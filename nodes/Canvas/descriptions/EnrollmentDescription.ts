@@ -264,6 +264,13 @@ export const enrollmentFields: INodeProperties[] = [
 				description: 'The ID of the course section to enroll the user in',
 			},
 			{
+				displayName: 'End At',
+				name: 'endAt',
+				type: 'dateTime',
+				default: '',
+				description: 'Override end date for the enrollment',
+			},
+			{
 				displayName: 'Enrollment State',
 				name: 'enrollmentState',
 				type: 'options',
@@ -323,13 +330,6 @@ export const enrollmentFields: INodeProperties[] = [
 				type: 'dateTime',
 				default: '',
 				description: 'Override start date for the enrollment',
-			},
-			{
-				displayName: 'End At',
-				name: 'endAt',
-				type: 'dateTime',
-				default: '',
-				description: 'Override end date for the enrollment',
 			},
 		],
 	},
