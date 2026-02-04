@@ -150,3 +150,91 @@ export {
 	moderatedGradingOperations,
 	moderatedGradingFields,
 } from './ModeratedGradingDescription';
+
+// Rubrics & Outcomes resource group descriptions
+export {
+	rubricOperations,
+	rubricFields,
+} from './RubricDescription';
+
+export {
+	outcomeOperations,
+	outcomeFields,
+} from './OutcomeDescription';
+
+export {
+	outcomeGroupOperations,
+	outcomeGroupFields,
+} from './OutcomeGroupDescription';
+
+export {
+	outcomeImportOperations,
+	outcomeImportFields,
+} from './OutcomeImportDescription';
+
+export {
+	outcomeResultOperations,
+	outcomeResultFields,
+} from './OutcomeResultDescription';
+
+export {
+	proficiencyRatingOperations,
+	proficiencyRatingFields,
+} from './ProficiencyRatingDescription';
+
+// New Quizzes resource group descriptions
+export {
+	newQuizOperations,
+	newQuizFields,
+} from './NewQuizDescription';
+
+export {
+	newQuizItemOperations,
+	newQuizItemFields,
+} from './NewQuizItemDescription';
+
+export {
+	newQuizAccommodationsOperations,
+	newQuizAccommodationsFields,
+} from './NewQuizAccommodationsDescription';
+
+export {
+	newQuizReportOperations,
+	newQuizReportFields,
+} from './NewQuizReportDescription';
+
+// Classic Quizzes resource group descriptions
+export {
+	quizOperations,
+	quizFields,
+} from './QuizDescription';
+
+export {
+	quizQuestionOperations,
+	quizQuestionFields,
+} from './QuizQuestionDescription';
+
+export {
+	quizQuestionGroupOperations,
+	quizQuestionGroupFields,
+} from './QuizQuestionGroupDescription';
+
+export {
+	quizSubmissionOperations,
+	quizSubmissionFields,
+} from './QuizSubmissionDescription';
+
+export {
+	quizReportOperations,
+	quizReportFields,
+} from './QuizReportDescription';
+
+export {
+	quizStatisticsOperations,
+	quizStatisticsFields,
+} from './QuizStatisticsDescription';
+
+export {
+	quizExtensionOperations,
+	quizExtensionFields,
+} from './QuizExtensionDescription';
