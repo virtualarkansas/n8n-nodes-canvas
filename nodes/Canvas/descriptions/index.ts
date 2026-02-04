@@ -238,3 +238,72 @@ export {
 	quizExtensionOperations,
 	quizExtensionFields,
 } from './QuizExtensionDescription';
+
+// Conversations resource group descriptions
+export {
+	conversationOperations,
+	conversationFields,
+} from './ConversationDescription';
+
+export {
+	commMessageOperations,
+	commMessageFields,
+} from './CommMessageDescription';
+
+export {
+	notificationPreferenceOperations,
+	notificationPreferenceFields,
+} from './NotificationPreferenceDescription';
+
+// Groups resource group descriptions
+export {
+	groupOperations,
+	groupFields,
+} from './GroupDescription';
+
+export {
+	groupCategoryOperations,
+	groupCategoryFields,
+} from './GroupCategoryDescription';
+
+export {
+	collaborationOperations,
+	collaborationFields,
+} from './CollaborationDescription';
+
+export {
+	conferenceOperations,
+	conferenceFields,
+} from './ConferenceDescription';
+
+// Calendar resource group descriptions
+export {
+	calendarEventOperations,
+	calendarEventFields,
+} from './CalendarEventDescription';
+
+export {
+	appointmentGroupOperations,
+	appointmentGroupFields,
+} from './AppointmentGroupDescription';
+
+export {
+	blackoutDateOperations,
+	blackoutDateFields,
+} from './BlackoutDateDescription';
+
+// Discussions resource group descriptions
+export {
+	discussionTopicOperations,
+	discussionTopicFields,
+} from './DiscussionTopicDescription';
+
+export {
+	announcementOperations,
+	announcementFields,
+} from './AnnouncementDescription';
+
+export {
+	announcementExternalFeedOperations,
+	announcementExternalFeedFields,
+} from './AnnouncementExternalFeedDescription';
