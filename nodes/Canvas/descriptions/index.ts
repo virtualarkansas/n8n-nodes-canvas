@@ -39,3 +39,24 @@ export {
 	courseReportOperations,
 	courseReportFields,
 } from './CourseReportDescription';
+
+// User resource group descriptions
+export {
+	userOperations,
+	userFields,
+} from './UserDescription';
+
+export {
+	loginOperations,
+	loginFields,
+} from './LoginDescription';
+
+export {
+	communicationChannelOperations,
+	communicationChannelFields,
+} from './CommunicationChannelDescription';
+
+export {
+	userObserveeOperations,
+	userObserveeFields,
+} from './UserObserveeDescription';
