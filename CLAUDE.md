@@ -78,37 +78,50 @@ See `docs/plans/resource-implementation-plan.md` for resource development plan.
 ### Phases
 - [x] Phase 1: Foundation (repo, credentials, GenericFunctions)
 - [x] Phase 2: Core node structure
-- [ ] Phase 3: Resources (130 total) - IN PROGRESS
+- [ ] Phase 3: Resources (130 total) - IN PROGRESS (46/130 complete)
 - [x] Phase 4: Trigger node
 - [ ] Phase 5: Testing & polish
 
-## Parallel Development Workflow
+### Resource Implementation Progress
 
-Resources are developed in parallel using feature branches:
+**Wave 1 - Core (COMPLETE - 14 resources)**
+- [x] Courses: Course, Section, Tab, CoursePace, CourseReport
+- [x] Users: User, Login, CommunicationChannel, UserObservee
+- [x] Enrollments: Enrollment, EnrollmentTerm
+- [x] Assignments: Assignment, AssignmentGroup, AssignmentExtension
 
-### Branch Strategy
-```bash
-# Create feature branch from main
-git checkout main && git pull
-git checkout -b feature/resource-name
+**Wave 2 - Content & Grading (COMPLETE - 15 resources)**
+- [x] Modules: Module, ModuleItem, Page
+- [x] Submissions: Submission, SubmissionComment, PeerReview
+- [x] Grades: CustomGradebookColumn, GradingPeriod, GradingPeriodSet, GradingStandard, LatePolicy, ModeratedGrading
+- [x] Files: File, Folder, MediaObject
 
-# After completing work
-git push -u origin feature/resource-name
+**Wave 3 - Quizzes & Assessments (COMPLETE - 17 resources)**
+- [x] Classic Quizzes: Quiz, QuizQuestion, QuizQuestionGroup, QuizSubmission, QuizReport, QuizStatistics, QuizExtension
+- [x] New Quizzes: NewQuiz, NewQuizItem, NewQuizAccommodations, NewQuizReport
+- [x] Rubrics/Outcomes: Rubric, Outcome, OutcomeGroup, OutcomeImport, OutcomeResult, ProficiencyRating
 
-# Merge back to main (after review)
-git checkout main && git merge feature/resource-name
-git push
-```
+**Wave 4 - Communication & Collaboration (PENDING - 13 resources)**
+- [ ] Discussions: DiscussionTopic, Announcement, AnnouncementExternalFeed
+- [ ] Conversations: Conversation, CommMessage, NotificationPreference
+- [ ] Calendar: CalendarEvent, AppointmentGroup, BlackoutDate
+- [ ] Groups: Group, GroupCategory, Collaboration, Conference
 
-### Current Branches
-- `feature/courses` - Courses, Sections, Tabs, Course Pace, Reports
-- `feature/users` - Users, Logins, Communication Channels, Observees
-- `feature/enrollments` - Enrollments, Enrollment Terms
-- `feature/assignments` - Assignments, Assignment Groups, Extensions
-- `feature/modules` - Modules, Module Items, Pages
-- `feature/submissions` - Submissions, Comments, Peer Reviews
-- `feature/grades` - Gradebook columns, Grading periods, Standards
-- `feature/files` - Files, Folders, Media Objects
+**Wave 5 - Admin & Integration (PENDING - 18 resources)**
+- [ ] Accounts: Account, AccountReport, AccountNotification, AccountCalendar, Admin, Role
+- [ ] Auth: AccessToken, ApiTokenScope, AuthenticationProvider, AuthenticationsLog, DeveloperKey
+- [ ] LTI: ExternalTool, LtiRegistration, LtiResourceLink, LineItem
+- [ ] SIS: SisImport, SisImportError, SisIntegration
+
+**Wave 6 - Analytics & Misc (PENDING - 15 resources)**
+- [ ] Analytics: Analytics, Progress, Search, SmartSearch, History
+- [ ] Content Mgmt: ContentExport, ContentMigration, ContentShare, BlueprintCourse
+- [ ] Misc: Favorite, FeatureFlag, Planner, Bookmark, EPortfolio, Poll
+
+### Next Steps
+1. Continue with Wave 4 (Discussions, Conversations, Calendar, Groups)
+2. Integrate all description files into Canvas.node.ts
+3. Test against Canvas Free-for-Teacher sandbox
 
 ### Description File Pattern
 Each resource gets a description file in `nodes/Canvas/descriptions/`:
@@ -120,6 +133,8 @@ import type { INodeProperties } from 'n8n-workflow';
 export const courseOperations: INodeProperties[] = [/* operations */];
 export const courseFields: INodeProperties[] = [/* fields */];
 ```
+
+All description files export operations and fields arrays, then re-exported from `descriptions/index.ts`.
 
 ## Coding Standards
 
