@@ -60,3 +60,93 @@ export {
 	userObserveeOperations,
 	userObserveeFields,
 } from './UserObserveeDescription';
+
+// Enrollment resource group descriptions
+export {
+	enrollmentOperations,
+	enrollmentFields,
+} from './EnrollmentDescription';
+
+export {
+	enrollmentTermOperations,
+	enrollmentTermFields,
+} from './EnrollmentTermDescription';
+
+// Submission resource group descriptions
+export {
+	submissionOperations,
+	submissionFields,
+} from './SubmissionDescription';
+
+export {
+	submissionCommentOperations,
+	submissionCommentFields,
+} from './SubmissionCommentDescription';
+
+export {
+	peerReviewOperations,
+	peerReviewFields,
+} from './PeerReviewDescription';
+
+// Module resource group descriptions
+export {
+	moduleOperations,
+	moduleFields,
+} from './ModuleDescription';
+
+export {
+	moduleItemOperations,
+	moduleItemFields,
+} from './ModuleItemDescription';
+
+export {
+	pageOperations,
+	pageFields,
+} from './PageDescription';
+
+// Files resource group descriptions
+export {
+	fileOperations,
+	fileFields,
+} from './FileDescription';
+
+export {
+	folderOperations,
+	folderFields,
+} from './FolderDescription';
+
+export {
+	mediaObjectOperations,
+	mediaObjectFields,
+} from './MediaObjectDescription';
+
+// Grades resource group descriptions
+export {
+	customGradebookColumnOperations,
+	customGradebookColumnFields,
+} from './CustomGradebookColumnDescription';
+
+export {
+	gradingPeriodOperations,
+	gradingPeriodFields,
+} from './GradingPeriodDescription';
+
+export {
+	gradingPeriodSetOperations,
+	gradingPeriodSetFields,
+} from './GradingPeriodSetDescription';
+
+export {
+	gradingStandardOperations,
+	gradingStandardFields,
+} from './GradingStandardDescription';
+
+export {
+	latePolicyOperations,
+	latePolicyFields,
+} from './LatePolicyDescription';
+
+export {
+	moderatedGradingOperations,
+	moderatedGradingFields,
+} from './ModeratedGradingDescription';
