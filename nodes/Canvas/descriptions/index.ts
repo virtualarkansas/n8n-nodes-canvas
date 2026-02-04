@@ -401,3 +401,81 @@ export {
 	ltiResourceLinkOperations,
 	ltiResourceLinkFields,
 } from './LtiResourceLinkDescription';
+
+// Analytics resource group descriptions
+export {
+	analyticsOperations,
+	analyticsFields,
+} from './AnalyticsDescription';
+
+export {
+	progressOperations,
+	progressFields,
+} from './ProgressDescription';
+
+export {
+	searchOperations,
+	searchFields,
+} from './SearchDescription';
+
+export {
+	smartSearchOperations,
+	smartSearchFields,
+} from './SmartSearchDescription';
+
+export {
+	historyOperations,
+	historyFields,
+} from './HistoryDescription';
+
+// Content Management resource group descriptions
+export {
+	contentExportOperations,
+	contentExportFields,
+} from './ContentExportDescription';
+
+export {
+	contentMigrationOperations,
+	contentMigrationFields,
+} from './ContentMigrationDescription';
+
+export {
+	contentShareOperations,
+	contentShareFields,
+} from './ContentShareDescription';
+
+export {
+	blueprintCourseOperations,
+	blueprintCourseFields,
+} from './BlueprintCourseDescription';
+
+// Misc resource group descriptions
+export {
+	bookmarkOperations,
+	bookmarkFields,
+} from './BookmarkDescription';
+
+export {
+	ePortfolioOperations,
+	ePortfolioFields,
+} from './EPortfolioDescription';
+
+export {
+	favoriteOperations,
+	favoriteFields,
+} from './FavoriteDescription';
+
+export {
+	featureFlagOperations,
+	featureFlagFields,
+} from './FeatureFlagDescription';
+
+export {
+	plannerOperations,
+	plannerFields,
+} from './PlannerDescription';
+
+export {
+	pollOperations,
+	pollFields,
+} from './PollDescription';
