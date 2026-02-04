@@ -72,14 +72,54 @@ All 130 Canvas resources in one node with resource/operation dropdowns. Keeps n8
 
 ## Implementation Status
 
-See `docs/plans/2025-02-04-canvas-n8n-nodes-design.md` for full design and checklist.
+See `docs/plans/2025-02-04-canvas-n8n-nodes-design.md` for full design.
+See `docs/plans/resource-implementation-plan.md` for resource development plan.
 
 ### Phases
 - [x] Phase 1: Foundation (repo, credentials, GenericFunctions)
-- [ ] Phase 2: Core node structure
-- [ ] Phase 3: Resources (130 total)
-- [ ] Phase 4: Trigger node
+- [x] Phase 2: Core node structure
+- [ ] Phase 3: Resources (130 total) - IN PROGRESS
+- [x] Phase 4: Trigger node
 - [ ] Phase 5: Testing & polish
+
+## Parallel Development Workflow
+
+Resources are developed in parallel using feature branches:
+
+### Branch Strategy
+```bash
+# Create feature branch from main
+git checkout main && git pull
+git checkout -b feature/resource-name
+
+# After completing work
+git push -u origin feature/resource-name
+
+# Merge back to main (after review)
+git checkout main && git merge feature/resource-name
+git push
+```
+
+### Current Branches
+- `feature/courses` - Courses, Sections, Tabs, Course Pace, Reports
+- `feature/users` - Users, Logins, Communication Channels, Observees
+- `feature/enrollments` - Enrollments, Enrollment Terms
+- `feature/assignments` - Assignments, Assignment Groups, Extensions
+- `feature/modules` - Modules, Module Items, Pages
+- `feature/submissions` - Submissions, Comments, Peer Reviews
+- `feature/grades` - Gradebook columns, Grading periods, Standards
+- `feature/files` - Files, Folders, Media Objects
+
+### Description File Pattern
+Each resource gets a description file in `nodes/Canvas/descriptions/`:
+
+```typescript
+// nodes/Canvas/descriptions/CourseDescription.ts
+import type { INodeProperties } from 'n8n-workflow';
+
+export const courseOperations: INodeProperties[] = [/* operations */];
+export const courseFields: INodeProperties[] = [/* fields */];
+```
 
 ## Coding Standards
 
