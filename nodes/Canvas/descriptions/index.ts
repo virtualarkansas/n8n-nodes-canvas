@@ -307,3 +307,97 @@ export {
 	announcementExternalFeedOperations,
 	announcementExternalFeedFields,
 } from './AnnouncementExternalFeedDescription';
+
+// SIS resource group descriptions
+export {
+	sisImportOperations,
+	sisImportFields,
+} from './SisImportDescription';
+
+export {
+	sisImportErrorOperations,
+	sisImportErrorFields,
+} from './SisImportErrorDescription';
+
+export {
+	sisIntegrationOperations,
+	sisIntegrationFields,
+} from './SisIntegrationDescription';
+
+// Accounts resource group descriptions
+export {
+	accountOperations,
+	accountFields,
+} from './AccountDescription';
+
+export {
+	accountReportOperations,
+	accountReportFields,
+} from './AccountReportDescription';
+
+export {
+	accountNotificationOperations,
+	accountNotificationFields,
+} from './AccountNotificationDescription';
+
+export {
+	accountCalendarOperations,
+	accountCalendarFields,
+} from './AccountCalendarDescription';
+
+export {
+	adminOperations,
+	adminFields,
+} from './AdminDescription';
+
+export {
+	roleOperations,
+	roleFields,
+} from './RoleDescription';
+
+// Auth resource group descriptions
+export {
+	accessTokenOperations,
+	accessTokenFields,
+} from './AccessTokenDescription';
+
+export {
+	apiTokenScopeOperations,
+	apiTokenScopeFields,
+} from './ApiTokenScopeDescription';
+
+export {
+	authenticationProviderOperations,
+	authenticationProviderFields,
+} from './AuthenticationProviderDescription';
+
+export {
+	authenticationsLogOperations,
+	authenticationsLogFields,
+} from './AuthenticationsLogDescription';
+
+export {
+	developerKeyOperations,
+	developerKeyFields,
+} from './DeveloperKeyDescription';
+
+// LTI resource group descriptions
+export {
+	externalToolOperations,
+	externalToolFields,
+} from './ExternalToolDescription';
+
+export {
+	lineItemOperations,
+	lineItemFields,
+} from './LineItemDescription';
+
+export {
+	ltiRegistrationOperations,
+	ltiRegistrationFields,
+} from './LtiRegistrationDescription';
+
+export {
+	ltiResourceLinkOperations,
+	ltiResourceLinkFields,
+} from './LtiResourceLinkDescription';
