@@ -2,19 +2,20 @@
 
 ## Project Overview
 
-Custom n8n community nodes providing full coverage of the Canvas LMS REST API (130 resources). Built for personal use on Hostinger n8n instance with npm publishing planned.
+Custom n8n community nodes providing full coverage of the Canvas LMS REST API (92 resources implemented). Built for personal use on Hostinger n8n instance.
 
 **Repo:** https://github.com/kyancey/n8n-nodes-canvas
+**Version:** 0.1.0-beta.1
 
 ## Quick Reference
 
 ### Key Files
 - `credentials/CanvasApi.credentials.ts` - API token auth
-- `credentials/CanvasOAuth2.credentials.ts` - OAuth2 auth
+- `credentials/CanvasOAuth2Api.credentials.ts` - OAuth2 auth
 - `nodes/Canvas/Canvas.node.ts` - Main mega-node
 - `nodes/Canvas/CanvasTrigger.node.ts` - Webhook trigger
 - `nodes/Canvas/GenericFunctions.ts` - Rate limiting, pagination, API helpers
-- `nodes/Canvas/descriptions/` - Resource/operation definitions
+- `nodes/Canvas/descriptions/` - Resource/operation definitions (92 files)
 
 ### Commands
 ```bash
@@ -24,13 +25,27 @@ npm run lint         # Check code style
 npm run lint:fix     # Auto-fix style issues
 ```
 
+### Project Commands
+```bash
+/project:release [version]   # Create and push a release (e.g., 0.1.0-beta.2)
+```
+
+### Releasing
+Releases are automated via GitHub Actions. To release:
+```bash
+# Update version in package.json, commit, tag, and push:
+git tag v0.1.0-beta.2
+git push origin v0.1.0-beta.2
+```
+GitHub Actions will build and create a release with the .tgz artifact.
+
 ### Testing
 Test against Canvas Free-for-Teacher sandbox, not production instances.
 
 ## Architecture Decisions
 
 ### Single Mega-Node
-All 130 Canvas resources in one node with resource/operation dropdowns. Keeps n8n palette clean.
+All 92 Canvas resources in one node with resource/operation dropdowns. Keeps n8n palette clean.
 
 ### Rate Limiting
 - Pre-flight probe: GET /api/v1/users/self before each request
@@ -72,56 +87,28 @@ All 130 Canvas resources in one node with resource/operation dropdowns. Keeps n8
 
 ## Implementation Status
 
-See `docs/plans/2025-02-04-canvas-n8n-nodes-design.md` for full design.
-See `docs/plans/resource-implementation-plan.md` for resource development plan.
+### Current: v0.1.0-beta.1
+
+**92 resources implemented** across all waves:
+
+- **Wave 1 - Core:** Course, Section, Tab, CoursePace, CourseReport, User, Login, CommunicationChannel, UserObservee, Enrollment, EnrollmentTerm, Assignment, AssignmentGroup, AssignmentExtension
+- **Wave 2 - Content & Grading:** Module, ModuleItem, Page, Submission, SubmissionComment, PeerReview, CustomGradebookColumn, GradingPeriod, GradingPeriodSet, GradingStandard, LatePolicy, ModeratedGrading, File, Folder, MediaObject
+- **Wave 3 - Quizzes & Assessments:** Quiz, QuizQuestion, QuizQuestionGroup, QuizSubmission, QuizReport, QuizStatistics, QuizExtension, NewQuiz, NewQuizItem, NewQuizAccommodations, NewQuizReport, Rubric, Outcome, OutcomeGroup, OutcomeImport, OutcomeResult, ProficiencyRating
+- **Wave 4 - Communication & Collaboration:** DiscussionTopic, Announcement, AnnouncementExternalFeed, Conversation, CommMessage, NotificationPreference, CalendarEvent, AppointmentGroup, BlackoutDate, Group, GroupCategory, Collaboration, Conference
+- **Wave 5 - Admin & Integration:** Account, AccountReport, AccountNotification, AccountCalendar, Admin, Role, AccessToken, ApiTokenScope, AuthenticationProvider, AuthenticationsLog, DeveloperKey, ExternalTool, LtiRegistration, LtiResourceLink, LineItem, SisImport, SisImportError, SisIntegration
+- **Wave 6 - Analytics & Misc:** Analytics, Progress, Search, SmartSearch, History, ContentExport, ContentMigration, ContentShare, BlueprintCourse, Favorite, FeatureFlag, Planner, Bookmark, EPortfolio, Poll
 
 ### Phases
 - [x] Phase 1: Foundation (repo, credentials, GenericFunctions)
 - [x] Phase 2: Core node structure
-- [ ] Phase 3: Resources (130 total) - IN PROGRESS (46/130 complete)
+- [x] Phase 3: Resources (92 complete)
 - [x] Phase 4: Trigger node
-- [ ] Phase 5: Testing & polish
-
-### Resource Implementation Progress
-
-**Wave 1 - Core (COMPLETE - 14 resources)**
-- [x] Courses: Course, Section, Tab, CoursePace, CourseReport
-- [x] Users: User, Login, CommunicationChannel, UserObservee
-- [x] Enrollments: Enrollment, EnrollmentTerm
-- [x] Assignments: Assignment, AssignmentGroup, AssignmentExtension
-
-**Wave 2 - Content & Grading (COMPLETE - 15 resources)**
-- [x] Modules: Module, ModuleItem, Page
-- [x] Submissions: Submission, SubmissionComment, PeerReview
-- [x] Grades: CustomGradebookColumn, GradingPeriod, GradingPeriodSet, GradingStandard, LatePolicy, ModeratedGrading
-- [x] Files: File, Folder, MediaObject
-
-**Wave 3 - Quizzes & Assessments (COMPLETE - 17 resources)**
-- [x] Classic Quizzes: Quiz, QuizQuestion, QuizQuestionGroup, QuizSubmission, QuizReport, QuizStatistics, QuizExtension
-- [x] New Quizzes: NewQuiz, NewQuizItem, NewQuizAccommodations, NewQuizReport
-- [x] Rubrics/Outcomes: Rubric, Outcome, OutcomeGroup, OutcomeImport, OutcomeResult, ProficiencyRating
-
-**Wave 4 - Communication & Collaboration (PENDING - 13 resources)**
-- [ ] Discussions: DiscussionTopic, Announcement, AnnouncementExternalFeed
-- [ ] Conversations: Conversation, CommMessage, NotificationPreference
-- [ ] Calendar: CalendarEvent, AppointmentGroup, BlackoutDate
-- [ ] Groups: Group, GroupCategory, Collaboration, Conference
-
-**Wave 5 - Admin & Integration (PENDING - 18 resources)**
-- [ ] Accounts: Account, AccountReport, AccountNotification, AccountCalendar, Admin, Role
-- [ ] Auth: AccessToken, ApiTokenScope, AuthenticationProvider, AuthenticationsLog, DeveloperKey
-- [ ] LTI: ExternalTool, LtiRegistration, LtiResourceLink, LineItem
-- [ ] SIS: SisImport, SisImportError, SisIntegration
-
-**Wave 6 - Analytics & Misc (PENDING - 15 resources)**
-- [ ] Analytics: Analytics, Progress, Search, SmartSearch, History
-- [ ] Content Mgmt: ContentExport, ContentMigration, ContentShare, BlueprintCourse
-- [ ] Misc: Favorite, FeatureFlag, Planner, Bookmark, EPortfolio, Poll
+- [ ] Phase 5: Testing & polish (IN PROGRESS)
 
 ### Next Steps
-1. Continue with Wave 4 (Discussions, Conversations, Calendar, Groups)
-2. Integrate all description files into Canvas.node.ts
-3. Test against Canvas Free-for-Teacher sandbox
+1. Test all resources against Canvas Free-for-Teacher sandbox
+2. Fix any issues discovered during testing
+3. Prepare for npm publishing
 
 ### Description File Pattern
 Each resource gets a description file in `nodes/Canvas/descriptions/`:
