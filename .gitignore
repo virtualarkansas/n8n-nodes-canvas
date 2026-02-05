@@ -28,3 +28,7 @@ npm-debug.log*
 
 # Test coverage
 coverage/
+
+# Release artifacts
+*.tgz
+*.tar.gz
