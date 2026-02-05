@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for changelog generation
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -30,11 +32,45 @@ jobs:
       - name: Package
         run: npm pack
 
+      - name: Get previous tag
+        id: prev_tag
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          echo "tag=$PREV_TAG" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          if [ -n "${{ steps.prev_tag.outputs.tag }}" ]; then
+            echo "Generating changelog from ${{ steps.prev_tag.outputs.tag }} to ${{ github.ref_name }}"
+            {
+              echo 'notes<<EOF'
+              echo "## What's Changed"
+              echo ""
+              git log ${{ steps.prev_tag.outputs.tag }}..${{ github.ref_name }} --pretty=format:"- %s" --no-merges | grep -v "Co-Authored-By" || true
+              echo ""
+              echo ""
+              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.prev_tag.outputs.tag }}...${{ github.ref_name }}"
+              echo 'EOF'
+            } >> $GITHUB_OUTPUT
+          else
+            echo "First release - no previous tag"
+            {
+              echo 'notes<<EOF'
+              echo "## Initial Release"
+              echo ""
+              echo "First beta release of n8n-nodes-canvas with 92 Canvas LMS API resources."
+              echo ""
+              echo "**Full Changelog**: https://github.com/${{ github.repository }}/commits/${{ github.ref_name }}"
+              echo 'EOF'
+            } >> $GITHUB_OUTPUT
+          fi
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: '*.tgz'
-          generate_release_notes: true
+          body: ${{ steps.changelog.outputs.notes }}
           prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
