@@ -4,7 +4,7 @@
 
 Custom n8n community nodes providing full coverage of the Canvas LMS REST API (92 resources implemented). Built for personal use on Hostinger n8n instance.
 
-**Repo:** https://github.com/kyancey/n8n-nodes-canvas
+**Repo:** https://github.com/virtualarkansas/n8n-nodes-canvas
 **Version:** 0.1.0-beta.1
 
 ## Quick Reference

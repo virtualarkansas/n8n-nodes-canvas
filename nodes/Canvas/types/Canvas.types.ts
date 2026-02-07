@@ -1,4 +1,35 @@
-import type { IDataObject } from 'n8n-workflow';
+import type { IDataObject, IHttpRequestMethods } from 'n8n-workflow';
+
+/**
+ * Request configuration returned by resource handlers.
+ * Uses Record<string, unknown> for body/qs since handlers build objects
+ * that TypeScript cannot narrow to IDataObject at compile time.
+ */
+export interface IRequestConfig {
+	endpoint: string;
+	method: IHttpRequestMethods;
+	body?: Record<string, unknown>;
+	qs?: Record<string, unknown>;
+}
+
+/**
+ * Helper function type for getting a single string parameter
+ */
+export type GetParam = (name: string, defaultValue?: string) => string;
+
+/**
+ * Helper function type for getting a collection/object parameter
+ */
+export type GetParamObject = (name: string) => Record<string, unknown>;
+
+/**
+ * Resource handler function signature
+ */
+export type ResourceHandler = (
+	operation: string,
+	getParam: GetParam,
+	getParamObject: GetParamObject,
+) => IRequestConfig;
 
 /**
  * Rate limit configuration options

@@ -49,12 +49,12 @@ mkdir -p /path/to/n8n/custom-nodes/n8n-nodes-canvas
 cd /path/to/n8n/custom-nodes/n8n-nodes-canvas
 
 # Option A: Clone from GitHub and build
-git clone https://github.com/kyancey/n8n-nodes-canvas.git .
+git clone https://github.com/virtualarkansas/n8n-nodes-canvas.git .
 npm install
 npm run build
 
 # Option B: Download a release (when available)
-# wget https://github.com/kyancey/n8n-nodes-canvas/releases/download/v0.1.0/n8n-nodes-canvas.tar.gz
+# wget https://github.com/virtualarkansas/n8n-nodes-canvas/releases/download/v0.1.0/n8n-nodes-canvas.tar.gz
 # tar -xzvf n8n-nodes-canvas.tar.gz
 ```
 
@@ -111,7 +111,7 @@ docker compose restart
 For development or customization:
 
 ```bash
-git clone https://github.com/kyancey/n8n-nodes-canvas.git
+git clone https://github.com/virtualarkansas/n8n-nodes-canvas.git
 cd n8n-nodes-canvas
 npm install
 npm run build
@@ -121,6 +121,51 @@ npm run dev
 
 # To create a distributable package
 npm pack
+```
+
+### Option 6: Git Clone (Updatable)
+
+For Docker setups where you want easy updates via `git pull`:
+
+#### Step 1: Clone and Build
+
+```bash
+# On your server
+cd /path/to/n8n
+git clone https://github.com/virtualarkansas/n8n-nodes-canvas.git custom-nodes/n8n-nodes-canvas
+cd custom-nodes/n8n-nodes-canvas
+npm install
+npm run build
+```
+
+#### Step 2: Volume Mount
+
+Add to your `docker-compose.yml`:
+
+```yaml
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    environment:
+      - N8N_CUSTOM_EXTENSIONS=/custom-nodes
+    volumes:
+      - ./custom-nodes:/custom-nodes
+```
+
+#### Step 3: Restart
+
+```bash
+docker compose down && docker compose up -d
+```
+
+#### Updating
+
+```bash
+cd /path/to/n8n/custom-nodes/n8n-nodes-canvas
+git pull
+npm install
+npm run build
+docker compose down && docker compose up -d
 ```
 
 ### Verifying Installation
@@ -254,7 +299,7 @@ The node has two outputs: **Success** and **Error**.
 
 ### "Resource not implemented" errors
 
-Some resources have UI definitions but may not have full endpoint implementations yet. Please [open an issue](https://github.com/kyancey/n8n-nodes-canvas/issues) for specific resources you need.
+Some resources have UI definitions but may not have full endpoint implementations yet. Please [open an issue](https://github.com/virtualarkansas/n8n-nodes-canvas/issues) for specific resources you need.
 
 ## Resources
 
