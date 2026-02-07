@@ -11,6 +11,8 @@ import {
 	canvasApiRequest,
 	canvasApiRequestAllItems,
 	executeWithErrorHandling,
+	buildCurlCommand,
+	getCanvasUrl,
 	DEFAULT_RATE_LIMIT_OPTIONS,
 	DEFAULT_PAGINATION_OPTIONS,
 	DEFAULT_ERROR_HANDLING_OPTIONS,
@@ -252,8 +254,8 @@ export class Canvas implements INodeType {
 		},
 		usableAsTool: true,
 		inputs: [NodeConnectionTypes.Main],
-		outputs: [NodeConnectionTypes.Main, NodeConnectionTypes.Main],
-		outputNames: ['Success', 'Error'],
+		outputs: '={{$parameter["debugMode"] ? ["main", "main", "main"] : ["main", "main"]}}',
+		outputNames: ['Success', 'Error', 'Debug'],
 		credentials: [
 			{
 				name: 'canvasApi',
@@ -291,6 +293,15 @@ export class Canvas implements INodeType {
 					},
 				],
 				default: 'accessToken',
+			},
+
+			// Debug Mode
+			{
+				displayName: 'Debug Mode',
+				name: 'debugMode',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to skip API calls and output the equivalent curl command and request details to a Debug output instead',
 			},
 
 			// Resource Selection (alphabetized)
@@ -768,6 +779,32 @@ export class Canvas implements INodeType {
 
 		const resource = this.getNodeParameter('resource', 0) as string;
 		const operation = this.getNodeParameter('operation', 0) as string;
+		const debugMode = this.getNodeParameter('debugMode', 0, false) as boolean;
+
+		if (debugMode) {
+			const canvasBaseUrl = await getCanvasUrl.call(this);
+			const authType = this.getNodeParameter('authentication', 0) as string;
+			const debugItems: INodeExecutionData[] = [];
+
+			for (let i = 0; i < items.length; i++) {
+				const { endpoint, method, body, qs } = buildRequest(this, resource, operation, i);
+				const curl = buildCurlCommand(method, canvasBaseUrl, endpoint, qs, body, authType);
+
+				debugItems.push({
+					json: {
+						resource,
+						operation,
+						method,
+						url: `${canvasBaseUrl}${endpoint}`,
+						queryString: qs || {},
+						body: body || {},
+						curl,
+					},
+				});
+			}
+
+			return [[], [], debugItems];
+		}
 
 		// Get options
 		const errorHandlingRaw = this.getNodeParameter('errorHandling', 0, {}) as IDataObject;

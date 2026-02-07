@@ -454,6 +454,48 @@ export function buildIncludeParams(includes: string[]): IDataObject {
 /**
  * Execute with error handling based on options
  */
+/**
+ * Build a curl command string from request details for debug output
+ */
+export function buildCurlCommand(
+	method: string,
+	baseUrl: string,
+	endpoint: string,
+	qs?: Record<string, unknown>,
+	body?: Record<string, unknown>,
+	authType?: string,
+): string {
+	const url = new URL(`${baseUrl}${endpoint}`);
+
+	if (qs) {
+		for (const [key, value] of Object.entries(qs)) {
+			if (Array.isArray(value)) {
+				for (const v of value) {
+					url.searchParams.append(key, String(v));
+				}
+			} else if (value !== undefined && value !== null) {
+				url.searchParams.append(key, String(value));
+			}
+		}
+	}
+
+	const tokenLabel = authType === 'oAuth2' ? '<OAUTH2_TOKEN>' : '<ACCESS_TOKEN>';
+	const parts: string[] = [
+		'curl',
+		`-X ${method}`,
+		`-H 'Authorization: Bearer ${tokenLabel}'`,
+	];
+
+	if (body && Object.keys(body).length > 0) {
+		parts.push("-H 'Content-Type: application/json'");
+		parts.push(`-d '${JSON.stringify(body)}'`);
+	}
+
+	parts.push(`'${url.toString()}'`);
+
+	return parts.join(' \\\n  ');
+}
+
 export async function executeWithErrorHandling<T>(
 	this: IExecuteFunctions,
 	operation: () => Promise<T>,
