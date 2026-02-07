@@ -4,7 +4,6 @@ import type {
 	INodeType,
 	INodeTypeDescription,
 	IDataObject,
-	IHttpRequestMethods,
 } from 'n8n-workflow';
 import { NodeConnectionTypes, ApplicationError } from 'n8n-workflow';
 
@@ -19,12 +18,15 @@ import {
 } from './GenericFunctions';
 
 import type {
+	IRequestConfig,
 	IRateLimitOptions,
 	IPaginationOptions,
 	IErrorHandlingOptions,
 	IBatchOptions,
 	ICanvasErrorOutput,
 } from './types/Canvas.types';
+
+import { resourceHandlers } from './handlers';
 
 // Import all resource descriptions
 import {
@@ -866,6 +868,8 @@ async function processItem(
 	rateLimit: IRateLimitOptions,
 ): Promise<{ success: boolean; items: INodeExecutionData[]; error?: ICanvasErrorOutput }> {
 	const { endpoint, method, body, qs } = buildRequest(context, resource, operation, itemIndex);
+	const bodyData = body as IDataObject | undefined;
+	const qsData = qs as IDataObject | undefined;
 
 	const result = await executeWithErrorHandling.call(
 		context,
@@ -876,8 +880,8 @@ async function processItem(
 					context,
 					method,
 					endpoint,
-					body,
-					qs,
+					bodyData,
+					qsData,
 					pagination,
 					rateLimit,
 				);
@@ -889,8 +893,8 @@ async function processItem(
 				context,
 				method,
 				endpoint,
-				body,
-				qs,
+				bodyData,
+				qsData,
 				rateLimit,
 			);
 			return response.data;
@@ -918,12 +922,7 @@ function buildRequest(
 	resource: string,
 	operation: string,
 	itemIndex: number,
-): { endpoint: string; method: IHttpRequestMethods; body?: IDataObject; qs?: IDataObject } {
-	let endpoint = '';
-	let method: IHttpRequestMethods = 'GET';
-	let body: IDataObject | undefined;
-	let qs: IDataObject | undefined;
-
+): IRequestConfig {
 	// Helper to safely get parameters
 	const getParam = (name: string, defaultValue: string = '') => {
 		try {
@@ -933,655 +932,18 @@ function buildRequest(
 		}
 	};
 
-	const getParamObject = (name: string) => {
+	const getParamObject = (name: string): Record<string, unknown> => {
 		try {
-			return context.getNodeParameter(name, itemIndex, {}) as IDataObject;
+			return context.getNodeParameter(name, itemIndex, {}) as Record<string, unknown>;
 		} catch {
 			return {};
 		}
 	};
 
-	// Build endpoint and method based on resource and operation
-	switch (resource) {
-		// ============================================
-		// COURSES GROUP
-		// ============================================
-		case 'course': {
-			const courseId = getParam('courseId');
-			switch (operation) {
-				case 'create':
-					endpoint = `/api/v1/accounts/${getParam('accountId')}/courses`;
-					method = 'POST';
-					body = { course: { name: getParam('name'), ...getParamObject('additionalFields') } };
-					break;
-				case 'delete':
-					endpoint = `/api/v1/courses/${courseId}`;
-					method = 'DELETE';
-					qs = { event: 'delete' };
-					break;
-				case 'get':
-					endpoint = `/api/v1/courses/${courseId}`;
-					qs = getParamObject('options');
-					break;
-				case 'getAll':
-					endpoint = '/api/v1/courses';
-					qs = getParamObject('options');
-					break;
-				case 'update':
-					endpoint = `/api/v1/courses/${courseId}`;
-					method = 'PUT';
-					body = { course: getParamObject('updateFields') };
-					break;
-				case 'conclude':
-					endpoint = `/api/v1/courses/${courseId}`;
-					method = 'DELETE';
-					qs = { event: 'conclude' };
-					break;
-				case 'copy':
-					endpoint = `/api/v1/courses/${courseId}/content_migrations`;
-					method = 'POST';
-					body = {
-						migration_type: 'course_copy_importer',
-						settings: { source_course_id: getParam('sourceCourseId'), ...getParamObject('options') },
-					};
-					break;
-				case 'listStudents':
-					endpoint = `/api/v1/courses/${courseId}/students`;
-					qs = getParamObject('options');
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		case 'section': {
-			const courseId = getParam('courseId');
-			const sectionId = getParam('sectionId');
-			switch (operation) {
-				case 'create':
-					endpoint = `/api/v1/courses/${courseId}/sections`;
-					method = 'POST';
-					body = { course_section: { name: getParam('name'), ...getParamObject('additionalFields') } };
-					break;
-				case 'delete':
-					endpoint = `/api/v1/sections/${sectionId}`;
-					method = 'DELETE';
-					break;
-				case 'get':
-					endpoint = `/api/v1/sections/${sectionId}`;
-					qs = getParamObject('options');
-					break;
-				case 'getAll':
-					endpoint = `/api/v1/courses/${courseId}/sections`;
-					qs = getParamObject('options');
-					break;
-				case 'update':
-					endpoint = `/api/v1/sections/${sectionId}`;
-					method = 'PUT';
-					body = { course_section: getParamObject('updateFields') };
-					break;
-				case 'crosslist':
-					endpoint = `/api/v1/sections/${sectionId}/crosslist/${getParam('newCourseId')}`;
-					method = 'POST';
-					break;
-				case 'uncrosslist':
-					endpoint = `/api/v1/sections/${sectionId}/crosslist`;
-					method = 'DELETE';
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		// ============================================
-		// USERS GROUP
-		// ============================================
-		case 'user': {
-			const userId = getParam('userId', 'self');
-			switch (operation) {
-				case 'create':
-					endpoint = `/api/v1/accounts/${getParam('accountId')}/users`;
-					method = 'POST';
-					body = {
-						user: { name: getParam('name'), ...getParamObject('additionalFields') },
-						pseudonym: getParamObject('pseudonym'),
-					};
-					break;
-				case 'delete':
-					endpoint = `/api/v1/accounts/${getParam('accountId')}/users/${userId}`;
-					method = 'DELETE';
-					break;
-				case 'get':
-					endpoint = `/api/v1/users/${userId}`;
-					qs = getParamObject('options');
-					break;
-				case 'getAll':
-					endpoint = `/api/v1/accounts/${getParam('accountId')}/users`;
-					qs = getParamObject('options');
-					break;
-				case 'update':
-					endpoint = `/api/v1/users/${userId}`;
-					method = 'PUT';
-					body = { user: getParamObject('updateFields') };
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		// ============================================
-		// ASSIGNMENTS GROUP
-		// ============================================
-		case 'assignment': {
-			const courseId = getParam('courseId');
-			const assignmentId = getParam('assignmentId');
-			switch (operation) {
-				case 'create':
-					endpoint = `/api/v1/courses/${courseId}/assignments`;
-					method = 'POST';
-					body = { assignment: { name: getParam('name'), ...getParamObject('additionalFields') } };
-					break;
-				case 'delete':
-					endpoint = `/api/v1/courses/${courseId}/assignments/${assignmentId}`;
-					method = 'DELETE';
-					break;
-				case 'get':
-					endpoint = `/api/v1/courses/${courseId}/assignments/${assignmentId}`;
-					qs = getParamObject('options');
-					break;
-				case 'getAll':
-					endpoint = `/api/v1/courses/${courseId}/assignments`;
-					qs = getParamObject('options');
-					break;
-				case 'update':
-					endpoint = `/api/v1/courses/${courseId}/assignments/${assignmentId}`;
-					method = 'PUT';
-					body = { assignment: getParamObject('updateFields') };
-					break;
-				case 'duplicate':
-					endpoint = `/api/v1/courses/${courseId}/assignments/${assignmentId}/duplicate`;
-					method = 'POST';
-					body = getParamObject('options');
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		// ============================================
-		// ENROLLMENTS GROUP
-		// ============================================
-		case 'enrollment': {
-			const courseId = getParam('courseId');
-			const enrollmentId = getParam('enrollmentId');
-			switch (operation) {
-				case 'create':
-					endpoint = `/api/v1/courses/${courseId}/enrollments`;
-					method = 'POST';
-					body = {
-						enrollment: {
-							user_id: getParam('userId'),
-							type: getParam('enrollmentType'),
-							...getParamObject('additionalFields'),
-						},
-					};
-					break;
-				case 'delete':
-					endpoint = `/api/v1/courses/${courseId}/enrollments/${enrollmentId}`;
-					method = 'DELETE';
-					qs = { task: getParam('task', 'conclude') };
-					break;
-				case 'get':
-					endpoint = `/api/v1/accounts/${getParam('accountId')}/enrollments/${enrollmentId}`;
-					break;
-				case 'getAll':
-					endpoint = `/api/v1/courses/${courseId}/enrollments`;
-					qs = getParamObject('options');
-					break;
-				case 'accept':
-					endpoint = `/api/v1/courses/${courseId}/enrollments/${enrollmentId}/accept`;
-					method = 'POST';
-					break;
-				case 'reject':
-					endpoint = `/api/v1/courses/${courseId}/enrollments/${enrollmentId}/reject`;
-					method = 'POST';
-					break;
-				case 'reactivate':
-					endpoint = `/api/v1/courses/${courseId}/enrollments/${enrollmentId}/reactivate`;
-					method = 'PUT';
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		// ============================================
-		// MODULES GROUP
-		// ============================================
-		case 'module': {
-			const courseId = getParam('courseId');
-			const moduleId = getParam('moduleId');
-			switch (operation) {
-				case 'create':
-					endpoint = `/api/v1/courses/${courseId}/modules`;
-					method = 'POST';
-					body = { module: { name: getParam('name'), ...getParamObject('additionalFields') } };
-					break;
-				case 'delete':
-					endpoint = `/api/v1/courses/${courseId}/modules/${moduleId}`;
-					method = 'DELETE';
-					break;
-				case 'get':
-					endpoint = `/api/v1/courses/${courseId}/modules/${moduleId}`;
-					qs = getParamObject('options');
-					break;
-				case 'getAll':
-					endpoint = `/api/v1/courses/${courseId}/modules`;
-					qs = getParamObject('options');
-					break;
-				case 'update':
-					endpoint = `/api/v1/courses/${courseId}/modules/${moduleId}`;
-					method = 'PUT';
-					body = { module: getParamObject('updateFields') };
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		case 'moduleItem': {
-			const courseId = getParam('courseId');
-			const moduleId = getParam('moduleId');
-			const itemId = getParam('itemId');
-			switch (operation) {
-				case 'create':
-					endpoint = `/api/v1/courses/${courseId}/modules/${moduleId}/items`;
-					method = 'POST';
-					body = {
-						module_item: {
-							title: getParam('title'),
-							type: getParam('type'),
-							...getParamObject('additionalFields'),
-						},
-					};
-					break;
-				case 'delete':
-					endpoint = `/api/v1/courses/${courseId}/modules/${moduleId}/items/${itemId}`;
-					method = 'DELETE';
-					break;
-				case 'get':
-					endpoint = `/api/v1/courses/${courseId}/modules/${moduleId}/items/${itemId}`;
-					qs = getParamObject('options');
-					break;
-				case 'getAll':
-					endpoint = `/api/v1/courses/${courseId}/modules/${moduleId}/items`;
-					qs = getParamObject('options');
-					break;
-				case 'update':
-					endpoint = `/api/v1/courses/${courseId}/modules/${moduleId}/items/${itemId}`;
-					method = 'PUT';
-					body = { module_item: getParamObject('updateFields') };
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		case 'page': {
-			const courseId = getParam('courseId');
-			const pageUrl = getParam('pageUrl');
-			switch (operation) {
-				case 'create':
-					endpoint = `/api/v1/courses/${courseId}/pages`;
-					method = 'POST';
-					body = { wiki_page: { title: getParam('title'), ...getParamObject('additionalFields') } };
-					break;
-				case 'delete':
-					endpoint = `/api/v1/courses/${courseId}/pages/${pageUrl}`;
-					method = 'DELETE';
-					break;
-				case 'get':
-					endpoint = `/api/v1/courses/${courseId}/pages/${pageUrl}`;
-					break;
-				case 'getAll':
-					endpoint = `/api/v1/courses/${courseId}/pages`;
-					qs = getParamObject('options');
-					break;
-				case 'update':
-					endpoint = `/api/v1/courses/${courseId}/pages/${pageUrl}`;
-					method = 'PUT';
-					body = { wiki_page: getParamObject('updateFields') };
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		// ============================================
-		// SUBMISSIONS GROUP
-		// ============================================
-		case 'submission': {
-			const courseId = getParam('courseId');
-			const assignmentId = getParam('assignmentId');
-			const userId = getParam('userId');
-			switch (operation) {
-				case 'get':
-					endpoint = `/api/v1/courses/${courseId}/assignments/${assignmentId}/submissions/${userId}`;
-					qs = getParamObject('options');
-					break;
-				case 'getAll':
-					endpoint = `/api/v1/courses/${courseId}/assignments/${assignmentId}/submissions`;
-					qs = getParamObject('options');
-					break;
-				case 'update':
-					endpoint = `/api/v1/courses/${courseId}/assignments/${assignmentId}/submissions/${userId}`;
-					method = 'PUT';
-					body = { submission: getParamObject('updateFields') };
-					break;
-				case 'grade':
-					endpoint = `/api/v1/courses/${courseId}/assignments/${assignmentId}/submissions/${userId}`;
-					method = 'PUT';
-					body = {
-						submission: {
-							posted_grade: getParam('grade'),
-							...getParamObject('additionalFields'),
-						},
-					};
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		// ============================================
-		// QUIZZES GROUP
-		// ============================================
-		case 'quiz': {
-			const courseId = getParam('courseId');
-			const quizId = getParam('quizId');
-			switch (operation) {
-				case 'create':
-					endpoint = `/api/v1/courses/${courseId}/quizzes`;
-					method = 'POST';
-					body = { quiz: { title: getParam('title'), ...getParamObject('additionalFields') } };
-					break;
-				case 'delete':
-					endpoint = `/api/v1/courses/${courseId}/quizzes/${quizId}`;
-					method = 'DELETE';
-					break;
-				case 'get':
-					endpoint = `/api/v1/courses/${courseId}/quizzes/${quizId}`;
-					break;
-				case 'getAll':
-					endpoint = `/api/v1/courses/${courseId}/quizzes`;
-					qs = getParamObject('options');
-					break;
-				case 'update':
-					endpoint = `/api/v1/courses/${courseId}/quizzes/${quizId}`;
-					method = 'PUT';
-					body = { quiz: getParamObject('updateFields') };
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		// ============================================
-		// FILES GROUP
-		// ============================================
-		case 'file': {
-			const fileId = getParam('fileId');
-			const courseId = getParam('courseId');
-			switch (operation) {
-				case 'get':
-					endpoint = `/api/v1/files/${fileId}`;
-					qs = getParamObject('options');
-					break;
-				case 'getAll':
-					endpoint = `/api/v1/courses/${courseId}/files`;
-					qs = getParamObject('options');
-					break;
-				case 'delete':
-					endpoint = `/api/v1/files/${fileId}`;
-					method = 'DELETE';
-					break;
-				case 'update':
-					endpoint = `/api/v1/files/${fileId}`;
-					method = 'PUT';
-					body = getParamObject('updateFields');
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		case 'folder': {
-			const folderId = getParam('folderId');
-			const courseId = getParam('courseId');
-			switch (operation) {
-				case 'create':
-					endpoint = `/api/v1/courses/${courseId}/folders`;
-					method = 'POST';
-					body = { name: getParam('name'), ...getParamObject('additionalFields') };
-					break;
-				case 'get':
-					endpoint = `/api/v1/folders/${folderId}`;
-					break;
-				case 'getAll':
-					endpoint = `/api/v1/courses/${courseId}/folders`;
-					qs = getParamObject('options');
-					break;
-				case 'delete':
-					endpoint = `/api/v1/folders/${folderId}`;
-					method = 'DELETE';
-					qs = getParamObject('options');
-					break;
-				case 'update':
-					endpoint = `/api/v1/folders/${folderId}`;
-					method = 'PUT';
-					body = getParamObject('updateFields');
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		// ============================================
-		// DISCUSSIONS GROUP
-		// ============================================
-		case 'discussionTopic': {
-			const courseId = getParam('courseId');
-			const topicId = getParam('topicId');
-			switch (operation) {
-				case 'create':
-					endpoint = `/api/v1/courses/${courseId}/discussion_topics`;
-					method = 'POST';
-					body = { title: getParam('title'), ...getParamObject('additionalFields') };
-					break;
-				case 'delete':
-					endpoint = `/api/v1/courses/${courseId}/discussion_topics/${topicId}`;
-					method = 'DELETE';
-					break;
-				case 'get':
-					endpoint = `/api/v1/courses/${courseId}/discussion_topics/${topicId}`;
-					qs = getParamObject('options');
-					break;
-				case 'getAll':
-					endpoint = `/api/v1/courses/${courseId}/discussion_topics`;
-					qs = getParamObject('options');
-					break;
-				case 'update':
-					endpoint = `/api/v1/courses/${courseId}/discussion_topics/${topicId}`;
-					method = 'PUT';
-					body = getParamObject('updateFields');
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		case 'announcement': {
-			const courseId = getParam('courseId');
-			const announcementId = getParam('announcementId');
-			switch (operation) {
-				case 'create':
-					endpoint = `/api/v1/courses/${courseId}/discussion_topics`;
-					method = 'POST';
-					body = {
-						title: getParam('title'),
-						message: getParam('message'),
-						is_announcement: true,
-						...getParamObject('additionalFields'),
-					};
-					break;
-				case 'delete':
-					endpoint = `/api/v1/courses/${courseId}/discussion_topics/${announcementId}`;
-					method = 'DELETE';
-					break;
-				case 'get':
-					endpoint = `/api/v1/courses/${courseId}/discussion_topics/${announcementId}`;
-					break;
-				case 'getAll':
-					endpoint = '/api/v1/announcements';
-					qs = { context_codes: getParam('contextCodes'), ...getParamObject('options') };
-					break;
-				case 'update':
-					endpoint = `/api/v1/courses/${courseId}/discussion_topics/${announcementId}`;
-					method = 'PUT';
-					body = getParamObject('updateFields');
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		// ============================================
-		// ACCOUNTS GROUP
-		// ============================================
-		case 'account': {
-			const accountId = getParam('accountId');
-			switch (operation) {
-				case 'get':
-					endpoint = `/api/v1/accounts/${accountId}`;
-					qs = getParamObject('options');
-					break;
-				case 'getAll':
-					endpoint = '/api/v1/accounts';
-					qs = getParamObject('options');
-					break;
-				case 'update':
-					endpoint = `/api/v1/accounts/${accountId}`;
-					method = 'PUT';
-					body = { account: getParamObject('updateFields') };
-					break;
-				case 'createSubAccount':
-					endpoint = `/api/v1/accounts/${accountId}/sub_accounts`;
-					method = 'POST';
-					body = { account: { name: getParam('name'), ...getParamObject('additionalFields') } };
-					break;
-				case 'getSubAccounts':
-					endpoint = `/api/v1/accounts/${accountId}/sub_accounts`;
-					qs = getParamObject('options');
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		// ============================================
-		// GROUPS GROUP
-		// ============================================
-		case 'group': {
-			const groupId = getParam('groupId');
-			const courseId = getParam('courseId');
-			switch (operation) {
-				case 'create':
-					endpoint = courseId ? `/api/v1/courses/${courseId}/groups` : `/api/v1/group_categories/${getParam('groupCategoryId')}/groups`;
-					method = 'POST';
-					body = { name: getParam('name'), ...getParamObject('additionalFields') };
-					break;
-				case 'delete':
-					endpoint = `/api/v1/groups/${groupId}`;
-					method = 'DELETE';
-					break;
-				case 'get':
-					endpoint = `/api/v1/groups/${groupId}`;
-					qs = getParamObject('options');
-					break;
-				case 'getAll':
-					endpoint = '/api/v1/users/self/groups';
-					qs = getParamObject('options');
-					break;
-				case 'update':
-					endpoint = `/api/v1/groups/${groupId}`;
-					method = 'PUT';
-					body = getParamObject('updateFields');
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		// ============================================
-		// CONVERSATIONS GROUP
-		// ============================================
-		case 'conversation': {
-			const conversationId = getParam('conversationId');
-			switch (operation) {
-				case 'create':
-					endpoint = '/api/v1/conversations';
-					method = 'POST';
-					body = {
-						recipients: getParam('recipients'),
-						body: getParam('body'),
-						...getParamObject('additionalFields'),
-					};
-					break;
-				case 'delete':
-					endpoint = `/api/v1/conversations/${conversationId}`;
-					method = 'DELETE';
-					break;
-				case 'get':
-					endpoint = `/api/v1/conversations/${conversationId}`;
-					qs = getParamObject('options');
-					break;
-				case 'getAll':
-					endpoint = '/api/v1/conversations';
-					qs = getParamObject('options');
-					break;
-				case 'update':
-					endpoint = `/api/v1/conversations/${conversationId}`;
-					method = 'PUT';
-					body = { conversation: getParamObject('updateFields') };
-					break;
-				default:
-					throw new ApplicationError(`Operation ${operation} not implemented for ${resource}`);
-			}
-			break;
-		}
-
-		// ============================================
-		// DEFAULT - Throw error for unimplemented resources
-		// ============================================
-		default:
-			throw new ApplicationError(`Resource ${resource} not yet fully implemented. Please check the Canvas API documentation.`);
+	const handler = resourceHandlers[resource];
+	if (!handler) {
+		throw new ApplicationError(`Resource "${resource}" is not implemented`);
 	}
 
-	return { endpoint, method, body, qs };
+	return handler(operation, getParam, getParamObject);
 }

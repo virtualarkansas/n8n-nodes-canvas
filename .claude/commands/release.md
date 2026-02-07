@@ -49,7 +49,7 @@ The GitHub Actions workflow automatically generates release notes from commit me
 ## Post-Release
 
 After the workflow completes (~1-2 min), verify the release at:
-https://github.com/kyancey/n8n-nodes-canvas/releases
+https://github.com/virtualarkansas/n8n-nodes-canvas/releases
 
 ## Manual Release (if needed)
 

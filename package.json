@@ -3,7 +3,7 @@
 	"version": "0.1.0-beta.2",
 	"description": "n8n community nodes for Canvas LMS - full API coverage with 92 resources",
 	"license": "MIT",
-	"homepage": "https://github.com/kyancey/n8n-nodes-canvas",
+	"homepage": "https://github.com/virtualarkansas/n8n-nodes-canvas",
 	"keywords": [
 		"n8n-community-node-package",
 		"canvas",
@@ -18,7 +18,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/kyancey/n8n-nodes-canvas.git"
+		"url": "https://github.com/virtualarkansas/n8n-nodes-canvas.git"
 	},
 	"scripts": {
 		"build": "n8n-node build",
