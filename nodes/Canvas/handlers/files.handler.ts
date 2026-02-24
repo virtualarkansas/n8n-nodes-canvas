@@ -70,10 +70,11 @@ export function handleFileResource(
 			};
 		}
 
+		case 'initiateUpload':
 		case 'upload': {
-			// NOTE: This builds the initial request config for the file upload
-			// notification step. Binary handling (the actual multipart upload)
-			// will be done separately by the execution engine.
+			// Builds the Step 1 request config (notify Canvas, get upload URL).
+			// For 'upload': processItem() in Canvas.node.ts orchestrates all three steps.
+			// For 'initiateUpload': returns the Step 1 response directly.
 			const basePath = getFileContextBasePath(getParam);
 			const options = getParamObject('options');
 			const body: Record<string, unknown> = {};
