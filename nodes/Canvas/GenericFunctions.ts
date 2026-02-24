@@ -7,7 +7,7 @@ import type {
 	IDataObject,
 	JsonObject,
 } from 'n8n-workflow';
-import { NodeApiError } from 'n8n-workflow';
+import { NodeApiError, ApplicationError } from 'n8n-workflow';
 
 import type {
 	IRateLimitOptions,
@@ -553,4 +553,256 @@ export async function executeWithErrorHandling<T>(
 
 	const retries = errorOptions.onError === 'retryThenError' ? errorOptions.maxRetries : 0;
 	return attemptOperation(retries);
+}
+
+/**
+ * Perform the complete Canvas three-step file upload (binary data).
+ *
+ * Step 1: POST to Canvas API endpoint to notify and get upload token
+ * Step 2: POST multipart/form-data to upload_url with upload_params + file
+ * Step 3: GET the redirect Location with auth to confirm upload
+ */
+export async function canvasFileUpload(
+	this: IExecuteFunctions,
+	step1Endpoint: string,
+	step1Body: IDataObject,
+	itemIndex: number,
+	binaryPropertyName: string,
+	rateLimitOptions: IRateLimitOptions = DEFAULT_RATE_LIMIT_OPTIONS,
+): Promise<IDataObject> {
+	// --- Step 1: Notify Canvas ---
+	const step1Response = await canvasApiRequest.call(
+		this,
+		'POST',
+		step1Endpoint,
+		step1Body,
+		undefined,
+		rateLimitOptions,
+	);
+
+	const step1Data = step1Response.data as IDataObject;
+	const uploadUrl = step1Data.upload_url as string;
+	const uploadParams = step1Data.upload_params as IDataObject;
+
+	if (!uploadUrl || !uploadParams) {
+		throw new ApplicationError(
+			'Canvas Step 1 response missing upload_url or upload_params',
+		);
+	}
+
+	// --- Step 2: Multipart upload to upload_url ---
+	const binaryData = this.helpers.assertBinaryData(itemIndex, binaryPropertyName);
+	const binaryDataBuffer = await this.helpers.getBinaryDataBuffer(itemIndex, binaryPropertyName);
+
+	// eslint-disable-next-line @typescript-eslint/no-require-imports
+	const FormData = require('form-data');
+	const formData = new FormData();
+
+	// Add all upload_params first (order matters - file must be last)
+	for (const [key, value] of Object.entries(uploadParams)) {
+		formData.append(key, String(value));
+	}
+
+	// Add file last
+	formData.append('file', binaryDataBuffer, {
+		filename: binaryData.fileName || 'file',
+		contentType: binaryData.mimeType || 'application/octet-stream',
+	});
+
+	const step2Options: IHttpRequestOptions = {
+		method: 'POST',
+		url: uploadUrl,
+		body: formData,
+		headers: formData.getHeaders(),
+		returnFullResponse: true,
+		json: false,
+		ignoreHttpStatusErrors: true,
+	};
+
+	const step2Response = await this.helpers.httpRequest(step2Options);
+	const step2Headers = (step2Response.headers || {}) as IDataObject;
+	const step2StatusCode = step2Response.statusCode as number;
+
+	// Some 2xx responses return the file object directly in the body
+	if (step2StatusCode >= 200 && step2StatusCode < 300) {
+		try {
+			const bodyData = typeof step2Response.body === 'string'
+				? JSON.parse(step2Response.body as string) as IDataObject
+				: step2Response.body as IDataObject;
+			if (bodyData && bodyData.id) {
+				return bodyData;
+			}
+		} catch {
+			// Not JSON, continue to check Location
+		}
+	}
+
+	// Extract Location header from response (handles both 2xx and 3xx)
+	const locationUrl = (step2Headers.location || step2Headers.Location) as string | undefined;
+
+	if (!locationUrl) {
+		throw new ApplicationError(
+			`Canvas Step 2 response missing Location header for upload confirmation (status: ${step2StatusCode})`,
+		);
+	}
+
+	// --- Step 3: Confirm upload with Canvas auth ---
+	const canvasUrl = await getCanvasUrl.call(this);
+	const confirmUrl = locationUrl.startsWith('http')
+		? locationUrl
+		: `${canvasUrl}${locationUrl}`;
+
+	const authType = this.getNodeParameter('authentication', 0) as string;
+	const credentialType = authType === 'oAuth2' ? 'canvasOAuth2Api' : 'canvasApi';
+
+	const step3Options: IHttpRequestOptions = {
+		method: 'GET',
+		url: confirmUrl,
+		returnFullResponse: true,
+		json: true,
+	};
+
+	const step3Response = await this.helpers.httpRequestWithAuthentication.call(
+		this,
+		credentialType,
+		step3Options,
+	);
+
+	return step3Response.body as IDataObject;
+}
+
+/**
+ * Perform Canvas file upload from a public URL.
+ *
+ * Step 1: POST to Canvas API endpoint with file metadata
+ * Step 1b: POST to upload_url with upload_params + target_url
+ * Step 2: Optionally poll progress until completion
+ * Step 3: Return final file object or progress object
+ */
+export async function canvasFileUploadFromUrl(
+	this: IExecuteFunctions,
+	step1Endpoint: string,
+	step1Body: IDataObject,
+	fileUrl: string,
+	waitForCompletion: boolean,
+	rateLimitOptions: IRateLimitOptions = DEFAULT_RATE_LIMIT_OPTIONS,
+): Promise<IDataObject> {
+	// --- Step 1: Notify Canvas ---
+	const step1BodyWithUrl = { ...step1Body, url: fileUrl };
+	const step1Response = await canvasApiRequest.call(
+		this,
+		'POST',
+		step1Endpoint,
+		step1BodyWithUrl,
+		undefined,
+		rateLimitOptions,
+	);
+
+	const responseData = step1Response.data as IDataObject;
+	const uploadUrl = responseData.upload_url as string | undefined;
+	const uploadParams = responseData.upload_params as IDataObject | undefined;
+	const progress = responseData.progress as IDataObject | undefined;
+
+	// --- Step 1b: POST to upload_url if present ---
+	if (uploadUrl && uploadParams) {
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		const FormData = require('form-data');
+		const formData = new FormData();
+
+		for (const [key, value] of Object.entries(uploadParams)) {
+			formData.append(key, String(value));
+		}
+		formData.append('target_url', fileUrl);
+
+		const uploadOptions: IHttpRequestOptions = {
+			method: 'POST',
+			url: uploadUrl,
+			body: formData,
+			headers: formData.getHeaders(),
+			returnFullResponse: true,
+			json: false,
+			ignoreHttpStatusErrors: true,
+		};
+
+		await this.helpers.httpRequest(uploadOptions);
+	}
+
+	// --- Step 2: Poll progress if requested ---
+	if (!waitForCompletion || !progress?.url) {
+		return responseData;
+	}
+
+	return pollCanvasProgress.call(
+		this,
+		progress.url as string,
+		rateLimitOptions,
+	);
+}
+
+/**
+ * Poll a Canvas progress URL until completion.
+ * Returns the final file object when available.
+ */
+export async function pollCanvasProgress(
+	this: IExecuteFunctions,
+	progressUrl: string,
+	rateLimitOptions: IRateLimitOptions = DEFAULT_RATE_LIMIT_OPTIONS,
+	maxAttempts: number = 60,
+	intervalMs: number = 2000,
+): Promise<IDataObject> {
+	const canvasUrl = await getCanvasUrl.call(this);
+	const authType = this.getNodeParameter('authentication', 0) as string;
+	const credentialType = authType === 'oAuth2' ? 'canvasOAuth2Api' : 'canvasApi';
+
+	const fullUrl = progressUrl.startsWith('http')
+		? progressUrl
+		: `${canvasUrl}${progressUrl}`;
+
+	for (let attempt = 0; attempt < maxAttempts; attempt++) {
+		const pollOptions: IHttpRequestOptions = {
+			method: 'GET',
+			url: fullUrl,
+			returnFullResponse: true,
+			json: true,
+		};
+
+		const response = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			credentialType,
+			pollOptions,
+		);
+
+		const progressData = response.body as IDataObject;
+		const state = progressData.workflow_state as string;
+
+		if (state === 'completed') {
+			const results = progressData.results as IDataObject | undefined;
+			if (results?.id) {
+				// Fetch the full file object
+				const fileResponse = await canvasApiRequest.call(
+					this,
+					'GET',
+					`/api/v1/files/${results.id as string}`,
+					undefined,
+					undefined,
+					rateLimitOptions,
+				);
+				return fileResponse.data as IDataObject;
+			}
+			return progressData;
+		}
+
+		if (state === 'failed') {
+			throw new ApplicationError(
+				`Canvas URL upload failed: ${(progressData.message as string) || 'Unknown error'}`,
+			);
+		}
+
+		// Still running - wait and retry
+		await sleep(intervalMs);
+	}
+
+	throw new ApplicationError(
+		`Canvas URL upload timed out after ${(maxAttempts * intervalMs) / 1000} seconds`,
+	);
 }

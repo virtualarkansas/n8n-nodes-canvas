@@ -37,6 +37,12 @@ export const fileOperations: INodeProperties[] = [
 				action: 'Get storage quota',
 			},
 			{
+				name: 'Initiate Upload (Step 1 Only)',
+				value: 'initiateUpload',
+				description: 'Initiate a file upload - returns upload_url and upload_params for manual completion',
+				action: 'Initiate a file upload',
+			},
+			{
 				name: 'Update',
 				value: 'update',
 				description: 'Update a file',
@@ -45,7 +51,7 @@ export const fileOperations: INodeProperties[] = [
 			{
 				name: 'Upload',
 				value: 'upload',
-				description: 'Upload a file',
+				description: 'Upload a file (handles all three steps automatically)',
 				action: 'Upload a file',
 			},
 		],
@@ -66,7 +72,7 @@ export const fileFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['file'],
-				operation: ['getAll', 'getQuota', 'upload'],
+				operation: ['getAll', 'getQuota', 'upload', 'initiateUpload'],
 			},
 		},
 		options: [
@@ -102,7 +108,7 @@ export const fileFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['file'],
-				operation: ['getAll', 'getQuota', 'upload'],
+				operation: ['getAll', 'getQuota', 'upload', 'initiateUpload'],
 				contextType: ['course'],
 			},
 		},
@@ -117,7 +123,7 @@ export const fileFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['file'],
-				operation: ['getAll', 'getQuota', 'upload'],
+				operation: ['getAll', 'getQuota', 'upload', 'initiateUpload'],
 				contextType: ['user'],
 			},
 		},
@@ -132,7 +138,7 @@ export const fileFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['file'],
-				operation: ['getAll', 'getQuota', 'upload'],
+				operation: ['getAll', 'getQuota', 'upload', 'initiateUpload'],
 				contextType: ['group'],
 			},
 		},
@@ -147,7 +153,7 @@ export const fileFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['file'],
-				operation: ['getAll', 'upload'],
+				operation: ['getAll', 'upload', 'initiateUpload'],
 				contextType: ['folder'],
 			},
 		},
@@ -173,7 +179,53 @@ export const fileFields: INodeProperties[] = [
 	},
 
 	// ----------------------------------
-	//         file: upload - file data
+	//         file: initiateUpload - notice
+	// ----------------------------------
+	{
+		displayName: 'This only performs Step 1 of the Canvas three-step file upload process. It returns upload_url and upload_params for manual completion. For a complete upload, use the "Upload" operation instead. <a href="https://canvas.instructure.com/doc/api/file.file_uploads.html" target="_blank">Canvas File Upload Documentation</a>',
+		name: 'initiateUploadNotice',
+		type: 'notice',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['file'],
+				operation: ['initiateUpload'],
+			},
+		},
+	},
+
+	// ----------------------------------
+	//         file: upload - source selection
+	// ----------------------------------
+	{
+		displayName: 'Upload Source',
+		name: 'uploadSource',
+		type: 'options',
+		required: true,
+		default: 'binaryData',
+		displayOptions: {
+			show: {
+				resource: ['file'],
+				operation: ['upload'],
+			},
+		},
+		options: [
+			{
+				name: 'Binary Data',
+				value: 'binaryData',
+				description: 'Upload from binary data in the workflow',
+			},
+			{
+				name: 'URL',
+				value: 'url',
+				description: 'Provide a public URL for Canvas to fetch',
+			},
+		],
+		description: 'Where the file data comes from',
+	},
+
+	// ----------------------------------
+	//         file: upload - binary data field
 	// ----------------------------------
 	{
 		displayName: 'Input Data Field Name',
@@ -185,9 +237,62 @@ export const fileFields: INodeProperties[] = [
 			show: {
 				resource: ['file'],
 				operation: ['upload'],
+				uploadSource: ['binaryData'],
 			},
 		},
 		description: 'The name of the incoming field containing the binary file data to upload',
+	},
+
+	// ----------------------------------
+	//         file: upload - URL source fields
+	// ----------------------------------
+	{
+		displayName: 'File URL',
+		name: 'fileUrl',
+		type: 'string',
+		required: true,
+		default: '',
+		placeholder: 'https://example.com/file.pdf',
+		displayOptions: {
+			show: {
+				resource: ['file'],
+				operation: ['upload'],
+				uploadSource: ['url'],
+			},
+		},
+		description: 'A publicly accessible HTTP or HTTPS URL for Canvas to fetch the file from',
+	},
+	{
+		displayName: 'Wait for Completion',
+		name: 'waitForCompletion',
+		type: 'boolean',
+		default: true,
+		displayOptions: {
+			show: {
+				resource: ['file'],
+				operation: ['upload'],
+				uploadSource: ['url'],
+			},
+		},
+		description: 'Whether to poll until Canvas finishes fetching the URL. If false, returns the progress object immediately.',
+	},
+
+	// ----------------------------------
+	//         file: initiateUpload - binary data field
+	// ----------------------------------
+	{
+		displayName: 'Input Data Field Name',
+		name: 'binaryPropertyName',
+		type: 'string',
+		required: true,
+		default: 'data',
+		displayOptions: {
+			show: {
+				resource: ['file'],
+				operation: ['initiateUpload'],
+			},
+		},
+		description: 'The name of the incoming field containing the binary file data (used to read file name, size, and content type for Step 1)',
 	},
 
 	// ----------------------------------
@@ -436,7 +541,7 @@ export const fileFields: INodeProperties[] = [
 	},
 
 	// ----------------------------------
-	//         file: upload - options
+	//         file: upload / initiateUpload - options
 	// ----------------------------------
 	{
 		displayName: 'Options',
@@ -447,7 +552,7 @@ export const fileFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['file'],
-				operation: ['upload'],
+				operation: ['upload', 'initiateUpload'],
 			},
 		},
 		options: [

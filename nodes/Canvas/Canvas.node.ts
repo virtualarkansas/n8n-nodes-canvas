@@ -10,6 +10,8 @@ import { NodeConnectionTypes, ApplicationError } from 'n8n-workflow';
 import {
 	canvasApiRequest,
 	canvasApiRequestAllItems,
+	canvasFileUpload,
+	canvasFileUploadFromUrl,
 	executeWithErrorHandling,
 	buildCurlCommand,
 	getCanvasUrl,
@@ -790,17 +792,21 @@ export class Canvas implements INodeType {
 				const { endpoint, method, body, qs } = buildRequest(this, resource, operation, i);
 				const curl = buildCurlCommand(method, canvasBaseUrl, endpoint, qs, body, authType);
 
-				debugItems.push({
-					json: {
-						resource,
-						operation,
-						method,
-						url: `${canvasBaseUrl}${endpoint}`,
-						queryString: qs || {},
-						body: body || {},
-						curl,
-					},
-				});
+				const debugJson: IDataObject = {
+					resource,
+					operation,
+					method,
+					url: `${canvasBaseUrl}${endpoint}`,
+					queryString: qs || {},
+					body: body || {},
+					curl,
+				};
+
+				if (resource === 'file' && operation === 'upload') {
+					debugJson._note = 'This is Step 1 of 3. Steps 2 (multipart upload) and 3 (confirmation) are handled automatically at runtime.';
+				}
+
+				debugItems.push({ json: debugJson });
 			}
 
 			return [[], [], debugItems];
@@ -907,6 +913,73 @@ async function processItem(
 	const { endpoint, method, body, qs } = buildRequest(context, resource, operation, itemIndex);
 	const bodyData = body as IDataObject | undefined;
 	const qsData = qs as IDataObject | undefined;
+
+	// Special case: File Upload (three-step process)
+	if (resource === 'file' && operation === 'upload') {
+		const result = await executeWithErrorHandling.call(
+			context,
+			async () => {
+				const uploadSource = context.getNodeParameter('uploadSource', itemIndex, 'binaryData') as string;
+
+				if (uploadSource === 'binaryData') {
+					const binaryPropertyName = context.getNodeParameter('binaryPropertyName', itemIndex, 'data') as string;
+					const binaryData = context.helpers.assertBinaryData(itemIndex, binaryPropertyName);
+					const binaryBuffer = await context.helpers.getBinaryDataBuffer(itemIndex, binaryPropertyName);
+
+					const step1Body = { ...(bodyData || {}) } as IDataObject;
+					if (!step1Body.name) {
+						step1Body.name = binaryData.fileName || 'unnamed_file';
+					}
+					if (!step1Body.content_type) {
+						step1Body.content_type = binaryData.mimeType || 'application/octet-stream';
+					}
+					step1Body.size = binaryBuffer.length;
+
+					return canvasFileUpload.call(
+						context,
+						endpoint,
+						step1Body,
+						itemIndex,
+						binaryPropertyName,
+						rateLimit,
+					);
+				} else {
+					const fileUrl = context.getNodeParameter('fileUrl', itemIndex) as string;
+					const waitForCompletion = context.getNodeParameter('waitForCompletion', itemIndex, true) as boolean;
+
+					const step1Body = { ...(bodyData || {}) } as IDataObject;
+					if (!step1Body.name) {
+						try {
+							const urlPath = new URL(fileUrl).pathname;
+							step1Body.name = urlPath.split('/').pop() || 'uploaded_file';
+						} catch {
+							step1Body.name = 'uploaded_file';
+						}
+					}
+
+					return canvasFileUploadFromUrl.call(
+						context,
+						endpoint,
+						step1Body,
+						fileUrl,
+						waitForCompletion,
+						rateLimit,
+					);
+				}
+			},
+			errorHandling,
+			item.json,
+			resource,
+			operation,
+			endpoint,
+		);
+
+		if (result.success && result.data) {
+			const data = result.data as IDataObject;
+			return { success: true, items: [{ json: data }] };
+		}
+		return { success: false, items: [], error: result.error };
+	}
 
 	const result = await executeWithErrorHandling.call(
 		context,
