@@ -65,31 +65,16 @@ export function buildCalendarEventRequest(
 
 		case 'getAll': {
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
 
-			// Handle context_codes as an array parameter
-			if (options.context_codes) {
-				const codes = (options.context_codes as string).split(',').map((code) => code.trim());
-				qs['context_codes[]'] = codes;
-				delete options.context_codes;
-			}
-
-			// Handle excludes as an array parameter
-			if (options.excludes) {
-				qs['excludes[]'] = options.excludes;
-				delete options.excludes;
-			}
-
-			// Handle includes as an array parameter
-			if (options.includes) {
-				qs['includes[]'] = options.includes;
-				delete options.includes;
+			// Convert CSV context_codes to array for bracket notation
+			if (options.context_codes && typeof options.context_codes === 'string') {
+				options.context_codes = (options.context_codes as string).split(',').map((code) => code.trim());
 			}
 
 			return {
 				method: 'GET',
 				endpoint: '/api/v1/calendar_events',
-				qs: { ...options, ...qs },
+				qs: options,
 			};
 		}
 
@@ -167,64 +152,42 @@ export function buildAppointmentGroupRequest(
 			};
 		}
 
-		case 'get': {
-			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
-
-			// Handle include as an array parameter
-			if (options.include) {
-				qs['include[]'] = options.include;
-				delete options.include;
-			}
-
+		case 'get':
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/appointment_groups/${appointmentGroupId}`,
-				qs: { ...options, ...qs },
+				qs: getParamObject('options'),
 			};
-		}
 
 		case 'getAll': {
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
 
-			// Handle context_codes as an array parameter
-			if (options.context_codes) {
-				const codes = (options.context_codes as string).split(',').map((code) => code.trim());
-				qs['context_codes[]'] = codes;
-				delete options.context_codes;
-			}
-
-			// Handle include as an array parameter
-			if (options.include) {
-				qs['include[]'] = options.include;
-				delete options.include;
+			// Convert CSV context_codes to array for bracket notation
+			if (options.context_codes && typeof options.context_codes === 'string') {
+				options.context_codes = (options.context_codes as string).split(',').map((code) => code.trim());
 			}
 
 			return {
 				method: 'GET',
 				endpoint: '/api/v1/appointment_groups',
-				qs: { ...options, ...qs },
+				qs: options,
 			};
 		}
 
 		case 'getNextAppointment': {
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
 
-			// Handle appointment_group_ids as an array parameter
-			if (options.appointment_group_ids) {
-				const ids = (options.appointment_group_ids as string)
+			// Convert CSV appointment_group_ids to array for bracket notation
+			if (options.appointment_group_ids && typeof options.appointment_group_ids === 'string') {
+				options.appointment_group_ids = (options.appointment_group_ids as string)
 					.split(',')
 					.map((id) => id.trim());
-				qs['appointment_group_ids[]'] = ids;
-				delete options.appointment_group_ids;
 			}
 
 			return {
 				method: 'GET',
 				endpoint: '/api/v1/appointment_groups/next_appointment',
-				qs: { ...options, ...qs },
+				qs: options,
 			};
 		}
 

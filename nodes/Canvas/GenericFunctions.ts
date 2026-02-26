@@ -276,11 +276,14 @@ export async function canvasApiRequest(
 		}
 	}
 
+	// Convert array query params to Canvas bracket notation (e.g., include[] = [...])
+	const convertedQuery = query ? convertArrayParams(query) : undefined;
+
 	const requestOptions: IHttpRequestOptions = {
 		method,
 		url: `${canvasUrl}${endpoint}`,
 		body,
-		qs: query,
+		qs: convertedQuery,
 		returnFullResponse: true,
 		json: true,
 	};
@@ -345,8 +348,8 @@ export async function canvasApiRequestAllItems(
 	let pageCount = 0;
 	let lastRateLimitStatus: IRateLimitStatus = { remaining: 1000 };
 
-	// Add per_page to query
-	const paginatedQuery = {
+	// Add per_page to query (array conversion happens inside canvasApiRequest)
+	const paginatedQuery: IDataObject = {
 		...query,
 		per_page: paginationOptions.perPage,
 	};
@@ -437,18 +440,21 @@ export async function canvasApiRequestAllItems(
 }
 
 /**
- * Build include[] query parameters
+ * Convert array query parameters to Canvas bracket notation.
+ * Canvas API requires: include[]=val1&include[]=val2
+ * n8n sends arrays as: include=val1,val2 (wrong)
+ * This converts { include: ['val1', 'val2'] } to { 'include[]': ['val1', 'val2'] }
  */
-export function buildIncludeParams(includes: string[]): IDataObject {
-	const query: IDataObject = {};
-	for (const include of includes) {
-		// Canvas uses array notation: include[]=term&include[]=teachers
-		if (!query['include[]']) {
-			query['include[]'] = [];
+export function convertArrayParams(query: IDataObject): IDataObject {
+	const converted: IDataObject = {};
+	for (const [key, value] of Object.entries(query)) {
+		if (Array.isArray(value) && value.length > 0 && !key.endsWith('[]')) {
+			converted[`${key}[]`] = value;
+		} else {
+			converted[key] = value;
 		}
-		(query['include[]'] as string[]).push(include);
 	}
-	return query;
+	return converted;
 }
 
 /**

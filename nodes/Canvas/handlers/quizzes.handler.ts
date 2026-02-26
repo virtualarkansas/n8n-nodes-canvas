@@ -362,10 +362,10 @@ export function handleQuizReportResource(
 				},
 			};
 
-			// Handle include as query string param
+			// Pass include as query string (convertArrayParams handles bracket notation)
 			const qs: Record<string, unknown> = {};
 			if (options.include && Array.isArray(options.include) && (options.include as string[]).length > 0) {
-				qs['include[]'] = options.include;
+				qs.include = options.include;
 			}
 
 			return {

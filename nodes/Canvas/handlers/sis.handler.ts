@@ -83,30 +83,12 @@ export function buildSisImportRequest(
 				endpoint: `/api/v1/accounts/${accountId}/sis_imports/${getParam('importId')}`,
 			};
 
-		case 'getAll': {
-			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
-
-			if (options.created_since) {
-				qs.created_since = options.created_since;
-			}
-			if (options.created_before) {
-				qs.created_before = options.created_before;
-			}
-			if (
-				options.workflow_state &&
-				Array.isArray(options.workflow_state) &&
-				(options.workflow_state as string[]).length > 0
-			) {
-				qs['workflow_state[]'] = options.workflow_state;
-			}
-
+		case 'getAll':
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/sis_imports`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs: getParamObject('options'),
 			};
-		}
 
 		case 'getCurrent':
 			return {
@@ -213,35 +195,15 @@ export function buildSisIntegrationRequest(
 		case 'getAssignments': {
 			const context = getParam('context');
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
 
-			if (options.starts_before) {
-				qs.starts_before = options.starts_before;
-			}
-			if (options.ends_after) {
-				qs.ends_after = options.ends_after;
-			}
-			if (
-				options.include &&
-				Array.isArray(options.include) &&
-				(options.include as string[]).length > 0
-			) {
-				qs['include[]'] = options.include;
-			}
-
-			let endpoint: string;
-			if (context === 'account') {
-				const accountId = getParam('accountId');
-				endpoint = `/api/v1/accounts/${accountId}/sis/assignments`;
-			} else {
-				const courseId = getParam('courseId');
-				endpoint = `/api/v1/courses/${courseId}/sis/assignments`;
-			}
+			const endpoint = context === 'account'
+				? `/api/v1/accounts/${getParam('accountId')}/sis/assignments`
+				: `/api/v1/courses/${getParam('courseId')}/sis/assignments`;
 
 			return {
 				method: 'GET',
 				endpoint,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs: options,
 			};
 		}
 

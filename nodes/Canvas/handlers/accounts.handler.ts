@@ -337,21 +337,16 @@ export function buildAdminRequest(
 
 		case 'getAll': {
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
-			if (options.include_deleted !== undefined) {
-				qs.include_deleted = options.include_deleted;
+
+			// Convert CSV user_id to array for bracket notation
+			if (options.user_id && typeof options.user_id === 'string') {
+				options.user_id = (options.user_id as string).split(',').map((id) => id.trim());
 			}
-			if (options.search_term) {
-				qs.search_term = options.search_term;
-			}
-			if (options.user_id) {
-				const userIdStr = options.user_id as string;
-				qs['user_id[]'] = userIdStr.split(',').map((id) => id.trim());
-			}
+
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/admins`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				...(Object.keys(options).length > 0 ? { qs: options } : {}),
 			};
 		}
 
@@ -408,21 +403,12 @@ export function buildRoleRequest(
 				endpoint: `/api/v1/accounts/${accountId}/roles/${roleId}`,
 			};
 
-		case 'getAll': {
-			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
-			if (options.show_inherited !== undefined) {
-				qs.show_inherited = options.show_inherited;
-			}
-			if (options.state && Array.isArray(options.state) && (options.state as string[]).length > 0) {
-				qs['state[]'] = options.state;
-			}
+		case 'getAll':
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/roles`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs: getParamObject('options'),
 			};
-		}
 
 		case 'update': {
 			const updateFields = getParamObject('updateFields');

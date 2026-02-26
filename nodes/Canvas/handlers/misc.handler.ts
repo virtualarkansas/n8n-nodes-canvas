@@ -85,16 +85,16 @@ export function buildEPortfolioRequest(
 		case 'getAll': {
 			const userId = getParam('userId');
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
 
+			// Convert boolean include flag to array value for bracket notation
 			if (options.include !== undefined) {
-				qs['include[]'] = 'deleted';
+				options.include = ['deleted'];
 			}
 
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/users/${userId}/eportfolios`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs: options,
 			};
 		}
 
@@ -303,32 +303,16 @@ export function buildPlannerRequest(
 		// ----- Items -----
 		case 'getAllItems': {
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
 
-			if (options.start_date) {
-				qs.start_date = options.start_date;
-			}
-			if (options.end_date) {
-				qs.end_date = options.end_date;
-			}
-			if (options.filter) {
-				qs.filter = options.filter;
-			}
-			if (options.observed_user_id) {
-				qs.observed_user_id = options.observed_user_id;
-			}
-			if (options.user_id) {
-				qs.user_id = options.user_id;
-			}
-			if (options.context_codes) {
-				const codes = (options.context_codes as string).split(',').map((code) => code.trim());
-				qs['context_codes[]'] = codes;
+			// Convert CSV context_codes to array for bracket notation
+			if (options.context_codes && typeof options.context_codes === 'string') {
+				options.context_codes = (options.context_codes as string).split(',').map((code) => code.trim());
 			}
 
 			return {
 				method: 'GET',
 				endpoint: '/api/v1/planner/items',
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs: options,
 			};
 		}
 
@@ -368,23 +352,16 @@ export function buildPlannerRequest(
 
 		case 'getAllNotes': {
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
 
-			if (options.start_date) {
-				qs.start_date = options.start_date;
-			}
-			if (options.end_date) {
-				qs.end_date = options.end_date;
-			}
-			if (options.context_codes) {
-				const codes = (options.context_codes as string).split(',').map((code) => code.trim());
-				qs['context_codes[]'] = codes;
+			// Convert CSV context_codes to array for bracket notation
+			if (options.context_codes && typeof options.context_codes === 'string') {
+				options.context_codes = (options.context_codes as string).split(',').map((code) => code.trim());
 			}
 
 			return {
 				method: 'GET',
 				endpoint: '/api/v1/planner_notes',
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs: options,
 			};
 		}
 
