@@ -276,14 +276,20 @@ export async function canvasApiRequest(
 		}
 	}
 
-	// Convert array query params to Canvas bracket notation (e.g., include[] = [...])
-	const convertedQuery = query ? convertArrayParams(query) : undefined;
+	// Build URL with query string manually to ensure Canvas bracket notation for arrays
+	// (n8n's built-in qs serialization may mangle array params)
+	let requestUrl = `${canvasUrl}${endpoint}`;
+	if (query && Object.keys(query).length > 0) {
+		const queryString = buildCanvasQueryString(query);
+		if (queryString) {
+			requestUrl += `?${queryString}`;
+		}
+	}
 
 	const requestOptions: IHttpRequestOptions = {
 		method,
-		url: `${canvasUrl}${endpoint}`,
+		url: requestUrl,
 		body,
-		qs: convertedQuery,
 		returnFullResponse: true,
 		json: true,
 	};
@@ -440,21 +446,26 @@ export async function canvasApiRequestAllItems(
 }
 
 /**
- * Convert array query parameters to Canvas bracket notation.
+ * Build a Canvas-compatible query string with proper bracket notation for arrays.
  * Canvas API requires: include[]=val1&include[]=val2
- * n8n sends arrays as: include=val1,val2 (wrong)
- * This converts { include: ['val1', 'val2'] } to { 'include[]': ['val1', 'val2'] }
+ * n8n's built-in qs serialization may not produce this format correctly,
+ * so we build the query string manually and append it to the URL.
  */
-export function convertArrayParams(query: IDataObject): IDataObject {
-	const converted: IDataObject = {};
+export function buildCanvasQueryString(query: IDataObject): string {
+	const parts: string[] = [];
 	for (const [key, value] of Object.entries(query)) {
-		if (Array.isArray(value) && value.length > 0 && !key.endsWith('[]')) {
-			converted[`${key}[]`] = value;
+		if (value === undefined || value === null) continue;
+		if (Array.isArray(value)) {
+			if (value.length === 0) continue;
+			const bracketKey = key.endsWith('[]') ? key : `${key}[]`;
+			for (const v of value) {
+				parts.push(`${encodeURIComponent(bracketKey)}=${encodeURIComponent(String(v))}`);
+			}
 		} else {
-			converted[key] = value;
+			parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`);
 		}
 	}
-	return converted;
+	return parts.join('&');
 }
 
 /**
@@ -471,17 +482,12 @@ export function buildCurlCommand(
 	body?: Record<string, unknown>,
 	authType?: string,
 ): string {
-	const url = new URL(`${baseUrl}${endpoint}`);
+	let url = `${baseUrl}${endpoint}`;
 
-	if (qs) {
-		for (const [key, value] of Object.entries(qs)) {
-			if (Array.isArray(value)) {
-				for (const v of value) {
-					url.searchParams.append(key, String(v));
-				}
-			} else if (value !== undefined && value !== null) {
-				url.searchParams.append(key, String(value));
-			}
+	if (qs && Object.keys(qs).length > 0) {
+		const queryString = buildCanvasQueryString(qs as IDataObject);
+		if (queryString) {
+			url += `?${queryString}`;
 		}
 	}
 
@@ -497,7 +503,7 @@ export function buildCurlCommand(
 		parts.push(`-d '${JSON.stringify(body)}'`);
 	}
 
-	parts.push(`'${url.toString()}'`);
+	parts.push(`'${url}'`);
 
 	return parts.join(' \\\n  ');
 }
