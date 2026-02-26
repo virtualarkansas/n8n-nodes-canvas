@@ -14,6 +14,7 @@ import {
 	canvasFileUploadFromUrl,
 	executeWithErrorHandling,
 	buildCurlCommand,
+	convertArrayParams,
 	getCanvasUrl,
 	DEFAULT_RATE_LIMIT_OPTIONS,
 	DEFAULT_PAGINATION_OPTIONS,
@@ -790,14 +791,15 @@ export class Canvas implements INodeType {
 
 			for (let i = 0; i < items.length; i++) {
 				const { endpoint, method, body, qs } = buildRequest(this, resource, operation, i);
-				const curl = buildCurlCommand(method, canvasBaseUrl, endpoint, qs, body, authType);
+				const convertedQs = qs ? convertArrayParams(qs as IDataObject) : qs;
+				const curl = buildCurlCommand(method, canvasBaseUrl, endpoint, convertedQs, body, authType);
 
 				const debugJson: IDataObject = {
 					resource,
 					operation,
 					method,
 					url: `${canvasBaseUrl}${endpoint}`,
-					queryString: qs || {},
+					queryString: convertedQs || {},
 					body: body || {},
 					curl,
 				};
