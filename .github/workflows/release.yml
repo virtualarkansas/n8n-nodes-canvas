@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write  # required for npm provenance
 
 jobs:
   release:
@@ -22,6 +23,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: npm ci
@@ -31,6 +33,24 @@ jobs:
 
       - name: Package
         run: npm pack
+
+      - name: Determine npm dist-tag
+        id: npm_tag
+        run: |
+          if [[ "${{ github.ref_name }}" == *"alpha"* ]]; then
+            echo "tag=alpha" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == *"beta"* ]]; then
+            echo "tag=beta" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == *"rc"* ]]; then
+            echo "tag=next" >> $GITHUB_OUTPUT
+          else
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish to npm
+        run: npm publish --tag ${{ steps.npm_tag.outputs.tag }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Get previous tag
         id: prev_tag
@@ -50,6 +70,12 @@ jobs:
               git log ${{ steps.prev_tag.outputs.tag }}..${{ github.ref_name }} --pretty=format:"- %s" --no-merges | grep -v "Co-Authored-By" || true
               echo ""
               echo ""
+              echo "## Install"
+              echo ""
+              echo '```bash'
+              echo "npm install @kyancey-va/n8n-nodes-canvas@${{ steps.npm_tag.outputs.tag }}"
+              echo '```'
+              echo ""
               echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.prev_tag.outputs.tag }}...${{ github.ref_name }}"
               echo 'EOF'
             } >> $GITHUB_OUTPUT
@@ -61,6 +87,12 @@ jobs:
               echo ""
               echo "First beta release of n8n-nodes-canvas with 92 Canvas LMS API resources."
               echo ""
+              echo "## Install"
+              echo ""
+              echo '```bash'
+              echo "npm install @kyancey-va/n8n-nodes-canvas@${{ steps.npm_tag.outputs.tag }}"
+              echo '```'
+              echo ""
               echo "**Full Changelog**: https://github.com/${{ github.repository }}/commits/${{ github.ref_name }}"
               echo 'EOF'
             } >> $GITHUB_OUTPUT
@@ -71,6 +103,6 @@ jobs:
         with:
           files: '*.tgz'
           body: ${{ steps.changelog.outputs.notes }}
-          prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
+          prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') || contains(github.ref, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

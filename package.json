@@ -1,5 +1,5 @@
 {
-	"name": "n8n-nodes-canvas",
+	"name": "@kyancey-va/n8n-nodes-canvas",
 	"version": "0.1.0-beta.3",
 	"description": "n8n community nodes for Canvas LMS - full API coverage with 92 resources",
 	"license": "MIT",
@@ -32,6 +32,10 @@
 	"files": [
 		"dist"
 	],
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	},
 	"n8n": {
 		"n8nNodesApiVersion": 1,
 		"strict": false,
