@@ -90,23 +90,12 @@ export function handleRubricResource(
 				endpoint: `${basePath}/rubrics/${rubricId}`,
 			};
 
-		case 'get': {
-			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
-
-			if (options.include && Array.isArray(options.include) && (options.include as string[]).length > 0) {
-				qs['include[]'] = options.include;
-			}
-			if (options.style) {
-				qs.style = options.style;
-			}
-
+		case 'get':
 			return {
 				method: 'GET',
 				endpoint: `${basePath}/rubrics/${rubricId}`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs: getParamObject('options'),
 			};
-		}
 
 		case 'getAll':
 			return {
@@ -366,89 +355,53 @@ export function handleOutcomeResultResource(
 	switch (operation) {
 		case 'getAll': {
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
 
-			if (options.user_ids) {
-				qs['user_ids[]'] = (options.user_ids as string).split(',').map((id) => id.trim());
+			// Convert CSV user_ids and outcome_ids to arrays for bracket notation
+			if (options.user_ids && typeof options.user_ids === 'string') {
+				options.user_ids = (options.user_ids as string).split(',').map((id) => id.trim());
 			}
-			if (options.outcome_ids) {
-				qs['outcome_ids[]'] = (options.outcome_ids as string).split(',').map((id) => id.trim());
-			}
-			if (options.include && Array.isArray(options.include) && (options.include as string[]).length > 0) {
-				qs['include[]'] = options.include;
-			}
-			if (options.include_hidden !== undefined) {
-				qs.include_hidden = options.include_hidden;
+			if (options.outcome_ids && typeof options.outcome_ids === 'string') {
+				options.outcome_ids = (options.outcome_ids as string).split(',').map((id) => id.trim());
 			}
 
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/courses/${courseId}/outcome_results`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs: options,
 			};
 		}
 
 		case 'getRollups': {
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
 
-			if (options.user_ids) {
-				qs['user_ids[]'] = (options.user_ids as string).split(',').map((id) => id.trim());
+			// Convert CSV user_ids and outcome_ids to arrays for bracket notation
+			if (options.user_ids && typeof options.user_ids === 'string') {
+				options.user_ids = (options.user_ids as string).split(',').map((id) => id.trim());
 			}
-			if (options.outcome_ids) {
-				qs['outcome_ids[]'] = (options.outcome_ids as string).split(',').map((id) => id.trim());
-			}
-			if (options.include && Array.isArray(options.include) && (options.include as string[]).length > 0) {
-				qs['include[]'] = options.include;
-			}
-			if (options.exclude && Array.isArray(options.exclude) && (options.exclude as string[]).length > 0) {
-				qs['exclude[]'] = options.exclude;
-			}
-			if (options.aggregate) {
-				qs.aggregate = options.aggregate;
-			}
-			if (options.aggregate_stat) {
-				qs.aggregate_stat = options.aggregate_stat;
-			}
-			if (options.sort_by) {
-				qs.sort_by = options.sort_by;
-			}
-			if (options.sort_order) {
-				qs.sort_order = options.sort_order;
-			}
-			if (options.sort_outcome_id) {
-				qs.sort_outcome_id = options.sort_outcome_id;
-			}
-			if (options.add_defaults !== undefined) {
-				qs.add_defaults = options.add_defaults;
+			if (options.outcome_ids && typeof options.outcome_ids === 'string') {
+				options.outcome_ids = (options.outcome_ids as string).split(',').map((id) => id.trim());
 			}
 
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/courses/${courseId}/outcome_rollups`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs: options,
 			};
 		}
 
 		case 'getContributingScores': {
 			const outcomeId = getParam('outcomeId');
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
 
-			if (options.user_ids) {
-				qs['user_ids[]'] = (options.user_ids as string).split(',').map((id) => id.trim());
-			}
-			if (options.only_assignment_alignments !== undefined) {
-				qs.only_assignment_alignments = options.only_assignment_alignments;
-			}
-			if (options.show_unpublished_assignments !== undefined) {
-				qs.show_unpublished_assignments = options.show_unpublished_assignments;
+			// Convert CSV user_ids to array for bracket notation
+			if (options.user_ids && typeof options.user_ids === 'string') {
+				options.user_ids = (options.user_ids as string).split(',').map((id) => id.trim());
 			}
 
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/courses/${courseId}/outcome_rollups/${outcomeId}/contributing_scores`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs: options,
 			};
 		}
 

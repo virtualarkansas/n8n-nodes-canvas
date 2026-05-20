@@ -159,24 +159,16 @@ export function handleSearchResource(
 	switch (operation) {
 		case 'findRecipients': {
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
 
-			// Handle permissions as an array parameter
-			if (options.permissions) {
-				qs['permissions[]'] = options.permissions;
-				delete options.permissions;
-			}
-
-			// Handle exclude as comma-separated to array
-			if (options.exclude) {
-				qs['exclude[]'] = (options.exclude as string).split(',').map((id) => id.trim());
-				delete options.exclude;
+			// Convert CSV exclude to array for bracket notation
+			if (options.exclude && typeof options.exclude === 'string') {
+				options.exclude = (options.exclude as string).split(',').map((id) => id.trim());
 			}
 
 			return {
 				method: 'GET',
 				endpoint: '/api/v1/search/recipients',
-				qs: { ...options, ...qs },
+				qs: options,
 			};
 		}
 
@@ -204,28 +196,12 @@ export function handleSmartSearchResource(
 	switch (operation) {
 		case 'search': {
 			const courseId = getParam('courseId');
-			const query = getParam('query');
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {
-				q: query,
-			};
-
-			// Handle filter as an array parameter
-			if (options.filter) {
-				qs['filter[]'] = options.filter;
-				delete options.filter;
-			}
-
-			// Handle include as an array parameter
-			if (options.include) {
-				qs['include[]'] = options.include;
-				delete options.include;
-			}
 
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/courses/${courseId}/smartsearch`,
-				qs: { ...options, ...qs },
+				qs: { q: getParam('query'), ...options },
 			};
 		}
 

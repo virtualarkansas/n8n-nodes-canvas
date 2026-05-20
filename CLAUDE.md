@@ -5,7 +5,7 @@
 Custom n8n community nodes providing full coverage of the Canvas LMS REST API (92 resources implemented). Built for personal use on Hostinger n8n instance.
 
 **Repo:** https://github.com/virtualarkansas/n8n-nodes-canvas
-**Version:** 0.1.0-beta.1
+**Version:** 0.1.0-beta.3
 
 ## Quick Reference
 
@@ -14,7 +14,8 @@ Custom n8n community nodes providing full coverage of the Canvas LMS REST API (9
 - `credentials/CanvasOAuth2Api.credentials.ts` - OAuth2 auth
 - `nodes/Canvas/Canvas.node.ts` - Main mega-node
 - `nodes/Canvas/CanvasTrigger.node.ts` - Webhook trigger
-- `nodes/Canvas/GenericFunctions.ts` - Rate limiting, pagination, API helpers
+- `nodes/Canvas/GenericFunctions.ts` - Rate limiting, pagination, file upload, API helpers
+- `nodes/Canvas/handlers/` - Resource handler functions (route operations to API endpoints)
 - `nodes/Canvas/descriptions/` - Resource/operation definitions (92 files)
 
 ### Commands
@@ -68,6 +69,16 @@ All 92 Canvas resources in one node with resource/operation dropdowns. Keeps n8n
 - Option: individual (one call per item)
 - Always 1:1 input/output mapping
 
+### File Upload (Three-Step Convenience)
+- Canvas requires a 3-step upload: notify → multipart POST → confirm
+- "Upload" operation on File resource handles all 3 steps automatically
+- "Initiate Upload" operation exposes Step 1 only for advanced use
+- Supports binary data (from workflow) and URL-based uploads
+- URL uploads support optional progress polling (waitForCompletion toggle)
+- Helper functions in GenericFunctions.ts: `canvasFileUpload()`, `canvasFileUploadFromUrl()`, `pollCanvasProgress()`
+- Uses `form-data` package (transitive dep of n8n-workflow) for multipart encoding
+- Special-case routing in `processItem()` of Canvas.node.ts (similar to getAll pagination handling)
+
 ## Canvas API Notes
 
 ### Authentication
@@ -87,7 +98,7 @@ All 92 Canvas resources in one node with resource/operation dropdowns. Keeps n8n
 
 ## Implementation Status
 
-### Current: v0.1.0-beta.1
+### Current: v0.1.0-beta.3
 
 **92 resources implemented** across all waves:
 
@@ -145,4 +156,5 @@ All description files export operations and fields arrays, then re-exported from
 - [Canvas Developer Docs](https://developerdocs.instructure.com/services/canvas)
 - [Canvas API Resources](https://developerdocs.instructure.com/services/canvas/resources)
 - [n8n Node Building](https://docs.n8n.io/integrations/community-nodes/build-community-nodes/)
+- [Canvas File Upload API](https://canvas.instructure.com/doc/api/file.file_uploads.html)
 - [n8n Starter Template](https://github.com/n8n-io/n8n-nodes-starter)

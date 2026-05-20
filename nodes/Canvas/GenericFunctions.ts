@@ -276,11 +276,20 @@ export async function canvasApiRequest(
 		}
 	}
 
+	// Build URL with query string manually to ensure Canvas bracket notation for arrays
+	// (n8n's built-in qs serialization may mangle array params)
+	let requestUrl = `${canvasUrl}${endpoint}`;
+	if (query && Object.keys(query).length > 0) {
+		const queryString = buildCanvasQueryString(query);
+		if (queryString) {
+			requestUrl += `?${queryString}`;
+		}
+	}
+
 	const requestOptions: IHttpRequestOptions = {
 		method,
-		url: `${canvasUrl}${endpoint}`,
+		url: requestUrl,
 		body,
-		qs: query,
 		returnFullResponse: true,
 		json: true,
 	};
@@ -345,8 +354,8 @@ export async function canvasApiRequestAllItems(
 	let pageCount = 0;
 	let lastRateLimitStatus: IRateLimitStatus = { remaining: 1000 };
 
-	// Add per_page to query
-	const paginatedQuery = {
+	// Add per_page to query (array conversion happens inside canvasApiRequest)
+	const paginatedQuery: IDataObject = {
 		...query,
 		per_page: paginationOptions.perPage,
 	};
@@ -437,18 +446,26 @@ export async function canvasApiRequestAllItems(
 }
 
 /**
- * Build include[] query parameters
+ * Build a Canvas-compatible query string with proper bracket notation for arrays.
+ * Canvas API requires: include[]=val1&include[]=val2
+ * n8n's built-in qs serialization may not produce this format correctly,
+ * so we build the query string manually and append it to the URL.
  */
-export function buildIncludeParams(includes: string[]): IDataObject {
-	const query: IDataObject = {};
-	for (const include of includes) {
-		// Canvas uses array notation: include[]=term&include[]=teachers
-		if (!query['include[]']) {
-			query['include[]'] = [];
+export function buildCanvasQueryString(query: IDataObject): string {
+	const parts: string[] = [];
+	for (const [key, value] of Object.entries(query)) {
+		if (value === undefined || value === null) continue;
+		if (Array.isArray(value)) {
+			if (value.length === 0) continue;
+			const bracketKey = key.endsWith('[]') ? key : `${key}[]`;
+			for (const v of value) {
+				parts.push(`${encodeURIComponent(bracketKey)}=${encodeURIComponent(String(v))}`);
+			}
+		} else {
+			parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`);
 		}
-		(query['include[]'] as string[]).push(include);
 	}
-	return query;
+	return parts.join('&');
 }
 
 /**
@@ -465,17 +482,12 @@ export function buildCurlCommand(
 	body?: Record<string, unknown>,
 	authType?: string,
 ): string {
-	const url = new URL(`${baseUrl}${endpoint}`);
+	let url = `${baseUrl}${endpoint}`;
 
-	if (qs) {
-		for (const [key, value] of Object.entries(qs)) {
-			if (Array.isArray(value)) {
-				for (const v of value) {
-					url.searchParams.append(key, String(v));
-				}
-			} else if (value !== undefined && value !== null) {
-				url.searchParams.append(key, String(value));
-			}
+	if (qs && Object.keys(qs).length > 0) {
+		const queryString = buildCanvasQueryString(qs as IDataObject);
+		if (queryString) {
+			url += `?${queryString}`;
 		}
 	}
 
@@ -491,7 +503,7 @@ export function buildCurlCommand(
 		parts.push(`-d '${JSON.stringify(body)}'`);
 	}
 
-	parts.push(`'${url.toString()}'`);
+	parts.push(`'${url}'`);
 
 	return parts.join(' \\\n  ');
 }
