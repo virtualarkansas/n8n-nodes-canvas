@@ -38,6 +38,12 @@ export function buildConversationRequest(
 				endpoint: `/api/v1/conversations/${conversationId}`,
 			};
 
+		case 'deleteForAll':
+			return {
+				method: 'DELETE',
+				endpoint: `/api/v1/conversations/${conversationId}/delete_for_all`,
+			};
+
 		case 'get':
 			return {
 				method: 'GET',
@@ -118,6 +124,16 @@ export function buildConversationRequest(
 				endpoint: '/api/v1/conversations/batches',
 			};
 
+		case 'getDeleted':
+			return {
+				method: 'GET',
+				endpoint: '/api/v1/conversations/deleted',
+				qs: {
+					user_id: getParam('userId'),
+					...getParamObject('options'),
+				},
+			};
+
 		case 'getUnreadCount':
 			return {
 				method: 'GET',
@@ -128,6 +144,17 @@ export function buildConversationRequest(
 			return {
 				method: 'POST',
 				endpoint: '/api/v1/conversations/mark_all_as_read',
+			};
+
+		case 'restore':
+			return {
+				method: 'PUT',
+				endpoint: '/api/v1/conversations/restore',
+				body: {
+					conversation_id: conversationId,
+					message_id: getParam('messageId'),
+					user_id: getParam('userId'),
+				},
 			};
 
 		default:

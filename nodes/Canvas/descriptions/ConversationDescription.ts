@@ -43,6 +43,12 @@ export const conversationOperations: INodeProperties[] = [
 				action: 'Delete a conversation',
 			},
 			{
+				name: 'Delete for All',
+				value: 'deleteForAll',
+				description: 'Permanently delete a conversation for all participants',
+				action: 'Delete a conversation for all participants',
+			},
+			{
 				name: 'Delete Messages',
 				value: 'deleteMessages',
 				description: 'Delete specific messages from a conversation',
@@ -61,6 +67,12 @@ export const conversationOperations: INodeProperties[] = [
 				action: 'Get conversation batches',
 			},
 			{
+				name: 'Get Deleted Conversations',
+				value: 'getDeleted',
+				description: 'List deleted conversations and messages for a user',
+				action: 'List deleted conversations',
+			},
+			{
 				name: 'Get Many',
 				value: 'getAll',
 				description: 'Get many conversations',
@@ -77,6 +89,12 @@ export const conversationOperations: INodeProperties[] = [
 				value: 'markAllAsRead',
 				description: 'Mark all conversations as read',
 				action: 'Mark all conversations as read',
+			},
+			{
+				name: 'Restore',
+				value: 'restore',
+				description: 'Restore a deleted message for a user',
+				action: 'Restore a deleted message',
 			},
 			{
 				name: 'Update',
@@ -102,10 +120,73 @@ export const conversationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['conversation'],
-				operation: ['get', 'update', 'delete', 'addMessage', 'addRecipients', 'deleteMessages'],
+				operation: [
+					'get',
+					'update',
+					'delete',
+					'deleteForAll',
+					'addMessage',
+					'addRecipients',
+					'deleteMessages',
+					'restore',
+				],
 			},
 		},
 		description: 'The ID of the conversation',
+	},
+
+	// ----------------------------------
+	//         conversation: admin
+	// ----------------------------------
+	{
+		displayName: 'User ID',
+		name: 'userId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['conversation'],
+				operation: ['getDeleted', 'restore'],
+			},
+		},
+		description: 'The ID of the user whose deleted messages to inspect or restore',
+	},
+	{
+		displayName: 'Message ID',
+		name: 'messageId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['conversation'],
+				operation: ['restore'],
+			},
+		},
+		description: 'The ID of the deleted message to restore',
+	},
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['conversation'],
+				operation: ['getDeleted'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Conversation ID',
+				name: 'conversation_id',
+				type: 'string',
+				default: '',
+				description: 'Limit results to a single conversation',
+			},
+		],
 	},
 
 	// ----------------------------------
