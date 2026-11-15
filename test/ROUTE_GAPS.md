@@ -6,10 +6,10 @@ Everything here can still be called through the **Custom API Request** resource.
 
 | | Endpoints | Reached by an operation | Not reached |
 |---|---:|---:|---:|
-| Documented by Instructure | 775 | 545 | 230 |
-| Not documented | 205 | 12 | 193 |
+| Documented by Instructure | 775 | 573 | 202 |
+| Not documented | 205 | 13 | 192 |
 
-30 documented endpoints are reached for some of their contexts only (listed at the end).
+24 documented endpoints are reached for some of their contexts only (listed at the end).
 
 ## Documented endpoints without an operation
 
@@ -61,38 +61,18 @@ Published in Instructure's API documentation. Some belong to hosted or feature-g
 - **upcoming_events**: `GET /users/self/upcoming_events`
 - **user_graded_submissions**: `GET /users/:id/graded_submissions`
 
-### submissions_api (17)
+### submissions_api (10)
 
-- **bulk_update**: `POST /courses/:course_id/assignments/:assignment_id/submissions/update_grades`, `POST /courses/:course_id/submissions/update_grades`, `POST /sections/:section_id/assignments/:assignment_id/submissions/update_grades` (+1 more)
 - **create_file**: `POST /courses/:course_id/assignments/:assignment_id/submissions/:user_id/files`, `POST /sections/:section_id/assignments/:assignment_id/submissions/:user_id/files`
 - **document_annotations_read_state**: `GET /courses/:course_id/assignments/:assignment_id/submissions/:user_id/document_annotations/read`, `GET /sections/:section_id/assignments/:assignment_id/submissions/:user_id/document_annotations/read`
-- **for_students**: `GET /courses/:course_id/students/submissions`, `GET /sections/:section_id/students/submissions`
-- **gradeable_students**: `GET /courses/:course_id/assignments/:assignment_id/gradeable_students`
 - **mark_bulk_submissions_as_read**: `PUT /courses/:course_id/submissions/bulk_mark_read`, `PUT /sections/:section_id/submissions/bulk_mark_read`
 - **mark_document_annotations_read**: `PUT /courses/:course_id/assignments/:assignment_id/submissions/:user_id/document_annotations/read`, `PUT /sections/:section_id/assignments/:assignment_id/submissions/:user_id/document_annotations/read`
 - **mark_rubric_assessments_read**: `PUT /courses/:course_id/assignments/:assignment_id/submissions/:user_id/rubric_assessments/read`, `PUT /courses/:course_id/assignments/:assignment_id/submissions/:user_id/rubric_comments/read`, `PUT /sections/:section_id/assignments/:assignment_id/submissions/:user_id/rubric_assessments/read` (+1 more)
-- **mark_submission_item_read**: `PUT /courses/:course_id/assignments/:assignment_id/submissions/:user_id/read/:item`, `PUT /sections/:section_id/assignments/:assignment_id/submissions/:user_id/read/:item`
-- **mark_submission_read**: `PUT /courses/:course_id/assignments/:assignment_id/submissions/:user_id/read`, `PUT /sections/:section_id/assignments/:assignment_id/submissions/:user_id/read`
-- **mark_submission_unread**: `DELETE /courses/:course_id/assignments/:assignment_id/submissions/:user_id/read`, `DELETE /sections/:section_id/assignments/:assignment_id/submissions/:user_id/read`
 - **multiple_gradeable_students**: `GET /courses/:course_id/assignments/gradeable_students`
 - **rubric_assessments_read_state**: `GET /courses/:course_id/assignments/:assignment_id/submissions/:user_id/rubric_assessments/read`, `GET /courses/:course_id/assignments/:assignment_id/submissions/:user_id/rubric_comments/read`, `GET /sections/:section_id/assignments/:assignment_id/submissions/:user_id/rubric_assessments/read` (+1 more)
 - **show_anonymous**: `GET /courses/:course_id/assignments/:assignment_id/anonymous_submissions/:anonymous_id`, `GET /sections/:section_id/assignments/:assignment_id/anonymous_submissions/:anonymous_id`
-- **submission_summary**: `GET /courses/:course_id/assignments/:assignment_id/submission_summary`, `GET /sections/:section_id/assignments/:assignment_id/submission_summary`
 - **submissions_clear_unread**: `PUT /courses/:course_id/submissions/:user_id/clear_unread`, `PUT /sections/:section_id/submissions/:user_id/clear_unread`
 - **update_anonymous**: `PUT /courses/:course_id/assignments/:assignment_id/anonymous_submissions/:anonymous_id`, `PUT /sections/:section_id/assignments/:assignment_id/anonymous_submissions/:anonymous_id`
-
-### assignment_overrides (10)
-
-- **batch_create**: `POST /courses/:course_id/assignments/overrides`
-- **batch_retrieve**: `GET /courses/:course_id/assignments/overrides`
-- **batch_update**: `PUT /courses/:course_id/assignments/overrides`
-- **create**: `POST /courses/:course_id/assignments/:assignment_id/overrides`
-- **destroy**: `DELETE /courses/:course_id/assignments/:assignment_id/overrides/:id`
-- **group_alias**: `GET /groups/:group_id/assignments/:assignment_id/override`
-- **index**: `GET /courses/:course_id/assignments/:assignment_id/overrides`
-- **section_alias**: `GET /sections/:course_section_id/assignments/:assignment_id/override`
-- **show**: `GET /courses/:course_id/assignments/:assignment_id/overrides/:id`
-- **update**: `PUT /courses/:course_id/assignments/:assignment_id/overrides/:id`
 
 ### ai_experiences (9)
 
@@ -152,6 +132,14 @@ Published in Instructure's API documentation. Some belong to hosted or feature-g
 - **manually_created_courses_account**: `GET /manually_created_courses_account`
 - **remove_users**: `DELETE /accounts/:account_id/users`
 - **update_users**: `PUT /accounts/:account_id/users/bulk_update`
+
+### assignment_overrides (5)
+
+- **batch_create**: `POST /courses/:course_id/assignments/overrides`
+- **batch_retrieve**: `GET /courses/:course_id/assignments/overrides`
+- **batch_update**: `PUT /courses/:course_id/assignments/overrides`
+- **group_alias**: `GET /groups/:group_id/assignments/:assignment_id/override`
+- **section_alias**: `GET /sections/:course_section_id/assignments/:assignment_id/override`
 
 ### course_nicknames (5)
 
@@ -222,24 +210,11 @@ Published in Instructure's API documentation. Some belong to hosted or feature-g
 - **find_summary**: `GET /courses/:course_id/discussion_topics/:topic_id/summaries`, `GET /groups/:group_id/discussion_topics/:topic_id/summaries`
 - **summary_feedback**: `POST /courses/:course_id/discussion_topics/:topic_id/summaries/:summary_id/feedback`, `POST /groups/:group_id/discussion_topics/:topic_id/summaries/:summary_id/feedback`
 
-### files (4)
-
-- **file_ref**: `GET /courses/:course_id/files/file_ref/:migration_id`
-- **icon_metadata**: `GET /files/:id/icon_metadata`
-- **public_url**: `GET /files/:id/public_url`
-- **reset_verifier**: `POST /files/:id/reset_verifier`
-
 ### assessment_question_banks (3)
 
 - **index**: `GET /question_banks`
 - **questions**: `GET /question_banks/:id/questions`
 - **show**: `GET /question_banks/:id`
-
-### assignments_api (3)
-
-- **bulk_update**: `PUT /courses/:course_id/assignments/bulk_update`
-- **student_group_members**: `GET /courses/:course_id/assignments/:assignment_id/users/:user_id/group_members`
-- **user_index**: `GET /users/:user_id/courses/:course_id/assignments`
 
 ### custom_data (3)
 
@@ -259,6 +234,12 @@ Published in Instructure's API documentation. Some belong to hosted or feature-g
 - **index**: `GET /epub_exports`
 - **show**: `GET /courses/:course_id/epub_exports/:id`
 
+### files (3)
+
+- **file_ref**: `GET /courses/:course_id/files/file_ref/:migration_id`
+- **icon_metadata**: `GET /files/:id/icon_metadata`
+- **reset_verifier**: `POST /files/:id/reset_verifier`
+
 ### outcome_results (3)
 
 - **enqueue_outcome_rollup_calculation**: `POST /enqueue_outcome_rollup_calculation`
@@ -277,18 +258,6 @@ Published in Instructure's API documentation. Some belong to hosted or feature-g
 - **destroy**: `DELETE /shared_brand_configs/:id`
 - **update**: `PUT /accounts/:account_id/shared_brand_configs/:id`
 
-### usage_rights (3)
-
-- **licenses**: `GET /courses/:course_id/content_licenses`, `GET /groups/:group_id/content_licenses`, `GET /users/:user_id/content_licenses`
-- **remove_usage_rights**: `DELETE /courses/:course_id/usage_rights`, `DELETE /groups/:group_id/usage_rights`, `DELETE /users/:user_id/usage_rights`
-- **set_usage_rights**: `PUT /courses/:course_id/usage_rights`, `PUT /groups/:group_id/usage_rights`, `PUT /users/:user_id/usage_rights`
-
-### wiki_pages_api (3)
-
-- **show_front_page**: `GET /courses/:course_id/front_page`, `GET /groups/:group_id/front_page`
-- **show_revision**: `GET /courses/:course_id/pages/:url_or_id/revisions/:revision_id`, `GET /courses/:course_id/pages/:url_or_id/revisions/latest`, `GET /groups/:group_id/pages/:url_or_id/revisions/:revision_id` (+1 more)
-- **update_front_page**: `PUT /courses/:course_id/front_page`, `PUT /groups/:group_id/front_page`
-
 ### brand_configs_api (2)
 
 - **show**: `GET /brand_variables`
@@ -298,16 +267,6 @@ Published in Instructure's API documentation. Some belong to hosted or feature-g
 
 - **copy_course_content**: `POST /courses/:course_id/course_copy`
 - **copy_course_status**: `GET /courses/:course_id/course_copy/:id`
-
-### context_module_items_api (2)
-
-- **item_sequence**: `GET /courses/:course_id/module_item_sequence`
-- **mark_item_read**: `POST /courses/:course_id/modules/:module_id/items/:id/mark_read`
-
-### folders (2)
-
-- **copy_file**: `POST /folders/:dest_folder_id/copy_file`
-- **media_folder**: `GET /courses/:course_id/folders/media`, `GET /groups/:group_id/folders/media`
 
 ### gradebooks (2)
 
@@ -323,16 +282,6 @@ Published in Instructure's API documentation. Some belong to hosted or feature-g
 
 - **show**: `GET /courses/:course_id/learning_mastery_gradebook_settings`
 - **update**: `PUT /courses/:course_id/learning_mastery_gradebook_settings`
-
-### media_tracks (2)
-
-- **index**: `GET /media_attachments/:attachment_id/media_tracks`, `GET /media_objects/:media_object_id/media_tracks`
-- **update**: `PUT /media_attachments/:attachment_id/media_tracks`, `PUT /media_objects/:media_object_id/media_tracks`
-
-### module_assignment_overrides (2)
-
-- **bulk_update**: `PUT /courses/:course_id/modules/:context_module_id/assignment_overrides`
-- **index**: `GET /courses/:course_id/modules/:context_module_id/assignment_overrides`
 
 ### permissions_help (2)
 
@@ -353,6 +302,10 @@ Published in Instructure's API documentation. Some belong to hosted or feature-g
 
 - **index**: `GET /courses/:course_id/web_zip_exports`
 - **show**: `GET /courses/:course_id/web_zip_exports/:id`
+
+### assignments_api (1)
+
+- **student_group_members**: `GET /courses/:course_id/assignments/:assignment_id/users/:user_id/group_members`
 
 ### blackout_dates (1)
 
@@ -381,6 +334,10 @@ Published in Instructure's API documentation. Some belong to hosted or feature-g
 ### external_tools (1)
 
 - **visible_course_nav_tools**: `GET /courses/:course_id/external_tools/visible_course_nav_tools`
+
+### folders (1)
+
+- **media_folder**: `GET /courses/:course_id/folders/media`, `GET /groups/:group_id/folders/media`
 
 ### inst_access_tokens (1)
 
@@ -680,11 +637,6 @@ Used by the Canvas web interface or internal tooling. They accept an API token b
 - **fail**: `PUT /courses/:course_id/content_exports/:id/fail`, `PUT /groups/:group_id/content_exports/:id/fail`, `PUT /users/:user_id/content_exports/:id/fail`
 - **update**: `PUT /courses/:course_id/content_exports/:id`
 
-### context_module_items_api (2)
-
-- **duplicate**: `POST /courses/:course_id/modules/items/:id/duplicate`
-- **redirect**: `GET /courses/:course_id/module_item_redirect/:id`
-
 ### context_modules_api (2)
 
 - **batch_update**: `PUT /courses/:course_id/modules`
@@ -746,6 +698,10 @@ Used by the Canvas web interface or internal tooling. They accept an API token b
 ### conferences (1)
 
 - **recording_ready**: `POST /courses/:course_id/conferences/:conference_id/recording_ready`, `POST /groups/:group_id/conferences/:conference_id/recording_ready`
+
+### context_module_items_api (1)
+
+- **redirect**: `GET /courses/:course_id/module_item_redirect/:id`
 
 ### course_pacing/bulk_student_enrollment_paces_api (1)
 
@@ -850,20 +806,14 @@ Used by the Canvas web interface or internal tooling. They accept an API token b
 - **learning_object_dates#update**: not reached: `PUT /courses/:course_id/files/:attachment_id/date_details`
 - **media_objects#index**: not reached: `GET /courses/:course_id/media_attachments`, `GET /groups/:group_id/media_attachments`, `GET /media_attachments`
 - **media_objects#update_media_object**: not reached: `PUT /media_attachments/:attachment_id`
-- **peer_reviews_api#index**: not reached: `GET /courses/:course_id/assignments/:assignment_id/submissions/:submission_id/peer_reviews`, `GET /sections/:section_id/assignments/:assignment_id/peer_reviews`, `GET /sections/:section_id/assignments/:assignment_id/submissions/:submission_id/peer_reviews`
+- **media_tracks#index**: not reached: `GET /media_attachments/:attachment_id/media_tracks`
+- **media_tracks#update**: not reached: `PUT /media_attachments/:attachment_id/media_tracks`
+- **peer_reviews_api#index**: not reached: `GET /sections/:section_id/assignments/:assignment_id/peer_reviews`, `GET /sections/:section_id/assignments/:assignment_id/submissions/:submission_id/peer_reviews`
 - **peer_reviews_api#destroy**: not reached: `DELETE /sections/:section_id/assignments/:assignment_id/submissions/:submission_id/peer_reviews`
 - **peer_reviews_api#create**: not reached: `POST /sections/:section_id/assignments/:assignment_id/submissions/:submission_id/peer_reviews`
 - **search#recipients**: not reached: `GET /conversations/find_recipients`
 - **sections#show**: not reached: `GET /courses/:course_id/sections/:id`
-- **submissions#create**: not reached: `POST /sections/:section_id/assignments/:assignment_id/submissions`
-- **submissions_api#index**: not reached: `GET /sections/:section_id/assignments/:assignment_id/submissions`
-- **submissions_api#show**: not reached: `GET /sections/:section_id/assignments/:assignment_id/submissions/:user_id`
-- **submissions_api#update**: not reached: `PUT /sections/:section_id/assignments/:assignment_id/submissions/:user_id`
+- **submissions_api#submission_summary**: not reached: `GET /sections/:section_id/assignments/:assignment_id/submission_summary`
+- **submissions_api#bulk_update**: not reached: `POST /courses/:course_id/submissions/update_grades`, `POST /sections/:section_id/submissions/update_grades`
 - **users#merge_into**: not reached: `PUT /users/:id/merge_into/:destination_user_id`
-- **wiki_pages_api#index**: not reached: `GET /groups/:group_id/pages`
-- **wiki_pages_api#create**: not reached: `POST /groups/:group_id/pages`
-- **wiki_pages_api#destroy**: not reached: `DELETE /groups/:group_id/pages/:url_or_id`
-- **wiki_pages_api#show**: not reached: `GET /groups/:group_id/pages/:url_or_id`
-- **wiki_pages_api#update**: not reached: `PUT /groups/:group_id/pages/:url_or_id`
-- **wiki_pages_api#revisions**: not reached: `GET /groups/:group_id/pages/:url_or_id/revisions`
-- **wiki_pages_api#revert**: not reached: `POST /groups/:group_id/pages/:url_or_id/revisions/:revision_id`
+- **wiki_pages_api#show_revision**: not reached: `GET /courses/:course_id/pages/:url_or_id/revisions/latest`, `GET /groups/:group_id/pages/:url_or_id/revisions/latest`
