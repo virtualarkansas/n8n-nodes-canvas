@@ -404,9 +404,6 @@ export function buildPlannerRequest(
 			if (include.length > 0) {
 				qs.include = include;
 			}
-			if (isSet(options.order)) {
-				qs.order = options.order;
-			}
 
 			// Another user's planner (an observer reading a linked student) has its own route.
 			const userId = isSet(options.user_id) ? String(options.user_id).trim() : '';

@@ -136,7 +136,7 @@ export const plannerFields: INodeProperties[] = [
 			},
 		},
 		description:
-			'The title of the planner note (at most 255 characters). Required, except when the note is linked to a learning object: left empty, the note then takes the title of that object.',
+			'The title of the planner note. Required, except when the note is linked to a learning object: left empty, the note then takes the title of that object.',
 	},
 	{
 		displayName: 'Todo Date',
@@ -249,7 +249,7 @@ export const plannerFields: INodeProperties[] = [
 				name: 'title',
 				type: 'string',
 				default: '',
-				description: 'The title of the planner note (at most 255 characters)',
+				description: 'The title of the planner note',
 			},
 			{
 				displayName: 'Todo Date',
@@ -432,7 +432,7 @@ export const plannerFields: INodeProperties[] = [
 				type: 'dateTime',
 				default: '',
 				description:
-					'Only return items up to this date (yyyy-mm-dd or ISO 8601). Without Start Date and End Date Canvas returns two weeks before to two weeks after today.',
+					'Only return items up to this date (yyyy-mm-dd or ISO 8601). Left out, Canvas looks ten years ahead: set both dates to get a bounded list.',
 			},
 			{
 				displayName: 'Filter',
@@ -477,7 +477,7 @@ export const plannerFields: INodeProperties[] = [
 					{
 						name: 'Concluded',
 						value: 'concluded',
-						description: 'Items of concluded courses',
+						description: 'Also consider concluded enrollments when Canvas collects the user\'s courses',
 					},
 				],
 				default: [],
@@ -492,23 +492,12 @@ export const plannerFields: INodeProperties[] = [
 					'For an observer: return the planner items of this observed student. Needs Context Codes with courses in which the observer is linked to the student (or Include: All Courses).',
 			},
 			{
-				displayName: 'Order',
-				name: 'order',
-				type: 'options',
-				options: [
-					{ name: 'Ascending', value: 'asc' },
-					{ name: 'Descending', value: 'desc' },
-				],
-				default: 'asc',
-				description: 'Order of the items by date',
-			},
-			{
 				displayName: 'Start Date',
 				name: 'start_date',
 				type: 'dateTime',
 				default: '',
 				description:
-					'Only return items from this date onwards (yyyy-mm-dd or ISO 8601). Without Start Date and End Date Canvas returns two weeks before to two weeks after today.',
+					'Only return items from this date onwards (yyyy-mm-dd or ISO 8601). Left out, Canvas looks ten years back: set both dates to get a bounded list.',
 			},
 			{
 				displayName: 'User ID',
@@ -543,7 +532,7 @@ export const plannerFields: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				description:
-					'Comma-separated context codes of courses whose notes to return, e.g. course_123. Add the user\'s own code (user_6) to include notes that belong to no course.',
+					'Comma-separated context codes of courses whose notes to return, e.g. course_123. Add the user\'s own code (user_6) next to a course code to include notes that belong to no course; on its own Canvas returns nothing for it.',
 			},
 			{
 				displayName: 'End Date',
