@@ -407,6 +407,68 @@ export function buildUserRequest(
 }
 
 // ============================================
+// USER CUSTOM DATA
+// ============================================
+
+/**
+ * The scope is a path into the stored JSON ("body/measurements/chest"). Each of its
+ * parts is one path segment for Canvas, so the slashes between them are sent as they
+ * are and only the parts themselves are encoded.
+ */
+function customDataScopePath(scope: unknown): string {
+	const parts = String(scope ?? '')
+		.split('/')
+		.map((part) => part.trim())
+		.filter((part) => part !== '');
+	return parts.map((part) => `/${encodeURIComponent(part)}`).join('');
+}
+
+/** The value of the "Data (JSON)" field: any JSON value, as text from the editor. */
+function parseCustomData(text: string): unknown {
+	if (text.trim() === '') {
+		throw new ApplicationError('Enter the data to store (any JSON value)');
+	}
+	try {
+		return JSON.parse(text);
+	} catch {
+		throw new ApplicationError(
+			'Data is not valid JSON. Put plain text in double quotes ("like this"); ' +
+				'pass a value from an expression as JSON text: {{ JSON.stringify($json.value) }}',
+		);
+	}
+}
+
+export function buildUserCustomDataRequest(
+	operation: string,
+	getParam: GetParam,
+	getParamObject: GetParamObject,
+): IRequestConfig {
+	const userId = getParam('userId');
+	const namespace = getParam('namespace');
+	// Read from the options collection on purpose: a top-level parameter value is
+	// percent-encoded as ONE path segment by the node ("a/b" would become "a%2Fb").
+	const endpoint = `/api/v1/users/${userId}/custom_data${customDataScopePath(getParamObject('options').scope)}`;
+
+	switch (operation) {
+		case 'get':
+			return { endpoint, method: 'GET', qs: { ns: namespace } };
+
+		case 'set':
+			return {
+				endpoint,
+				method: 'PUT',
+				body: { ns: namespace, data: parseCustomData(getParam('data')) },
+			};
+
+		case 'delete':
+			return { endpoint, method: 'DELETE', qs: { ns: namespace } };
+
+		default:
+			throw new ApplicationError(`Operation ${operation} not implemented for userCustomData`);
+	}
+}
+
+// ============================================
 // LOGIN
 // ============================================
 

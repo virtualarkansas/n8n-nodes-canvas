@@ -60,6 +60,7 @@ export {
 	userObserveeOperations,
 	userObserveeFields,
 } from './UserObserveeDescription';
+export { userCustomDataOperations, userCustomDataFields } from './UserCustomDataDescription';
 
 // Enrollment resource group descriptions
 export {

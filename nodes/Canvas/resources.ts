@@ -123,6 +123,7 @@ export const canvasResources: ICanvasResource[] = [
 	{ name: 'Submission Comment', value: 'submissionComment', operations: descriptions.submissionCommentOperations, fields: descriptions.submissionCommentFields },
 	{ name: 'Tab', value: 'tab', operations: descriptions.tabOperations, fields: descriptions.tabFields },
 	{ name: 'User', value: 'user', operations: descriptions.userOperations, fields: descriptions.userFields },
+	{ name: 'User Custom Data', value: 'userCustomData', operations: descriptions.userCustomDataOperations, fields: descriptions.userCustomDataFields },
 	{ name: 'User Observee', value: 'userObservee', operations: descriptions.userObserveeOperations, fields: descriptions.userObserveeFields },
 	{ name: 'What-If Grade', value: 'whatIfGrade', operations: descriptions.whatIfGradeOperations, fields: descriptions.whatIfGradeFields },
 ];
