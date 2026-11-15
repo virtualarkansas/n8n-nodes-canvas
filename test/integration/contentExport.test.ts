@@ -234,6 +234,17 @@ describe('contentExport', () => {
 
 		const listed = await runOk({ resource: 'contentExport', operation: 'getAll', params: { contextType: 'group', groupId } });
 		expect(listed.map((e) => e.id)).toEqual([created.id]);
+
+		// Waiting for it in the group context (it is finished by now: the wait returns at once).
+		const [waited] = await runOk({
+			resource: 'contentExport',
+			operation: 'waitForCompletion',
+			params: { contextType: 'group', groupId, contentExportId: String(created.id), pollInterval: 1, timeout: 120 },
+		});
+		const direct = await canvas().get<Json>(`/api/v1/groups/${groupId}/content_exports/${String(created.id)}`);
+		expect(waited).toMatchObject({ id: created.id, workflow_state: 'exported' });
+		expect(waited.workflow_state).toBe(direct.workflow_state);
+		expect((waited.attachment as Json).id).toBe((direct.attachment as Json).id);
 	});
 
 	it('create (user): a user zips their own files; nobody else can open the export', async () => {

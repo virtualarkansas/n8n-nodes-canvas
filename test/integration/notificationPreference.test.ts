@@ -337,6 +337,68 @@ describe('notificationPreference', () => {
 		expect(restored.submission_comment.frequency).toBe('immediately');
 	});
 
+	// ------------------------------------------------- other channel types
+
+	it('get, getAll, update, updateMultiple: an SMS channel identified by type and number', async () => {
+		const number = `+1555${String(Date.now()).slice(-7)}`;
+		const channel = await canvas().post<Json>(`/api/v1/users/${owner.id}/communication_channels`, {
+			communication_channel: { type: 'sms', address: number },
+			skip_confirmation: true,
+		});
+		expect(channel).toMatchObject({ type: 'sms', workflow_state: 'active' });
+		const channelId = String(channel.id);
+		const sms = { channelBy: 'address', channelType: 'sms', channelAddress: String(channel.address) };
+		try {
+			const all = await runOk({ resource: 'notificationPreference', operation: 'getAll', persona: asOwner, params: sms });
+			expect(all).toEqual((await canvas().get<Json>(prefsPath(owner, channelId))).notification_preferences);
+
+			const [updated] = await runOk({
+				resource: 'notificationPreference',
+				operation: 'update',
+				persona: asOwner,
+				params: { ...sms, notification: 'new_announcement', frequency: 'immediately' },
+			});
+			expect(updated).toMatchObject({ notification: 'new_announcement', frequency: 'immediately' });
+			expect((await actual(owner, channelId)).new_announcement.frequency).toBe('immediately');
+
+			const [one] = await runOk({
+				resource: 'notificationPreference',
+				operation: 'get',
+				persona: asOwner,
+				params: { ...sms, notification: 'new_announcement' },
+			});
+			expect(one).toEqual((await actual(owner, channelId)).new_announcement);
+
+			await runOk({
+				resource: 'notificationPreference',
+				operation: 'updateMultiple',
+				persona: asOwner,
+				params: {
+					...sms,
+					preferences: {
+						preferenceValues: [
+							{ notification: 'new_announcement', frequency: 'never' },
+							{ notification: 'submission_comment', frequency: 'immediately' },
+						],
+					},
+				},
+			});
+			const stored = await actual(owner, channelId);
+			expect(stored.new_announcement.frequency).toBe('never');
+			expect(stored.submission_comment.frequency).toBe('immediately');
+			// The e-mail channel of the same user was not touched.
+			expect((await actual(owner, String(owner.channelId))).new_announcement.frequency).toBe('immediately');
+		} finally {
+			await canvas().request('DELETE', `/api/v1/users/${owner.id}/communication_channels/${channelId}`);
+		}
+	});
+
+	// Push channels cannot be created on the local Canvas: Canvas registers a push channel only
+	// for an access token whose developer key has an AWS SNS topic (sns_arn), and creates the
+	// endpoint in SNS on the spot (NotificationEndpoint#create_platform_endpoint). The push
+	// value only changes the type segment of the path, which the route audit checks.
+	it.skip('channel type "push": needs a developer key with an AWS SNS topic, which the local Canvas cannot reach', () => {});
+
 	// ---------------------------------------------------------------- errors
 
 	it('errors: updateMultiple without any preference is rejected before a request is sent', async () => {
