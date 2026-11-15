@@ -1,5 +1,17 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { pollUntil, stateIn } from './shared';
+
+/** States in which Canvas is done with a SIS import. */
+const SIS_IMPORT_FINISHED = [
+	'imported',
+	'imported_with_messages',
+	'failed',
+	'failed_with_messages',
+	'aborted',
+	'restored',
+	'partially_restored',
+];
 
 // ============================================
 // Shared helpers
@@ -154,6 +166,13 @@ export function buildSisImportRequest(
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/sis_imports/${getParam('importId')}`,
+			};
+
+		case 'waitForCompletion':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/accounts/${accountId}/sis_imports/${getParam('importId')}`,
+				poll: pollUntil(getParam, stateIn('workflow_state', SIS_IMPORT_FINISHED)),
 			};
 
 		case 'getAll': {

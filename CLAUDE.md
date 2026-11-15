@@ -60,6 +60,8 @@ Handlers are pure: they only build `{ method, endpoint, qs, body }` plus optiona
 - `singlePage` - the endpoint answers with its complete list while still announcing pages
 - `itemKey` - every entry of a list is wrapped (`[{ "course": {...} }]`)
 - `upload` - the request is step 1 of Canvas' three-step file upload (binary property or URL); the node runs the rest
+- `download` - after the GET, fetch the file the record points to and attach it as binary data
+- `poll` - repeat the GET until the record reports the end of a background job ("Wait for Completion"; `pollUntil` in `handlers/shared.ts`, fields from `waitFields` in `descriptions/shared.ts`)
 - `binaryBody` - send a binary property of the input item as the request body (import files); a string or Buffer `body` with `contentType` is sent as it is
 - `thenGet` - after a write, output the result of this GET instead (writes whose own response is empty or stale)
 
@@ -84,8 +86,8 @@ Handlers are pure: they only build `{ method, endpoint, qs, body }` plus optiona
 ### Output and errors
 - Dual outputs (Success, Error) plus Debug in debug mode. Every item carries `pairedItem`.
 - Empty response body → `{ success: true }` (never drop an item). Empty list → no items.
-- Modes: stop, continueWithError, ignoreAndContinue, retryThenError (retries only throttling, 5xx and network errors). n8n's own "Continue On Fail" routes to the Error output.
-- Error output: `errorCode` (number, 0 without an HTTP response), `errorType`, `errorMessage` (Canvas' own message), `canvasErrors`, `originalItem`, `resource`, `operation`, `endpoint`.
+- Modes: stop, continueWithError, ignoreAndContinue, retryThenError (retries only throttling, 5xx and network errors; a write only when Canvas cannot have carried it out: throttled, never sent, or 503). n8n's own "Continue On Fail" routes to the Error output.
+- Error output: `errorCode` (number, 0 without an HTTP response), `errorType`, `errorMessage` (Canvas' own message), `canvasErrors`, `responseBody` (when Canvas answered a refusal with a record), `originalItem`, `resource`, `operation`, `endpoint`.
 
 ### Batch Processing
 - Default: batches of 10 items in parallel with a delay between batches. Option: individual (sequential).

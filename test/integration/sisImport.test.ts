@@ -425,6 +425,31 @@ describe('sisImport', () => {
 		expect((missing.error[0].originalItem as Json).note).toBe('no file here');
 	});
 
+	it('waitForCompletion: several imports are waited for in one run; the final states come back', async () => {
+		const first = await startImport(usersCsv(userRow('w1', 'Wait', 'One')));
+		const second = await startImport('this,is,not\na,sis,file\n');
+		const result = await runNode({
+			resource: 'sisImport',
+			operation: 'waitForCompletion',
+			items: [{ id: first.id }, { id: second.id }, { id: 999999999 }],
+			params: {
+				accountId: account,
+				importId: '={{ $json.id }}',
+				pollInterval: 2,
+				timeout: 600,
+				errorHandling: { onError: 'continueWithError' },
+			},
+		});
+		expect(pairedItems(result)).toEqual([0, 1]);
+		expect(result.success[0]).toMatchObject({ id: first.id, workflow_state: 'imported', progress: 100 });
+		expect(counts(result.success[0])).toMatchObject({ users: 1 });
+		expect(result.success[1].id).toBe(second.id);
+		expect(String(result.success[1].workflow_state)).toMatch(/^failed/);
+		expect(result.error).toHaveLength(1);
+		expect(result.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', operation: 'waitForCompletion' });
+		expect(await findUser('w1')).toBeDefined();
+	});
+
 	it('create: a zip file as Base64, from several items', async () => {
 		const archive = zip({
 			'accounts.csv': `account_id,parent_account_id,name,status\n${sis('acct')},,Battery SIS sub-account 部门,active\n`,

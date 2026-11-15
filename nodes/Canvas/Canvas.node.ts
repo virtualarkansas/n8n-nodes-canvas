@@ -26,6 +26,7 @@ import {
 	DEFAULT_PAGINATION_OPTIONS,
 	DEFAULT_ERROR_HANDLING_OPTIONS,
 	sleep,
+	tagError,
 } from './GenericFunctions';
 
 import type {
@@ -438,6 +439,9 @@ export class Canvas implements INodeType {
 					curl,
 				};
 
+				if (request.poll) {
+					debugJson._note = `Repeated every ${request.poll.intervalSeconds} seconds until the job is finished, for at most ${request.poll.timeoutSeconds} seconds.`;
+				}
 				if (request.download) {
 					debugJson._note = `Then the file is downloaded from the "${request.download.urlField}" of the answer and attached as binary property "${request.download.binaryPropertyName}".`;
 				}
@@ -585,6 +589,42 @@ async function downloadTo(
 	});
 }
 
+/**
+ * "Wait for Completion": read the record again and again until it reports that the
+ * background job is over, and output that final record.
+ */
+async function waitUntilFinished(
+	context: IExecuteFunctions,
+	itemIndex: number,
+	request: IRequestConfig,
+	query: IDataObject | undefined,
+	rateLimit: IRateLimitOptions,
+): Promise<unknown> {
+	const poll = request.poll as NonNullable<IRequestConfig['poll']>;
+	const intervalMs = Math.max(1, poll.intervalSeconds) * 1000;
+	const deadline = Date.now() + Math.max(0, poll.timeoutSeconds) * 1000;
+	for (;;) {
+		const response = await canvasApiRequest.call(context, 'GET', request.endpoint, undefined, query, rateLimit);
+		const record = unwrapRecord(response.data, request.dataKey) as IDataObject;
+		if (poll.isFinished(record ?? {})) {
+			return record;
+		}
+		if (Date.now() + intervalMs > deadline) {
+			const state = record?.workflow_state ?? record?.status;
+			throw tagError(
+				new NodeOperationError(context.getNode(), `Still not finished after ${poll.timeoutSeconds} seconds`, {
+					itemIndex,
+					description:
+						(state !== undefined ? `Last state: ${String(state)}. ` : '') +
+						'The job keeps running in Canvas. Raise the Timeout, or run this operation again later.',
+				}),
+				'TIMEOUT',
+			);
+		}
+		await sleep(intervalMs);
+	}
+}
+
 /** The user to act as for this item ("Act as User ID"), if any. */
 function masqueradeAs(context: IExecuteFunctions, itemIndex: number): string {
 	const options = context.getNodeParameter('requestOptions', itemIndex, {}) as IDataObject;
@@ -681,6 +721,10 @@ async function processItem(
 					request.mergePagedArray,
 					rateLimit,
 				);
+			}
+
+			if (request.method === 'GET' && request.poll) {
+				return waitUntilFinished(context, itemIndex, request, qsData, rateLimit);
 			}
 
 			if (request.method === 'GET') {

@@ -1,4 +1,5 @@
 import type { INodeProperties } from 'n8n-workflow';
+import { waitFields } from './shared';
 
 export const sisImportOperations: INodeProperties[] = [
 	{
@@ -55,6 +56,13 @@ export const sisImportOperations: INodeProperties[] = [
 					'Undo the state changes of a SIS import (for example deletions). Returns a progress object.',
 				action: 'Restore states from a SIS import',
 			},
+			{
+				name: 'Wait for Completion',
+				value: 'waitForCompletion',
+				description:
+					'Check the import again and again until Canvas has finished with it, then output its final state (imported, imported_with_messages, failed ...)',
+				action: 'Wait for a SIS import to complete',
+			},
 		],
 		default: 'getAll',
 	},
@@ -90,11 +98,13 @@ export const sisImportFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['sisImport'],
-				operation: ['get', 'abort', 'restoreStates'],
+				operation: ['get', 'abort', 'restoreStates', 'waitForCompletion'],
 			},
 		},
 		description: 'The ID of the SIS import',
 	},
+
+	...waitFields('sisImport'),
 
 	// ----------------------------------
 	//         sisImport: create

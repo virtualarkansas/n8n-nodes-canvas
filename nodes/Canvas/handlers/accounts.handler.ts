@@ -1,5 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { pollUntil, stateIn } from './shared';
 
 // ============================================
 // Shared helpers
@@ -302,6 +303,13 @@ export function buildAccountReportRequest(
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/reports/${reportType}/${reportId}`,
+			};
+
+		case 'waitForCompletion':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/accounts/${accountId}/reports/${reportType}/${reportId}`,
+				poll: pollUntil(getParam, stateIn('status', ['complete', 'error', 'aborted', 'deleted'])),
 			};
 
 		case 'getAll':

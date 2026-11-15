@@ -486,7 +486,7 @@ function taggedErrorType(error: unknown): CanvasErrorType | undefined {
 	return undefined;
 }
 
-function tagError<T extends Error>(error: T, type: CanvasErrorType, data?: unknown): T {
+export function tagError<T extends Error>(error: T, type: CanvasErrorType, data?: unknown): T {
 	const target = error as unknown as { context?: IDataObject };
 	target.context = { ...(target.context ?? {}), canvasErrorType: type };
 	if (data !== undefined) {

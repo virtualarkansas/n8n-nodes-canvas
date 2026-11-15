@@ -265,6 +265,59 @@ describe('cross-cutting', () => {
 			expect(attempts).toEqual({ '500': 2, '504': 2 });
 		}, 240_000);
 
+		it('Wait for Completion: polls until the job reports its end, and gives up with TIMEOUT', async () => {
+			const states = ['queued', 'running', 'running', 'completed'];
+			let looks = 0;
+			stub.reset(() => ({ body: { id: 7, workflow_state: states[Math.min(looks++, states.length - 1)], completion: looks * 25 } }));
+			const started = Date.now();
+			const done = await viaStub({
+				resource: 'progress',
+				operation: 'waitForCompletion',
+				params: { progressId: '7', pollInterval: 1, timeout: 30, rateLimiting: { enabled: false } },
+			});
+			expect(done.error).toEqual([]);
+			expect(done.success).toEqual([{ id: 7, workflow_state: 'completed', completion: 100 }]);
+			expect(stub.calls.map((c) => `${c.method} ${c.url}`)).toEqual(Array(4).fill('GET /api/v1/progress/7'));
+			expect(Date.now() - started).toBeGreaterThanOrEqual(2900); // three pauses of a second
+
+			// A failed job is a result, not an error of the operation.
+			stub.reset(() => ({ body: { id: 8, workflow_state: 'failed', message: 'cancelled' } }));
+			const failed = await viaStub({
+				resource: 'progress',
+				operation: 'waitForCompletion',
+				params: { progressId: '8', rateLimiting: { enabled: false } },
+			});
+			expect(failed.success).toEqual([{ id: 8, workflow_state: 'failed', message: 'cancelled' }]);
+
+			// Never finishing: the item ends on the Error output as TIMEOUT after about the time allowed.
+			stub.reset(() => ({ body: { id: 9, workflow_state: 'running' } }));
+			const startedWaiting = Date.now();
+			const gaveUp = await viaStub({
+				resource: 'progress',
+				operation: 'waitForCompletion',
+				params: {
+					progressId: '9',
+					pollInterval: 1,
+					timeout: 3,
+					rateLimiting: { enabled: false },
+					errorHandling: { onError: 'retryThenError', maxRetries: 3 },
+				},
+			});
+			expect(gaveUp.success).toEqual([]);
+			expect(gaveUp.error[0]).toMatchObject({
+				errorCode: 0,
+				errorType: 'TIMEOUT',
+				errorMessage: 'Still not finished after 3 seconds',
+				resource: 'progress',
+				operation: 'waitForCompletion',
+				endpoint: '/api/v1/progress/9',
+			});
+			// Not retried (that would wait all over again), and no longer than allowed.
+			expect(Date.now() - startedWaiting).toBeLessThan(8000);
+			expect(stub.calls.length).toBeGreaterThanOrEqual(3);
+			expect(stub.calls.length).toBeLessThanOrEqual(4);
+		}, 120_000);
+
 		it('stop (default): the execution fails with Canvas\' message and says which item and request', async () => {
 			const result = await getUsers({});
 			expect(result.ok).toBe(false);

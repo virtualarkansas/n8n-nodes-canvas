@@ -1,4 +1,5 @@
 import type { INodeProperties } from 'n8n-workflow';
+import { waitFields } from './shared';
 
 export const progressOperations: INodeProperties[] = [
 	{
@@ -33,6 +34,13 @@ export const progressOperations: INodeProperties[] = [
 					'Get the progress of an LTI Assignment and Grade Services job (a score with file uploads). Needs Authentication > LTI Advantage with the credential of the tool that started it; a personal Canvas API token is rejected with 401.',
 				action: 'Get LTI progress',
 			},
+			{
+				name: 'Wait for Completion',
+				value: 'waitForCompletion',
+				description:
+					'Check the job again and again until it is completed or has failed, then output its final state. Check "workflow_state" of the result: a failed job is not an error of this operation.',
+				action: 'Wait for a progress to complete',
+			},
 		],
 		default: 'get',
 	},
@@ -51,12 +59,14 @@ export const progressFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['progress'],
-				operation: ['get', 'cancel'],
+				operation: ['get', 'cancel', 'waitForCompletion'],
 			},
 		},
 		description:
 			'The ID of the progress object. Canvas returns it (or a "progress_url" ending in it) from operations that run in the background.',
 	},
+
+	...waitFields('progress'),
 
 	// ----------------------------------
 	//         progress: getLti

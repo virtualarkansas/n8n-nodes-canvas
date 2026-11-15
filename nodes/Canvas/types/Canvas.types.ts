@@ -60,6 +60,15 @@ export interface IRequestConfig {
 		fileNameField?: string;
 		contentTypeField?: string;
 	};
+	/**
+	 * Repeat the GET until the record says the background job is over (or the time is up):
+	 * "Wait for Completion" operations for progress objects, SIS imports, reports ...
+	 */
+	poll?: {
+		intervalSeconds: number;
+		timeoutSeconds: number;
+		isFinished: (record: IDataObject) => boolean;
+	};
 	fetchAllPages?: boolean;
 	/**
 	 * The endpoint answers with its complete list whatever page is asked for, while
@@ -188,6 +197,7 @@ export type CanvasErrorType =
 	| 'SERVER_ERROR' // 500+
 	| 'INVALID_PARAMETERS' // rejected by the node before any request was sent
 	| 'NETWORK_ERROR' // no HTTP response (DNS, connection refused, timeout)
+	| 'TIMEOUT' // a "Wait for Completion" operation gave up waiting
 	| 'UNKNOWN'; // Other
 
 /**

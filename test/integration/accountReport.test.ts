@@ -442,12 +442,65 @@ describe('accountReport', () => {
 			operation: 'create',
 			originalItem: { n: 2 },
 		});
+		// Canvas answers the refusal with the report that is already running: a workflow can carry on with it.
+		expect(result.error[0].responseBody).toMatchObject({ id: Number(id), report: 'provisioning_csv' });
 		const reports = await canvas().getAll<Json>(`/api/v1/accounts/${root}/reports/provisioning_csv`);
 		const sameParameters = reports.filter(
 			(r) => (r.parameters as Json | null)?.groups === true && Number(r.id) >= Number(id),
 		);
 		expect(sameParameters.map((r) => r.id)).toEqual([Number(id)]);
 		await waitForReport(root, 'provisioning_csv', id);
+	});
+
+	// ------------------------------------------------------- waitForCompletion
+
+	it('waitForCompletion: returns the finished report with its file; giving up is reported as TIMEOUT', async () => {
+		const [started] = await runOk({
+			resource: 'accountReport',
+			operation: 'create',
+			params: { accountId: root, reportType: 'provisioning_csv', additionalFields: { users: true, courses: true, skip_message: true } },
+		});
+		const id = remember(root, started);
+		expect(['created', 'running', 'compiling']).toContain(String(started.status));
+
+		// Not enough time: the item fails with TIMEOUT, the report keeps running.
+		const impatient = await runNode({
+			resource: 'accountReport',
+			operation: 'waitForCompletion',
+			params: {
+				accountId: root,
+				reportType: 'provisioning_csv',
+				reportId: id,
+				pollInterval: 1,
+				timeout: 0,
+				errorHandling: { onError: 'continueWithError' },
+			},
+		});
+		if (impatient.error.length > 0) {
+			expect(impatient.error[0]).toMatchObject({ errorCode: 0, errorType: 'TIMEOUT', operation: 'waitForCompletion' });
+			expect(String(impatient.error[0].errorMessage)).toContain('Still not finished after 0 seconds');
+		} else {
+			// The job was quicker than the first look.
+			expect(impatient.success[0].status).toBe('complete');
+		}
+
+		const [finished] = await runOk({
+			resource: 'accountReport',
+			operation: 'waitForCompletion',
+			params: { accountId: root, reportType: 'provisioning_csv', reportId: id, pollInterval: 2, timeout: 300 },
+		});
+		expect(finished).toMatchObject({ id: Number(id), status: 'complete', progress: 100 });
+		const direct = await canvas().get<Json>(`/api/v1/accounts/${root}/reports/provisioning_csv/${id}`);
+		expect((finished.attachment as Json).id).toBe((direct.attachment as Json).id);
+
+		// Waiting for something that is already finished returns at once.
+		const startedAt = Date.now();
+		await runOk({
+			resource: 'accountReport',
+			operation: 'waitForCompletion',
+			params: { accountId: root, reportType: 'provisioning_csv', reportId: id, pollInterval: 30 },
+		});
+		expect(Date.now() - startedAt).toBeLessThan(15_000);
 	});
 
 	// --------------------------------------------------------------------- get

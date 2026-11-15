@@ -1,4 +1,5 @@
 import type { INodeProperties } from 'n8n-workflow';
+import { waitFields } from './shared';
 
 export const accountReportOperations: INodeProperties[] = [
 	{
@@ -48,6 +49,13 @@ export const accountReportOperations: INodeProperties[] = [
 				description: 'List available report types with their parameters and last run',
 				action: 'List available reports',
 			},
+			{
+				name: 'Wait for Completion',
+				value: 'waitForCompletion',
+				description:
+					'Check the report again and again until it is complete (or has failed or was aborted), then output it with its file',
+				action: 'Wait for an account report to complete',
+			},
 		],
 		default: 'listAvailable',
 	},
@@ -66,7 +74,7 @@ export const accountReportFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['accountReport'],
-				operation: ['listAvailable', 'create', 'get', 'getAll', 'delete', 'abort'],
+				operation: ['listAvailable', 'create', 'get', 'getAll', 'delete', 'abort', 'waitForCompletion'],
 			},
 		},
 		description: 'The ID of the account',
@@ -85,7 +93,7 @@ export const accountReportFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['accountReport'],
-				operation: ['create', 'get', 'getAll', 'delete', 'abort'],
+				operation: ['create', 'get', 'getAll', 'delete', 'abort', 'waitForCompletion'],
 			},
 		},
 		description:
@@ -104,7 +112,7 @@ export const accountReportFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['accountReport'],
-				operation: ['get', 'delete', 'abort'],
+				operation: ['get', 'delete', 'abort', 'waitForCompletion'],
 			},
 		},
 		description: 'The ID of the report',
@@ -391,4 +399,5 @@ export const accountReportFields: INodeProperties[] = [
 			},
 		],
 	},
+	...waitFields('accountReport'),
 ];

@@ -1,5 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { pollUntil, stateIn } from './shared';
 
 /** Drop options the user added but left empty; Canvas treats `key=` as a value. */
 function withoutEmpty(options: Record<string, unknown>): Record<string, unknown> {
@@ -151,6 +152,13 @@ export function handleProgressResource(
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/progress/${progressId}`,
+			};
+
+		case 'waitForCompletion':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/progress/${progressId}`,
+				poll: pollUntil(getParam, stateIn('workflow_state', ['completed', 'failed'])),
 			};
 
 		case 'cancel':
