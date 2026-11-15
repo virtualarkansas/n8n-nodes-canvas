@@ -2,7 +2,7 @@
   "name": "Canvas battery — outcome",
   "nodes": [
     {
-      "id": "6c4f8253-6f8c-4772-9806-278f7da2ffaf",
+      "id": "122a30f3-a91a-4d86-85be-d43efde1b584",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "f1fde6f5-b5b3-4a5e-be4e-52559be81cff",
+      "id": "33a5a0ed-4ed7-41a5-a46d-22b74ca6407b",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "d00db45e-a965-400a-910c-ba2d74f902bc",
+      "id": "a1d43627-6649-48b5-874a-c9536e382a66",
       "name": "create — create: every optional field and ratings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,8 +42,8 @@
         "resource": "outcome",
         "operation": "create",
         "context": "course",
-        "courseId": "835",
-        "outcomeGroupId": "252",
+        "courseId": "1000",
+        "outcomeGroupId": "293",
         "title": "=Outcöme \"quoted\" & <b>tags</b> 目标 🎯 {{ $execution.id }}-1",
         "additionalFields": {
           "calculation_int": 4,
@@ -81,7 +81,7 @@
       "executeOnce": true
     },
     {
-      "id": "5e29da03-e764-453f-80eb-19ce3a7925cd",
+      "id": "1f6b8756-6e59-40a2-9a57-9cb6232378b5",
       "name": "create — create: with only a title, in an account group and in the gl",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -94,8 +94,8 @@
         "resource": "outcome",
         "operation": "create",
         "context": "account",
-        "accountId": 242,
-        "outcomeGroupId": 253,
+        "accountId": 290,
+        "outcomeGroupId": 294,
         "title": "=Account outcome {{ $execution.id }}-5"
       },
       "credentials": {
@@ -109,7 +109,7 @@
       "executeOnce": true
     },
     {
-      "id": "b809f1f5-8bba-45e7-ba74-521fa5a5e68c",
+      "id": "ad8be98c-ffa4-45fa-be7d-46a5a3b1bd8e",
       "name": "create — create: with only a title, in an account group and in the gl (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -136,7 +136,7 @@
       "executeOnce": true
     },
     {
-      "id": "66078f12-c364-4a54-aec3-1b55dc8c4b9a",
+      "id": "2bffd17d-46ba-4fa5-aee5-aa2c02f28453",
       "name": "update — update: title, display name, description and vendor GUID",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -148,7 +148,7 @@
         "authentication": "accessToken",
         "resource": "outcome",
         "operation": "update",
-        "outcomeId": "225",
+        "outcomeId": "265",
         "updateFields": {
           "title": "=Outcöme \"quoted\" & <b>tags</b> 目标 🎯 {{ $execution.id }}-1 (renamed)",
           "display_name": "New friendly name",
@@ -167,7 +167,7 @@
       "executeOnce": true
     },
     {
-      "id": "15509ff2-bfb2-430c-9469-729298189e3b",
+      "id": "c9e442ca-94fa-45e6-9e71-03f0d7eb548e",
       "name": "getAlignedAssignments — getAlignedAssignments: the alignments of an assignment and o",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -179,9 +179,9 @@
         "authentication": "accessToken",
         "resource": "outcome",
         "operation": "getAlignedAssignments",
-        "courseId": "835",
+        "courseId": "1000",
         "options": {
-          "assignment_id": "1970"
+          "assignment_id": "2220"
         }
       },
       "credentials": {
@@ -195,7 +195,7 @@
       "executeOnce": true
     },
     {
-      "id": "e50c2031-ffa3-47e2-860c-bf6c7b0847cc",
+      "id": "36f7bb95-d43b-48ed-a814-80b6526f7fe4",
       "name": "getAlignedAssignments — getAlignedAssignments: the alignments of an assignment and o (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -207,9 +207,9 @@
         "authentication": "accessToken",
         "resource": "outcome",
         "operation": "getAlignedAssignments",
-        "courseId": "835",
+        "courseId": "1000",
         "options": {
-          "assignment_id": "1971"
+          "assignment_id": "2221"
         }
       },
       "credentials": {

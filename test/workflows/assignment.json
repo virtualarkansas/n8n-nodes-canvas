@@ -2,7 +2,7 @@
   "name": "Canvas battery — assignment",
   "nodes": [
     {
-      "id": "f74a75d1-caa3-4f99-a448-5991e8e74795",
+      "id": "1d5a4010-721e-46b6-8d73-bb5f008385a0",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "fb9457cc-f353-4269-957b-a4a324aaa068",
+      "id": "b618ddf9-1bb8-4f53-aa2b-156abbe0ba2a",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "8561aa33-e043-4751-8423-82927a018fd7",
+      "id": "01c80adc-859e-42f6-9558-0992d5b95017",
       "name": "create — create: every general, peer review and group field reaches C",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -91,7 +91,7 @@
       "executeOnce": true
     },
     {
-      "id": "6d4c172d-f968-4a09-a025-4518c6b0efd4",
+      "id": "af82fb8c-6288-46cd-9ecd-37b80d7bc69e",
       "name": "create — create: minimal assignment gets the Canvas defaults",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -117,7 +117,7 @@
       "executeOnce": true
     },
     {
-      "id": "1568a36b-be52-45d6-9e5d-3e920eec46ba",
+      "id": "c2f8529e-087d-45fc-a02e-359988f4b4ce",
       "name": "create — create: moderated grading fields",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -155,7 +155,7 @@
       "executeOnce": true
     },
     {
-      "id": "b02c29dc-1a01-4a2c-a8a8-3682f6725ea3",
+      "id": "3e49867e-c652-4495-a33c-1e0fd49c7a9e",
       "name": "create — create: anonymous grading is sent, but Canvas ignores it whi",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -188,7 +188,7 @@
       "executeOnce": true
     },
     {
-      "id": "7e0b4906-5a8b-49ea-8410-242d0d97e3e7",
+      "id": "2deab13d-c8a2-4653-a219-c2eb3bacf2b7",
       "name": "create — create: external tool and student annotation assignments",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -222,7 +222,7 @@
       "executeOnce": true
     },
     {
-      "id": "c6f36e6d-8a1d-4ea6-abdf-d4cc8a66ebdb",
+      "id": "bd3716f7-43e6-4e6e-a7cf-e213caa06239",
       "name": "create — create: hide in gradebook is only accepted together with ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -253,7 +253,7 @@
       "executeOnce": true
     },
     {
-      "id": "e2695d9c-4869-4cf8-ae66-5441706a3cec",
+      "id": "be3edd01-6d4a-4703-ae4a-0d4e30cea76b",
       "name": "get — get: every option",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -293,7 +293,7 @@
       "executeOnce": true
     },
     {
-      "id": "bdf11aae-b7c4-4b13-974d-434da2ead988",
+      "id": "cef62abb-d03d-494d-9ceb-62461cd9defd",
       "name": "getAll — getAll: pages through more than 100 assignments without dupl",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -318,7 +318,7 @@
       "executeOnce": true
     },
     {
-      "id": "6b70150a-29ec-4f0b-826b-3d81441de5c3",
+      "id": "e14294ac-2eff-4280-bb5f-1c3a5ad93452",
       "name": "getAll — getAll: pages through more than 100 assignments without dupl (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -346,7 +346,7 @@
       "executeOnce": true
     },
     {
-      "id": "573dc5db-504c-48d7-a8f7-3c89b1b23f0e",
+      "id": "214677aa-3d6b-4f8c-a0b2-c9ea9304d7bf",
       "name": "getAll — getAll: pages through more than 100 assignments without dupl (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -375,7 +375,7 @@
       "executeOnce": true
     },
     {
-      "id": "c1b1e9e1-15b1-4cc8-a08e-2419330d71e2",
+      "id": "4cda6daa-90a2-433e-99c0-aa3e11ad7df8",
       "name": "getAll — getAll: search term, order, SIS filter and assignment IDs",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -407,7 +407,7 @@
       "executeOnce": true
     },
     {
-      "id": "a3aadb84-ee2e-482c-853e-eca617724460",
+      "id": "6aae3814-e58a-4da0-b251-a8def7b1cf66",
       "name": "getAll — getAll: search term, order, SIS filter and assignment IDs (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -439,7 +439,7 @@
       "executeOnce": true
     },
     {
-      "id": "60b19470-3f1e-406d-8384-d8b1ae58fa76",
+      "id": "49071f54-f7f9-4a2b-b89f-6ecedd948152",
       "name": "getAll — getAll: search term, order, SIS filter and assignment IDs (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -471,7 +471,7 @@
       "executeOnce": true
     },
     {
-      "id": "ee392810-efb8-4ded-980e-345f33683bbf",
+      "id": "14d256ba-db68-4fee-b0c4-94158fae99da",
       "name": "getAll — getAll: search term, order, SIS filter and assignment IDs (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -503,7 +503,7 @@
       "executeOnce": true
     },
     {
-      "id": "b7f037f6-36ff-4a69-a79d-082e7e4fd2a1",
+      "id": "b5a8e6f3-7925-4029-b98a-c89ced99385c",
       "name": "getAll — getAll: search term, order, SIS filter and assignment IDs (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -534,7 +534,7 @@
       "executeOnce": true
     },
     {
-      "id": "7455acb2-5774-4c46-8a8b-ceebb01a2cb9",
+      "id": "8d1b6631-e5aa-4da8-8030-ad37eecba09c",
       "name": "getAll — getAll: every bucket matches what Canvas returns for it",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -566,7 +566,7 @@
       "executeOnce": true
     },
     {
-      "id": "6744f8dd-72f0-4ea8-8437-24fda2394cc3",
+      "id": "15cc8318-7e20-41f0-b82b-bf084a0fd07a",
       "name": "getAll — getAll: every bucket matches what Canvas returns for it (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -598,7 +598,7 @@
       "executeOnce": true
     },
     {
-      "id": "857a0bbc-21e4-4d95-aef3-8586934e4db7",
+      "id": "dac06d40-2759-413e-b046-19a3d7559ce5",
       "name": "getAll — getAll: every bucket matches what Canvas returns for it (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -630,7 +630,7 @@
       "executeOnce": true
     },
     {
-      "id": "d33a1dc7-7eec-4e2f-966b-7e152fc33f08",
+      "id": "daf02079-0aec-490b-8be9-d524c7b45db2",
       "name": "getAll — getAll: every bucket matches what Canvas returns for it (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -662,7 +662,7 @@
       "executeOnce": true
     },
     {
-      "id": "40181565-0b4d-4cf4-b729-0f54f8b755db",
+      "id": "dce442b8-28cd-43f3-a65e-91ed00fa3bd1",
       "name": "getAll — getAll: every bucket matches what Canvas returns for it (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -694,7 +694,7 @@
       "executeOnce": true
     },
     {
-      "id": "ab3ba524-cd84-4250-b4c2-60e80b10aaa9",
+      "id": "dfa4327b-d347-4908-a868-54cf978c1fe6",
       "name": "getAll — getAll: every bucket matches what Canvas returns for it (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -726,7 +726,7 @@
       "executeOnce": true
     },
     {
-      "id": "6656626a-dee8-41a9-ac7b-cf629249f59d",
+      "id": "16112902-12b2-4055-95f6-2ac30965c03e",
       "name": "getAll — getAll: every bucket matches what Canvas returns for it (7)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -758,7 +758,7 @@
       "executeOnce": true
     },
     {
-      "id": "a858ecca-1b9f-4bd2-a5d8-2fb37a3e393a",
+      "id": "e0eb4c80-cfef-4ab6-8f20-67d5e12d5967",
       "name": "getAll — getAll: new quizzes only filters when on and is not sent w",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -789,7 +789,7 @@
       "executeOnce": true
     },
     {
-      "id": "9cd791be-63af-4a4e-a26d-d28218e6bccc",
+      "id": "d4e52288-2a52-46d9-8dc4-685a4054bdef",
       "name": "getAll — getAll: new quizzes only filters when on and is not sent w (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -818,7 +818,7 @@
       "executeOnce": true
     },
     {
-      "id": "cf7118cc-1abf-43af-9dea-f66e64d85d40",
+      "id": "cac4189f-aef7-4ac7-bce0-209d2bf67162",
       "name": "getAll — getAll: include and date options",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -858,7 +858,7 @@
       "executeOnce": true
     },
     {
-      "id": "fb411a6a-a0af-4bcd-931d-12ea50feec53",
+      "id": "fc882ca0-45f2-4272-9e7c-343e2ec9b636",
       "name": "getAll — getAll: one assignment group, and the assignments of one use",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -889,7 +889,7 @@
       "executeOnce": true
     },
     {
-      "id": "1bd23fa7-711f-440c-8b91-13fd407edfdf",
+      "id": "17a2449f-26f0-488f-9cf5-44bb83dee804",
       "name": "getAll — getAll: one assignment group, and the assignments of one use (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -921,7 +921,7 @@
       "executeOnce": true
     },
     {
-      "id": "50ee70a8-9267-4cd3-a74e-adaa79574813",
+      "id": "574a97b8-a6e4-49a8-8c8d-610a3ee6aea1",
       "name": "getAll — getAll: one assignment group, and the assignments of one use (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -953,7 +953,7 @@
       "executeOnce": true
     },
     {
-      "id": "398d0a73-fb4a-4b92-80a8-d5bbcf12ea9c",
+      "id": "d55157a0-9544-441f-83f2-9877ca0c4d04",
       "name": "update — update: every general field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1010,7 +1010,7 @@
       "executeOnce": true
     },
     {
-      "id": "fb0b7bdc-06ea-4c8f-a844-abc5485a4110",
+      "id": "fff037c2-5b3b-4bbc-9aa0-6e0044200683",
       "name": "update — update: empty values clear dates, extensions, group set and ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1045,7 +1045,7 @@
       "executeOnce": true
     },
     {
-      "id": "4d96695b-5a88-49e8-ad73-a66471abc603",
+      "id": "7256c636-11d7-4168-808f-c631630d3b15",
       "name": "update — update: moderated grading fields, external tool settings",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1077,7 +1077,7 @@
       "executeOnce": true
     },
     {
-      "id": "deb0b17b-f253-451b-8812-617a9c49073e",
+      "id": "a09d96f0-d751-4c1f-8e2c-5b71cdb0f93c",
       "name": "update — update: moderated grading fields, external tool settings (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1107,7 +1107,7 @@
       "executeOnce": true
     },
     {
-      "id": "20814693-8087-4616-a956-3af535443c38",
+      "id": "b7412ecb-99ec-4f8b-b62c-01c5d4d6ca9e",
       "name": "update — update: external tool, annotation file, hide in gradebook, a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1120,7 +1120,7 @@
         "resource": "assignment",
         "operation": "update",
         "courseId": "={{ $('update — update: moderated grading fields, external tool settings (2)').first().json.course_id }}",
-        "assignmentId": "1838",
+        "assignmentId": "2075",
         "updateFields": {
           "external_tool_url": "https://lti.example.com/launch?unit=2",
           "external_tool_new_tab": true
@@ -1137,7 +1137,7 @@
       "executeOnce": true
     },
     {
-      "id": "ca96a8be-731b-4c6b-957a-b83afd7cfaa5",
+      "id": "3056a4e7-df57-4ac7-83a4-be069dc49176",
       "name": "update — update: external tool, annotation file, hide in gradebook, a (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1150,9 +1150,9 @@
         "resource": "assignment",
         "operation": "update",
         "courseId": "={{ $('update — update: external tool, annotation file, hide in gradebook, a').first().json.course_id }}",
-        "assignmentId": "1839",
+        "assignmentId": "2076",
         "updateFields": {
-          "annotatable_attachment_id": "3270",
+          "annotatable_attachment_id": "3643",
           "submission_types": [
             "student_annotation"
           ]
@@ -1169,7 +1169,7 @@
       "executeOnce": true
     },
     {
-      "id": "1d8887ea-1597-4a90-9f0c-731224cdcaa0",
+      "id": "de3693e0-72c9-42e8-b0e9-2c6e615ade31",
       "name": "update — update: external tool, annotation file, hide in gradebook, a (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1182,7 +1182,7 @@
         "resource": "assignment",
         "operation": "update",
         "courseId": "={{ $('update — update: external tool, annotation file, hide in gradebook, a (2)').first().json.course_id }}",
-        "assignmentId": "1840",
+        "assignmentId": "2078",
         "updateFields": {
           "hide_in_gradebook": true
         }
@@ -1198,7 +1198,7 @@
       "executeOnce": true
     },
     {
-      "id": "04034082-e4bd-4b3b-875b-95d76091cc43",
+      "id": "345af18d-fd43-4676-abf8-77750f06362f",
       "name": "update — update: external tool, annotation file, hide in gradebook, a (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1227,7 +1227,7 @@
       "executeOnce": true
     },
     {
-      "id": "ae9378f7-d780-4459-aa26-648762f4b180",
+      "id": "84a92aa9-207b-4d6b-bcd2-e22cc9d65f88",
       "name": "update — update: external tool, annotation file, hide in gradebook, a (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1240,7 +1240,7 @@
         "resource": "assignment",
         "operation": "update",
         "courseId": "={{ $('update — update: external tool, annotation file, hide in gradebook, a (4)').first().json.course_id }}",
-        "assignmentId": "1841",
+        "assignmentId": "2079",
         "updateFields": {
           "graders_anonymous_to_graders": true,
           "grader_comments_visible_to_graders": true
@@ -1257,7 +1257,7 @@
       "executeOnce": true
     },
     {
-      "id": "9608185a-5bfe-4fa1-a01a-1f0c62793ba6",
+      "id": "e15a4d2c-85e4-4ef0-8288-84dac9ab79f0",
       "name": "update — update: external tool, annotation file, hide in gradebook, a (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1270,7 +1270,7 @@
         "resource": "assignment",
         "operation": "update",
         "courseId": "={{ $('update — update: external tool, annotation file, hide in gradebook, a (5)').first().json.course_id }}",
-        "assignmentId": "1842",
+        "assignmentId": "2080",
         "updateFields": {
           "peer_reviews_assign_at": "2031-03-05T12:00:00Z"
         }
@@ -1286,7 +1286,7 @@
       "executeOnce": true
     },
     {
-      "id": "ba087a5d-3793-41e5-b94b-c81310fdd7c7",
+      "id": "b5c8c8bf-9c79-4486-94ee-dcd2ca7145eb",
       "name": "update — update: external tool, annotation file, hide in gradebook, a (7)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1315,7 +1315,7 @@
       "executeOnce": true
     },
     {
-      "id": "c9e8b8ab-481e-4911-b20e-e7e49c858735",
+      "id": "3d72e607-b5dd-4616-b4fe-a26ecdca60eb",
       "name": "create — update: Canvas refuses a final grader who is not an instruct",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1349,7 +1349,7 @@
       "executeOnce": true
     },
     {
-      "id": "2cd1365e-bd8f-4121-abfb-844a1ff58f21",
+      "id": "9848365c-3313-42ef-b82b-a94eef5d1bea",
       "name": "duplicate — duplicate: copies the assignment next to the original",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1375,7 +1375,7 @@
       "executeOnce": true
     },
     {
-      "id": "401453f8-d13e-4412-89bd-3eb3a2aba50d",
+      "id": "67d40bb2-9ccf-4a68-ada2-efe2654fa479",
       "name": "duplicate — duplicate: copies the assignment next to the original (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1404,7 +1404,7 @@
       "executeOnce": true
     },
     {
-      "id": "61e4da5d-4972-49e1-9a09-46749b9f3a25",
+      "id": "473e85b3-dd93-4e4f-8086-543c7947e44e",
       "name": "createOverride — overrides: create for students, a section and a group; list,",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1438,7 +1438,7 @@
       "executeOnce": true
     },
     {
-      "id": "3066897e-46f2-4764-8b22-973605967020",
+      "id": "319dce46-9f12-4fde-ba8a-a85e57ef7447",
       "name": "createOverride — overrides: create for students, a section and a group; list, (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1469,7 +1469,7 @@
       "executeOnce": true
     },
     {
-      "id": "981808ab-e77e-43c2-8d5e-0afab7142433",
+      "id": "f778e1df-8409-4021-a613-ba0f95f3091c",
       "name": "createOverride — overrides: create for students, a section and a group; list, (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1500,7 +1500,7 @@
       "executeOnce": true
     },
     {
-      "id": "0e127a3d-5697-4109-ac27-25e91bea347c",
+      "id": "976ac777-b07f-48a7-922a-e6e4764b3e58",
       "name": "listOverrides — overrides: create for students, a section and a group; list,",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1526,7 +1526,7 @@
       "executeOnce": true
     },
     {
-      "id": "f32b18b5-d697-41fb-9e9f-228716564a0b",
+      "id": "101f4758-25b7-4f80-bd46-c734edf6caf3",
       "name": "updateOverride — overrides: create for students, a section and a group; list,",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1540,7 +1540,7 @@
         "operation": "updateOverride",
         "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
         "assignmentId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.id }}",
-        "overrideId": "220",
+        "overrideId": "279",
         "updateFields": {
           "due_at": "2033-01-12T12:00:00Z",
           "student_ids": "6",
@@ -1558,7 +1558,7 @@
       "executeOnce": true
     },
     {
-      "id": "ec9b22d3-ee79-4a00-925a-807dd1550ee6",
+      "id": "5556c5c8-a86a-426a-9330-ff0a1c26d29a",
       "name": "updateOverride — overrides: create for students, a section and a group; list, (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1572,7 +1572,7 @@
         "operation": "updateOverride",
         "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
         "assignmentId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.id }}",
-        "overrideId": "220",
+        "overrideId": "279",
         "updateFields": {
           "due_at": "2033-01-12T12:00:00Z",
           "unlock_at": "2033-01-01T08:00:00Z",
@@ -1590,7 +1590,7 @@
       "executeOnce": true
     },
     {
-      "id": "00c164bc-a641-4a82-b2d2-90d83c58c8e6",
+      "id": "57bf970b-b108-45f9-9cad-27c01a1c9956",
       "name": "deleteOverride — overrides: create for students, a section and a group; list,",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1604,7 +1604,7 @@
         "operation": "deleteOverride",
         "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
         "assignmentId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.id }}",
-        "overrideId": "220"
+        "overrideId": "279"
       },
       "credentials": {
         "canvasApi": {
@@ -1617,7 +1617,7 @@
       "executeOnce": true
     },
     {
-      "id": "c22e5afe-4c49-42fa-9ae1-ffe69032bab7",
+      "id": "531fbb1b-b431-4441-8026-98fc2841e7ce",
       "name": "batchCreateOverrides — batchCreateOverrides: overrides for students, a section and ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1630,7 +1630,7 @@
         "resource": "assignment",
         "operation": "batchCreateOverrides",
         "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
-        "overrides": "[{\"assignment_id\":1819,\"student_ids\":[5],\"title\":\"Batch ünï \\\"one\\\"\",\"due_at\":\"2035-01-10T12:00:00Z\",\"unlock_at\":\"2035-01-01T12:00:00Z\",\"lock_at\":\"2035-01-20T12:00:00Z\"},{\"assignment_id\":\"1819\",\"course_section_id\":\"230\",\"due_at\":\"2035-02-10T12:00:00Z\"},{\"assignment_id\":\"1819\",\"group_id\":56,\"lock_at\":\"2035-03-10T12:00:00Z\"},{\"assignment_id\":1820,\"student_ids\":\"5, 6\",\"title\":\"Two students\",\"unlock_at\":\"2035-04-01T12:00:00Z\"}]"
+        "overrides": "[{\"assignment_id\":2066,\"student_ids\":[5],\"title\":\"Batch ünï \\\"one\\\"\",\"due_at\":\"2035-01-10T12:00:00Z\",\"unlock_at\":\"2035-01-01T12:00:00Z\",\"lock_at\":\"2035-01-20T12:00:00Z\"},{\"assignment_id\":\"2066\",\"course_section_id\":\"230\",\"due_at\":\"2035-02-10T12:00:00Z\"},{\"assignment_id\":\"2066\",\"group_id\":56,\"lock_at\":\"2035-03-10T12:00:00Z\"},{\"assignment_id\":2067,\"student_ids\":\"5, 6\",\"title\":\"Two students\",\"unlock_at\":\"2035-04-01T12:00:00Z\"}]"
       },
       "credentials": {
         "canvasApi": {
@@ -1643,7 +1643,7 @@
       "executeOnce": true
     },
     {
-      "id": "dfdd8637-000e-4761-8eca-c6ca28372b96",
+      "id": "2333d267-e731-40e2-8417-38bb45957a68",
       "name": "batchGetOverrides — batchGetOverrides: returns the overrides in the order asked ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1656,7 +1656,7 @@
         "resource": "assignment",
         "operation": "batchGetOverrides",
         "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
-        "overrides": "[{\"id\":226,\"assignment_id\":1820},{\"id\":999999999,\"assignment_id\":1819},{\"id\":225,\"assignment_id\":\"1819\"},{\"id\":224,\"assignment_id\":\"1820\"},{\"id\":\"223\",\"assignment_id\":\"1819\"}]"
+        "overrides": "[{\"id\":285,\"assignment_id\":2067},{\"id\":999999999,\"assignment_id\":2066},{\"id\":284,\"assignment_id\":\"2066\"},{\"id\":283,\"assignment_id\":\"2067\"},{\"id\":\"282\",\"assignment_id\":\"2066\"}]"
       },
       "credentials": {
         "canvasApi": {
@@ -1669,7 +1669,7 @@
       "executeOnce": true
     },
     {
-      "id": "f0c49a12-f18e-4be1-aebc-687564c5e57e",
+      "id": "477438ee-15a8-4b7d-a680-6431e32344fe",
       "name": "batchUpdateOverrides — batchUpdateOverrides: changes several overrides at once; dat",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1682,7 +1682,7 @@
         "resource": "assignment",
         "operation": "batchUpdateOverrides",
         "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
-        "overrides": "[{\"id\":223,\"assignment_id\":1819,\"student_ids\":[6],\"title\":\"Batch renamed\",\"due_at\":\"2035-01-12T12:00:00Z\"},{\"id\":224,\"assignment_id\":\"1819\",\"lock_at\":\"2035-02-20T12:00:00Z\"},{\"id\":226,\"assignment_id\":1820,\"unlock_at\":null,\"due_at\":\"2035-04-15T12:00:00Z\"}]"
+        "overrides": "[{\"id\":282,\"assignment_id\":2066,\"student_ids\":[6],\"title\":\"Batch renamed\",\"due_at\":\"2035-01-12T12:00:00Z\"},{\"id\":283,\"assignment_id\":\"2066\",\"lock_at\":\"2035-02-20T12:00:00Z\"},{\"id\":285,\"assignment_id\":2067,\"unlock_at\":null,\"due_at\":\"2035-04-15T12:00:00Z\"}]"
       },
       "credentials": {
         "canvasApi": {
@@ -1695,7 +1695,7 @@
       "executeOnce": true
     },
     {
-      "id": "729ccee0-08c2-4c8c-94fa-aacfd2c92dc1",
+      "id": "f0435a38-6e3d-4b0e-a8e4-d06e54f76660",
       "name": "batchGetOverrides — batch overrides: input that is not a list is rejected by the",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1708,7 +1708,7 @@
         "resource": "assignment",
         "operation": "batchGetOverrides",
         "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
-        "overrides": "[{\"assignment_id\":\"1820\"}]",
+        "overrides": "[{\"assignment_id\":\"2067\"}]",
         "errorHandling": {
           "onError": "continueWithError"
         }
@@ -1724,7 +1724,7 @@
       "executeOnce": true
     },
     {
-      "id": "c1ec15cd-c8de-4f02-aa20-094c9fe53e39",
+      "id": "a3b5185a-84a1-4adf-a044-a41b377e46cd",
       "name": "getOverride — getOverride: by the group or the section the override applie",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1751,7 +1751,7 @@
       "executeOnce": true
     },
     {
-      "id": "cb42afc0-34c5-4ccb-868e-ff808528aee6",
+      "id": "be5645a4-a4e4-49cf-8065-037e20c16df6",
       "name": "getOverride — getOverride: by the group or the section the override applie (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1766,7 +1766,7 @@
         "overrideBy": "id",
         "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
         "assignmentId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.id }}",
-        "overrideId": "223"
+        "overrideId": "282"
       },
       "credentials": {
         "canvasApi": {
@@ -1779,7 +1779,7 @@
       "executeOnce": true
     },
     {
-      "id": "bb966f43-16da-4a87-a514-7c3650d1e6e7",
+      "id": "65165802-fd18-411c-a0a6-71e11fab6544",
       "name": "listGroupMembers — listGroupMembers: the students who share a group assignment ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1806,7 +1806,7 @@
       "executeOnce": true
     },
     {
-      "id": "b0a5454a-7a29-4a84-903d-84132b035615",
+      "id": "0341c285-4975-4c15-a898-08c538bf7878",
       "name": "listGroupMembers — listGroupMembers: the students who share a group assignment  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1833,7 +1833,7 @@
       "executeOnce": true
     },
     {
-      "id": "6bc2112c-3cbe-4124-a849-47893cfbdb63",
+      "id": "1620bcbe-64e6-4f28-a3c1-0b56cd24dd15",
       "name": "bulkUpdateDates — bulkUpdateDates: changes base and override dates of several ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1846,7 +1846,7 @@
         "resource": "assignment",
         "operation": "bulkUpdateDates",
         "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
-        "dates": "[{\"id\":1820,\"all_dates\":[{\"base\":true,\"due_at\":\"2034-05-01T12:00:00Z\",\"unlock_at\":\"2034-04-01T12:00:00Z\",\"lock_at\":null}]},{\"id\":1821,\"all_dates\":[{\"base\":true,\"due_at\":\"2034-06-01T12:00:00Z\"},{\"id\":227,\"due_at\":\"2034-06-15T12:00:00Z\"}]}]"
+        "dates": "[{\"id\":2067,\"all_dates\":[{\"base\":true,\"due_at\":\"2034-05-01T12:00:00Z\",\"unlock_at\":\"2034-04-01T12:00:00Z\",\"lock_at\":null}]},{\"id\":2068,\"all_dates\":[{\"base\":true,\"due_at\":\"2034-06-01T12:00:00Z\"},{\"id\":286,\"due_at\":\"2034-06-15T12:00:00Z\"}]}]"
       },
       "credentials": {
         "canvasApi": {

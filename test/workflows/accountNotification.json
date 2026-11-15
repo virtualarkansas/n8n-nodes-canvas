@@ -2,7 +2,7 @@
   "name": "Canvas battery — accountNotification",
   "nodes": [
     {
-      "id": "8a1a3b9f-338a-4f1c-89e8-ac6fd474139c",
+      "id": "0f004ed4-27ab-4487-9c52-ac7cc4baaa80",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "1ce15975-4422-4386-97d2-3bbba3071e36",
+      "id": "b39de802-10c1-4a8a-a296-2502ef0acedc",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "d3140cc1-e235-434d-a4d5-f48f2fa140e6",
+              "id": "5c0b4ffb-9dc9-4f06-a969-aeebbd4809fc",
               "name": "accountId",
               "value": "1",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "d781e03d-faad-4699-a29a-626efab6ac78",
+      "id": "10b4f92e-17da-42e7-b890-9ad5cb8cc0a7",
       "name": "create — create: every optional field reaches Canvas (roles by name)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -51,8 +51,8 @@
         "accountId": "={{ $('Config').first().json.accountId }}",
         "subject": "=Battery Notice Ünïcødé 通知 \"quoted\" & <b>tags</b> 📣 {{ $execution.id }}-1",
         "message": "<p>Message with <strong>HTML</strong>, an &amp; and emoji 🎓</p>",
-        "startAt": "2026-11-15T14:52:28Z",
-        "endAt": "2026-11-17T16:52:28Z",
+        "startAt": "2026-11-15T15:42:21Z",
+        "endAt": "2026-11-17T17:42:21Z",
         "additionalFields": {
           "icon": "calendar",
           "roles": "AccountAdmin, TeacherEnrollment",
@@ -70,7 +70,7 @@
       "executeOnce": true
     },
     {
-      "id": "d2d26819-1f8a-4aaa-b601-708d8f7887cb",
+      "id": "5599a353-9ec6-47e2-a0ee-25a589f57070",
       "name": "create — create: without optional fields the notification is for ever",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -85,8 +85,8 @@
         "accountId": "self",
         "subject": "=Battery minimal {{ $execution.id }}-5",
         "message": "Minimal",
-        "startAt": "2026-12-06T12:52:30Z",
-        "endAt": "2026-12-06T13:52:30Z"
+        "startAt": "2026-12-06T13:42:23Z",
+        "endAt": "2026-12-06T14:42:23Z"
       },
       "credentials": {
         "canvasApi": {
@@ -99,7 +99,7 @@
       "executeOnce": true
     },
     {
-      "id": "12e425ad-c0d3-46cd-a476-efcbde75cc2c",
+      "id": "a720b847-a229-4b7c-ae61-8a998bab51d7",
       "name": "get — get: returns a notification that is currently shown to the u",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -125,7 +125,7 @@
       "executeOnce": true
     },
     {
-      "id": "c4c44166-7a34-4e33-8b74-9e45fb0f6457",
+      "id": "6487ae69-47bc-4f06-845b-0ecb67338c58",
       "name": "getAll — getAll: current notifications by default; past and future on",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -150,7 +150,7 @@
       "executeOnce": true
     },
     {
-      "id": "6e6eb1e2-3ead-4382-88be-d4fe637a3dc8",
+      "id": "8acd029c-db3a-4d1a-8b53-415a2c136845",
       "name": "getAll — getAll: current notifications by default; past and future on (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -179,7 +179,7 @@
       "executeOnce": true
     },
     {
-      "id": "95cbcda8-0ac7-42a4-ba9c-855ced422454",
+      "id": "2d4f7e5a-42de-4f05-8eec-ee8e84c3cd89",
       "name": "getAll — getAll: current notifications by default; past and future on (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -210,7 +210,7 @@
       "executeOnce": true
     },
     {
-      "id": "41d3fe79-70d0-4d96-8f9a-7647ccdfd743",
+      "id": "4923d0c8-d752-44ae-8a2f-d5c35f62e287",
       "name": "getAll — getAll: Include All on a sub-account lists its own notific",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -222,7 +222,7 @@
         "authentication": "accessToken",
         "resource": "accountNotification",
         "operation": "getAll",
-        "accountId": "238",
+        "accountId": "287",
         "options": {
           "include_all": true
         },
@@ -241,7 +241,7 @@
       "executeOnce": true
     },
     {
-      "id": "2230095d-1ca0-4606-84f0-bf65085614e5",
+      "id": "cceb2ccf-df82-404e-bf43-b17424f43296",
       "name": "update — update: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -258,8 +258,8 @@
         "message": "<p>Second <em>version</em> with \"quotes\" &amp; 🎓</p>",
         "updateFields": {
           "subject": "=Battery updated — عنوان جديد {{ $execution.id }}-9",
-          "start_at": "2026-12-10T16:52:39Z",
-          "end_at": "2026-12-14T20:52:39Z",
+          "start_at": "2026-12-10T17:42:33Z",
+          "end_at": "2026-12-14T21:42:33Z",
           "icon": "error",
           "roles": "StudentEnrollment,1",
           "send_message": false
@@ -276,7 +276,7 @@
       "executeOnce": true
     },
     {
-      "id": "46d17eaa-803e-4a84-acf3-85ef5d55fa3b",
+      "id": "881b3693-a864-4bb5-969a-eca492a18987",
       "name": "update — update: Canvas replaces the roles on every update, so leavin",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -306,7 +306,7 @@
       "executeOnce": true
     },
     {
-      "id": "ae14934b-2c47-4100-9119-20d4b0e713b9",
+      "id": "0fb14d21-4a33-487a-9c86-a6176e91625e",
       "name": "close — close: dismisses the notification for the current user only",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -332,7 +332,7 @@
       "executeOnce": true
     },
     {
-      "id": "c798f653-4127-4e2c-8b94-b753d00966fe",
+      "id": "f8b50f26-bb51-4035-984f-c930d9ec0ac0",
       "name": "close — close: with Remove an admin deletes the notification for e",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -361,7 +361,7 @@
       "executeOnce": true
     },
     {
-      "id": "78d56497-c330-408a-8454-e3720be31b1c",
+      "id": "c8976d85-5321-4e44-a48f-84bc8cb73c43",
       "name": "close — close: with Remove an admin deletes the notification for e (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

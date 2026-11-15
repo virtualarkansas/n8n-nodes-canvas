@@ -2,7 +2,7 @@
   "name": "Canvas battery — communicationChannel",
   "nodes": [
     {
-      "id": "199f6694-4c14-40ab-a6b1-bf64fde0b949",
+      "id": "292a84db-509e-4c1e-aeed-46bd0db19a72",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "d94e57b2-f693-44e2-9cac-5f3a0a925be0",
+      "id": "6629ff1b-1242-428f-a2d6-d525d8d501e3",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "194dbe5e-a413-47e9-a2fa-5588fb72b25a",
+              "id": "d46d7395-b933-430a-ad3c-c5bd8d23f1a7",
               "name": "multiChannelUserId",
               "value": "48",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "e407e05e-3986-4245-af34-c5c3863990a5",
+      "id": "bce361c1-c77e-456c-b2e0-eb7017c06594",
       "name": "getAll — getAll: a new user has the channel of their login email",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -48,7 +48,7 @@
         "authentication": "accessToken",
         "resource": "communicationChannel",
         "operation": "getAll",
-        "userId": "2306"
+        "userId": "2646"
       },
       "credentials": {
         "canvasApi": {
@@ -61,7 +61,7 @@
       "executeOnce": true
     },
     {
-      "id": "87ad1bad-9a8c-446b-a76b-6ef4bee4c243",
+      "id": "69ede6df-7eed-4b08-8bfe-ff5c1358baf4",
       "name": "create — create: an email channel that is confirmed right away",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -75,7 +75,7 @@
         "operation": "create",
         "userId": "={{ $('getAll — getAll: a new user has the channel of their login email').first().json.user_id }}",
         "channelType": "email",
-        "address": "battery+tag.1794761638116@example.edu",
+        "address": "battery+tag.1794764663854@example.edu",
         "additionalFields": {
           "skipConfirmation": true
         }
@@ -91,7 +91,7 @@
       "executeOnce": true
     },
     {
-      "id": "8b99cb94-d940-4d39-947d-60ffcea23b5e",
+      "id": "f1858b79-c359-4b16-ba61-1302acde5a72",
       "name": "create — create: without Skip Confirmation the channel waits for th",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -121,7 +121,7 @@
       "executeOnce": true
     },
     {
-      "id": "f8501089-425a-4356-a20f-9eee7d6746b0",
+      "id": "315933fc-0b08-4947-ab15-e2629bd6c13f",
       "name": "create — create: without Skip Confirmation the channel waits for th (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -135,7 +135,7 @@
         "operation": "create",
         "userId": "={{ $('create — create: without Skip Confirmation the channel waits for th').first().json.user_id }}",
         "channelType": "sms",
-        "address": "5015550204@txt.att.net",
+        "address": "5015555648@txt.att.net",
         "additionalFields": {
           "skipConfirmation": true
         }
@@ -151,7 +151,7 @@
       "executeOnce": true
     },
     {
-      "id": "b680a3bd-b250-46f6-a71d-eb21c8db0823",
+      "id": "d61c653d-74d3-4c21-9b32-e80524912c37",
       "name": "getAll — getAll: lists every channel of a user in Canvas order; reti",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -180,7 +180,7 @@
       "executeOnce": true
     },
     {
-      "id": "887bad1a-a335-4e66-a61d-59e085262b79",
+      "id": "04a611f6-9b62-4071-a41c-cc5a1521aefa",
       "name": "getAll — getAll: lists every channel of a user in Canvas order; reti (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -209,7 +209,7 @@
       "executeOnce": true
     },
     {
-      "id": "a9225886-a39b-460d-8fe3-ddd981130da5",
+      "id": "c60d76eb-8dea-42df-b4f9-ad4cffb68684",
       "name": "delete — delete: by ID, and by type and address (with characters that",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -224,7 +224,7 @@
         "userId": "={{ $('create — create: without Skip Confirmation the channel waits for th (2)').first().json.user_id }}",
         "deleteBy": "typeAndAddress",
         "channelType": "email",
-        "address": "battery+delete.1794761645209@example.edu"
+        "address": "battery+delete.1794764670545@example.edu"
       },
       "credentials": {
         "canvasApi": {

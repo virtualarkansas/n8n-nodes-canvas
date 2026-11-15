@@ -2,7 +2,7 @@
   "name": "Canvas battery — quizExtension",
   "nodes": [
     {
-      "id": "6ea2a369-1971-413b-90df-0e0e6e9f06f9",
+      "id": "672eb921-61fe-40b4-ac2e-af170846f0b1",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "d28b9d32-49c9-497a-9001-1fcbb1339251",
+      "id": "7ec0045d-c9fb-4c67-8b77-168e57cbb5e5",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "1b8ae99d-b30e-492e-8732-2b7d9eb8fc16",
+      "id": "c593c3ea-5c8c-43fb-8f09-ee398a94ad6c",
       "name": "setExtensions — setExtensions: the values are replaced, not added up; Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,7 +42,7 @@
         "resource": "quizExtension",
         "operation": "setExtensions",
         "courseId": "119",
-        "quizId": "262",
+        "quizId": "309",
         "extensions": {
           "extensionValues": [
             {
@@ -65,7 +65,7 @@
       "executeOnce": true
     },
     {
-      "id": "3853c625-d970-4e0c-af2f-c53c49d9f4d7",
+      "id": "719431f0-b160-49f3-b028-6def04c8e17c",
       "name": "setExtensions — setExtensions: extending the time of an attempt in progress,",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -100,7 +100,7 @@
       "executeOnce": true
     },
     {
-      "id": "88e3f2c1-892a-4d9d-bc54-c3114d13cd26",
+      "id": "89bf5b75-a3c0-4664-b9bf-df6e99849d57",
       "name": "setExtensions — setExtensions: extending the time of an attempt in progress, (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -137,7 +137,7 @@
       "executeOnce": true
     },
     {
-      "id": "84e962bf-675f-427f-8296-1c83115825ee",
+      "id": "dc54c064-ae75-470c-af25-39e6dd76164e",
       "name": "setExtensions — setExtensions: extending the time of an attempt in progress, (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -174,7 +174,7 @@
       "executeOnce": true
     },
     {
-      "id": "fd893279-ce07-4f95-b53a-a8f349a81d30",
+      "id": "cddb7561-f819-4c9f-8707-7a6fbabd9276",
       "name": "setExtensions — setExtensions: extending the time of an attempt in progress, (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

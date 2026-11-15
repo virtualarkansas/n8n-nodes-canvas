@@ -2,7 +2,7 @@
   "name": "Canvas battery — userCustomData",
   "nodes": [
     {
-      "id": "3a6e2d3c-8dfa-447f-978d-6cbd94a8b31d",
+      "id": "71fbd2de-cf79-4f32-8d75-e775aaee31ab",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "b943102c-67e1-4602-a3a4-6961ea15e466",
+      "id": "12cbcf8d-ad6a-49a9-ba0d-1da827e77cad",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "eb100438-c6b2-4588-8b88-fd5c4ee57e41",
+      "id": "ba9062e3-269d-4894-95a8-034ec205d954",
       "name": "set — set: stores any JSON at the root of a namespace, and reports",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,7 +41,7 @@
         "authentication": "accessToken",
         "resource": "userCustomData",
         "operation": "set",
-        "userId": "2288",
+        "userId": "2617",
         "namespace": "=n8n.battery.ns-{{ $execution.id }}-1",
         "data": "{\"text\":\"Ünïcødé 测试 \\\"quoted\\\" & <b>tags</b> 🎓\",\"number\":6.02e+23,\"integer\":-42,\"yes\":true,\"no\":false,\"nothing\":null,\"list\":[1,\"two\",false,{\"deep\":[\"x\",\"y\"]}],\"key with spaces\":{\"ключ\":\"значение\",\"empty\":\"\"},\"favorites\":{\"dessert\":\"pistachio ice cream\",\"meat\":\"pork belly\"}}"
       },
@@ -56,7 +56,7 @@
       "executeOnce": true
     },
     {
-      "id": "e4556779-15cf-4263-8309-9460f65e89df",
+      "id": "970ee0cd-ed3b-4c7e-b299-874aadac06d8",
       "name": "set — set: with a scope only that part changes; nested objects bec",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -68,7 +68,7 @@
         "authentication": "accessToken",
         "resource": "userCustomData",
         "operation": "set",
-        "userId": 2288,
+        "userId": 2617,
         "namespace": "=n8n.battery.ns-{{ $execution.id }}-1",
         "data": "{ \"waist\": \"32in\", \"inseam\": { \"left\": 34, \"right\": 34.5 } }",
         "options": {
@@ -86,7 +86,7 @@
       "executeOnce": true
     },
     {
-      "id": "269ba496-389c-4128-b91e-b42aab2b844e",
+      "id": "56151dfe-692e-46cc-85d0-6f289ae6dd49",
       "name": "set — set: with a scope only that part changes; nested objects bec (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -98,7 +98,7 @@
         "authentication": "accessToken",
         "resource": "userCustomData",
         "operation": "set",
-        "userId": "2288",
+        "userId": "2617",
         "namespace": "=n8n.battery.ns-{{ $execution.id }}-1",
         "data": "\"cherry pie\"",
         "options": {
@@ -116,7 +116,7 @@
       "executeOnce": true
     },
     {
-      "id": "69580b5c-98a3-4b50-a30d-cf7b472febb1",
+      "id": "09b3ceeb-ea5a-4192-889b-0dd648cf757f",
       "name": "set — set: scope parts with spaces, percent signs, umlauts and res",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -128,7 +128,7 @@
         "authentication": "accessToken",
         "resource": "userCustomData",
         "operation": "set",
-        "userId": "2288",
+        "userId": "2617",
         "namespace": "=n8n.battery.ns-{{ $execution.id }}-1",
         "data": "{\"ok\": true}",
         "options": {
@@ -146,7 +146,7 @@
       "executeOnce": true
     },
     {
-      "id": "225d4b11-7a43-49a1-9b92-d486b549c6ea",
+      "id": "31d28c27-4b6e-4948-9a90-6fc8a7a51477",
       "name": "get — set: scope parts with spaces, percent signs, umlauts and res",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -158,7 +158,7 @@
         "authentication": "accessToken",
         "resource": "userCustomData",
         "operation": "get",
-        "userId": "2288",
+        "userId": "2617",
         "namespace": "=n8n.battery.ns-{{ $execution.id }}-1",
         "options": {
           "scope": "key with spaces/100% äöü & more?/x#y"
@@ -175,7 +175,7 @@
       "executeOnce": true
     },
     {
-      "id": "fcefa590-cf30-4e77-9ffb-87fa17364481",
+      "id": "c8bff4f7-d0dd-4172-b892-0e8008ecf407",
       "name": "get — get: the whole namespace, objects, lists, texts, numbers and",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -187,7 +187,7 @@
         "authentication": "accessToken",
         "resource": "userCustomData",
         "operation": "get",
-        "userId": "2288",
+        "userId": "2617",
         "namespace": "=n8n.battery.ns-{{ $execution.id }}-1"
       },
       "credentials": {
@@ -201,7 +201,7 @@
       "executeOnce": true
     },
     {
-      "id": "0c1724cd-9c5d-42d2-98cd-45c4fdcd7cf8",
+      "id": "924251b3-c866-4f2a-8a65-2b2bf8356a22",
       "name": "set — set: Canvas drops null entries from lists (and keeps null va",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -213,7 +213,7 @@
         "authentication": "accessToken",
         "resource": "userCustomData",
         "operation": "set",
-        "userId": "2289",
+        "userId": "2618",
         "namespace": "=n8n.battery.ns-{{ $execution.id }}-1",
         "data": "{\"list\": [1, null, \"two\", null], \"gap\": null}",
         "options": {
@@ -231,7 +231,7 @@
       "executeOnce": true
     },
     {
-      "id": "9760cfdb-1987-4981-853e-ac9b9b9a5d60",
+      "id": "929a34e1-a030-423a-9cc6-4d8857b0f93b",
       "name": "set — namespaces keep data apart",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -243,7 +243,7 @@
         "authentication": "accessToken",
         "resource": "userCustomData",
         "operation": "set",
-        "userId": "2289",
+        "userId": "2618",
         "namespace": "=n8n.battery.ns-{{ $execution.id }}-1.other",
         "data": "{\"score\": \"from another app\"}"
       },
@@ -258,7 +258,7 @@
       "executeOnce": true
     },
     {
-      "id": "8db5c37b-097d-4d52-8e97-e770c322d9f1",
+      "id": "3fdca994-3429-400e-b211-73bb9b17bd86",
       "name": "delete — namespaces keep data apart",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -270,7 +270,7 @@
         "authentication": "accessToken",
         "resource": "userCustomData",
         "operation": "delete",
-        "userId": "2289",
+        "userId": "2618",
         "namespace": "=n8n.battery.ns-{{ $execution.id }}-1.other"
       },
       "credentials": {
@@ -284,7 +284,7 @@
       "executeOnce": true
     },
     {
-      "id": "b3429122-db8e-4f02-b5d9-84788f66cc9f",
+      "id": "516205d9-f03b-4667-9a94-f00d6e943101",
       "name": "delete — delete: without a scope everything in the namespace goes; de",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -296,7 +296,7 @@
         "authentication": "accessToken",
         "resource": "userCustomData",
         "operation": "delete",
-        "userId": "2288",
+        "userId": "2617",
         "namespace": "=n8n.battery.ns-{{ $execution.id }}-1"
       },
       "credentials": {

@@ -2,7 +2,7 @@
   "name": "Canvas battery — outcomeResult",
   "nodes": [
     {
-      "id": "008f60d1-d869-4dc1-828c-ad9c9ec64d30",
+      "id": "10dc371c-e406-4ff8-bfa2-14976685f9bb",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "1fb5db4e-adc6-4b2a-99b9-c783c7945b94",
+      "id": "685f96d5-c080-4cbf-9d01-f9e7381df804",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "246a1c4b-731e-4f12-993e-1f17f55b02cf",
+      "id": "6f5769c1-165a-4fe4-9ab8-70881bdafed4",
       "name": "getAll — getAll: one item per result, every result exactly once, acro",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,7 +41,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getAll",
-        "courseId": "763"
+        "courseId": "938"
       },
       "credentials": {
         "canvasApi": {
@@ -54,7 +54,7 @@
       "executeOnce": true
     },
     {
-      "id": "fed39e8e-7c04-40a0-afbb-f3418b5a7d7b",
+      "id": "26ad43e9-7be3-4978-9723-520eba0bc685",
       "name": "getAll — getAll: one item per result, every result exactly once, acro (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -82,7 +82,7 @@
       "executeOnce": true
     },
     {
-      "id": "411f32a0-fb6f-4057-b963-6153e9b28a02",
+      "id": "a51a51b7-781d-42fe-bc8a-97278e3b8797",
       "name": "getAll — getAll: filters by students, outcomes, outcome group and sec",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -94,7 +94,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getAll",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "user_ids": "949, sis_user_id:BATTERY-GRD-STU-002"
         },
@@ -113,7 +113,7 @@
       "executeOnce": true
     },
     {
-      "id": "aeb1481f-a8b3-43ca-9d00-d4b5b3a43631",
+      "id": "c51fbbfe-54f2-47e1-a0bc-ecd085a9868e",
       "name": "getAll — getAll: filters by students, outcomes, outcome group and sec (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -125,9 +125,9 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getAll",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
-          "outcome_ids": "212"
+          "outcome_ids": "252"
         },
         "pagination": {
           "returnAll": true
@@ -144,7 +144,7 @@
       "executeOnce": true
     },
     {
-      "id": "a82b87c5-1221-43cf-bd62-daaedefda2ce",
+      "id": "b7b62702-2921-4818-8931-4f81a845f771",
       "name": "getAll — getAll: filters by students, outcomes, outcome group and sec (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -156,9 +156,9 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getAll",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
-          "outcome_group_id": "241"
+          "outcome_group_id": "282"
         },
         "pagination": {
           "returnAll": true
@@ -175,7 +175,7 @@
       "executeOnce": true
     },
     {
-      "id": "59787cf9-da77-41b2-8608-156862986caf",
+      "id": "2e9e58f5-b698-43af-8650-1e5b5498cb64",
       "name": "getAll — getAll: filters by students, outcomes, outcome group and sec (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -187,9 +187,9 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getAll",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
-          "section_id": 760
+          "section_id": 917
         },
         "pagination": {
           "returnAll": true
@@ -206,7 +206,7 @@
       "executeOnce": true
     },
     {
-      "id": "6d8efe74-d090-4621-8c75-acf214893736",
+      "id": "9373d989-9dca-418d-94fc-d0642accd594",
       "name": "getAll — getAll: a student without results yields no items; Canvas ex",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -218,7 +218,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getAll",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "user_ids": "996"
         }
@@ -234,7 +234,7 @@
       "executeOnce": true
     },
     {
-      "id": "eb993ffe-12d4-476d-af0d-411dc11b8418",
+      "id": "960e2e0b-2a92-4536-a515-5fc4cd6954ba",
       "name": "getRollups — getRollups: one item per student, across pages",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -246,7 +246,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getRollups",
-        "courseId": "763"
+        "courseId": "938"
       },
       "credentials": {
         "canvasApi": {
@@ -259,7 +259,7 @@
       "executeOnce": true
     },
     {
-      "id": "2db6c8f0-ec6b-467b-8c41-2b0c8e90a5d8",
+      "id": "94a88489-a61b-4007-96f5-1b12d7d14b07",
       "name": "getRollups — getRollups: one item per student, across pages (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -271,7 +271,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getRollups",
-        "courseId": "763",
+        "courseId": "938",
         "pagination": {
           "returnAll": true
         }
@@ -287,7 +287,7 @@
       "executeOnce": true
     },
     {
-      "id": "573ad25a-d323-4529-935d-0c21a93a1f1a",
+      "id": "6ce1d79a-3197-4957-8294-274e592e6d2d",
       "name": "getRollups — getRollups: filters, exclusions and sorting",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -299,7 +299,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getRollups",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "exclude": [
             "missing_user_rollups"
@@ -320,7 +320,7 @@
       "executeOnce": true
     },
     {
-      "id": "ee010399-a436-4e4d-81bc-e1839b1fc2bd",
+      "id": "0c33de77-31b6-43d3-a7b3-e8454d82d752",
       "name": "getRollups — getRollups: filters, exclusions and sorting (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -332,15 +332,15 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getRollups",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "sort_by": "outcome",
-          "sort_outcome_id": "212",
+          "sort_outcome_id": "252",
           "sort_order": "desc",
           "exclude": [
             "missing_user_rollups"
           ],
-          "outcome_ids": "212"
+          "outcome_ids": "252"
         },
         "pagination": {
           "returnAll": true
@@ -357,7 +357,7 @@
       "executeOnce": true
     },
     {
-      "id": "5f4c86fc-fe2b-4ccc-b6ac-121a92609b49",
+      "id": "e21655b4-1789-49cb-98f6-ff1a48eb06a6",
       "name": "getRollups — getRollups: filters, exclusions and sorting (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -369,7 +369,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getRollups",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "sort_by": "student",
           "sort_order": "desc",
@@ -387,7 +387,7 @@
       "executeOnce": true
     },
     {
-      "id": "9ce2fcaa-4f6e-4813-8c2f-21345c91f1af",
+      "id": "7006311e-5e58-4386-84ee-8ea654fe8846",
       "name": "getRollups — getRollups: aggregated for the course, by mean and by median",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -399,10 +399,10 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getRollups",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "aggregate": "course",
-          "outcome_ids": "212"
+          "outcome_ids": "252"
         }
       },
       "credentials": {
@@ -416,7 +416,7 @@
       "executeOnce": true
     },
     {
-      "id": "af99a63a-e9d8-42d3-b706-a1f1238acc1d",
+      "id": "a473dc8e-6937-41a6-abb0-881033935fa3",
       "name": "getContributingScores — getContributingScores: the alignments of an outcome and the ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -428,8 +428,8 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getContributingScores",
-        "courseId": "763",
-        "outcomeId": 212
+        "courseId": "938",
+        "outcomeId": 252
       },
       "credentials": {
         "canvasApi": {
@@ -442,7 +442,7 @@
       "executeOnce": true
     },
     {
-      "id": "be934bf9-c993-4b8d-96ab-b0ea5518cbd8",
+      "id": "38635d8a-7381-4ee0-b4de-efccac86cd7d",
       "name": "getMasteryDistribution — getMasteryDistribution: every option narrows or extends the ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -454,7 +454,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getMasteryDistribution",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "exclude_missing_outcome_results": true
         }
@@ -470,7 +470,7 @@
       "executeOnce": true
     },
     {
-      "id": "5f256aef-f020-491f-a556-ca1409eaae25",
+      "id": "6717b7b7-5165-4d6e-a5d9-c6abd2692519",
       "name": "getMasteryDistribution — getMasteryDistribution: every option narrows or extends the  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -482,7 +482,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getMasteryDistribution",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "exclude_missing_outcome_results": false
         }
@@ -498,7 +498,7 @@
       "executeOnce": true
     },
     {
-      "id": "62b26244-1230-4835-b531-86f616dca793",
+      "id": "0a6869ed-e5ec-4069-98fe-4e08b7043e0a",
       "name": "getMasteryDistribution — getMasteryDistribution: every option narrows or extends the  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -510,7 +510,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getMasteryDistribution",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "include_alignment_distributions": true
         }
@@ -526,7 +526,7 @@
       "executeOnce": true
     },
     {
-      "id": "ca3afb62-9667-4549-b734-688ccef5b9f7",
+      "id": "cb1d88ad-79cf-4262-9689-c1e324c0573b",
       "name": "getMasteryDistribution — getMasteryDistribution: every option narrows or extends the  (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -538,7 +538,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getMasteryDistribution",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "include_alignment_distributions": true,
           "add_defaults": true
@@ -555,7 +555,7 @@
       "executeOnce": true
     },
     {
-      "id": "c9e648c0-9696-414c-aab6-1ad19bc3e0e3",
+      "id": "1e202cf3-2263-4541-949e-098e1fc04d4f",
       "name": "getMasteryDistribution — getMasteryDistribution: every option narrows or extends the  (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -567,7 +567,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getMasteryDistribution",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "include_alignment_distributions": true,
           "only_assignment_alignments": true
@@ -584,7 +584,7 @@
       "executeOnce": true
     },
     {
-      "id": "2828df99-992b-498e-80a3-d0a7d1f67737",
+      "id": "bc9265a3-8a8e-4d06-811e-b9218e8cff5c",
       "name": "getMasteryDistribution — getMasteryDistribution: every option narrows or extends the  (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -596,7 +596,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getMasteryDistribution",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "include_alignment_distributions": true,
           "only_assignment_alignments": false
@@ -613,7 +613,7 @@
       "executeOnce": true
     },
     {
-      "id": "efd06444-a577-4b94-af25-02bfb8c55547",
+      "id": "c0d3278a-d184-4d93-a777-376cd4d61346",
       "name": "getMasteryDistribution — getMasteryDistribution: every option narrows or extends the  (7)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -625,7 +625,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getMasteryDistribution",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "include_alignment_distributions": true,
           "show_unpublished_assignments": true
@@ -642,7 +642,7 @@
       "executeOnce": true
     },
     {
-      "id": "f69336d5-96e8-4e13-8751-6ab5efa083d2",
+      "id": "f030249d-c0b0-4990-b756-511b720be9f2",
       "name": "getMasteryDistribution — getMasteryDistribution: every option narrows or extends the  (8)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -654,7 +654,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getMasteryDistribution",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "include_alignment_distributions": true,
           "show_unpublished_assignments": true,
@@ -672,7 +672,7 @@
       "executeOnce": true
     },
     {
-      "id": "53633b0f-4be6-4329-9d72-2240d57db94b",
+      "id": "798e0c6d-fce6-4ad6-b35b-86c3b847fbcc",
       "name": "getMasteryDistribution — getMasteryDistribution: every option narrows or extends the  (9)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -684,7 +684,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getMasteryDistribution",
-        "courseId": "763",
+        "courseId": "938",
         "options": {
           "include_alignment_distributions": true,
           "add_defaults": true,
@@ -702,7 +702,7 @@
       "executeOnce": true
     },
     {
-      "id": "c7ff2beb-fd1a-49f0-aef3-bf1273b4cb2e",
+      "id": "78fb92dd-b1cc-4ae8-afad-c6490af3d4a5",
       "name": "getGradebookSettings — getGradebookSettings: a user who never changed anything has ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -714,7 +714,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getGradebookSettings",
-        "courseId": "836"
+        "courseId": "1001"
       },
       "credentials": {
         "canvasApi": {
@@ -727,7 +727,7 @@
       "executeOnce": true
     },
     {
-      "id": "ad76e839-92b4-4131-92a9-441383be3056",
+      "id": "7dae80e5-6ab6-4897-9185-05c2f7a340eb",
       "name": "updateGradebookSettings — updateGradebookSettings: every setting reaches Canvas, for t",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -739,7 +739,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "updateGradebookSettings",
-        "courseId": "836",
+        "courseId": "1001",
         "settings": {
           "name_display_format": "last_first",
           "outcome_arrangement": "upload_order",
@@ -763,7 +763,7 @@
       "executeOnce": true
     },
     {
-      "id": "b766a264-a9c2-4827-95e6-ae3ac7710fe1",
+      "id": "d13b5c2e-c832-41b3-9e82-40d1f80a2072",
       "name": "updateGradebookSettings — updateGradebookSettings: only the given settings change; eve",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -775,7 +775,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "updateGradebookSettings",
-        "courseId": "836",
+        "courseId": "1001",
         "settings": {
           "show_student_avatars": true
         }
@@ -791,7 +791,7 @@
       "executeOnce": true
     },
     {
-      "id": "249160f6-e938-4b7c-9965-813d06a6f434",
+      "id": "1dc3a9c6-f8cb-46d8-8815-ff16abf6d4eb",
       "name": "updateGradebookSettings — updateGradebookSettings: only the given settings change; eve (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -803,7 +803,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "updateGradebookSettings",
-        "courseId": "836",
+        "courseId": "1001",
         "settings": {
           "name_display_format": "first_last",
           "outcome_arrangement": "alphabetical",
@@ -823,7 +823,7 @@
       "executeOnce": true
     },
     {
-      "id": "d5e75932-386c-44b5-a6f5-0ec15843cc74",
+      "id": "06af19ff-abb0-45f8-af6d-328f1385caf9",
       "name": "updateGradebookSettings — updateGradebookSettings: only the given settings change; eve (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -835,7 +835,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "updateGradebookSettings",
-        "courseId": "836",
+        "courseId": "1001",
         "settings": {
           "outcome_arrangement": "custom",
           "score_display_format": "icon_and_points",
@@ -854,7 +854,7 @@
       "executeOnce": true
     },
     {
-      "id": "20a0b4d9-9144-4ce5-ae63-0867cf0592f7",
+      "id": "6f3a7ebb-9342-4f12-9fef-110e6149c218",
       "name": "updateGradebookSettings — updateGradebookSettings: only the given settings change; eve (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -866,7 +866,7 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "updateGradebookSettings",
-        "courseId": "836",
+        "courseId": "1001",
         "settings": {
           "secondary_info_display": "login_id",
           "students_per_page": 100,
@@ -886,7 +886,7 @@
       "executeOnce": true
     },
     {
-      "id": "cfb64674-6b9f-4af2-bb84-06d76f985c9f",
+      "id": "da7eb9fc-19d2-44e1-8448-8d6622f31950",
       "name": "getUserDetails — getUserDetails: the sections of a student in the course and ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -898,8 +898,8 @@
         "authentication": "accessToken",
         "resource": "outcomeResult",
         "operation": "getUserDetails",
-        "courseId": "836",
-        "userId": "2305"
+        "courseId": "1001",
+        "userId": "2640"
       },
       "credentials": {
         "canvasApi": {

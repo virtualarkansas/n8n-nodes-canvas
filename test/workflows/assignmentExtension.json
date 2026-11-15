@@ -2,7 +2,7 @@
   "name": "Canvas battery — assignmentExtension",
   "nodes": [
     {
-      "id": "3077c3c6-862b-4416-ac34-f39ce645419a",
+      "id": "449808b7-1f9c-461c-b53b-962e1f90227e",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "e0c7f534-9b87-4868-8649-e39ccb4b51bf",
+      "id": "1b775992-b7cf-4268-9f72-98ac176e2132",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "fc11e613-5dce-4d83-b8d7-25a95c11155f",
+      "id": "71f5c899-0fff-47e8-9ae7-3b03884a5ddb",
       "name": "setExtensions — setExtensions: grants extra attempts to several students in ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,7 +42,7 @@
         "resource": "assignmentExtension",
         "operation": "setExtensions",
         "courseId": "115",
-        "assignmentId": "1975",
+        "assignmentId": "2226",
         "extensions": {
           "extensionValues": [
             {
@@ -67,7 +67,7 @@
       "executeOnce": true
     },
     {
-      "id": "fa154da2-92b7-4e67-863b-579037afa5ab",
+      "id": "708e932f-fe81-4073-9fa2-07fc1d0abc97",
       "name": "setExtensions — setExtensions: replaces an earlier extension; zero removes i",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -80,7 +80,7 @@
         "resource": "assignmentExtension",
         "operation": "setExtensions",
         "courseId": "115",
-        "assignmentId": "1975",
+        "assignmentId": "2226",
         "extensions": {
           "extensionValues": [
             {
@@ -105,7 +105,7 @@
       "executeOnce": true
     },
     {
-      "id": "da6634c7-8c3d-4c3e-be06-c12cf116a513",
+      "id": "8afadd8c-7670-4cab-a490-8fbad3687047",
       "name": "setExtensions — setExtensions: users who are not students of the course are ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -118,7 +118,7 @@
         "resource": "assignmentExtension",
         "operation": "setExtensions",
         "courseId": "115",
-        "assignmentId": "1975",
+        "assignmentId": "2226",
         "extensions": {
           "extensionValues": [
             {

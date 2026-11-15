@@ -2,7 +2,7 @@
   "name": "Canvas battery — cspSetting",
   "nodes": [
     {
-      "id": "2002567c-4e05-4e67-9608-574c106e88b1",
+      "id": "2741a9f1-07fc-4b84-86cf-4cfbbb5105c8",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "cf90bc27-6dd8-4079-8bc3-be6dded846e7",
+      "id": "8d16e36a-1e30-40a4-80a4-79ea4a7398ef",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "7be6b2a4-b774-4ef0-a0a4-8d1c23be9997",
+      "id": "13620dd8-b5df-4a26-8616-62a55eef3709",
       "name": "get — get: an untouched account inherits its policy",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,7 +42,7 @@
         "resource": "cspSetting",
         "operation": "get",
         "contextType": "account",
-        "accountId": "244"
+        "accountId": "292"
       },
       "credentials": {
         "canvasApi": {
@@ -55,7 +55,7 @@
       "executeOnce": true
     },
     {
-      "id": "30c7fa68-3ade-493b-b784-b3b7cc0e588f",
+      "id": "0ca5976c-8433-4b87-bbf9-1505f0f9d7dc",
       "name": "setStatus — setStatus: enables the policy explicitly on an account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -68,7 +68,7 @@
         "resource": "cspSetting",
         "operation": "setStatus",
         "contextType": "account",
-        "accountId": "244",
+        "accountId": "292",
         "status": "enabled"
       },
       "credentials": {
@@ -82,7 +82,7 @@
       "executeOnce": true
     },
     {
-      "id": "ade5ec54-f757-4c1c-bd28-b6ca95792f50",
+      "id": "336fe73d-6d4b-4250-9431-60b5278b5141",
       "name": "addDomain — addDomain and addDomains: extend the allowed domains, trimmi",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -94,7 +94,7 @@
         "authentication": "accessToken",
         "resource": "cspSetting",
         "operation": "addDomain",
-        "accountId": "244",
+        "accountId": "292",
         "domain": "  cdn.example.com "
       },
       "credentials": {
@@ -108,7 +108,7 @@
       "executeOnce": true
     },
     {
-      "id": "1816fae9-fde3-4aa2-a349-07e8092daaf1",
+      "id": "79715fa2-1958-49d1-b06c-1fc8a8d6a345",
       "name": "addDomains — addDomain and addDomains: extend the allowed domains, trimmi",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -120,7 +120,7 @@
         "authentication": "accessToken",
         "resource": "cspSetting",
         "operation": "addDomains",
-        "accountId": "244",
+        "accountId": "292",
         "domains": "*.example.org,  media.example.net\nfonts.example.io"
       },
       "credentials": {
@@ -134,7 +134,7 @@
       "executeOnce": true
     },
     {
-      "id": "a9c83673-6a91-4819-9cc6-53a3922661ce",
+      "id": "e5831ce9-7cc0-4537-89c1-a8438b8aadfb",
       "name": "get — get: a course reports the policy it inherits, including the ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -147,7 +147,7 @@
         "resource": "cspSetting",
         "operation": "get",
         "contextType": "course",
-        "courseId": "843"
+        "courseId": "1004"
       },
       "credentials": {
         "canvasApi": {
@@ -160,7 +160,7 @@
       "executeOnce": true
     },
     {
-      "id": "6afacaed-8a4d-4686-b58c-30160af0f2e4",
+      "id": "af63a3ee-dff7-4aac-8966-97bfbeede53a",
       "name": "setStatus — setStatus: a course can opt out, and go back to inheriting",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -173,7 +173,7 @@
         "resource": "cspSetting",
         "operation": "setStatus",
         "contextType": "course",
-        "courseId": "843",
+        "courseId": "1004",
         "status": "disabled"
       },
       "credentials": {
@@ -187,7 +187,7 @@
       "executeOnce": true
     },
     {
-      "id": "0a45ac2f-c5fe-4241-8a46-dbafc4017300",
+      "id": "dd1d2796-48cd-4f61-a64e-16243d04878a",
       "name": "setStatus — setStatus: a course can opt out, and go back to inheriting (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -200,7 +200,7 @@
         "resource": "cspSetting",
         "operation": "setStatus",
         "contextType": "course",
-        "courseId": "843",
+        "courseId": "1004",
         "status": "inherited"
       },
       "credentials": {
@@ -214,7 +214,7 @@
       "executeOnce": true
     },
     {
-      "id": "1d6732c9-0852-49e0-8046-f04831eb8329",
+      "id": "74c9fb3d-bcbd-4f27-932e-9d71e2117ffa",
       "name": "lock — lock and unlock: change whether sub-accounts and courses may",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -226,7 +226,7 @@
         "authentication": "accessToken",
         "resource": "cspSetting",
         "operation": "lock",
-        "accountId": "244",
+        "accountId": "292",
         "settingsLocked": true
       },
       "credentials": {
@@ -240,7 +240,7 @@
       "executeOnce": true
     },
     {
-      "id": "dc6343c4-4b11-40db-8e05-f0d0f1abe0d1",
+      "id": "8eacfeb6-06c4-4a38-9ac6-4722ea3ad52f",
       "name": "lock — lock and unlock: change whether sub-accounts and courses may (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -252,7 +252,7 @@
         "authentication": "accessToken",
         "resource": "cspSetting",
         "operation": "lock",
-        "accountId": "244",
+        "accountId": "292",
         "settingsLocked": false
       },
       "credentials": {
@@ -266,7 +266,7 @@
       "executeOnce": true
     },
     {
-      "id": "f0961fe6-6daa-47e9-a9af-1bf01ef7b293",
+      "id": "d9c023d1-a603-4a24-bcb5-ae18bdbb2102",
       "name": "removeDomain — removeDomain: removes one domain and leaves the rest",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -278,7 +278,7 @@
         "authentication": "accessToken",
         "resource": "cspSetting",
         "operation": "removeDomain",
-        "accountId": "244",
+        "accountId": "292",
         "domain": "*.example.org"
       },
       "credentials": {

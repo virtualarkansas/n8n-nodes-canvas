@@ -2,7 +2,7 @@
   "name": "Canvas battery — quizIpFilter",
   "nodes": [
     {
-      "id": "173a5b96-0765-49f3-aa18-a55a436016cf",
+      "id": "46d3441b-b71f-4193-a8a5-064d120dbb71",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "1b853cf3-e351-494b-8f27-cc325bf97c0c",
+      "id": "7e77aa66-6e7e-482e-b203-23bab84b658f",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "c11100c6-4667-4cfc-b2a8-7546316c1d77",
+      "id": "5df6debd-c84a-42a3-a401-fad060aac0a2",
       "name": "getAll — getAll: lists the filters defined on the account, one item e",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,8 +41,8 @@
         "authentication": "accessToken",
         "resource": "quizIpFilter",
         "operation": "getAll",
-        "courseId": "845",
-        "quizId": "267"
+        "courseId": "947",
+        "quizId": "296"
       },
       "credentials": {
         "canvasApi": {

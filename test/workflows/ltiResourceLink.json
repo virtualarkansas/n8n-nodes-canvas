@@ -2,7 +2,7 @@
   "name": "Canvas battery — ltiResourceLink",
   "nodes": [
     {
-      "id": "65e520d7-82d8-416f-8e20-d43a303562e4",
+      "id": "e65b1f3a-c3fd-41c8-a1eb-8d4c572cd8d9",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "7ae6bbd8-5c34-4f66-adf7-fb626f885c24",
+      "id": "fc68568d-70d0-4632-9b97-c84c15e97b52",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "151624fa-958d-4e41-a4c0-afe6dd2849ee",
+              "id": "0cd7f490-0432-4085-88a5-eee040135cae",
               "name": "emptyCourseId",
               "value": "3",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "c1cf3fef-6efe-4ed9-91b6-f9739736b615",
+      "id": "bf98b229-4c70-45b6-a444-9a0929af378e",
       "name": "create — create: URL, title and custom parameters reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -48,8 +48,8 @@
         "authentication": "accessToken",
         "resource": "ltiResourceLink",
         "operation": "create",
-        "courseId": "819",
-        "url": "https://reslink-06618313.lti.example.com/launch/chapter/1?lang=sv&mode=a b",
+        "courseId": "986",
+        "url": "https://reslink-487d700c.lti.example.com/launch/chapter/1?lang=sv&mode=a b",
         "additionalFields": {
           "title": "Kapitel 1 – Ünïcødé \"quoted\" & <b>tags</b> 📚",
           "custom": "{\"chapter\": \"1\", \"note\": \"värde with spaces & symbols\", \"variable\": \"$Canvas.user.id\"}"
@@ -66,7 +66,7 @@
       "executeOnce": true
     },
     {
-      "id": "eb0873e4-cd78-465c-8cbf-56aebde35ce7",
+      "id": "1cc1fdc0-c1a7-4d39-99f2-9ef8c00308a4",
       "name": "create — create: only a URL",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -78,8 +78,8 @@
         "authentication": "accessToken",
         "resource": "ltiResourceLink",
         "operation": "create",
-        "courseId": "819",
-        "url": "https://reslink-06618313.lti.example.com/launch/minimal",
+        "courseId": "986",
+        "url": "https://reslink-487d700c.lti.example.com/launch/minimal",
         "additionalFields": {
           "custom": "{}"
         }
@@ -95,7 +95,7 @@
       "executeOnce": true
     },
     {
-      "id": "356850f6-ef27-4164-bf7d-38d478a009c3",
+      "id": "af355703-7e02-4510-b41c-355ea5b1fbd3",
       "name": "bulkCreate — bulkCreate: creates every link of the array, or none when on",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -107,8 +107,8 @@
         "authentication": "accessToken",
         "resource": "ltiResourceLink",
         "operation": "bulkCreate",
-        "courseId": "819",
-        "resourceLinks": "[{\"url\":\"https://reslink-06618313.lti.example.com/launch/bulk/1\",\"title\":\"Bulk 1\",\"custom\":{\"n\":\"1\"}},{\"url\":\"https://reslink-06618313.lti.example.com/launch/bulk/2\",\"title\":\"Bulk 2 – 第二\"},{\"url\":\"https://reslink-06618313.lti.example.com/launch/bulk/3\"}]"
+        "courseId": "986",
+        "resourceLinks": "[{\"url\":\"https://reslink-487d700c.lti.example.com/launch/bulk/1\",\"title\":\"Bulk 1\",\"custom\":{\"n\":\"1\"}},{\"url\":\"https://reslink-487d700c.lti.example.com/launch/bulk/2\",\"title\":\"Bulk 2 – 第二\"},{\"url\":\"https://reslink-487d700c.lti.example.com/launch/bulk/3\"}]"
       },
       "credentials": {
         "canvasApi": {
@@ -121,7 +121,7 @@
       "executeOnce": true
     },
     {
-      "id": "3ac0c776-62d4-43b6-930a-fe8461c35c4c",
+      "id": "9ab748b3-7c60-4863-aaee-fb7f701f0249",
       "name": "update — update: URL, custom parameters and tool",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -133,12 +133,12 @@
         "authentication": "accessToken",
         "resource": "ltiResourceLink",
         "operation": "update",
-        "courseId": "819",
-        "resourceLinkId": "=lookup_uuid:{{ $execution.id }}-4e2b-a87d-65ffc399000a",
+        "courseId": "986",
+        "resourceLinkId": "=lookup_uuid:{{ $execution.id }}-4452-814f-5c9d5860da0f",
         "updateFields": {
-          "url": "https://reslink-06618313.lti.example.com/launch/chapter/2",
+          "url": "https://reslink-487d700c.lti.example.com/launch/chapter/2",
           "custom": "{\"chapter\": \"2\"}",
-          "context_external_tool_id": "213"
+          "context_external_tool_id": "258"
         }
       },
       "credentials": {
@@ -152,7 +152,7 @@
       "executeOnce": true
     },
     {
-      "id": "a7170ba3-a581-4ca0-9050-e3f4fa220188",
+      "id": "71ba5a55-223d-490e-acfb-6b6b503f109a",
       "name": "getAll — getAll: every link of a course with many links, exactly once",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -164,7 +164,7 @@
         "authentication": "accessToken",
         "resource": "ltiResourceLink",
         "operation": "getAll",
-        "courseId": "819"
+        "courseId": "986"
       },
       "credentials": {
         "canvasApi": {
@@ -177,7 +177,7 @@
       "executeOnce": true
     },
     {
-      "id": "05500f0c-639b-45e4-b3d2-953f0b0ed39a",
+      "id": "3e1a1bec-39b7-4a11-9bca-b47fb97ce45e",
       "name": "getAll — getAll: every link of a course with many links, exactly once (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -189,7 +189,7 @@
         "authentication": "accessToken",
         "resource": "ltiResourceLink",
         "operation": "getAll",
-        "courseId": "819",
+        "courseId": "986",
         "pagination": {
           "returnAll": true
         }
@@ -205,7 +205,7 @@
       "executeOnce": true
     },
     {
-      "id": "c273af33-2629-4cbe-bbb3-480a346b43a6",
+      "id": "af5a1cb1-7ab8-455d-b7ae-83ffadac2c08",
       "name": "getAll — getAll: every link of a course with many links, exactly once (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -217,7 +217,7 @@
         "authentication": "accessToken",
         "resource": "ltiResourceLink",
         "operation": "getAll",
-        "courseId": "819",
+        "courseId": "986",
         "pagination": {
           "perPage": 7,
           "maxPages": 3
@@ -234,7 +234,7 @@
       "executeOnce": true
     },
     {
-      "id": "1c22af6a-a12d-4cf0-8032-994732b8cea2",
+      "id": "afcc553d-7a00-421f-a14d-a7069ab89c2d",
       "name": "delete — delete: only links that are not tied to content can be delet",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -246,8 +246,8 @@
         "authentication": "accessToken",
         "resource": "ltiResourceLink",
         "operation": "delete",
-        "courseId": "819",
-        "resourceLinkId": "=resource_link_uuid:{{ $execution.id }}-4daf-89af-d386402f612b"
+        "courseId": "986",
+        "resourceLinkId": "=resource_link_uuid:{{ $execution.id }}-4f25-9974-cf8963963f11"
       },
       "credentials": {
         "canvasApi": {
@@ -260,7 +260,7 @@
       "executeOnce": true
     },
     {
-      "id": "ec8c990f-05b8-47ad-8f0f-8ae5f796bbbc",
+      "id": "79b02153-ebd4-4d28-986b-7caafc442f75",
       "name": "get — include deleted: off (even explicitly) hides deleted links, ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -272,7 +272,7 @@
         "authentication": "accessToken",
         "resource": "ltiResourceLink",
         "operation": "get",
-        "courseId": "819",
+        "courseId": "986",
         "resourceLinkId": "={{ $('delete — delete: only links that are not tied to content can be delet').first().json.id }}",
         "options": {
           "include_deleted": true
@@ -289,7 +289,7 @@
       "executeOnce": true
     },
     {
-      "id": "9a657c43-0f59-40d2-a6b7-cf622066cda0",
+      "id": "f65d5e1b-c23d-4f3a-a097-217e598da31d",
       "name": "getAll — include deleted: off (even explicitly) hides deleted links, ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -301,7 +301,7 @@
         "authentication": "accessToken",
         "resource": "ltiResourceLink",
         "operation": "getAll",
-        "courseId": "819",
+        "courseId": "986",
         "options": {
           "include_deleted": false
         },
@@ -320,7 +320,7 @@
       "executeOnce": true
     },
     {
-      "id": "868d2b0e-0f97-4822-b1e9-66b732988e48",
+      "id": "57966a73-6181-4f13-8ee5-144afab52252",
       "name": "getAll — include deleted: off (even explicitly) hides deleted links,  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -332,7 +332,7 @@
         "authentication": "accessToken",
         "resource": "ltiResourceLink",
         "operation": "getAll",
-        "courseId": "819",
+        "courseId": "986",
         "options": {
           "include_deleted": true
         },
@@ -351,7 +351,7 @@
       "executeOnce": true
     },
     {
-      "id": "87130b82-c9c0-4020-a570-54dc0aa099d1",
+      "id": "cc33f14c-2937-4dab-8fd1-c2662ac605ff",
       "name": "update — include deleted: off (even explicitly) hides deleted links, ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -363,7 +363,7 @@
         "authentication": "accessToken",
         "resource": "ltiResourceLink",
         "operation": "update",
-        "courseId": "819",
+        "courseId": "986",
         "resourceLinkId": "={{ $('getAll — include deleted: off (even explicitly) hides deleted links,  (2)').first().json.id }}",
         "updateFields": {
           "custom": "{\"chapter\": \"3\"}",
@@ -381,7 +381,7 @@
       "executeOnce": true
     },
     {
-      "id": "2e76ecd5-d4e4-4c32-9303-b58e4f303f72",
+      "id": "33c15bc2-2864-4466-b902-2e5d330b3975",
       "name": "getAll — errors: students may not read resource links; a course witho",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

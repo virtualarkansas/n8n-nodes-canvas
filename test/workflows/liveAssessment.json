@@ -2,7 +2,7 @@
   "name": "Canvas battery — liveAssessment",
   "nodes": [
     {
-      "id": "31cedafa-e37d-4b76-9ba9-030e13675dd2",
+      "id": "3ad4de21-7875-476b-878b-5291c6a496e4",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "86a5416d-def5-47d3-9ce0-16005539dc09",
+      "id": "ccf12b37-91aa-49c0-91f5-1d486e6b8853",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "ad731841-3f9d-40b5-adc4-80fe3977607f",
+      "id": "cd994f50-2af5-45ac-9b4a-8e9fdf024cc6",
       "name": "create — create: makes an assessment, and finds it again by key inste",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,8 +41,8 @@
         "authentication": "accessToken",
         "resource": "liveAssessment",
         "operation": "create",
-        "courseId": "782",
-        "key": "battery-1794761197575",
+        "courseId": "944",
+        "key": "battery-1794764222926",
         "title": "Exit ticket — Tuesday \"review\""
       },
       "credentials": {
@@ -56,7 +56,7 @@
       "executeOnce": true
     },
     {
-      "id": "ed90608e-fc11-4477-a58a-e33dd2a7be19",
+      "id": "4463ca33-d3c1-48ca-8b29-af9cb8ffc0d7",
       "name": "create — create: makes an assessment, and finds it again by key inste (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -68,8 +68,8 @@
         "authentication": "accessToken",
         "resource": "liveAssessment",
         "operation": "create",
-        "courseId": "782",
-        "key": "battery-1794761197575",
+        "courseId": "944",
+        "key": "battery-1794764222926",
         "title": "Different title"
       },
       "credentials": {
@@ -83,7 +83,7 @@
       "executeOnce": true
     },
     {
-      "id": "e6b3dee0-9ae2-40c7-8dfe-e94781f777cb",
+      "id": "4c1a8453-2bd1-4f73-939a-2470109f64a4",
       "name": "create — create: aligned with a learning outcome",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -95,11 +95,11 @@
         "authentication": "accessToken",
         "resource": "liveAssessment",
         "operation": "create",
-        "courseId": "782",
-        "key": "battery-1794761197575-outcome",
+        "courseId": "944",
+        "key": "battery-1794764222926-outcome",
         "title": "Aligned",
         "additionalFields": {
-          "outcome_id": "215"
+          "outcome_id": "257"
         }
       },
       "credentials": {
@@ -113,7 +113,7 @@
       "executeOnce": true
     },
     {
-      "id": "570e0ede-8066-4153-8656-116bfaa41403",
+      "id": "a794da1c-d4b2-4f6d-b526-54859ccc656d",
       "name": "getAll — getAll: lists the assessments of the course as separate item",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -125,7 +125,7 @@
         "authentication": "accessToken",
         "resource": "liveAssessment",
         "operation": "getAll",
-        "courseId": "782",
+        "courseId": "944",
         "pagination": {
           "returnAll": true
         }
@@ -141,7 +141,7 @@
       "executeOnce": true
     },
     {
-      "id": "160cc4e9-5286-4b02-8dee-14d1c01990fb",
+      "id": "a1f4e209-2ae8-4317-bd6e-e5c2b20efbbb",
       "name": "createResults — createResults and getResults: records pass/fail per student ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -153,22 +153,22 @@
         "authentication": "accessToken",
         "resource": "liveAssessment",
         "operation": "createResults",
-        "courseId": "782",
+        "courseId": "944",
         "assessmentId": "={{ $('getAll — getAll: lists the assessments of the course as separate item').first().json.id }}",
         "results": {
           "result": [
             {
-              "user_id": "2251",
+              "user_id": "2560",
               "passed": true,
               "assessed_at": "2026-05-26T13:05:40Z"
             },
             {
-              "user_id": "2252",
+              "user_id": "2561",
               "passed": false,
               "assessed_at": "2026-05-26T14:57:23Z"
             },
             {
-              "user_id": "2253",
+              "user_id": "2562",
               "passed": true
             }
           ]
@@ -185,7 +185,7 @@
       "executeOnce": true
     },
     {
-      "id": "41fac46a-da15-4ccf-b6c4-62421bd529e1",
+      "id": "497d323b-fde3-41e1-bf74-a4adca1000e1",
       "name": "getResults — createResults and getResults: records pass/fail per student ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -197,7 +197,7 @@
         "authentication": "accessToken",
         "resource": "liveAssessment",
         "operation": "getResults",
-        "courseId": "782",
+        "courseId": "944",
         "assessmentId": "={{ $('getAll — getAll: lists the assessments of the course as separate item').first().json.id }}",
         "pagination": {
           "returnAll": true
@@ -214,7 +214,7 @@
       "executeOnce": true
     },
     {
-      "id": "b90c9f85-97d7-4ce3-af36-62b90520758f",
+      "id": "d810247e-8be3-4b7d-a0bd-f4c68e375f4a",
       "name": "getResults — createResults and getResults: records pass/fail per student  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -226,10 +226,10 @@
         "authentication": "accessToken",
         "resource": "liveAssessment",
         "operation": "getResults",
-        "courseId": "782",
+        "courseId": "944",
         "assessmentId": "={{ $('getAll — getAll: lists the assessments of the course as separate item').first().json.id }}",
         "options": {
-          "user_id": "2252"
+          "user_id": "2561"
         }
       },
       "credentials": {

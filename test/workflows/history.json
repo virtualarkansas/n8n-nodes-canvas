@@ -2,7 +2,7 @@
   "name": "Canvas battery — history",
   "nodes": [
     {
-      "id": "3e6affb9-3776-489f-8147-1e2af3648b8c",
+      "id": "6e60cf12-32ed-4986-8bcc-6952bea5f9c4",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "f46a6a48-5584-488f-9303-c87fad3a2adc",
+      "id": "efa63f74-d822-4666-8078-d29cb5c6a39c",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "cef50610-7ad2-4447-8314-14319964105f",
+      "id": "93bd70c6-3cfb-4749-96f7-94c93bdb8abc",
       "name": "getAll — getAll: the history of the tokens user (self is the defau",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,7 +41,7 @@
         "authentication": "accessToken",
         "resource": "history",
         "operation": "getAll",
-        "userId": "2255",
+        "userId": "2580",
         "pagination": {
           "returnAll": true
         }

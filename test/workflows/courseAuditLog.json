@@ -2,7 +2,7 @@
   "name": "Canvas battery — courseAuditLog",
   "nodes": [
     {
-      "id": "f0449bc2-0be5-4f2b-8626-b3874ce8a4ac",
+      "id": "be804f2b-e22a-4a1b-9f5c-46979e518e04",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "890f0ba9-93b1-44bc-86c5-8366504b3cfd",
+      "id": "dffc0f93-451a-4b7d-b8ee-7d13479717ad",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "ebecec65-120e-4f27-a0eb-075d249aebba",
+              "id": "2184a9d6-ad5c-47f4-bd08-eaaffcb1c9af",
               "name": "accountId",
               "value": "1",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "3a310dcf-cbcc-4b69-9084-ff90fdf1be7f",
+      "id": "8bd6d74d-6329-447e-a0cf-87c3044c3386",
       "name": "getByCourse — getByCourse: lists what happened to the course",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -48,7 +48,7 @@
         "authentication": "accessToken",
         "resource": "courseAuditLog",
         "operation": "getByCourse",
-        "courseId": "717",
+        "courseId": "885",
         "pagination": {
           "returnAll": true
         }
@@ -64,7 +64,7 @@
       "executeOnce": true
     },
     {
-      "id": "6d251f04-5e17-4ff0-8ab2-6d59d56c9ffc",
+      "id": "7f3739d5-6059-4188-97ce-c062c73fc863",
       "name": "getByCourse — getByCourse: Start Time and End Time narrow the events exact",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -76,9 +76,9 @@
         "authentication": "accessToken",
         "resource": "courseAuditLog",
         "operation": "getByCourse",
-        "courseId": "717",
+        "courseId": "885",
         "options": {
-          "start_time": "2026-11-15T16:38:17.000Z"
+          "start_time": "2026-11-15T17:29:03.000Z"
         },
         "pagination": {
           "returnAll": true
@@ -95,7 +95,7 @@
       "executeOnce": true
     },
     {
-      "id": "31a3bca5-05ff-4e13-bb86-96997ba3ee6f",
+      "id": "33b1a717-efdf-4585-abfa-e99db8fae5ca",
       "name": "getByCourse — getByCourse: Start Time and End Time narrow the events exact (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -107,9 +107,9 @@
         "authentication": "accessToken",
         "resource": "courseAuditLog",
         "operation": "getByCourse",
-        "courseId": "717",
+        "courseId": "885",
         "options": {
-          "end_time": "2026-11-15T16:38:16Z"
+          "end_time": "2026-11-15T17:29:02Z"
         },
         "pagination": {
           "returnAll": true
@@ -126,7 +126,7 @@
       "executeOnce": true
     },
     {
-      "id": "7b8e0565-4db0-4490-b37c-36ddecb3748b",
+      "id": "478b1ff4-0a6e-405f-a3f5-31b2d4ebaba2",
       "name": "getByCourse — getByCourse: Start Time and End Time narrow the events exact (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -138,10 +138,10 @@
         "authentication": "accessToken",
         "resource": "courseAuditLog",
         "operation": "getByCourse",
-        "courseId": "717",
+        "courseId": "885",
         "options": {
-          "start_time": "2026-11-15T16:38:16Z",
-          "end_time": "2026-11-15T16:38:16Z"
+          "start_time": "2026-11-15T17:29:02Z",
+          "end_time": "2026-11-15T17:29:03Z"
         },
         "pagination": {
           "returnAll": true
@@ -158,7 +158,7 @@
       "executeOnce": true
     },
     {
-      "id": "66c5d3ed-5871-4059-b533-aec1b845c6cd",
+      "id": "f285fb02-f265-45b3-8435-e89fa5de39ba",
       "name": "getByAccount — getByAccount: pages through the events of every course in th",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -189,7 +189,7 @@
       "executeOnce": true
     },
     {
-      "id": "48bd713a-fe0c-4cde-8934-e17af4ab68e7",
+      "id": "e6813b9c-2be3-434d-96e8-5aca2c19db7d",
       "name": "getByAccount — getByAccount: pages through the events of every course in th (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -218,7 +218,7 @@
       "executeOnce": true
     },
     {
-      "id": "5454eb2c-957d-4c41-91cc-dacc4100f060",
+      "id": "e732ba86-9ef2-4b6f-b0af-8742c0198f41",
       "name": "getByCourse — every event carries its course, user and the course it was r",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -230,7 +230,7 @@
         "authentication": "accessToken",
         "resource": "courseAuditLog",
         "operation": "getByCourse",
-        "courseId": "732",
+        "courseId": "891",
         "pagination": {
           "returnAll": true,
           "perPage": 2
@@ -247,7 +247,7 @@
       "executeOnce": true
     },
     {
-      "id": "6ea88f0d-8f10-44ba-b2a0-1867c30cb500",
+      "id": "c898332f-8d8d-4665-8279-2ca441460275",
       "name": "getByAccount — every event carries its course, user and the course it was r",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -262,7 +262,7 @@
         "accountId": "={{ $('Config').first().json.accountId }}",
         "includeLinked": false,
         "options": {
-          "start_time": "2026-11-15T16:40:03Z"
+          "start_time": "2026-11-15T17:30:57Z"
         },
         "pagination": {
           "perPage": 5,

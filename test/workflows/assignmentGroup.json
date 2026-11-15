@@ -2,7 +2,7 @@
   "name": "Canvas battery — assignmentGroup",
   "nodes": [
     {
-      "id": "749942a0-bf48-46e3-b2a1-c2fad60959dc",
+      "id": "3c9fc10a-5851-4bc5-8f3e-199dfa91d082",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "67349de9-5b3d-41de-9e8b-d355c8561d28",
+      "id": "0008ac19-0f0e-4a32-aa6e-f9397f2187b3",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "dbc77eff-6ec5-4f30-8ec4-79972bfdc977",
+      "id": "db186be9-dce8-4108-8f2b-832587ee2c40",
       "name": "create — create: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -61,7 +61,7 @@
       "executeOnce": true
     },
     {
-      "id": "c27a265a-f494-48d0-bb12-e5ffb2e7a446",
+      "id": "ce346b87-903c-454d-936c-b32a9a40d51d",
       "name": "get — get: includes the assignments and their details",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -97,7 +97,7 @@
       "executeOnce": true
     },
     {
-      "id": "7f712c0c-04d5-4bd1-a7e0-cedca87a0e41",
+      "id": "4bf7e811-0912-42d9-8780-edcc7c712de8",
       "name": "get — get: grading period ID narrows the assignments to that per",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -128,7 +128,7 @@
       "executeOnce": true
     },
     {
-      "id": "20f4f518-1cb7-4f51-ab5f-4aa3e981fb42",
+      "id": "66e77e9f-5276-421d-9f30-f5ad9d2696f7",
       "name": "get — get: grading period ID narrows the assignments to that per (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -160,7 +160,7 @@
       "executeOnce": true
     },
     {
-      "id": "0045b039-1df6-4960-8f7a-ba73312ee91b",
+      "id": "9ecac297-06cd-4109-9018-beca9de5e9e0",
       "name": "get — get: grading period ID narrows the assignments to that per (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -192,7 +192,7 @@
       "executeOnce": true
     },
     {
-      "id": "59c5b2a8-75a0-4f0a-b7e4-d6e47700fa94",
+      "id": "ab71d581-d994-4e5e-9f1e-ad645ff650cf",
       "name": "getAll — getAll: lists every group and paginates",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -220,7 +220,7 @@
       "executeOnce": true
     },
     {
-      "id": "a6a9d251-12f4-4f59-aec8-129a63de8896",
+      "id": "646c0138-fbbd-4ffb-b608-826064b5910a",
       "name": "getAll — getAll: lists every group and paginates (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -245,7 +245,7 @@
       "executeOnce": true
     },
     {
-      "id": "527c51cd-e25e-4bab-8702-9a9c15df2138",
+      "id": "e0ab940e-8f34-42d5-9f75-9cbc3eaf4b1a",
       "name": "getAll — getAll: lists every group and paginates (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -274,7 +274,7 @@
       "executeOnce": true
     },
     {
-      "id": "49bfd79b-4c6c-4a18-8c4a-5ab225f3540c",
+      "id": "089343c0-06ce-4860-8882-4d1d9f1c1b2e",
       "name": "getAll — getAll: include, assignment IDs and excluded submission type",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -317,7 +317,7 @@
       "executeOnce": true
     },
     {
-      "id": "b1ece67d-3a2f-495d-95c5-661bbb877973",
+      "id": "d75f6c9e-19c6-49af-bb57-9bca8aa9a44f",
       "name": "getAll — getAll: include, assignment IDs and excluded submission type (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -334,7 +334,7 @@
           "include": [
             "assignments"
           ],
-          "assignment_ids": "1895, 1894"
+          "assignment_ids": "2146, 2145"
         },
         "pagination": {
           "returnAll": true
@@ -351,7 +351,7 @@
       "executeOnce": true
     },
     {
-      "id": "8735e92f-b2e5-4c5e-8b84-b2ebb79b75b7",
+      "id": "a05f492f-51f6-461d-9197-eb3650faac92",
       "name": "getAll — getAll: include, assignment IDs and excluded submission type (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -390,7 +390,7 @@
       "executeOnce": true
     },
     {
-      "id": "8eae759e-6375-4aa2-a6e4-c15738468549",
+      "id": "991ef608-2f8d-4c32-a1e2-6b676886346c",
       "name": "getAll — getAll: include, assignment IDs and excluded submission type (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -426,7 +426,7 @@
       "executeOnce": true
     },
     {
-      "id": "622bd1d5-1cc6-4700-a283-0b4351b21d73",
+      "id": "0575551a-5ea9-4dba-8acf-b3189b86f3c7",
       "name": "getAll — getAll: grading period and student scope",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -460,7 +460,7 @@
       "executeOnce": true
     },
     {
-      "id": "8d04140f-23e4-4464-8e58-bbe91728c3a2",
+      "id": "58e023cd-d217-41ee-b8e8-eb98c6f415a0",
       "name": "update — update: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -479,7 +479,7 @@
           "integration_data": "{\"tag\": \"y\", \"extra\": true}",
           "name": "=Gruppe ünï 组 \"quoted\" & <b>tags</b> {{ $execution.id }}-1 (renamed)",
           "position": 1,
-          "rules": "{\"drop_lowest\": 2, \"drop_highest\": 1, \"never_drop\": [1895]}",
+          "rules": "{\"drop_lowest\": 2, \"drop_highest\": 1, \"never_drop\": [2146]}",
           "sis_source_id": "=SIS-AG2-{{ $execution.id }}-10"
         }
       },
@@ -494,7 +494,7 @@
       "executeOnce": true
     },
     {
-      "id": "a0c91489-7d32-45c2-b46c-5cfe86e1c2c7",
+      "id": "94caeb31-a7ca-4f4f-be5c-5f970d1b97be",
       "name": "update — update: an empty rules object removes the rules",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -523,7 +523,7 @@
       "executeOnce": true
     },
     {
-      "id": "948a6d05-ef43-4ca1-b9b6-5408a19e9d67",
+      "id": "39a85d4f-7b5a-4474-a546-86edb0cb0ccd",
       "name": "delete — delete: move assignments to keeps the assignments in anoth",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -538,7 +538,7 @@
         "courseId": "115",
         "assignmentGroupId": "={{ $('update — update: an empty rules object removes the rules').first().json.id }}",
         "options": {
-          "move_assignments_to": "878"
+          "move_assignments_to": "1055"
         }
       },
       "credentials": {
@@ -552,7 +552,7 @@
       "executeOnce": true
     },
     {
-      "id": "f7cf8e0a-eebf-40a5-881d-5a46f1d47109",
+      "id": "4e7851b4-bab0-40f5-96bd-8719cbaf19ed",
       "name": "delete — delete: without a target the assignments of the group are de",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -565,7 +565,7 @@
         "resource": "assignmentGroup",
         "operation": "delete",
         "courseId": "115",
-        "assignmentGroupId": "878"
+        "assignmentGroupId": "1055"
       },
       "credentials": {
         "canvasApi": {

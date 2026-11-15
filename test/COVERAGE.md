@@ -65,13 +65,13 @@ What the columns mean. **passed**: a real n8n ran the operation against Canvas a
 
 | Operation | Status | Runs | Error runs | Route | Note |
 |---|---|---:|---:|---|---|
-| abort | passed | 1 | 1 | ok |  |
-| create | passed | 11 | 4 | ok |  |
-| delete | passed | 1 | 1 | ok |  |
-| get | passed | 22 | 2 | ok |  |
-| getAll | passed | 4 | 0 | ok |  |
-| listAvailable | passed | 2 | 1 | ok |  |
-| waitForCompletion | passed | 4 | 1 | ok |  |
+| abort | passed | 2 | 2 | ok |  |
+| create | passed | 22 | 7 | ok |  |
+| delete | passed | 2 | 2 | ok |  |
+| get | passed | 36 | 4 | ok |  |
+| getAll | passed | 8 | 0 | ok |  |
+| listAvailable | passed | 4 | 2 | ok |  |
+| waitForCompletion | passed | 8 | 2 | ok |  |
 
 ## admin
 
@@ -125,7 +125,7 @@ What the columns mean. **passed**: a real n8n ran the operation against Canvas a
 
 | Operation | Status | Runs | Error runs | Route | Note |
 |---|---|---:|---:|---|---|
-| getAll | passed | 5 | 2 | ok |  |
+| getAll | passed | 4 | 2 | ok |  |
 
 ## appointmentGroup
 
@@ -184,7 +184,7 @@ What the columns mean. **passed**: a real n8n ran the operation against Canvas a
 | create | passed | 13 | 5 | ok |  |
 | delete | passed | 11 | 1 | ok |  |
 | get | passed | 2 | 1 | ok |  |
-| getAll | passed | 3 | 2 | ok |  |
+| getAll | passed | 2 | 2 | ok |  |
 | getSsoSettings | passed | 1 | 0 | ok |  |
 | restore | passed | 1 | 1 | ok |  |
 | update | passed | 4 | 3 | ok |  |
@@ -194,9 +194,9 @@ What the columns mean. **passed**: a real n8n ran the operation against Canvas a
 
 | Operation | Status | Runs | Error runs | Route | Note |
 |---|---|---:|---:|---|---|
-| getAllByAccount | passed | 8 | 2 | ok |  |
-| getAllByLogin | passed | 2 | 1 | ok |  |
-| getAllByUser | passed | 7 | 2 | ok |  |
+| getAllByAccount | passed | 16 | 4 | ok |  |
+| getAllByLogin | passed | 4 | 2 | ok |  |
+| getAllByUser | passed | 14 | 4 | ok |  |
 
 ## blackoutDate
 
@@ -218,7 +218,7 @@ What the columns mean. **passed**: a real n8n ran the operation against Canvas a
 | getAllMigrations | passed | 2 | 1 | ok |  |
 | getAssociatedCourses | passed | 3 | 0 | ok |  |
 | getImportDetails | passed | 1 | 0 | ok |  |
-| getMigration | passed | 4 | 1 | ok |  |
+| getMigration | passed | 5 | 1 | ok |  |
 | getMigrationDetails | passed | 2 | 0 | ok |  |
 | getSubscriptions | passed | 2 | 0 | ok |  |
 | getTemplate | passed | 2 | 2 | ok |  |
@@ -305,7 +305,7 @@ What the columns mean. **passed**: a real n8n ran the operation against Canvas a
 | Operation | Status | Runs | Error runs | Route | Note |
 |---|---|---:|---:|---|---|
 | create | passed | 9 | 4 | ok |  |
-| get | passed | 6 | 0 | ok |  |
+| get | passed | 7 | 0 | ok |  |
 | getAll | passed | 7 | 0 | ok |  |
 | getAssetIdMapping | passed | 2 | 1 | ok |  |
 | getIssue | passed | 6 | 3 | ok |  |
@@ -1016,7 +1016,7 @@ What the columns mean. **passed**: a real n8n ran the operation against Canvas a
 | Operation | Status | Runs | Error runs | Route | Note |
 |---|---|---:|---:|---|---|
 | cancel | passed | 4 | 1 | ok |  |
-| get | passed | 48 | 3 | ok |  |
+| get | passed | 59 | 3 | ok |  |
 | getLti | passed | 2 | 2 | ok |  |
 | waitForCompletion | passed | 3 | 1 | ok |  |
 
@@ -1047,8 +1047,8 @@ What the columns mean. **passed**: a real n8n ran the operation against Canvas a
 
 | Operation | Status | Runs | Error runs | Route | Note |
 |---|---|---:|---:|---|---|
-| getAll | passed | 8 | 0 | ok |  |
-| getAllNewQuizzes | passed | 2 | 0 | ok | empty answers only |
+| getAll | passed | 4 | 0 | ok |  |
+| getAllNewQuizzes | passed | 1 | 0 | ok | empty answers only |
 
 ## quizExtension
 
@@ -1061,7 +1061,7 @@ What the columns mean. **passed**: a real n8n ran the operation against Canvas a
 
 | Operation | Status | Runs | Error runs | Route | Note |
 |---|---|---:|---:|---|---|
-| getAll | passed | 2 | 2 | ok |  |
+| getAll | passed | 1 | 1 | ok |  |
 
 ## quizQuestion
 
@@ -1118,17 +1118,17 @@ What the columns mean. **passed**: a real n8n ran the operation against Canvas a
 
 | Operation | Status | Runs | Error runs | Route | Note |
 |---|---|---:|---:|---|---|
-| getAll | passed | 2 | 2 | ok |  |
+| getAll | passed | 1 | 1 | ok |  |
 
 ## quizSubmissionQuestion
 
 | Operation | Status | Runs | Error runs | Route | Note |
 |---|---|---:|---:|---|---|
-| answer | passed | 4 | 12 | ok |  |
-| flag | passed | 4 | 4 | ok |  |
-| getAll | passed | 2 | 0 | ok |  |
-| getFormattedAnswer | passed | 6 | 6 | ok |  |
-| unflag | passed | 4 | 4 | ok |  |
+| answer | passed | 2 | 6 | ok |  |
+| flag | passed | 2 | 2 | ok |  |
+| getAll | passed | 1 | 0 | ok |  |
+| getFormattedAnswer | passed | 3 | 3 | ok |  |
+| unflag | passed | 2 | 2 | ok |  |
 
 ## role
 
@@ -1190,9 +1190,9 @@ What the columns mean. **passed**: a real n8n ran the operation against Canvas a
 | abort | passed | 1 | 1 | ok |  |
 | abortAllPending | passed | 2 | 0 | ok |  |
 | create | passed | 20 | 5 | ok |  |
-| get | passed | 45 | 2 | ok |  |
+| get | passed | 46 | 2 | ok |  |
 | getAll | passed | 7 | 1 | ok |  |
-| getCurrent | passed | 4 | 1 | ok |  |
+| getCurrent | passed | 3 | 1 | ok |  |
 | restoreStates | passed | 1 | 1 | ok |  |
 | waitForCompletion | passed | 1 | 1 | ok |  |
 

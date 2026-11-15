@@ -2,7 +2,7 @@
   "name": "Canvas battery — learningObjectDate",
   "nodes": [
     {
-      "id": "91a0f8e3-72bb-4974-ad24-c70f83adab94",
+      "id": "e841c80a-89e7-4f80-994b-d8f668b745ad",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "90cd730b-91da-4339-9e40-98159e935c73",
+      "id": "27d42249-c30b-45de-9073-ffc60d50a1bf",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "38c0a6bc-1ca6-4389-ab63-357494b14f97",
+      "id": "7c778b87-c4a4-419e-a04d-9c53fee39102",
       "name": "get — get: reads the dates of every kind of item",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,9 +41,9 @@
         "authentication": "accessToken",
         "resource": "learningObjectDate",
         "operation": "get",
-        "courseId": "782",
+        "courseId": "944",
         "objectType": "assignment",
-        "objectId": "1891"
+        "objectId": "2141"
       },
       "credentials": {
         "canvasApi": {
@@ -56,7 +56,7 @@
       "executeOnce": true
     },
     {
-      "id": "87271bfc-722b-4270-aa8b-d0bbeb086fbe",
+      "id": "2b81a4cf-9b5c-454e-9a89-d45a74031f80",
       "name": "get — get: reads the dates of every kind of item (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -68,9 +68,9 @@
         "authentication": "accessToken",
         "resource": "learningObjectDate",
         "operation": "get",
-        "courseId": "782",
+        "courseId": "944",
         "objectType": "quiz",
-        "objectId": "251"
+        "objectId": "294"
       },
       "credentials": {
         "canvasApi": {
@@ -83,7 +83,7 @@
       "executeOnce": true
     },
     {
-      "id": "35fbe203-896a-4874-aa65-70ab22f0b553",
+      "id": "5ebd1352-b40b-4c55-a99d-53e1939d8bf2",
       "name": "get — get: reads the dates of every kind of item (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -95,9 +95,9 @@
         "authentication": "accessToken",
         "resource": "learningObjectDate",
         "operation": "get",
-        "courseId": "782",
+        "courseId": "944",
         "objectType": "discussionTopic",
-        "objectId": "656"
+        "objectId": "761"
       },
       "credentials": {
         "canvasApi": {
@@ -110,7 +110,7 @@
       "executeOnce": true
     },
     {
-      "id": "489099db-dd58-4d30-b8cb-a6fc96628f33",
+      "id": "cf7cb195-89c6-4e16-bb21-60d3a447ace0",
       "name": "get — get: reads the dates of every kind of item (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -122,7 +122,7 @@
         "authentication": "accessToken",
         "resource": "learningObjectDate",
         "operation": "get",
-        "courseId": "782",
+        "courseId": "944",
         "objectType": "page",
         "objectId": "=dated-page-{{ $execution.id }}-12"
       },
@@ -137,7 +137,7 @@
       "executeOnce": true
     },
     {
-      "id": "2d8f2d63-b296-4169-baa5-dfcc425af15f",
+      "id": "f2d6b454-9f8f-4064-8eea-d1ddc490e81b",
       "name": "get — get: reads the dates of every kind of item (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -149,9 +149,9 @@
         "authentication": "accessToken",
         "resource": "learningObjectDate",
         "operation": "get",
-        "courseId": "782",
+        "courseId": "944",
         "objectType": "module",
-        "objectId": "337"
+        "objectId": "367"
       },
       "credentials": {
         "canvasApi": {
@@ -164,7 +164,7 @@
       "executeOnce": true
     },
     {
-      "id": "72a2bdb9-0c85-4795-8c59-9d4e2b1c1c01",
+      "id": "77c9bffe-3d9a-4f95-b9d2-53c773ce48ae",
       "name": "update — update: sets dates and creates one override per section; get",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -176,7 +176,7 @@
         "authentication": "accessToken",
         "resource": "learningObjectDate",
         "operation": "update",
-        "courseId": "782",
+        "courseId": "944",
         "objectType": "assignment",
         "objectId": "={{ $('get — get: reads the dates of every kind of item').first().json.id }}",
         "updateFields": {
@@ -184,7 +184,7 @@
           "unlock_at": "2031-03-01T08:00:00Z",
           "lock_at": "2031-05-31T23:59:00Z",
           "only_visible_to_overrides": false,
-          "assignment_overrides": "[{\"course_section_id\":775,\"due_at\":\"2031-04-01T23:59:00Z\"},{\"course_section_id\":776,\"due_at\":\"2031-04-02T23:59:00Z\"},{\"course_section_id\":777,\"due_at\":\"2031-04-03T23:59:00Z\"},{\"course_section_id\":778,\"due_at\":\"2031-04-04T23:59:00Z\"},{\"course_section_id\":779,\"due_at\":\"2031-04-05T23:59:00Z\"},{\"course_section_id\":780,\"due_at\":\"2031-04-06T23:59:00Z\"},{\"course_section_id\":781,\"due_at\":\"2031-04-07T23:59:00Z\"},{\"course_section_id\":782,\"due_at\":\"2031-04-08T23:59:00Z\"},{\"course_section_id\":783,\"due_at\":\"2031-04-09T23:59:00Z\"},{\"course_section_id\":784,\"due_at\":\"2031-04-10T23:59:00Z\"},{\"course_section_id\":785,\"due_at\":\"2031-04-11T23:59:00Z\"},{\"course_section_id\":786,\"due_at\":\"2031-04-12T23:59:00Z\"},{\"course_section_id\":787,\"due_at\":\"2031-04-13T23:59:00Z\"},{\"course_section_id\":788,\"due_at\":\"2031-04-14T23:59:00Z\"}]"
+          "assignment_overrides": "[{\"course_section_id\":922,\"due_at\":\"2031-04-01T23:59:00Z\"},{\"course_section_id\":923,\"due_at\":\"2031-04-02T23:59:00Z\"},{\"course_section_id\":924,\"due_at\":\"2031-04-03T23:59:00Z\"},{\"course_section_id\":925,\"due_at\":\"2031-04-04T23:59:00Z\"},{\"course_section_id\":926,\"due_at\":\"2031-04-05T23:59:00Z\"},{\"course_section_id\":927,\"due_at\":\"2031-04-06T23:59:00Z\"},{\"course_section_id\":928,\"due_at\":\"2031-04-07T23:59:00Z\"},{\"course_section_id\":929,\"due_at\":\"2031-04-08T23:59:00Z\"},{\"course_section_id\":930,\"due_at\":\"2031-04-09T23:59:00Z\"},{\"course_section_id\":931,\"due_at\":\"2031-04-10T23:59:00Z\"},{\"course_section_id\":932,\"due_at\":\"2031-04-11T23:59:00Z\"},{\"course_section_id\":933,\"due_at\":\"2031-04-12T23:59:00Z\"},{\"course_section_id\":934,\"due_at\":\"2031-04-13T23:59:00Z\"},{\"course_section_id\":935,\"due_at\":\"2031-04-14T23:59:00Z\"}]"
         }
       },
       "credentials": {
@@ -198,7 +198,7 @@
       "executeOnce": true
     },
     {
-      "id": "8fce765c-7678-4783-9295-72ee8ec2588b",
+      "id": "dd070d4c-976b-4397-a34a-129d5e51bb01",
       "name": "update — update: an override list replaces the old one, and student o",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -210,19 +210,19 @@
         "authentication": "accessToken",
         "resource": "learningObjectDate",
         "operation": "update",
-        "courseId": "782",
+        "courseId": "944",
         "objectType": "assignment",
         "objectId": "={{ $('update — update: sets dates and creates one override per section; get').first().json.id }}",
         "updateFields": {
           "assignment_overrides": [
             {
-              "id": 232,
+              "id": 290,
               "due_at": "2031-06-01T23:59:00Z"
             },
             {
               "student_ids": [
-                2251,
-                2252
+                2560,
+                2561
               ],
               "title": "Two students",
               "due_at": "2031-06-15T23:59:00Z"
@@ -241,7 +241,7 @@
       "executeOnce": true
     },
     {
-      "id": "b862572e-8a02-4f89-9d6c-7009f9a37edc",
+      "id": "439d66d8-e419-4868-9742-9a14a8327cae",
       "name": "update — update: clears dates and removes all overrides",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -253,7 +253,7 @@
         "authentication": "accessToken",
         "resource": "learningObjectDate",
         "operation": "update",
-        "courseId": "782",
+        "courseId": "944",
         "objectType": "assignment",
         "objectId": "={{ $('update — update: an override list replaces the old one, and student o').first().json.id }}",
         "updateFields": {
@@ -276,7 +276,7 @@
       "executeOnce": true
     },
     {
-      "id": "197a3ea2-755e-40f2-ae92-4a0d5d167838",
+      "id": "76ec978a-2a35-44c5-a16f-81a750050b63",
       "name": "update — update: works for quizzes, discussions and pages",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -288,7 +288,7 @@
         "authentication": "accessToken",
         "resource": "learningObjectDate",
         "operation": "update",
-        "courseId": "782",
+        "courseId": "944",
         "objectType": "quiz",
         "objectId": "={{ $('get — get: reads the dates of every kind of item (2)').first().json.id }}",
         "updateFields": {
@@ -307,7 +307,7 @@
       "executeOnce": true
     },
     {
-      "id": "418502a0-74cd-4fd5-98a7-3e2878d22db2",
+      "id": "1cf2d6ac-0158-4a73-9f1b-10cff6922a54",
       "name": "update — update: works for quizzes, discussions and pages (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -319,7 +319,7 @@
         "authentication": "accessToken",
         "resource": "learningObjectDate",
         "operation": "update",
-        "courseId": "782",
+        "courseId": "944",
         "objectType": "discussionTopic",
         "objectId": "={{ $('get — get: reads the dates of every kind of item (3)').first().json.id }}",
         "updateFields": {
@@ -338,7 +338,7 @@
       "executeOnce": true
     },
     {
-      "id": "8a176e13-d055-42de-b74c-2b4b291fdd2b",
+      "id": "1aff7a9a-3f56-4945-bd39-137c21c81b41",
       "name": "update — update: works for quizzes, discussions and pages (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -350,14 +350,14 @@
         "authentication": "accessToken",
         "resource": "learningObjectDate",
         "operation": "update",
-        "courseId": "782",
+        "courseId": "944",
         "objectType": "page",
         "objectId": "=dated-page-{{ $execution.id }}-12",
         "updateFields": {
           "only_visible_to_overrides": true,
           "assignment_overrides": [
             {
-              "course_section_id": 775,
+              "course_section_id": 922,
               "unlock_at": "2031-02-01T08:00:00Z"
             }
           ]

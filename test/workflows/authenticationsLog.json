@@ -2,7 +2,7 @@
   "name": "Canvas battery — authenticationsLog",
   "nodes": [
     {
-      "id": "160993ce-f09c-4256-aca7-5e52ecbadaa0",
+      "id": "34cf4133-db46-4400-bd42-ff133c646df9",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "41986576-0575-41a0-9766-238124ef1eb0",
+      "id": "6cce8b32-793a-47e3-ab8e-c17342a43175",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,13 +25,13 @@
         "assignments": {
           "assignments": [
             {
-              "id": "307efd01-2fd4-4b33-8232-4435ad70c6b6",
+              "id": "c422d37c-ca63-479b-92ac-3e4ec5b2e6bd",
               "name": "accountId",
               "value": "1",
               "type": "string"
             },
             {
-              "id": "cf93097d-ef96-4bc9-bbbc-760a160f7b30",
+              "id": "75789d8d-e663-4678-81d1-c7a62808e7ff",
               "name": "adminUserId",
               "value": "1",
               "type": "string"
@@ -42,7 +42,7 @@
       }
     },
     {
-      "id": "6e4ee32f-35e5-4af8-a670-f3a54f0c69e6",
+      "id": "12291f66-f91e-4002-a598-b49bb0a3a6e8",
       "name": "getAllByAccount — getAllByAccount: Return All lists every event, one item per ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -68,7 +68,7 @@
       "executeOnce": true
     },
     {
-      "id": "f66eb7c3-7009-4dc5-bb5d-2a99d877d8b8",
+      "id": "e676fe94-3184-4f99-a3db-e3e5f65bab4d",
       "name": "getAllByAccount — getAllByAccount: Limit is honoured across page boundaries (d",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -93,7 +93,7 @@
       "executeOnce": true
     },
     {
-      "id": "25625477-b953-43f0-83f7-d425596dc90a",
+      "id": "25602d9b-f935-498a-be28-2e2396bba280",
       "name": "getAllByAccount — getAllByAccount: Limit is honoured across page boundaries (d (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -120,7 +120,7 @@
       "executeOnce": true
     },
     {
-      "id": "3165ae93-e016-47d0-b523-9fbc86ded34a",
+      "id": "4c8a8650-bdaf-4d92-b6ec-b3a9f0277cb1",
       "name": "getAllByAccount — getAllByAccount: Limit is honoured across page boundaries (d (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -150,7 +150,7 @@
       "executeOnce": true
     },
     {
-      "id": "28db87f1-f954-4689-9155-049f812e383b",
+      "id": "399f064a-2891-4a1b-a780-fe9ab08fa713",
       "name": "getAllByAccount — getAllByAccount: Start Time and End Time bound the events",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -166,7 +166,7 @@
         "returnAll": true,
         "options": {
           "start_time": "2026-11-15T13:34:01Z",
-          "end_time": "2026-11-15T16:46:37Z"
+          "end_time": "2026-11-15T17:40:51Z"
         }
       },
       "credentials": {
@@ -180,7 +180,7 @@
       "executeOnce": true
     },
     {
-      "id": "f3eb07e1-9b0c-49d0-af29-311d10af88bc",
+      "id": "2adaae56-d52f-4483-a62b-893fb0ae1d6e",
       "name": "getAllByAccount — getAllByAccount: Start Time and End Time bound the events (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -195,7 +195,7 @@
         "accountId": "={{ $('Config').first().json.accountId }}",
         "returnAll": true,
         "options": {
-          "start_time": "2026-11-15T16:46:37Z"
+          "start_time": "2026-11-15T17:40:51Z"
         }
       },
       "credentials": {
@@ -209,7 +209,7 @@
       "executeOnce": true
     },
     {
-      "id": "3db8b36d-fab6-4632-b554-b7b74cd4b2eb",
+      "id": "4b86fdcd-52df-42bf-8227-1041a094ccbb",
       "name": "getAllByAccount — getAllByAccount: Start Time and End Time bound the events (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -239,7 +239,7 @@
       "executeOnce": true
     },
     {
-      "id": "52bf3fb4-ca97-44d4-a95d-74e981f2fd7f",
+      "id": "02df560b-76a2-4903-9c1a-9e9c12590544",
       "name": "getAllByUser — getAllByUser: lists the events of one user, by ID or as sel",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -265,7 +265,7 @@
       "executeOnce": true
     },
     {
-      "id": "1015e653-a8f9-4511-8bd6-6454d2ab66cf",
+      "id": "bc1a38df-9da9-4fcc-ac50-a28a0b97224e",
       "name": "getAllByUser — getAllByUser: lists the events of one user, by ID or as sel (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -292,7 +292,7 @@
       "executeOnce": true
     },
     {
-      "id": "708cba21-94c7-4539-8178-cb44aef0dc3e",
+      "id": "365bb3e6-f692-4262-8b0b-fea30ff45623",
       "name": "getAllByUser — getAllByUser: time range, a user without logins, and several",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -307,7 +307,7 @@
         "userId": "={{ $('Config').first().json.adminUserId }}",
         "returnAll": true,
         "options": {
-          "start_time": "2026-11-15T16:37:20Z"
+          "start_time": "2026-11-15T17:28:03Z"
         }
       },
       "credentials": {
@@ -321,7 +321,7 @@
       "executeOnce": true
     },
     {
-      "id": "7c60acdb-e078-4aba-ace5-82c461f2c11c",
+      "id": "68845092-1b5c-4c84-81d9-3ba9c41e2a31",
       "name": "getAllByUser — getAllByUser: time range, a user without logins, and several (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -350,7 +350,7 @@
       "executeOnce": true
     },
     {
-      "id": "5318a4b2-f14c-4e6c-8ef3-be0efe7597cf",
+      "id": "e6232bee-8abf-4478-9e00-b633b82bde2e",
       "name": "getAllByLogin — getAllByLogin: lists the events of one login",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -376,7 +376,7 @@
       "executeOnce": true
     },
     {
-      "id": "7d12f2bf-6216-41ee-96d4-917280d44eb0",
+      "id": "44e328c2-0720-444c-b769-799455e01daa",
       "name": "getAllByAccount — every event carries the login, account, user and page view i",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -406,7 +406,7 @@
       "executeOnce": true
     },
     {
-      "id": "53edc414-cba5-4209-b89a-8306b880abf6",
+      "id": "0922a18a-0242-4cf9-8fc7-9000bd3ca91c",
       "name": "getAllByUser — Include Linked Records off: the events exactly as Canvas lis",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -434,7 +434,7 @@
       "executeOnce": true
     },
     {
-      "id": "e162da8d-7ecd-4e79-a058-d30042cdd74b",
+      "id": "bb182400-3128-40ba-b2ce-bf91cfd6d64a",
       "name": "getAllByUser — keeps its name in the events: linked.login holds the deleted",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -446,7 +446,7 @@
         "authentication": "accessToken",
         "resource": "authenticationsLog",
         "operation": "getAllByUser",
-        "userId": "2291",
+        "userId": "2647",
         "returnAll": true
       },
       "credentials": {

@@ -2,7 +2,7 @@
   "name": "Canvas battery — moderatedGrading",
   "nodes": [
     {
-      "id": "bdd66ac2-3c5d-4067-a675-d99de7adcd03",
+      "id": "c663be40-49d0-4e48-98ac-f2952fb4e399",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "e27564dc-de54-463e-96d4-781275e17bd0",
+      "id": "02585ab3-0122-486f-930c-6c0a7c963762",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "ab6f5808-3cd0-4f60-a374-4e62f4e3802d",
+      "id": "10d2905d-df21-4111-b5ad-5f442dc4c498",
       "name": "listModeratedStudents — listModeratedStudents: returns every student of the moderati",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,8 +41,8 @@
         "authentication": "accessToken",
         "resource": "moderatedGrading",
         "operation": "listModeratedStudents",
-        "courseId": "795",
-        "assignmentId": "1911"
+        "courseId": "972",
+        "assignmentId": "2161"
       },
       "credentials": {
         "canvasApi": {
@@ -55,7 +55,7 @@
       "executeOnce": true
     },
     {
-      "id": "6f568934-d360-4236-ad1e-7d3a3299f186",
+      "id": "322daefd-7036-4d18-a3a1-f9cf77432c38",
       "name": "listModeratedStudents — listModeratedStudents: returns every student of the moderati (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -68,7 +68,7 @@
         "resource": "moderatedGrading",
         "operation": "listModeratedStudents",
         "courseId": "=sis_course_id:GRD-moderation-{{ $execution.id }}-1",
-        "assignmentId": 1911,
+        "assignmentId": 2161,
         "pagination": {
           "returnAll": true
         }
@@ -84,7 +84,7 @@
       "executeOnce": true
     },
     {
-      "id": "f602447d-3e7c-4149-98d9-33ecb965d59b",
+      "id": "f36515ec-6fc9-4557-bb20-36265e42e643",
       "name": "selectStudentsForModeration — selectStudentsForModeration: adds students to the moderation",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -96,8 +96,8 @@
         "authentication": "accessToken",
         "resource": "moderatedGrading",
         "operation": "selectStudentsForModeration",
-        "courseId": "795",
-        "assignmentId": "1911",
+        "courseId": "972",
+        "assignmentId": "2161",
         "studentIds": "1032, 949 ,1"
       },
       "credentials": {
@@ -111,7 +111,7 @@
       "executeOnce": true
     },
     {
-      "id": "16f481e2-fbec-4c2d-a246-e6a44348e18b",
+      "id": "fa80f565-3f40-47c1-9fdd-f4b1b21f412f",
       "name": "getProvisionalGradeStatus — getProvisionalGradeStatus: by student ID",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -123,8 +123,8 @@
         "authentication": "accessToken",
         "resource": "moderatedGrading",
         "operation": "getProvisionalGradeStatus",
-        "courseId": "795",
-        "assignmentId": "1911",
+        "courseId": "972",
+        "assignmentId": "2161",
         "identificationMethod": "studentId",
         "studentId": 949
       },
@@ -139,7 +139,7 @@
       "executeOnce": true
     },
     {
-      "id": "c841f96a-1a39-4223-92ce-cd393bafc82f",
+      "id": "6cf0e96b-d4c8-438d-a5c3-adc18431e9e7",
       "name": "getProvisionalGradeStatus — getProvisionalGradeStatus: by anonymous ID (its own Canvas e",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -151,10 +151,10 @@
         "authentication": "accessToken",
         "resource": "moderatedGrading",
         "operation": "getProvisionalGradeStatus",
-        "courseId": "795",
-        "assignmentId": "1911",
+        "courseId": "972",
+        "assignmentId": "2161",
         "identificationMethod": "anonymousId",
-        "anonymousId": "GfquJ",
+        "anonymousId": "AiN25",
         "options": {
           "last_updated_at": "2020-01-01T00:00:00Z"
         }
@@ -170,7 +170,7 @@
       "executeOnce": true
     },
     {
-      "id": "010819df-68e3-49be-9ee5-3b7d9031176a",
+      "id": "e0dec7aa-1dfa-4075-953b-eb88b6fbacff",
       "name": "bulkSelectProvisionalGrades — bulkSelectProvisionalGrades: selects one grade per student a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -182,9 +182,9 @@
         "authentication": "accessToken",
         "resource": "moderatedGrading",
         "operation": "bulkSelectProvisionalGrades",
-        "courseId": "795",
-        "assignmentId": "1911",
-        "provisionalGradeIds": "172, 174, 176, 178, 180, 182, 184, 186, 188, 190, 192, 99999999"
+        "courseId": "972",
+        "assignmentId": "2161",
+        "provisionalGradeIds": "199, 201, 203, 205, 207, 209, 211, 213, 215, 217, 219, 99999999"
       },
       "credentials": {
         "canvasApi": {
@@ -197,7 +197,7 @@
       "executeOnce": true
     },
     {
-      "id": "a0daa07b-992b-44b9-8e87-a0e3c6e3e86e",
+      "id": "8bf23a46-141d-40b1-99d1-99e566643611",
       "name": "bulkSelectProvisionalGrades — bulkSelectProvisionalGrades: selecting what is already selec",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -209,9 +209,9 @@
         "authentication": "accessToken",
         "resource": "moderatedGrading",
         "operation": "bulkSelectProvisionalGrades",
-        "courseId": "795",
+        "courseId": "972",
         "assignmentId": "={{ $('bulkSelectProvisionalGrades — bulkSelectProvisionalGrades: selects one grade per student a').first().json.assignment_id }}",
-        "provisionalGradeIds": "171"
+        "provisionalGradeIds": "198"
       },
       "credentials": {
         "canvasApi": {

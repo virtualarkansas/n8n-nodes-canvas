@@ -2,7 +2,7 @@
   "name": "Canvas battery — quizQuestionGroup",
   "nodes": [
     {
-      "id": "568f1898-fc9f-49e3-b72b-db6e51d4af06",
+      "id": "96d4d61a-fdbd-47d3-b006-0dec709778fd",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "e2d5d93b-bc61-4973-ba1d-0b4e54f39911",
+      "id": "80d8f0f9-5093-4d17-94ef-06e79a34b7bc",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "abcbabe4-327a-4ab8-b410-d4c59e0c8c47",
+      "id": "58a7659b-5cb7-4c83-99f1-d4d89eff3de5",
       "name": "create — create: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,7 +42,7 @@
         "resource": "quizQuestionGroup",
         "operation": "create",
         "courseId": "119",
-        "quizId": "264",
+        "quizId": "310",
         "name": "=Pool \"A\" & <b>B</b> — ünï 题库 {{ $execution.id }}-1",
         "additionalFields": {
           "assessment_question_bank_id": "7",
@@ -61,7 +61,7 @@
       "executeOnce": true
     },
     {
-      "id": "fb629f19-5528-4f2e-899e-6f78c5201d08",
+      "id": "9030d63e-9f0e-4f6c-b056-2954294df394",
       "name": "create — create: a group with only a name; a question bank of another",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -91,7 +91,7 @@
       "executeOnce": true
     },
     {
-      "id": "8b10b514-00ee-472a-a974-1b37596cab5b",
+      "id": "93ec4769-a392-46c4-ac51-375ddcfb4057",
       "name": "getAll — getAll: one item per group of the quiz",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -117,7 +117,7 @@
       "executeOnce": true
     },
     {
-      "id": "bc002d7b-33da-4aa5-bb79-48ed89533d7d",
+      "id": "faf76559-c70b-4d89-a529-ada29ab7d7a8",
       "name": "getAll — getAll: one item per group of the quiz (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -146,7 +146,7 @@
       "executeOnce": true
     },
     {
-      "id": "3e179eaa-a59e-427c-843d-8046d07a38ed",
+      "id": "5ef43ccf-80ba-4983-8616-5a222515c2e3",
       "name": "getAll — getAll: a quiz without groups gives no items",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -159,7 +159,7 @@
         "resource": "quizQuestionGroup",
         "operation": "getAll",
         "courseId": "119",
-        "quizId": "265"
+        "quizId": "312"
       },
       "credentials": {
         "canvasApi": {
@@ -172,7 +172,7 @@
       "executeOnce": true
     },
     {
-      "id": "32bcb161-7628-47ed-aafb-68d2b05483b7",
+      "id": "1814ff3f-6bb6-4a0d-9fb5-3e7dc62065e7",
       "name": "update — update: every field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -204,7 +204,7 @@
       "executeOnce": true
     },
     {
-      "id": "008a3118-c112-459c-8abd-f0ef96d75d67",
+      "id": "97d9eefd-0dbd-463a-bdac-941eb04567f7",
       "name": "reorder — reorder: listed questions move into the group in the given o",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -222,13 +222,13 @@
         "questionOrder": {
           "questions": [
             {
-              "id": 449
+              "id": 507
             },
             {
-              "id": " 447 "
+              "id": " 505 "
             },
             {
-              "id": "448"
+              "id": "506"
             }
           ]
         }
@@ -244,7 +244,7 @@
       "executeOnce": true
     },
     {
-      "id": "7e2f517a-c304-4adf-9190-26359489c7d0",
+      "id": "0091fca9-6097-4c42-9838-41ae92af5703",
       "name": "reorder — reorder: listed questions move into the group in the given o (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -262,13 +262,13 @@
         "questionOrder": {
           "questions": [
             {
-              "id": 448
+              "id": 506
             },
             {
-              "id": 447
+              "id": 505
             },
             {
-              "id": 449
+              "id": 507
             }
           ]
         }

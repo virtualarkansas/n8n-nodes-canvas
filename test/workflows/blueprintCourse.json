@@ -2,7 +2,7 @@
   "name": "Canvas battery — blueprintCourse",
   "nodes": [
     {
-      "id": "adddc170-3821-4834-b433-16fcd7b27193",
+      "id": "0f22b863-783d-4d40-88fd-afa294a169e4",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "9b14913c-abbe-4233-9447-b9617ce1011e",
+      "id": "2d4e9105-113e-4764-a2a2-d797ac717860",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "96b84f28-0ab3-4364-b8d2-dc33223c6e9f",
+              "id": "e6241a72-7abb-4a8f-854d-c387a58a88fa",
               "name": "blueprintCourseId",
               "value": "7",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "de9d24fd-4e6c-466c-a4f6-10ee285b82d1",
+      "id": "a8e514bc-d3e3-411d-b504-e338dc1699e1",
       "name": "getTemplate — getTemplate: by default and by template ID; a course that ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -48,7 +48,7 @@
         "authentication": "accessToken",
         "resource": "blueprintCourse",
         "operation": "getTemplate",
-        "courseId": "751"
+        "courseId": "910"
       },
       "credentials": {
         "canvasApi": {
@@ -61,7 +61,7 @@
       "executeOnce": true
     },
     {
-      "id": "a2c65d3b-622a-493c-95d1-12445deebbd9",
+      "id": "72e75639-197a-4f4f-b4fa-baebfc114ba2",
       "name": "updateAssociations — updateAssociations: adds and removes courses, in one call to",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -74,7 +74,7 @@
         "resource": "blueprintCourse",
         "operation": "updateAssociations",
         "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
-        "courseIdsToAdd": " 752 , 753 "
+        "courseIdsToAdd": " 911 , 912 "
       },
       "credentials": {
         "canvasApi": {
@@ -87,7 +87,7 @@
       "executeOnce": true
     },
     {
-      "id": "684901a7-c7aa-41e5-9d1c-719256bc5420",
+      "id": "70809b95-6570-4a19-87eb-fdc746f3f44d",
       "name": "updateAssociations — updateAssociations: adds and removes courses, in one call to (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -100,7 +100,7 @@
         "resource": "blueprintCourse",
         "operation": "updateAssociations",
         "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
-        "courseIdsToAdd": "753"
+        "courseIdsToAdd": "912"
       },
       "credentials": {
         "canvasApi": {
@@ -113,7 +113,7 @@
       "executeOnce": true
     },
     {
-      "id": "e78ec1d9-e40a-4da9-9adf-23a5ad652a91",
+      "id": "1b11a0c7-3e36-4a75-a992-13b04de5de11",
       "name": "getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -138,7 +138,7 @@
       "executeOnce": true
     },
     {
-      "id": "31a83347-a3e6-48e4-98b5-b67d22de8753",
+      "id": "3ba7682c-a608-4754-b5be-351bd5ba8668",
       "name": "getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -167,7 +167,7 @@
       "executeOnce": true
     },
     {
-      "id": "d761f8db-7207-46ef-b493-c87ef9646c2f",
+      "id": "9cacac38-ed8d-4081-bb5d-ffa9c4885746",
       "name": "getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -196,7 +196,7 @@
       "executeOnce": true
     },
     {
-      "id": "5da1a165-de34-40b2-8a75-8e691410c7ca",
+      "id": "01c16640-04e1-48c7-90d9-21c56cb7f496",
       "name": "setRestrictions — setRestrictions: locks objects with the course defaults or w",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -210,7 +210,7 @@
         "operation": "setRestrictions",
         "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
         "contentType": "assignment",
-        "contentId": "1875",
+        "contentId": "2124",
         "restricted": true,
         "restrictions": {
           "content": false,
@@ -232,7 +232,7 @@
       "executeOnce": true
     },
     {
-      "id": "56ccdc2e-68ea-4309-89f8-39f9a051c29f",
+      "id": "34119e3b-c229-4dc3-8d90-0366869e106f",
       "name": "setRestrictions — setRestrictions: locks objects with the course defaults or w (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -246,7 +246,7 @@
         "operation": "setRestrictions",
         "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
         "contentType": "wiki_page",
-        "contentId": "561",
+        "contentId": "608",
         "restricted": true
       },
       "credentials": {
@@ -260,7 +260,7 @@
       "executeOnce": true
     },
     {
-      "id": "64e5c83b-be84-45da-ba33-c3ee61d84696",
+      "id": "889cbe5d-71e3-4442-8055-b03385bddfbd",
       "name": "setRestrictions — setRestrictions: locks objects with the course defaults or w (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -274,7 +274,7 @@
         "operation": "setRestrictions",
         "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
         "contentType": "quiz",
-        "contentId": "240",
+        "contentId": "293",
         "restricted": true
       },
       "credentials": {
@@ -288,7 +288,7 @@
       "executeOnce": true
     },
     {
-      "id": "e41463e5-c6d2-49e6-bdd6-8b620107ddd8",
+      "id": "d885a037-7f32-49b6-96b4-864125f837fe",
       "name": "setRestrictions — setRestrictions: locks objects with the course defaults or w (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -302,7 +302,7 @@
         "operation": "setRestrictions",
         "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
         "contentType": "discussion_topic",
-        "contentId": "652",
+        "contentId": "733",
         "restricted": true
       },
       "credentials": {
@@ -316,7 +316,7 @@
       "executeOnce": true
     },
     {
-      "id": "e3244dfc-fb6b-4657-862e-540ba2ce8d20",
+      "id": "85640517-59c5-489f-b21c-22888096e927",
       "name": "setRestrictions — setRestrictions: locks objects with the course defaults or w (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -330,7 +330,7 @@
         "operation": "setRestrictions",
         "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
         "contentType": "attachment",
-        "contentId": "3350",
+        "contentId": "3708",
         "restricted": true
       },
       "credentials": {
@@ -344,7 +344,7 @@
       "executeOnce": true
     },
     {
-      "id": "8a03475e-ec5c-4c14-b9c4-11a076950255",
+      "id": "e5ec31f4-f80b-403b-b8d5-a13398105120",
       "name": "setRestrictions — setRestrictions: locks objects with the course defaults or w (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -358,7 +358,7 @@
         "operation": "setRestrictions",
         "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
         "contentType": "quiz",
-        "contentId": "240",
+        "contentId": "293",
         "restricted": false
       },
       "credentials": {
@@ -372,7 +372,7 @@
       "executeOnce": true
     },
     {
-      "id": "ddda3ce8-5579-49ee-8b90-6dcf1cfbd619",
+      "id": "9b9cc0c3-f607-43d9-8ae9-66f2a82b6299",
       "name": "getUnsyncedChanges — getUnsyncedChanges: before the first sync everything is pend",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -397,7 +397,7 @@
       "executeOnce": true
     },
     {
-      "id": "5bb4f1b0-4a91-416d-abdd-a071976bd79c",
+      "id": "6f857744-4fd2-4032-9643-4f8aabb66ae7",
       "name": "beginMigration — beginMigration: the first sync fills the associated courses ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -429,7 +429,7 @@
       "executeOnce": true
     },
     {
-      "id": "2a23d331-b0b5-4b45-9aa6-3f6719100416",
+      "id": "bafb61c0-eaf3-4f5b-9c71-d28b9fdf4469",
       "name": "getMigration — beginMigration: the first sync fills the associated courses ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -442,7 +442,7 @@
         "resource": "blueprintCourse",
         "operation": "getMigration",
         "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
-        "migrationId": "8"
+        "migrationId": "10"
       },
       "credentials": {
         "canvasApi": {
@@ -455,7 +455,7 @@
       "executeOnce": true
     },
     {
-      "id": "df4433a1-1cc5-4966-a3ed-b0fe97250891",
+      "id": "8fac4113-d69a-4d44-9ed0-49415daab875",
       "name": "beginMigration — beginMigration: a second sync pushes changes, but keeps loca",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -485,7 +485,7 @@
       "executeOnce": true
     },
     {
-      "id": "945c6c69-4807-40b2-a776-7fdc99753d6a",
+      "id": "666368c5-278e-4f1a-a777-9c3729d9361c",
       "name": "getMigration — beginMigration: a second sync pushes changes, but keeps loca",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -498,7 +498,7 @@
         "resource": "blueprintCourse",
         "operation": "getMigration",
         "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
-        "migrationId": "9"
+        "migrationId": "11"
       },
       "credentials": {
         "canvasApi": {
@@ -511,7 +511,7 @@
       "executeOnce": true
     },
     {
-      "id": "7b4b7b1a-8129-4d41-9dd8-92b84e3763f2",
+      "id": "ae5a4265-51ae-4180-8ec2-0eb130131e0b",
       "name": "getAllMigrations — getAllMigrations, getMigration, getMigrationDetails: the syn",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -536,7 +536,7 @@
       "executeOnce": true
     },
     {
-      "id": "b076ae6d-287e-4d91-ab15-d1c57548bc30",
+      "id": "aa22487f-1d91-4cfa-a44c-81ca8babc86a",
       "name": "getAllMigrations — getAllMigrations, getMigration, getMigrationDetails: the syn (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -566,7 +566,7 @@
       "executeOnce": true
     },
     {
-      "id": "69b2a534-42ab-4800-bb50-ad857906e357",
+      "id": "dec09275-0f93-4869-9601-cbe189f764c0",
       "name": "getMigrationDetails — getAllMigrations, getMigration, getMigrationDetails: the syn",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -579,7 +579,7 @@
         "resource": "blueprintCourse",
         "operation": "getMigrationDetails",
         "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
-        "migrationId": "8"
+        "migrationId": "10"
       },
       "credentials": {
         "canvasApi": {
@@ -592,7 +592,7 @@
       "executeOnce": true
     },
     {
-      "id": "169bf9bc-ea3a-4611-b9f5-41a73c7abeb3",
+      "id": "4dfe242c-7a6f-49f7-9ddf-e02747cf533f",
       "name": "getMigrationDetails — getAllMigrations, getMigration, getMigrationDetails: the syn (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -605,7 +605,7 @@
         "resource": "blueprintCourse",
         "operation": "getMigrationDetails",
         "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
-        "migrationId": "9"
+        "migrationId": "11"
       },
       "credentials": {
         "canvasApi": {
@@ -618,7 +618,7 @@
       "executeOnce": true
     },
     {
-      "id": "fbd22ad3-24c5-4a60-b7c9-34ac6aa64a20",
+      "id": "0b9e6e4e-7044-4b7b-b748-7ea1c19400d3",
       "name": "getSubscriptions — getSubscriptions, getAllImports, showImport, getImportDetail",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -643,7 +643,7 @@
       "executeOnce": true
     },
     {
-      "id": "0778ba62-842e-466c-88a6-06d7bfa4b164",
+      "id": "c43f1035-0195-4fa0-96a1-c9f89fd80776",
       "name": "getAllImports — getSubscriptions, getAllImports, showImport, getImportDetail",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -668,7 +668,7 @@
       "executeOnce": true
     },
     {
-      "id": "b7d9b3a4-1380-4564-a7e3-175232cb67a7",
+      "id": "dc9220fb-6338-4376-8885-ceeaaeb5133f",
       "name": "getAllImports — getSubscriptions, getAllImports, showImport, getImportDetail (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -698,7 +698,7 @@
       "executeOnce": true
     },
     {
-      "id": "445f09f3-2948-435e-8aaf-142d68be8a66",
+      "id": "3b76b9c6-e144-44e2-a4c8-cf304f502d3d",
       "name": "showImport — getSubscriptions, getAllImports, showImport, getImportDetail",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -712,7 +712,7 @@
         "operation": "showImport",
         "courseId": "={{ $('getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (2)').first().json.id }}",
         "subscriptionId": "={{ $('getAllImports — getSubscriptions, getAllImports, showImport, getImportDetail (2)').first().json.subscription_id }}",
-        "migrationId": "187"
+        "migrationId": "218"
       },
       "credentials": {
         "canvasApi": {
@@ -725,7 +725,7 @@
       "executeOnce": true
     },
     {
-      "id": "cba2ab92-6f2d-4a14-a10a-f6aada2da871",
+      "id": "8f0f865a-5207-4d2d-9922-8edb8bf891eb",
       "name": "getImportDetails — getSubscriptions, getAllImports, showImport, getImportDetail",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -738,7 +738,7 @@
         "resource": "blueprintCourse",
         "operation": "getImportDetails",
         "courseId": "={{ $('getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (2)').first().json.id }}",
-        "migrationId": "187"
+        "migrationId": "218"
       },
       "credentials": {
         "canvasApi": {
@@ -751,7 +751,7 @@
       "executeOnce": true
     },
     {
-      "id": "3daf823e-cdbe-4d07-b52e-9e12f6ad754e",
+      "id": "de5bf6a3-d3f5-4462-9037-2a03b19e934a",
       "name": "getSubscriptions — getSubscriptions, getAllImports, showImport, getImportDetail (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -763,7 +763,7 @@
         "authentication": "accessToken",
         "resource": "blueprintCourse",
         "operation": "getSubscriptions",
-        "courseId": "752"
+        "courseId": "911"
       },
       "credentials": {
         "canvasApi": {
@@ -776,7 +776,7 @@
       "executeOnce": true
     },
     {
-      "id": "cdceff2b-8f4e-43cd-a744-a763e2d544d8",
+      "id": "33a57da2-1b09-44a3-af23-ba4a2bb05a6a",
       "name": "updateAssociations — updateAssociations: removing the courses ends their subscrip",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -789,7 +789,7 @@
         "resource": "blueprintCourse",
         "operation": "updateAssociations",
         "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
-        "courseIdsToRemove": "753,754"
+        "courseIdsToRemove": "912,913"
       },
       "credentials": {
         "canvasApi": {

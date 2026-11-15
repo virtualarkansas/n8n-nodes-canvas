@@ -2,7 +2,7 @@
   "name": "Canvas battery — module",
   "nodes": [
     {
-      "id": "8b1c7172-8fe5-4bc7-a973-2043aa6f849c",
+      "id": "3114de2f-5cfd-4675-b8d7-39d5301e9919",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "9bd71fca-bba4-463d-a3f0-28f130157653",
+      "id": "e3e88f90-7bc0-4679-b705-3dbdcd01d176",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "2c64031e-792f-4765-96bc-0367c9de61c2",
+      "id": "caa32e31-8381-4c8d-86af-b827d136b103",
       "name": "create — create: minimal module is created unpublished; position in",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -55,7 +55,7 @@
       "executeOnce": true
     },
     {
-      "id": "8cd5297d-7ca4-497a-a688-4d9e748faacb",
+      "id": "7a24ee85-4bc3-439a-bbb0-ea4b1ee18139",
       "name": "create — create: minimal module is created unpublished; position in (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -84,7 +84,7 @@
       "executeOnce": true
     },
     {
-      "id": "b8acb94e-c4e1-40b8-8aef-e38911893699",
+      "id": "98ad1e88-3c2e-47d4-86e0-0fa549259fd8",
       "name": "create — create: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -100,7 +100,7 @@
         "name": "=Módulo ünïcode 模块 🚀 \"quoted\" & <b>tags</b> {{ $execution.id }}-1",
         "additionalFields": {
           "position": 3,
-          "prerequisite_module_ids": " 332, 333 ",
+          "prerequisite_module_ids": " 362, 363 ",
           "publish_final_grade": true,
           "require_sequential_progress": true,
           "unlock_at": "2031-02-03T04:05:00Z"
@@ -117,7 +117,7 @@
       "executeOnce": true
     },
     {
-      "id": "e0ccb8dc-23d9-4890-a9bb-6ae21c84e19d",
+      "id": "7b92cdaa-8405-482c-8b9f-f47024fffbc0",
       "name": "get — get: returns the module, with items and content details",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -149,7 +149,7 @@
       "executeOnce": true
     },
     {
-      "id": "f05c1340-4d19-4775-839b-31a0b9b8227b",
+      "id": "0a215ec5-fe49-4af1-af9a-8ffbe92af139",
       "name": "get — get: student ID adds that students progress (modules the ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -175,7 +175,7 @@
       "executeOnce": true
     },
     {
-      "id": "f553b8cf-7973-4763-806e-015d37de3836",
+      "id": "1add7c81-c6bb-45f5-8aee-59a4a93aa068",
       "name": "getAll — getAll: pages through more than 100 modules without duplicat",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -200,7 +200,7 @@
       "executeOnce": true
     },
     {
-      "id": "35aafa34-1d88-44bc-a0e9-779834a121cf",
+      "id": "895d1e57-9c65-401f-8d8c-200cc2c649d8",
       "name": "getAll — getAll: pages through more than 100 modules without duplicat (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -228,7 +228,7 @@
       "executeOnce": true
     },
     {
-      "id": "ce8832e7-6a59-41bc-9611-c38f77cc3371",
+      "id": "92733a25-d3d5-421c-b561-986e29d69a41",
       "name": "getAll — getAll: pages through more than 100 modules without duplicat (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -257,7 +257,7 @@
       "executeOnce": true
     },
     {
-      "id": "b6ef3eb1-7fbe-4e0a-b26b-8d8009ec0579",
+      "id": "c576330f-a6a7-4be5-ae0e-41fe98524573",
       "name": "getAll — getAll: search term filters, include adds the items",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -288,7 +288,7 @@
       "executeOnce": true
     },
     {
-      "id": "729959e9-bb98-4f7d-8bac-446f5e8f5b47",
+      "id": "1ee18f8d-40cf-4d59-b0e7-73245a96acb1",
       "name": "getAll — getAll: search term filters, include adds the items (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -316,7 +316,7 @@
       "executeOnce": true
     },
     {
-      "id": "d2fd8d3c-6888-4356-ba54-e70618ca67be",
+      "id": "60502966-1a26-4747-a9c3-e132e192fba2",
       "name": "getAll — getAll: search term filters, include adds the items (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -349,7 +349,7 @@
       "executeOnce": true
     },
     {
-      "id": "d2fc5d6d-0fb8-482c-95ab-82510036630a",
+      "id": "d5c9d0a1-10fb-4fb8-ae47-411b6a7bd22f",
       "name": "getAll — getAll: search term filters, include adds the items (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -377,7 +377,7 @@
       "executeOnce": true
     },
     {
-      "id": "6dfb7618-7b4a-463e-9604-f7748b4eb40a",
+      "id": "e79ce9cc-fd08-4593-8bc6-37c86a1796b1",
       "name": "update — update: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -393,7 +393,7 @@
         "moduleId": "={{ $('getAll — getAll: search term filters, include adds the items (2)').first().json.id }}",
         "updateFields": {
           "name": "=Módulo ünïcode 模块 🚀 \"quoted\" & <b>tags</b> {{ $execution.id }}-1 (renamed)",
-          "prerequisite_module_ids": "333",
+          "prerequisite_module_ids": "363",
           "publish_final_grade": false,
           "published": false,
           "require_sequential_progress": false,
@@ -411,7 +411,7 @@
       "executeOnce": true
     },
     {
-      "id": "c4128dcf-13f9-474c-a3a0-e1640878556d",
+      "id": "65927430-88b8-4232-ab94-138615acebd8",
       "name": "update — update: an empty prerequisite list removes all prerequisites",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -442,7 +442,7 @@
       "executeOnce": true
     },
     {
-      "id": "0d4bae67-e2d5-4ae5-bf33-a476da368127",
+      "id": "1feaf057-9810-485b-9e63-1cad1b6cb11e",
       "name": "update — update: position moves the module",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -471,7 +471,7 @@
       "executeOnce": true
     },
     {
-      "id": "f9643ad3-a67e-4a6d-be86-7586c2fa233f",
+      "id": "3097c4d0-d6c3-4716-98fd-90348ab169ea",
       "name": "listItems — listItems: pages through more than 100 items in order",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -497,7 +497,7 @@
       "executeOnce": true
     },
     {
-      "id": "cf87f31d-d033-48a4-b3ef-0728f3b07a4e",
+      "id": "5ea29647-c1f5-4808-91d3-1bb456de43cf",
       "name": "listItems — listItems: pages through more than 100 items in order (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -526,7 +526,7 @@
       "executeOnce": true
     },
     {
-      "id": "5859b7c2-6177-4749-8e3d-eb27e076b308",
+      "id": "4fabb447-ba8d-46ab-a6c4-5a72d62e6eff",
       "name": "listItems — listItems: pages through more than 100 items in order (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -556,7 +556,7 @@
       "executeOnce": true
     },
     {
-      "id": "4063d951-a953-4709-868f-d4abfc3ecb6f",
+      "id": "f0e30ce7-0956-468c-b956-3f2cec203589",
       "name": "listItems — listItems: options filter and enrich the items",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -585,7 +585,7 @@
       "executeOnce": true
     },
     {
-      "id": "1a9297a2-d21f-4a9d-8188-bc5d5752acd4",
+      "id": "5cec91e6-ba3c-4264-8e88-033cbf43cd55",
       "name": "listItems — listItems: options filter and enrich the items (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -617,7 +617,7 @@
       "executeOnce": true
     },
     {
-      "id": "3c84b041-69cc-4c31-a292-1beba5a79b5d",
+      "id": "f7e57c2b-4440-4fff-b0d6-7d57e14f5fa8",
       "name": "listItems — listItems: options filter and enrich the items (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -643,7 +643,7 @@
       "executeOnce": true
     },
     {
-      "id": "c0f039da-cea7-494c-a3b5-8d598f3fc19c",
+      "id": "1f83c497-14c9-47ac-91da-85a2fe4afe52",
       "name": "listItems — listItems: an empty module yields no items",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -669,7 +669,7 @@
       "executeOnce": true
     },
     {
-      "id": "353431f7-4bd5-49b9-8598-5655477f1be1",
+      "id": "245cf472-6965-4db5-8ef1-1dcfcdd7ef6b",
       "name": "listOverrides — setOverrides / listOverrides: assign the module to a section",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -695,7 +695,7 @@
       "executeOnce": true
     },
     {
-      "id": "34cf1b7e-a24f-46ab-8358-3296fd2ca9ee",
+      "id": "fa802e61-10a9-42e8-85f6-e9ee154575fd",
       "name": "setOverrides — setOverrides / listOverrides: assign the module to a section",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -732,7 +732,7 @@
       "executeOnce": true
     },
     {
-      "id": "c0a12001-fa3d-455e-9766-a9cdfc5580c4",
+      "id": "5a7a3b60-b2c4-4b0c-838c-2e0ceb63b02e",
       "name": "setOverrides — setOverrides / listOverrides: assign the module to a section (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -759,7 +759,7 @@
       "executeOnce": true
     },
     {
-      "id": "e5af7f13-05a8-4337-abab-ef9a1bb34d1d",
+      "id": "64133b68-2e97-4810-9cba-a1d6902faf92",
       "name": "relock — relock: resets progressions and returns the module",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -785,7 +785,7 @@
       "executeOnce": true
     },
     {
-      "id": "a7f2b714-af3c-482e-9318-0c78a3326b07",
+      "id": "122828ad-55d5-41d5-af4f-9a714b6a2b14",
       "name": "create — errors: a prerequisite that does not exist is ignored by Can",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

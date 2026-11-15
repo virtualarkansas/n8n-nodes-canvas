@@ -312,7 +312,17 @@ describe('authenticationsLog', () => {
 			compared++;
 			const { linked, ...event } = item;
 			expect(event).toEqual(direct.event);
-			expect(linked).toEqual(direct.linked);
+			// The linked records are live data: other files delete the users whose logins are in this
+			// account-wide log between the two reads (the login turns "deleted", the user loses its
+			// login_id). What identifies a record does not change.
+			const identity = (records: unknown): Json =>
+				Object.fromEntries(
+					Object.entries((records ?? {}) as Record<string, Json | null>).map(([name, record]) => [
+						name,
+						record && Object.fromEntries(['id', 'unique_id', 'user_id', 'account_id', 'name', 'created_at'].filter((key) => key in record).map((key) => [key, record[key]])),
+					]),
+				);
+			expect(identity(linked)).toEqual(identity(direct.linked));
 			expect(Object.keys(linked as Json).sort()).toEqual(['account', 'login', 'page_view', 'user']);
 			expect(String(((linked as Json).user as Json).id)).toBe(String(links(item).user));
 			expect(((linked as Json).user as Json).name).toBeTypeOf('string');

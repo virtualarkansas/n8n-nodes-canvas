@@ -2,7 +2,7 @@
   "name": "Canvas battery — sisIntegration",
   "nodes": [
     {
-      "id": "c15656a8-7e2a-43fb-ad35-518938d51027",
+      "id": "361f65ba-69e1-418b-ab30-472d92da8705",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "302c64d8-18d3-4dce-a712-e192bb800edf",
+      "id": "db7c95af-f5fb-4f50-9b39-f126feee8fb6",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "89e89737-89c1-444a-8217-2c463e52ca90",
+      "id": "a9a44206-ba69-4b36-a2c7-7e3b091737a2",
       "name": "getAssignments — getAssignments (course): the published, flagged assignments ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,7 +42,7 @@
         "resource": "sisIntegration",
         "operation": "getAssignments",
         "context": "course",
-        "courseId": "827",
+        "courseId": "987",
         "pagination": {
           "returnAll": true
         }
@@ -58,7 +58,7 @@
       "executeOnce": true
     },
     {
-      "id": "9423ed16-6a25-48ac-b92a-3f7db4a4760f",
+      "id": "cc1e942e-caa5-4e95-996a-93a56ca606c2",
       "name": "getAssignments — getAssignments (course): the published, flagged assignments  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -84,7 +84,7 @@
       "executeOnce": true
     },
     {
-      "id": "8ebd7a4b-ef3e-4029-b9cb-d282b4dfcc4b",
+      "id": "0441f57d-a8ad-4760-abf8-5c7a14a6cf80",
       "name": "getAssignments — getAssignments (course): Student Overrides adds the overri",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -118,7 +118,7 @@
       "executeOnce": true
     },
     {
-      "id": "edf0e733-d7e5-44c2-9120-209df79da3e1",
+      "id": "c44fa9ea-e711-4b6d-9304-30702a85015f",
       "name": "getAssignments — getAssignments (account): every published course below the a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -131,7 +131,7 @@
         "resource": "sisIntegration",
         "operation": "getAssignments",
         "context": "account",
-        "accountId": "239",
+        "accountId": "286",
         "pagination": {
           "returnAll": true
         }
@@ -147,7 +147,7 @@
       "executeOnce": true
     },
     {
-      "id": "e7fa0af2-4340-4ea9-be0b-54517fc95c37",
+      "id": "c9a3c907-9025-4008-a9dd-ba2f8d15d604",
       "name": "getAssignments — getAssignments (account): every published course below the a (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -160,7 +160,7 @@
         "resource": "sisIntegration",
         "operation": "getAssignments",
         "context": "account",
-        "accountId": "239",
+        "accountId": "286",
         "options": {
           "ends_after": "2026-09-01T00:00:00Z"
         },
@@ -179,7 +179,7 @@
       "executeOnce": true
     },
     {
-      "id": "d509d67a-5e2b-4d81-b40a-91e5e9a9e9e9",
+      "id": "28951073-7669-47e9-ab34-b5ba9a81e509",
       "name": "getAssignments — getAssignments (account): every published course below the a (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -192,7 +192,7 @@
         "resource": "sisIntegration",
         "operation": "getAssignments",
         "context": "account",
-        "accountId": "239",
+        "accountId": "286",
         "options": {
           "starts_before": "2026-06-01T00:00:00Z",
           "include": [
@@ -214,7 +214,7 @@
       "executeOnce": true
     },
     {
-      "id": "4e293722-557e-4e7f-890d-ce699c0a3376",
+      "id": "fafe7b9d-7a94-41b9-a46d-91ec3d19e1d1",
       "name": "getAssignments — getAssignments (account): every published course below the a (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -227,7 +227,7 @@
         "resource": "sisIntegration",
         "operation": "getAssignments",
         "context": "account",
-        "accountId": "239",
+        "accountId": "286",
         "options": {
           "starts_before": "2020-01-01T00:00:00Z",
           "ends_after": "2040-01-01T00:00:00Z"
@@ -244,7 +244,7 @@
       "executeOnce": true
     },
     {
-      "id": "0a988cb2-3151-44e5-ac5d-82e3a384cf7e",
+      "id": "9bdc8d4b-eaa6-4b08-b3e4-40b165edcffd",
       "name": "disablePostToSis — disablePostToSis: with a grading period only the assignments",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -272,7 +272,7 @@
       "executeOnce": true
     },
     {
-      "id": "cf5bb3e4-c739-49a3-980c-b2e26d33f179",
+      "id": "3ea5c3ef-c2b0-4917-bc1b-f561f4e3eefa",
       "name": "disablePostToSis — disablePostToSis: without a grading period every published a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

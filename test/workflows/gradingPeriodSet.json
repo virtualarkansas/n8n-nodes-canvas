@@ -2,7 +2,7 @@
   "name": "Canvas battery — gradingPeriodSet",
   "nodes": [
     {
-      "id": "85bea6ce-e788-4c1c-b499-33efb7c3f0be",
+      "id": "e84686fe-c1bb-4d9c-a1c4-ed9ba7a3ddb9",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "c1c4f9d3-6110-4ed6-b812-2e6522c75a1b",
+      "id": "4272019a-60cd-49bb-9744-d219ab1f72fe",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,13 +25,13 @@
         "assignments": {
           "assignments": [
             {
-              "id": "ddb3b467-05cc-4cd5-beb7-0b2ffad7cb71",
+              "id": "f688c088-1593-4bf7-ae5a-f084c2aba0fe",
               "name": "accountId",
               "value": "1",
               "type": "string"
             },
             {
-              "id": "8685e142-30e7-45ef-85a1-642d08f4d594",
+              "id": "a01c1467-4479-4efb-9589-b98511368b5b",
               "name": "subAccountId",
               "value": "3",
               "type": "string"
@@ -42,7 +42,7 @@
       }
     },
     {
-      "id": "2fed780c-7fb5-48da-b2fb-2da8df72cede",
+      "id": "f07eb65d-c621-4d36-8831-403dd6d5775c",
       "name": "create — create: every optional field reaches Canvas, terms included",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -58,7 +58,7 @@
         "title": "=Sét \"quoted\" & <i>tags</i> 学期 🗓️ {{ $execution.id }}-1",
         "additionalFields": {
           "display_totals_for_all_grading_periods": true,
-          "enrollment_term_ids": "92, 93",
+          "enrollment_term_ids": "114, 115",
           "weighted": true
         }
       },
@@ -73,7 +73,7 @@
       "executeOnce": true
     },
     {
-      "id": "569ef3e7-9b01-44e1-bd81-a3b6bf60822d",
+      "id": "528563e6-5e4d-4ef3-b731-04ace055e42d",
       "name": "getAll — getAll: returns the sets themselves (not Canvas wrapper), a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -98,7 +98,7 @@
       "executeOnce": true
     },
     {
-      "id": "b320b19d-43b8-45ed-b8d5-3d561f0dbd77",
+      "id": "7741e71f-96c4-4be9-b733-fae2be447fca",
       "name": "getAll — getAll: returns the sets themselves (not Canvas wrapper), a (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -127,7 +127,7 @@
       "executeOnce": true
     },
     {
-      "id": "58f06531-8763-4646-9b5c-68c515efee69",
+      "id": "2b0c0ba9-f8cf-4e34-acbd-3b23591c1489",
       "name": "getAll — getAll: returns the sets themselves (not Canvas wrapper), a (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -155,7 +155,7 @@
       "executeOnce": true
     },
     {
-      "id": "4033e3d7-c026-4652-82ac-dd67912d2a18",
+      "id": "4a5e9352-a8de-4869-be39-621124b6d726",
       "name": "getAll — getAll: a sub-account lists the sets of its root account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -183,7 +183,7 @@
       "executeOnce": true
     },
     {
-      "id": "f359beed-fd90-465e-b93f-d9c8e79d3100",
+      "id": "1ea0a51c-481a-46e1-b192-a11d83c18a3d",
       "name": "update — update: every field reaches Canvas and the term list replace",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -197,7 +197,7 @@
         "operation": "update",
         "accountId": "={{ $('Config').first().json.accountId }}",
         "gradingPeriodSetId": "={{ $('create — create: every optional field reaches Canvas, terms included').first().json.id }}",
-        "enrollmentTermIds": "92,94",
+        "enrollmentTermIds": "114,116",
         "updateFields": {
           "title": "=Sét \"quoted\" & <i>tags</i> 学期 🗓️ {{ $execution.id }}-1 (renamed)",
           "weighted": false,
@@ -215,7 +215,7 @@
       "executeOnce": true
     },
     {
-      "id": "bce128a4-c9fb-4ae3-8416-ad766810fe9a",
+      "id": "901b7e37-c833-4142-894d-cb684bc4314e",
       "name": "update — update: an empty term list detaches every term (Canvas repla",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -244,7 +244,7 @@
       "executeOnce": true
     },
     {
-      "id": "6573fe88-bee4-4ade-95c6-48e1548adae0",
+      "id": "29bf7a16-3efb-4b1c-9582-9ecbe1d84adc",
       "name": "delete — delete: removes the set and frees its terms",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

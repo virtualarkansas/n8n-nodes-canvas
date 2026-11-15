@@ -2,7 +2,7 @@
   "name": "Canvas battery — enrollmentTerm",
   "nodes": [
     {
-      "id": "0931e2d1-15e9-4eb1-ace2-5d2389959ec1",
+      "id": "048d862c-e16a-4af1-8e30-acba30719783",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "ad08b073-aeda-4880-be62-536b8d76794b",
+      "id": "ceeeccaf-f7d1-4469-a23e-17450b0ccd7c",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "c7efde52-e351-4635-af3f-fc7794628927",
+              "id": "03f2d032-90fe-4f69-83de-472378db1944",
               "name": "accountId",
               "value": "1",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "05133c53-6bb7-4c35-8d77-6ca3ed5fc0aa",
+      "id": "324c539b-f3af-4a79-b7ab-990f793000d9",
       "name": "create — create: every optional field and date override reaches Canva",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -49,7 +49,7 @@
         "resource": "enrollmentTerm",
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountId }}",
-        "name": "zqtermmwi2q4d2exb1 Tërm 学期 \"quoted\" & <b>tags</b> 🗓",
+        "name": "zqtermmwi4h478ob1 Tërm 学期 \"quoted\" & <b>tags</b> 🗓",
         "additionalFields": {
           "startAt": "2031-01-01T00:00:00Z",
           "endAt": "2031-06-30T00:00:00Z",
@@ -91,7 +91,7 @@
       "executeOnce": true
     },
     {
-      "id": "9ece6d26-78c5-49e1-b296-96381d07ff2f",
+      "id": "a870a1fd-5b73-4e45-9932-390d2d936c47",
       "name": "create — create: only a name is needed; a taken SIS ID and inverted d",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -104,7 +104,7 @@
         "resource": "enrollmentTerm",
         "operation": "create",
         "accountId": "self",
-        "name": "zqtermmwi2q4d2exb1 Minimal"
+        "name": "zqtermmwi4h478ob1 Minimal"
       },
       "credentials": {
         "canvasApi": {
@@ -117,7 +117,7 @@
       "executeOnce": true
     },
     {
-      "id": "6188b92f-b7e5-41ee-8fe7-f2c25550f786",
+      "id": "33277c03-7dc3-4937-9e1c-f230f7e4ff15",
       "name": "get — get: by ID and by SIS ID, with course count; seeded terms ar",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -143,7 +143,7 @@
       "executeOnce": true
     },
     {
-      "id": "e2d07bb4-7e90-44de-ad1c-608887fb2fc0",
+      "id": "0d128479-5b0d-40a0-8a69-816e74bf3897",
       "name": "get — get: by ID and by SIS ID, with course count; seeded terms ar (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -169,7 +169,7 @@
       "executeOnce": true
     },
     {
-      "id": "a6d7516c-9c05-4590-9b68-d7af762365f6",
+      "id": "99a48796-7135-46d6-87ae-4b8fcdc3f155",
       "name": "getAll — getAll: every term is its own item, across pages",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -197,7 +197,7 @@
       "executeOnce": true
     },
     {
-      "id": "2bcb6100-face-46da-817e-8b7b94b8e6c2",
+      "id": "856eb79a-2116-4bce-9185-4124b39ac21b",
       "name": "getAll — getAll: every term is its own item, across pages (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -222,7 +222,7 @@
       "executeOnce": true
     },
     {
-      "id": "145dead7-ef08-4f9a-b2b0-31d2a2ae5162",
+      "id": "da24f625-bf18-4b00-9e25-55f18fcd3d3d",
       "name": "getAll — getAll: every term is its own item, across pages (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -251,7 +251,7 @@
       "executeOnce": true
     },
     {
-      "id": "198b187e-7df8-488e-8d10-0e04cd6e1f4d",
+      "id": "b2fb8435-142b-4d30-8e1d-21a00f2dbbdc",
       "name": "getAll — getAll: name search, includes and workflow state are applied",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -265,7 +265,7 @@
         "operation": "getAll",
         "accountId": "={{ $('Config').first().json.accountId }}",
         "filters": {
-          "termName": "zqtermmwi2q4d2exb1 Bulk",
+          "termName": "zqtermmwi4h478ob1 Bulk",
           "include": [
             "course_count",
             "overrides"
@@ -287,7 +287,7 @@
       "executeOnce": true
     },
     {
-      "id": "9d4d7c6e-e6f3-48d4-a3c9-327e8632705f",
+      "id": "89bdf636-8277-4c3b-a0ac-669be9443385",
       "name": "getAll — getAll: name search, includes and workflow state are applied (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -315,7 +315,7 @@
       "executeOnce": true
     },
     {
-      "id": "e2619569-5340-4d73-a5ea-69ff8d13c200",
+      "id": "62c585b2-761c-474c-a408-69bc6c9bfb58",
       "name": "getAll — getAll: name search, includes and workflow state are applied (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -348,7 +348,7 @@
       "executeOnce": true
     },
     {
-      "id": "c2fe2f12-54b6-4f80-917d-a8cceadfdfb9",
+      "id": "a603299a-bdae-440e-b578-c0132cbd4aba",
       "name": "getAll — getAll: name search, includes and workflow state are applied (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -381,7 +381,7 @@
       "executeOnce": true
     },
     {
-      "id": "2cee04b2-a014-4217-954e-466702bdeef6",
+      "id": "55eda8f6-55d2-4cbf-a536-3d66748cea7d",
       "name": "update — update: every optional field reaches Canvas; overrides of ot",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -396,7 +396,7 @@
         "accountId": "={{ $('Config').first().json.accountId }}",
         "termId": "={{ $('get — get: by ID and by SIS ID, with course count; seeded terms ar').first().json.id }}",
         "updateFields": {
-          "name": "zqtermmwi2q4d2exb1 Renamed",
+          "name": "zqtermmwi4h478ob1 Renamed",
           "startAt": "2032-01-01T00:00:00Z",
           "endAt": "2032-06-30T00:00:00Z",
           "sisTermId": "=TERM-SIS_{{ $execution.id }}-2_v2",
@@ -423,7 +423,7 @@
       "executeOnce": true
     },
     {
-      "id": "29733dff-3297-46c2-93f2-b9770ab47e0f",
+      "id": "e95cce3d-7472-46db-891c-493678ea204c",
       "name": "update — update: with Override SIS Stickiness off, a name changed i",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -453,7 +453,7 @@
       "executeOnce": true
     },
     {
-      "id": "a1b5ccb1-e124-4a6d-8ab2-67b73e8889e3",
+      "id": "718c54db-7d52-4658-bde3-7067b73355c8",
       "name": "update — update: empty dates and SIS ID are cleared; an empty name is",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

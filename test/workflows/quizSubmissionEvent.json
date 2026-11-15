@@ -2,7 +2,7 @@
   "name": "Canvas battery — quizSubmissionEvent",
   "nodes": [
     {
-      "id": "7149d122-0ed0-4e06-8cef-82a06219d575",
+      "id": "1375e955-4be1-47ef-b001-a300e97195aa",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "cf99862d-3617-4433-8f82-c7b10c054829",
+      "id": "cc0ce331-c269-4ed0-80a4-e2e29d5e2298",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "61cc7273-0f55-45cd-9407-30b0fd4ca31d",
+      "id": "1a13b5d4-c358-4c29-a38d-d3e5c2411f15",
       "name": "getAll — quizSubmissionEvent.getAll: the teacher reads what was captu",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,9 +41,9 @@
         "authentication": "accessToken",
         "resource": "quizSubmissionEvent",
         "operation": "getAll",
-        "courseId": "845",
-        "quizId": "267",
-        "quizSubmissionId": "537",
+        "courseId": "947",
+        "quizId": "296",
+        "quizSubmissionId": "549",
         "options": {
           "attempt": 1
         },

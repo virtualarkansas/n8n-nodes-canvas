@@ -2,7 +2,7 @@
   "name": "Canvas battery — folder",
   "nodes": [
     {
-      "id": "e3b5e7b0-032b-4a1d-ab1f-e270419c5c1f",
+      "id": "ef22317d-303f-445e-874b-71481aa7b26a",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "84b50a3c-190c-40a9-b2e9-83a1833509bc",
+      "id": "edf121fe-b308-4ca6-a3b7-e318d891da08",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,13 +25,13 @@
         "assignments": {
           "assignments": [
             {
-              "id": "8cfbc79f-b2e1-4a14-b1b4-3afca3c4f8ae",
+              "id": "16c34854-fa5a-4808-8db1-5f969deff433",
               "name": "accountId",
               "value": "1",
               "type": "string"
             },
             {
-              "id": "6e90ce02-8097-4b33-845e-607be9ee2cfc",
+              "id": "cc073b5c-5a8a-487e-8b4a-397b6764cd1f",
               "name": "student2UserId",
               "value": "6",
               "type": "string"
@@ -42,7 +42,7 @@
       }
     },
     {
-      "id": "2f74c79c-4dde-4cb8-8d86-8951b9c7f872",
+      "id": "4d8c6877-9163-4ad7-8306-5a60290300fb",
       "name": "create — create: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -61,7 +61,7 @@
           "hidden": true,
           "lock_at": "2032-03-01T12:00:00Z",
           "locked": false,
-          "parent_folder_id": "1421",
+          "parent_folder_id": "1555",
           "position": 3,
           "unlock_at": "2032-01-15T12:00:00Z"
         }
@@ -77,7 +77,7 @@
       "executeOnce": true
     },
     {
-      "id": "f49f9f2c-c1da-4c18-b8ab-3d7668b72c85",
+      "id": "4f0e0e0c-59c4-48a2-b03e-bb3e3d6864b7",
       "name": "create — create: parent folder path creates the missing folders on ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -108,7 +108,7 @@
       "executeOnce": true
     },
     {
-      "id": "226ed94a-c489-459e-be98-baae2e07fe35",
+      "id": "29914ca1-3b4f-401e-9025-fdb26b7872ad",
       "name": "create — create: without a parent Canvas files the folder under unfi",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -135,7 +135,7 @@
       "executeOnce": true
     },
     {
-      "id": "f1ce6250-0580-4a11-a550-40e0e354c2b7",
+      "id": "06831021-2b42-4cf1-ab8a-fd6baa2ac34f",
       "name": "create — create: folder, group, user and account contexts",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -162,7 +162,7 @@
       "executeOnce": true
     },
     {
-      "id": "d7bac119-4ee1-4c59-a013-fd36189d8d7b",
+      "id": "ebced62a-4b5b-4287-87bc-3b122378a423",
       "name": "create — create: folder, group, user and account contexts (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -189,7 +189,7 @@
       "executeOnce": true
     },
     {
-      "id": "01e5b872-fcd3-4b46-8f80-237a358e86db",
+      "id": "59f50492-5b81-4924-b4d5-1b8f380b4a9f",
       "name": "get — get: returns the folder; a missing folder is not found",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -214,7 +214,7 @@
       "executeOnce": true
     },
     {
-      "id": "c03b2afe-6616-4715-8016-ec20ff37ba9f",
+      "id": "792910fc-7252-4085-b0f8-eebf534401a3",
       "name": "get — get: within a course, a group or a user; root is the top f",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -244,7 +244,7 @@
       "executeOnce": true
     },
     {
-      "id": "ec155fdc-0409-4f1b-8926-07708eb78a50",
+      "id": "891521cc-ff2f-4ecc-93ce-2860614c4618",
       "name": "get — get: within a course, a group or a user; root is the top f (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -274,7 +274,7 @@
       "executeOnce": true
     },
     {
-      "id": "901d310b-6bbd-4d02-81d3-1aec3c6aed58",
+      "id": "c03dd72a-ee46-4a34-a714-ee54a719a745",
       "name": "get — get: within a course, a group or a user; root is the top f (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -304,7 +304,7 @@
       "executeOnce": true
     },
     {
-      "id": "5c8469cc-d5fe-41df-b6d2-df9d7907a611",
+      "id": "b0d94501-a639-4ef6-9557-a5ca95feb762",
       "name": "get — get: within a course, a group or a user; root is the top f (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -334,7 +334,7 @@
       "executeOnce": true
     },
     {
-      "id": "4f2ee872-f1b7-4fe7-8a21-7b10343c2100",
+      "id": "641af8ef-7e87-4d3e-8478-a375cad5fe68",
       "name": "get — get: within a course, a group or a user; root is the top f (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -364,7 +364,7 @@
       "executeOnce": true
     },
     {
-      "id": "569359d2-a259-4906-bfd0-7191481f600c",
+      "id": "a57b6731-5310-4c79-8e3c-9e4a0ac9482e",
       "name": "getMediaFolder — getMediaFolder: the folder for uploaded media of a course or",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -390,7 +390,7 @@
       "executeOnce": true
     },
     {
-      "id": "c6b4c0c0-ce04-4a58-9e43-4aa1f7f394b6",
+      "id": "b4b65dc2-f4b2-46f6-b553-d46e285acb96",
       "name": "getMediaFolder — getMediaFolder: the folder for uploaded media of a course or (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -416,7 +416,7 @@
       "executeOnce": true
     },
     {
-      "id": "0f6003f5-4611-450b-8bdb-1bd523c95fbb",
+      "id": "e637e599-2c92-4926-ab37-c4399b495a30",
       "name": "getAll — getAll: the direct sub-folders of a folder, paginated",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -442,7 +442,7 @@
       "executeOnce": true
     },
     {
-      "id": "30715b9c-b160-4e8d-b963-5947c3700ddf",
+      "id": "ea4743c2-dc05-43bd-ad90-5eff1f5c521e",
       "name": "getAll — getAll: the direct sub-folders of a folder, paginated (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -471,7 +471,7 @@
       "executeOnce": true
     },
     {
-      "id": "7bcb7c58-94b0-40c1-91d8-862ac73e488c",
+      "id": "f37ca218-409a-44b8-991e-7cd4268d38bf",
       "name": "getAll — getAll: the direct sub-folders of a folder, paginated (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -501,7 +501,7 @@
       "executeOnce": true
     },
     {
-      "id": "9439f397-6b76-4b54-b637-ff9304d646a2",
+      "id": "33900e79-a5e1-4365-9ea6-b0bb833133c1",
       "name": "getAll — getAll: the direct sub-folders of a folder, paginated (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -527,7 +527,7 @@
       "executeOnce": true
     },
     {
-      "id": "7120a496-952e-4888-8ba6-d3d81a5cf102",
+      "id": "108a455e-28f8-495f-9685-b9da3052dfea",
       "name": "getAll — getAll: every folder of a course, a group and a user",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -556,7 +556,7 @@
       "executeOnce": true
     },
     {
-      "id": "3cd5e5ef-2c31-4f30-a1b3-41e2df83a29c",
+      "id": "c79ad089-681e-4ba6-93ed-cab0df50e492",
       "name": "getAll — getAll: every folder of a course, a group and a user (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -585,7 +585,7 @@
       "executeOnce": true
     },
     {
-      "id": "393e4660-c673-4c56-931b-a1efa48e7dcf",
+      "id": "7e85bf99-59aa-41a0-b307-22d618377fcf",
       "name": "getByPath — getByPath: resolves a path to the folders along it",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -612,7 +612,7 @@
       "executeOnce": true
     },
     {
-      "id": "f75c6ae0-6c6b-40e9-9d38-ea51ff9bb6c7",
+      "id": "14e216cd-4c64-45dc-a746-3160092f2d77",
       "name": "getByPath — getByPath: resolves a path to the folders along it (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -639,7 +639,7 @@
       "executeOnce": true
     },
     {
-      "id": "fac6a656-7dd4-4b56-8f67-24b3214f726d",
+      "id": "3ec37830-1a8d-49dd-8701-d2565d6b6755",
       "name": "getByPath — getByPath: resolves a path to the folders along it (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -666,7 +666,7 @@
       "executeOnce": true
     },
     {
-      "id": "122df359-4604-45ae-8d47-d11e04ef19a2",
+      "id": "e5b894a2-5418-48fa-9b34-33ffc6559398",
       "name": "getByPath — getByPath: an empty path is the root folder; group and user ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -693,7 +693,7 @@
       "executeOnce": true
     },
     {
-      "id": "97c1dd2d-8dd9-4f09-8920-97f87381b3a7",
+      "id": "ccf0eac6-b63f-4407-9f84-f0ee0b95b24f",
       "name": "getByPath — getByPath: an empty path is the root folder; group and user  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -719,7 +719,7 @@
       "executeOnce": true
     },
     {
-      "id": "1602445e-ad92-4dce-baea-ad66e95c8412",
+      "id": "90528c1a-fc54-4a73-b9ca-9b419cc524a9",
       "name": "listFiles — listFiles: pages through the files of a folder and honours t",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -744,7 +744,7 @@
       "executeOnce": true
     },
     {
-      "id": "2da34564-b690-4ab2-9fa0-b54631ece79c",
+      "id": "87cfae8f-4de8-48cb-ad90-7c5b8e94e197",
       "name": "listFiles — listFiles: pages through the files of a folder and honours t (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -772,7 +772,7 @@
       "executeOnce": true
     },
     {
-      "id": "f25957b4-85d2-47a9-8b4b-81b32e0a49cd",
+      "id": "3d83872e-2436-43f4-8e72-7a383d62d89f",
       "name": "listFiles — listFiles: pages through the files of a folder and honours t (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -803,7 +803,7 @@
       "executeOnce": true
     },
     {
-      "id": "d01198e6-a17a-4ad8-ae2f-6e6bfd53cb32",
+      "id": "88644886-edb4-4cef-a96a-e9121a4e5bc8",
       "name": "listFiles — listFiles: pages through the files of a folder and honours t (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -834,7 +834,7 @@
       "executeOnce": true
     },
     {
-      "id": "9d9ee8e1-8c0a-4f0c-b511-fe58eaba9a96",
+      "id": "69ee2380-6c64-42d6-b344-4b11fbeed20e",
       "name": "listFiles — listFiles: pages through the files of a folder and honours t (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -865,7 +865,7 @@
       "executeOnce": true
     },
     {
-      "id": "1a337b56-f4cb-467f-9cce-38cecea13518",
+      "id": "19100dba-677a-43f5-a6aa-8971cb1e2d19",
       "name": "listFiles — listFiles: pages through the files of a folder and honours t (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -902,7 +902,7 @@
       "executeOnce": true
     },
     {
-      "id": "05f88785-362a-483a-bda3-1cf4cc6b9849",
+      "id": "bc6338f2-1b47-44cf-8064-f9a555ff3ef4",
       "name": "listFiles — listFiles: pages through the files of a folder and honours t (7)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -934,7 +934,7 @@
       "executeOnce": true
     },
     {
-      "id": "84a8649e-ccc4-4d8c-b200-5d5bd5db5764",
+      "id": "3b224007-3acc-4eda-bc16-27ac73c04957",
       "name": "listFiles — listFiles: pages through the files of a folder and honours t (8)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -965,7 +965,7 @@
       "executeOnce": true
     },
     {
-      "id": "955006a9-7576-4717-b7c3-a6c4b54478e4",
+      "id": "9fc80979-ce19-428a-b178-e9b27e606409",
       "name": "listFiles — listFiles: pages through the files of a folder and honours t (9)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -996,7 +996,7 @@
       "executeOnce": true
     },
     {
-      "id": "f850fa42-f8af-4a7e-bf17-2d549a026098",
+      "id": "ad98d3b3-9cc0-4130-b3fb-8cc38ba0a5a3",
       "name": "listFiles — listFiles: pages through the files of a folder and honours t (10)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1027,7 +1027,7 @@
       "executeOnce": true
     },
     {
-      "id": "8bfc7486-58d4-4666-b231-bed5dbfac2a6",
+      "id": "648d65e3-6b82-4de7-ac26-2212abd04f52",
       "name": "listFiles — listFiles: pages through the files of a folder and honours t (11)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1058,7 +1058,7 @@
       "executeOnce": true
     },
     {
-      "id": "092dc0ca-a8f3-4d2e-ad35-977647598cca",
+      "id": "08559939-edb1-4de4-add6-fe914d8e40a2",
       "name": "listFiles — listFiles: pages through the files of a folder and honours t (12)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1090,7 +1090,7 @@
       "executeOnce": true
     },
     {
-      "id": "46ab5e90-31e2-4305-a38e-b8a74bc0c26c",
+      "id": "f0a5200b-ea93-444d-8d75-9bdc5f67da5d",
       "name": "listFiles — listFiles: pages through the files of a folder and honours t (13)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1115,7 +1115,7 @@
       "executeOnce": true
     },
     {
-      "id": "fe51a626-9964-433e-a220-45172d36c642",
+      "id": "94ef0a3c-d3b4-406c-9c2a-b0d6de1aca14",
       "name": "update — update: every field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1133,7 +1133,7 @@
           "lock_at": "2033-03-01T12:00:00Z",
           "locked": true,
           "name": "Umbenannt ünï",
-          "parent_folder_id": "1434",
+          "parent_folder_id": "1568",
           "position": 7,
           "unlock_at": "2033-01-15T12:00:00Z"
         }
@@ -1149,7 +1149,7 @@
       "executeOnce": true
     },
     {
-      "id": "b045c5f3-45e5-4e43-8a14-d01705e28196",
+      "id": "add50e90-2052-4583-8040-dd9b2656839b",
       "name": "update — update: every field reaches Canvas (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1180,7 +1180,7 @@
       "executeOnce": true
     },
     {
-      "id": "1674dedb-88b1-4fd4-ba87-feeab91afb03",
+      "id": "3e2db795-c749-4631-a24d-5ea9ee32fc09",
       "name": "copy — copy: copies a folder with its files and sub-folders",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1193,7 +1193,7 @@
         "resource": "folder",
         "operation": "copy",
         "sourceFolderId": "={{ $('update — update: every field reaches Canvas (2)').first().json.id }}",
-        "destinationFolderId": "1435"
+        "destinationFolderId": "1569"
       },
       "credentials": {
         "canvasApi": {
@@ -1206,7 +1206,7 @@
       "executeOnce": true
     },
     {
-      "id": "e8db88fa-74a0-432f-8287-faf49da1ae23",
+      "id": "3ff7c71e-432c-4c24-ab49-833ee0b6448d",
       "name": "delete — delete: a folder with content needs force; the root folder",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

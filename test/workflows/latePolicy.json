@@ -2,7 +2,7 @@
   "name": "Canvas battery — latePolicy",
   "nodes": [
     {
-      "id": "22af1cfd-e92d-4209-ab23-549c3e925718",
+      "id": "057e3b91-3ccb-49d5-bfab-fba61b897ab6",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "5843cf9d-a1a3-49bc-9a48-1bd34f6d8222",
+      "id": "d7ebfa0a-cab2-48a6-b8b7-79b19e4146d3",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "d7d1dc98-f7d4-4f4c-89a1-a89e69d88648",
+      "id": "38015a8c-0f6a-4b51-9dba-37bbd38084db",
       "name": "create — create: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,7 +41,7 @@
         "authentication": "accessToken",
         "resource": "latePolicy",
         "operation": "create",
-        "courseId": "715",
+        "courseId": "893",
         "additionalFields": {
           "late_submission_deduction": 12.5,
           "late_submission_deduction_enabled": true,
@@ -63,7 +63,7 @@
       "executeOnce": true
     },
     {
-      "id": "05c4614b-2d76-416e-8bab-732ba1121616",
+      "id": "f448d262-fd26-401a-863f-e090132b21dc",
       "name": "update — update: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -75,7 +75,7 @@
         "authentication": "accessToken",
         "resource": "latePolicy",
         "operation": "update",
-        "courseId": "715",
+        "courseId": "893",
         "updateFields": {
           "late_submission_deduction": 10,
           "late_submission_deduction_enabled": true,

@@ -2,7 +2,7 @@
   "name": "Canvas battery — conversation",
   "nodes": [
     {
-      "id": "5f808158-7657-4d6a-8d42-9c8b9d4df466",
+      "id": "fbf7c272-11ab-439f-9b99-99a660113205",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "6129b206-d62e-459f-ad84-a73103884990",
+      "id": "e28eb31f-4529-4e8f-aca0-918a53044001",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "c176d6ea-fa44-4c32-a951-8caee9a195a5",
+      "id": "8cee2105-f566-4ef6-b91e-6acc62b45805",
       "name": "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -43,7 +43,7 @@
         "operation": "getDeleted",
         "userId": "634",
         "options": {
-          "conversation_id": "414"
+          "conversation_id": "433"
         }
       },
       "credentials": {
@@ -57,7 +57,7 @@
       "executeOnce": true
     },
     {
-      "id": "6addaf89-9783-4d35-bd83-16dea039c5e9",
+      "id": "0eb37102-e0b4-4f58-858f-9ad45b0f80fd",
       "name": "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -71,8 +71,8 @@
         "operation": "getDeleted",
         "userId": "={{ $('getDeleted — deleteMessages -> getDeleted -> restore: a student removes m').first().json.user_id }}",
         "options": {
-          "conversation_id": "414",
-          "deleted_after": "2026-11-15T16:34:58.477Z"
+          "conversation_id": "433",
+          "deleted_after": "2026-11-15T17:26:44.432Z"
         }
       },
       "credentials": {
@@ -86,7 +86,7 @@
       "executeOnce": true
     },
     {
-      "id": "190d66b9-23e7-4e12-b75c-a3da4a9a1c45",
+      "id": "41804973-a78e-4bca-b528-3630727555a8",
       "name": "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -100,8 +100,8 @@
         "operation": "getDeleted",
         "userId": "={{ $('getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (2)').first().json.user_id }}",
         "options": {
-          "conversation_id": "414",
-          "deleted_before": "2026-11-15T16:34:58.477Z"
+          "conversation_id": "433",
+          "deleted_before": "2026-11-15T17:26:44.432Z"
         }
       },
       "credentials": {
@@ -115,7 +115,7 @@
       "executeOnce": true
     },
     {
-      "id": "f4a6df9d-f237-4244-8681-97c10e5583d4",
+      "id": "f4696256-6c64-4e1a-b45a-5022e86933f1",
       "name": "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -129,8 +129,8 @@
         "operation": "getDeleted",
         "userId": "={{ $('getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (2)').first().json.user_id }}",
         "options": {
-          "conversation_id": "414",
-          "deleted_after": "2026-11-15T17:35:05.348Z"
+          "conversation_id": "433",
+          "deleted_after": "2026-11-15T18:26:51.514Z"
         }
       },
       "credentials": {
@@ -144,7 +144,7 @@
       "executeOnce": true
     },
     {
-      "id": "88e82e77-dfc1-4a7f-873a-5066f4dfe265",
+      "id": "dff1b769-0a65-4882-971c-8b2dc203ddae",
       "name": "getDeleted — delete -> getDeleted: more deleted messages than a page are ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -169,7 +169,7 @@
       "executeOnce": true
     },
     {
-      "id": "af16c79e-d5c3-4da4-9c31-fab6b8939e8d",
+      "id": "f1248db9-b714-4c4c-a312-00760c900701",
       "name": "deleteForAll — deleteForAll: a site admin removes a conversation from every",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -181,7 +181,7 @@
         "authentication": "accessToken",
         "resource": "conversation",
         "operation": "deleteForAll",
-        "conversationId": "420"
+        "conversationId": "440"
       },
       "credentials": {
         "canvasApi": {

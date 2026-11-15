@@ -2,7 +2,7 @@
   "name": "Canvas battery — errorReport",
   "nodes": [
     {
-      "id": "cff7a2be-0c96-441d-9e6f-dce9aa34b430",
+      "id": "4ce09fc2-9656-459a-9992-b86a8037a4dd",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "820f4fbd-37c5-4b0f-9ee2-19c9d5dce8d4",
+      "id": "a9c7e352-aef0-4d3a-b614-fa46c51ce2b7",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "fe70a9ad-f308-4d63-9fd4-9bdd95cafa61",
+      "id": "7acd4723-61c5-4bc3-86a7-73c74c40004b",
       "name": "create — create: every field is stored with the report, for the user ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

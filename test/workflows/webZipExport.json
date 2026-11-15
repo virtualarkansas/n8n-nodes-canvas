@@ -2,7 +2,7 @@
   "name": "Canvas battery — webZipExport",
   "nodes": [
     {
-      "id": "7c4b971a-e3c8-4b56-99c0-af5b93cb34f7",
+      "id": "4e958f68-ea4c-4641-8d8b-cae6f8d53b25",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "67a72490-bf8f-403a-a539-3a066b2571bc",
+      "id": "eb3b11d3-e759-4775-b249-46fdc08a655f",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "b4557fe9-230d-43ec-a252-adb014e16234",
+      "id": "2d37f699-e11c-4f75-9983-2fc4e4d29070",
       "name": "getAll — getAll: exports are private — an admin sees none of the stud",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,7 +41,7 @@
         "authentication": "accessToken",
         "resource": "webZipExport",
         "operation": "getAll",
-        "courseId": "831"
+        "courseId": "985"
       },
       "credentials": {
         "canvasApi": {

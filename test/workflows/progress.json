@@ -2,7 +2,7 @@
   "name": "Canvas battery — progress",
   "nodes": [
     {
-      "id": "fe5f39ea-e537-477f-afd3-129040aa7087",
+      "id": "b2e199bd-a76f-489d-b2a9-0d4b9d2ee810",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "9215f165-fb3c-49ed-9487-69d8d4ca167c",
+      "id": "4e0e6e7b-055f-4036-a25c-4f89ca425171",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "e0d499f2-8a78-4077-b3f5-697c483b34a4",
+      "id": "bc16a8ad-c6f7-4588-a233-5ae50878606c",
       "name": "get — create (course copy): copies everything and shifts the dates",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,7 +41,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1419"
+        "progressId": "1681"
       },
       "credentials": {
         "canvasApi": {
@@ -54,7 +54,7 @@
       "executeOnce": true
     },
     {
-      "id": "48520b66-8755-406f-a6e8-a33c56fbeec3",
+      "id": "bb4ca1c6-dd0f-4f6a-9c62-a59400e28520",
       "name": "get — create (course copy): Select copies only the chosen object",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -66,7 +66,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1420"
+        "progressId": "1682"
       },
       "credentials": {
         "canvasApi": {
@@ -79,7 +79,7 @@
       "executeOnce": true
     },
     {
-      "id": "07aee2f1-f342-4c0a-ac0b-c3533a2991ce",
+      "id": "f20e9f76-d6d6-42b8-8350-d560432d251e",
       "name": "get — create (course copy): module insertion, assignment group, re",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -91,7 +91,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1421"
+        "progressId": "1684"
       },
       "credentials": {
         "canvasApi": {
@@ -104,7 +104,7 @@
       "executeOnce": true
     },
     {
-      "id": "5087a1ca-b2d8-412e-9f01-c4a020a047a1",
+      "id": "956b9401-c182-4eb1-aab8-9011a2b9535c",
       "name": "get — selective import: wait for the selection, list the content, ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -116,7 +116,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1422"
+        "progressId": "1688"
       },
       "credentials": {
         "canvasApi": {
@@ -129,7 +129,7 @@
       "executeOnce": true
     },
     {
-      "id": "f5e20a40-6c10-47e3-a812-d82d9572596e",
+      "id": "fb8c6fec-af9b-4d11-8b6d-20f719c988ad",
       "name": "get — create (Canvas cartridge): imports a finished content export",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -141,7 +141,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1423"
+        "progressId": "1693"
       },
       "credentials": {
         "canvasApi": {
@@ -154,7 +154,7 @@
       "executeOnce": true
     },
     {
-      "id": "1d05cabd-d776-41ba-97a2-eca327b4a842",
+      "id": "cecf2f8d-f6e4-4eca-a096-cfafb6249e21",
       "name": "get — create (ZIP file): announces an upload, and unzips the file ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -166,7 +166,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1425"
+        "progressId": "1695"
       },
       "credentials": {
         "canvasApi": {
@@ -179,7 +179,7 @@
       "executeOnce": true
     },
     {
-      "id": "3932378f-940b-464f-a7ed-c414d85b6c90",
+      "id": "ada13585-669a-4c78-b407-a0e1b5740ebc",
       "name": "get — create (account): a cartridge import into an account, by fil",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -191,7 +191,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1433"
+        "progressId": "1701"
       },
       "credentials": {
         "canvasApi": {
@@ -204,7 +204,7 @@
       "executeOnce": true
     },
     {
-      "id": "41b1e38b-4dad-43de-968b-7130ed0c32f0",
+      "id": "e5b8e03e-05d2-4212-b355-52f0fb8ac43b",
       "name": "get — update (course): a selective copy, with date shifting and pl",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -216,7 +216,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1443"
+        "progressId": "1713"
       },
       "credentials": {
         "canvasApi": {
@@ -229,7 +229,7 @@
       "executeOnce": true
     },
     {
-      "id": "264042d1-b94b-4fbc-9e70-db38f244d77c",
+      "id": "868feda6-dba6-4c83-ac65-f51fa8674ffd",
       "name": "get — update, getSelectiveData (account): a cartridge from a conte",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -241,7 +241,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1459"
+        "progressId": "1714"
       },
       "credentials": {
         "canvasApi": {
@@ -254,7 +254,7 @@
       "executeOnce": true
     },
     {
-      "id": "241da75c-3803-42cf-a775-16c8ef4ec7fd",
+      "id": "602f501e-adb6-4d49-8086-f3edf17f88ff",
       "name": "get — create (course, Common Cartridge): exports the whole course;",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -266,7 +266,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1468"
+        "progressId": "1775"
       },
       "credentials": {
         "canvasApi": {
@@ -279,7 +279,7 @@
       "executeOnce": true
     },
     {
-      "id": "5cf70b88-adf4-4351-a798-d601263f57d7",
+      "id": "46ffc449-ca33-4099-8625-c58ef33dc2a1",
       "name": "get — create (course, Common Cartridge): every Select field limits",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -291,7 +291,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1470"
+        "progressId": "1783"
       },
       "credentials": {
         "canvasApi": {
@@ -304,7 +304,7 @@
       "executeOnce": true
     },
     {
-      "id": "bd8917d3-b081-4c18-8d66-bc4c0a493954",
+      "id": "73d04624-a451-4a94-9e8c-decbcb6bc938",
       "name": "get — create (course, QTI): exports quizzes, all of them or the se",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -316,7 +316,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1473"
+        "progressId": "1786"
       },
       "credentials": {
         "canvasApi": {
@@ -329,7 +329,7 @@
       "executeOnce": true
     },
     {
-      "id": "94514177-069f-40cf-be31-8eca453a9b44",
+      "id": "45f6004d-d699-4d66-a1af-7f6541748345",
       "name": "get — create (course, QTI): exports quizzes, all of them or the se (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -341,7 +341,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1474"
+        "progressId": "1787"
       },
       "credentials": {
         "canvasApi": {
@@ -354,7 +354,7 @@
       "executeOnce": true
     },
     {
-      "id": "85f9cbcf-d838-4d45-9b36-6dd92ffa77e5",
+      "id": "03202fb8-ff26-4aaa-8fd2-f55bd7ef840e",
       "name": "get — create (course, ZIP): exports files, all of them, selected f",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -366,7 +366,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1476"
+        "progressId": "1788"
       },
       "credentials": {
         "canvasApi": {
@@ -379,7 +379,7 @@
       "executeOnce": true
     },
     {
-      "id": "f862808d-5c36-43bf-ab92-a59803e464b7",
+      "id": "233a6a1b-01b9-41f6-8803-dc5a4350d416",
       "name": "get — create (course, ZIP): exports files, all of them, selected f (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -391,7 +391,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1478"
+        "progressId": "1789"
       },
       "credentials": {
         "canvasApi": {
@@ -404,7 +404,7 @@
       "executeOnce": true
     },
     {
-      "id": "63d72070-ea96-46d7-a26f-d0f0e2480733",
+      "id": "320b4f97-dbab-4b9f-969e-4bdb31f1ab56",
       "name": "get — create (course, ZIP): exports files, all of them, selected f (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -416,7 +416,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1480"
+        "progressId": "1790"
       },
       "credentials": {
         "canvasApi": {
@@ -429,7 +429,7 @@
       "executeOnce": true
     },
     {
-      "id": "5d0730d4-b796-4155-9ebf-7b1ede3ee3f7",
+      "id": "ff6ae321-777c-44cb-a5ea-a172c7890bc0",
       "name": "get — create (group): zips the files of a group",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -441,7 +441,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1483"
+        "progressId": "1791"
       },
       "credentials": {
         "canvasApi": {
@@ -454,7 +454,7 @@
       "executeOnce": true
     },
     {
-      "id": "762e5212-c71d-46dc-97b8-01d5f4c8fb11",
+      "id": "ed192de2-40ec-418e-a3c4-6156d79318d9",
       "name": "get — bulkEnroll: enrolls every user in every course as a student ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -466,7 +466,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1514"
+        "progressId": "1821"
       },
       "credentials": {
         "canvasApi": {
@@ -479,7 +479,7 @@
       "executeOnce": true
     },
     {
-      "id": "c04ba658-c99e-490b-9275-dad396a57a29",
+      "id": "3eed47e4-8fb2-4086-8cca-76ca5396ba33",
       "name": "get — get: follows a background job from queued to completed",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -491,7 +491,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1612"
+        "progressId": "1897"
       },
       "credentials": {
         "canvasApi": {
@@ -504,7 +504,7 @@
       "executeOnce": true
     },
     {
-      "id": "832e3340-4f31-4110-82d0-f2ff5a99cf5f",
+      "id": "8be49eb2-d1ea-4682-b5d4-f2bfed36fdac",
       "name": "get — get, waitForCompletion, cancel: accept the progress_url a ba",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -516,7 +516,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "http://localhost:3000/api/v1/progress/1613"
+        "progressId": "http://localhost:3000/api/v1/progress/1898"
       },
       "credentials": {
         "canvasApi": {
@@ -529,7 +529,7 @@
       "executeOnce": true
     },
     {
-      "id": "7353beb7-d9db-4a89-b0da-90cac1682d71",
+      "id": "ba1cc79a-71da-48b9-9cc7-dfac97f501ad",
       "name": "cancel — get, waitForCompletion, cancel: accept the progress_url a ba",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -541,7 +541,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "cancel",
-        "progressId": "/api/v1/progress/1613?x=1",
+        "progressId": "/api/v1/progress/1898?x=1",
         "options": {
           "message": "by URL"
         }
@@ -557,7 +557,7 @@
       "executeOnce": true
     },
     {
-      "id": "3755d5a0-52bb-49c4-9021-2e96eca36561",
+      "id": "7b4512bd-ee43-4d09-acff-e5fa0918c16c",
       "name": "cancel — cancel: marks the job as failed and stores the message",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -569,7 +569,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "cancel",
-        "progressId": "1614",
+        "progressId": "1899",
         "options": {
           "message": "Cancelled by the battery – \"quoted\" & <b>tags</b> 🛑"
         }
@@ -585,7 +585,7 @@
       "executeOnce": true
     },
     {
-      "id": "026bb0be-1bd0-40a1-8b1b-5d2d021fc1ba",
+      "id": "88da48dd-bb25-41aa-8dd8-13ed093725d6",
       "name": "cancel — cancel: without a message, on a job nothing touches any more",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -597,7 +597,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "cancel",
-        "progressId": "1615"
+        "progressId": "1900"
       },
       "credentials": {
         "canvasApi": {
@@ -610,7 +610,7 @@
       "executeOnce": true
     },
     {
-      "id": "17d2aa9b-dbcb-43b5-b73a-d994cc1ad21a",
+      "id": "8243e0c4-6d49-4254-8a10-a64075ea2285",
       "name": "get — getLti: the progress of an LTI score upload, readable only w",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -622,7 +622,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "1618"
+        "progressId": "1903"
       },
       "credentials": {
         "canvasApi": {

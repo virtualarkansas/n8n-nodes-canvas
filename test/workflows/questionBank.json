@@ -2,7 +2,7 @@
   "name": "Canvas battery — questionBank",
   "nodes": [
     {
-      "id": "3bc707be-2451-459c-9ef8-26ecf452b207",
+      "id": "dd9bf7fb-1708-4e33-aeea-b47c089f6ae8",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "164298f2-abff-4c1b-a78b-f81cced1583c",
+      "id": "14014ffd-09ff-453d-8490-7a27581a83ce",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "1f6db82c-c0fd-4b7d-a5e6-b440b92678a5",
+      "id": "b28b20f0-c3f6-4b81-b70f-920dd839c9e2",
       "name": "getAll — getAll (course): every bank of the course that is not delete",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,7 +42,7 @@
         "resource": "questionBank",
         "operation": "getAll",
         "context": "course",
-        "courseId": "821",
+        "courseId": "979",
         "pagination": {
           "perPage": 1,
           "maxPages": 1
@@ -59,7 +59,7 @@
       "executeOnce": true
     },
     {
-      "id": "45e6118d-6d0e-4a4c-8e26-04d7c3685041",
+      "id": "9b14ae54-6158-4439-9523-495b2a4b426f",
       "name": "getAll — getAll: Include Question Count on and off; the ID as a num",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -72,7 +72,7 @@
         "resource": "questionBank",
         "operation": "getAll",
         "context": "course",
-        "courseId": "821",
+        "courseId": "979",
         "options": {
           "include_question_count": false
         }
@@ -88,7 +88,7 @@
       "executeOnce": true
     },
     {
-      "id": "c2172e81-4fa9-44e1-ae7e-73329a35d26a",
+      "id": "83fca58d-521e-4a73-a543-4b595a2f11f8",
       "name": "getAll — getAll (account): the banks of an account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -101,7 +101,7 @@
         "resource": "questionBank",
         "operation": "getAll",
         "context": "account",
-        "accountId": "237",
+        "accountId": "284",
         "options": {
           "include_question_count": true
         }
@@ -117,7 +117,7 @@
       "executeOnce": true
     },
     {
-      "id": "1868401e-9444-4a13-86fb-299b3414d376",
+      "id": "89052057-5183-43ce-b4b4-8c45a252bbb1",
       "name": "get — get: one bank, with and without the number of its questions",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -129,7 +129,7 @@
         "authentication": "accessToken",
         "resource": "questionBank",
         "operation": "get",
-        "questionBankId": "35"
+        "questionBankId": "42"
       },
       "credentials": {
         "canvasApi": {
@@ -142,7 +142,7 @@
       "executeOnce": true
     },
     {
-      "id": "36a3e008-21a1-4dd6-bcc9-fe93077be66c",
+      "id": "d3403100-0a7c-4fdf-b822-45c02c41d142",
       "name": "listQuestions — listQuestions: a bank with more questions than two pages",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -170,7 +170,7 @@
       "executeOnce": true
     },
     {
-      "id": "016adbdd-8d22-4b94-9593-0cc2c873d347",
+      "id": "42000874-c51b-4555-8ab1-4444864fc44f",
       "name": "listQuestions — listQuestions: a bank with more questions than two pages (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -199,7 +199,7 @@
       "executeOnce": true
     },
     {
-      "id": "83cce6aa-d5a6-4fee-ad89-9d42823645d2",
+      "id": "5af904a8-1c3b-4682-9e32-635c021b44b4",
       "name": "listQuestions — listQuestions: a bank with more questions than two pages (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -228,7 +228,7 @@
       "executeOnce": true
     },
     {
-      "id": "74f1cca5-b334-4aa3-803e-743065ac5eb2",
+      "id": "f5d42076-3d03-423e-b0e4-e2a488dd0fda",
       "name": "listQuestions — listQuestions: the questions with their text and answers; an",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -240,7 +240,7 @@
         "authentication": "accessToken",
         "resource": "questionBank",
         "operation": "listQuestions",
-        "questionBankId": "33"
+        "questionBankId": "40"
       },
       "credentials": {
         "canvasApi": {
@@ -253,7 +253,7 @@
       "executeOnce": true
     },
     {
-      "id": "56b469c5-7766-44f2-99a8-d0192707e0f2",
+      "id": "14b46d1f-19bb-4bbf-bc57-1f2fdc6f1bba",
       "name": "listQuestions — listQuestions: the questions with their text and answers; an (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -282,7 +282,7 @@
       "executeOnce": true
     },
     {
-      "id": "cd63fb07-56a8-47ca-83c1-7b8b90fcbdbb",
+      "id": "53347d4c-7c70-4505-a844-4c731a392aa8",
       "name": "listQuestions — listQuestions: the questions with their text and answers; an (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -294,7 +294,7 @@
         "authentication": "accessToken",
         "resource": "questionBank",
         "operation": "listQuestions",
-        "questionBankId": "34",
+        "questionBankId": "41",
         "pagination": {
           "returnAll": true
         }
@@ -310,7 +310,7 @@
       "executeOnce": true
     },
     {
-      "id": "ab919b6e-294c-4862-9a12-93e198010566",
+      "id": "acc27994-ce8f-45a7-8843-9c2e0a7f86a4",
       "name": "listQuestions — listQuestions: the questions with their text and answers; an (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

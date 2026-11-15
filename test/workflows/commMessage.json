@@ -2,7 +2,7 @@
   "name": "Canvas battery — commMessage",
   "nodes": [
     {
-      "id": "a5634446-7d68-4b8f-9b8f-ba23ea15034e",
+      "id": "b100b621-80e3-438f-8bad-54ac4003d074",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "84930ae1-807c-46e9-bfcf-52024d4345b0",
+      "id": "9872fd81-f546-42c9-8efd-58be9edc488c",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "3567637e-04ce-4b38-a8ca-96261ea06a6e",
+              "id": "d718e5be-8350-41df-a642-b6c48e733eaf",
               "name": "adminUserId",
               "value": "1",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "bbabbfc3-e789-4071-8bc4-898c1ba8dbe7",
+      "id": "6bf2a292-a140-4879-b433-a2457e3e6450",
       "name": "getAll — getAll: Return All follows the pages, the default stops at 5",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -51,7 +51,7 @@
         "userId": "635",
         "returnAll": true,
         "options": {
-          "end_time": "2026-11-15T16:53:27Z"
+          "end_time": "2026-11-15T17:42:53Z"
         }
       },
       "credentials": {
@@ -65,7 +65,7 @@
       "executeOnce": true
     },
     {
-      "id": "13cf4df7-04a8-4dbe-a6f3-8505f3210833",
+      "id": "4f60a442-d774-4831-95d6-330709339156",
       "name": "getAll — getAll: Return All follows the pages, the default stops at 5 (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -79,7 +79,7 @@
         "operation": "getAll",
         "userId": "635",
         "options": {
-          "end_time": "2026-11-15T16:53:27Z"
+          "end_time": "2026-11-15T17:42:53Z"
         }
       },
       "credentials": {
@@ -93,7 +93,7 @@
       "executeOnce": true
     },
     {
-      "id": "79557a42-90ec-4b4b-a0bf-9d0a225117a7",
+      "id": "ac8abaaf-f43b-4078-a6cb-f8770e8471a7",
       "name": "getAll — getAll: Return All follows the pages, the default stops at 5 (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -109,7 +109,7 @@
         "returnAll": false,
         "limit": 7,
         "options": {
-          "end_time": "2026-11-15T16:53:27Z"
+          "end_time": "2026-11-15T17:42:53Z"
         }
       },
       "credentials": {
@@ -123,7 +123,7 @@
       "executeOnce": true
     },
     {
-      "id": "d514b144-e27e-44a6-bd9f-8273ebe32de4",
+      "id": "fa9baa80-dd23-4a9d-8e86-4bf326c70591",
       "name": "getAll — getAll: Return All follows the pages, the default stops at 5 (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -139,7 +139,7 @@
         "returnAll": false,
         "limit": 103,
         "options": {
-          "end_time": "2026-11-15T16:53:27Z"
+          "end_time": "2026-11-15T17:42:53Z"
         }
       },
       "credentials": {
@@ -153,7 +153,7 @@
       "executeOnce": true
     },
     {
-      "id": "ea31ebb2-68bd-4434-a00b-dacfce76d687",
+      "id": "57ebcdce-9219-423a-8010-5a68490fdf25",
       "name": "getAll — getAll: without a time range the newest messages come first",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -179,7 +179,7 @@
       "executeOnce": true
     },
     {
-      "id": "7994adb7-aa58-4011-ae6b-91bde7448a85",
+      "id": "2ecb90b4-b28e-428f-9dc6-35eb50301b03",
       "name": "getAll — getAll: Start Time and End Time bound the result",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -194,8 +194,8 @@
         "userId": "635",
         "returnAll": true,
         "options": {
-          "start_time": "2026-11-15T16:43:20Z",
-          "end_time": "2026-11-15T16:53:24Z"
+          "start_time": "2026-11-15T17:31:35Z",
+          "end_time": "2026-11-15T17:42:51Z"
         }
       },
       "credentials": {
@@ -209,7 +209,7 @@
       "executeOnce": true
     },
     {
-      "id": "84bfc550-707c-4ffb-a2ec-70e1eefba860",
+      "id": "7d705ecf-ae00-4e6c-a915-ce101dd5526e",
       "name": "getAll — getAll: Start Time and End Time bound the result (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -224,8 +224,8 @@
         "userId": "635",
         "returnAll": true,
         "options": {
-          "start_time": "2026-11-15T16:43:20Z",
-          "end_time": "2026-11-15T16:53:27Z"
+          "start_time": "2026-11-15T17:31:35Z",
+          "end_time": "2026-11-15T17:42:53Z"
         }
       },
       "credentials": {
@@ -239,7 +239,7 @@
       "executeOnce": true
     },
     {
-      "id": "ed38f4ea-4f70-46c5-9372-d209ebac7aff",
+      "id": "6a23054b-6e26-40da-98b4-c5630b50e3c2",
       "name": "getAll — getAll: Start Time and End Time bound the result (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -268,7 +268,7 @@
       "executeOnce": true
     },
     {
-      "id": "6a4a72bb-756c-46bf-8ceb-72b9d34a73f6",
+      "id": "df674b12-6588-4092-9c85-23d1dcc7fcfe",
       "name": "getAll — getAll: a user without any notifications yields no items",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

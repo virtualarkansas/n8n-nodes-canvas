@@ -2,7 +2,7 @@
   "name": "Canvas battery — gradeChangeLog",
   "nodes": [
     {
-      "id": "92b6ad8f-c693-491b-9fea-3f9afbfc4c88",
+      "id": "c42eede7-a83e-4ef3-b19d-02ddde1c1365",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "d90bc95b-fe7d-489e-9486-f0d86cd86a46",
+      "id": "dcb3a5c9-1f7b-4007-9dca-38ed2e37132f",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "24d8bec4-dda3-4ed6-86a6-85c75107daa4",
+      "id": "59188642-520b-42b3-912b-ae4424e50c53",
       "name": "getByCourse — getByCourse: one item per grade change, across pages",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,7 +41,7 @@
         "authentication": "accessToken",
         "resource": "gradeChangeLog",
         "operation": "getByCourse",
-        "courseId": "717",
+        "courseId": "885",
         "pagination": {
           "returnAll": true
         }
@@ -57,7 +57,7 @@
       "executeOnce": true
     },
     {
-      "id": "72d0bd10-c566-478b-9cec-ef78c244a14b",
+      "id": "7b50c623-eb82-4973-b1b4-4564cd6941b8",
       "name": "getByCourse — getByCourse: one item per grade change, across pages (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -69,7 +69,7 @@
         "authentication": "accessToken",
         "resource": "gradeChangeLog",
         "operation": "getByCourse",
-        "courseId": "717",
+        "courseId": "885",
         "pagination": {
           "perPage": 5,
           "maxPages": 2
@@ -86,7 +86,7 @@
       "executeOnce": true
     },
     {
-      "id": "fbde9c68-25a0-4794-9dfd-604dcd7c1f90",
+      "id": "a707c912-a3d4-4de3-8a13-b0f71785c384",
       "name": "getByAssignment — getByAssignment, getByStudent, getByGrader: each narrows to ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -98,7 +98,7 @@
         "authentication": "accessToken",
         "resource": "gradeChangeLog",
         "operation": "getByAssignment",
-        "assignmentId": "1825",
+        "assignmentId": "2088",
         "pagination": {
           "returnAll": true
         }
@@ -114,7 +114,7 @@
       "executeOnce": true
     },
     {
-      "id": "99e718af-ba4c-4485-9b60-fe84c88699b1",
+      "id": "773c34bf-9750-4211-b9dd-f59c76c785ea",
       "name": "getByStudent — getByAssignment, getByStudent, getByGrader: each narrows to ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -126,7 +126,7 @@
         "authentication": "accessToken",
         "resource": "gradeChangeLog",
         "operation": "getByStudent",
-        "studentId": "2153",
+        "studentId": "2491",
         "pagination": {
           "returnAll": true
         }
@@ -142,7 +142,7 @@
       "executeOnce": true
     },
     {
-      "id": "60cacd8b-f38a-436b-bd25-a5f678241906",
+      "id": "6df83cb7-b8c1-475a-bec9-9e91134d1188",
       "name": "getByGrader — getByAssignment, getByStudent, getByGrader: each narrows to ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -173,7 +173,7 @@
       "executeOnce": true
     },
     {
-      "id": "857f753b-3abc-43b4-bca0-60430e108795",
+      "id": "cbc03ffd-e898-41e0-bf6f-313967bc4654",
       "name": "getByCourse — every change carries the course, assignment, student and gra",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -185,7 +185,7 @@
         "authentication": "accessToken",
         "resource": "gradeChangeLog",
         "operation": "getByCourse",
-        "courseId": "717",
+        "courseId": "885",
         "pagination": {
           "returnAll": true,
           "perPage": 4
@@ -202,7 +202,7 @@
       "executeOnce": true
     },
     {
-      "id": "5d1948ae-03a1-411d-9c35-640de9927cb6",
+      "id": "22d93e24-083f-4d24-ac86-cf978037bfce",
       "name": "query — every change carries the course, assignment, student and gra",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -215,8 +215,8 @@
         "resource": "gradeChangeLog",
         "operation": "query",
         "filters": {
-          "course_id": "717",
-          "student_id": "2155"
+          "course_id": "885",
+          "student_id": "2493"
         },
         "includeLinked": false,
         "pagination": {
@@ -234,7 +234,7 @@
       "executeOnce": true
     },
     {
-      "id": "c1758ee5-64b7-491e-ae63-2513b255f75d",
+      "id": "f22c312c-97e8-4396-bc5b-b935f64adbeb",
       "name": "getByAssignment — time range: Start Time and End Time narrow every lookup exac",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -246,10 +246,10 @@
         "authentication": "accessToken",
         "resource": "gradeChangeLog",
         "operation": "getByAssignment",
-        "assignmentId": "1823",
+        "assignmentId": "2087",
         "options": {
-          "start_time": "2026-11-15T16:38:24Z",
-          "end_time": "2026-11-15T16:38:33Z"
+          "start_time": "2026-11-15T17:29:13Z",
+          "end_time": "2026-11-15T17:29:24Z"
         },
         "pagination": {
           "returnAll": true
@@ -266,7 +266,7 @@
       "executeOnce": true
     },
     {
-      "id": "14458d09-ccf8-4186-aa4f-36575c3ff5f1",
+      "id": "244938d2-fd32-4ed9-a15b-a5abd0277c8d",
       "name": "getByStudent — time range: Start Time and End Time narrow every lookup exac",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -278,10 +278,10 @@
         "authentication": "accessToken",
         "resource": "gradeChangeLog",
         "operation": "getByStudent",
-        "studentId": "2153",
+        "studentId": "2491",
         "options": {
-          "start_time": "2026-11-15T16:38:30Z",
-          "end_time": "2026-11-15T16:38:30Z"
+          "start_time": "2026-11-15T17:29:20Z",
+          "end_time": "2026-11-15T17:29:20Z"
         },
         "pagination": {
           "returnAll": true
@@ -298,7 +298,7 @@
       "executeOnce": true
     },
     {
-      "id": "60b361fc-ba01-4830-a865-e0055d2c27f1",
+      "id": "d0ab5bae-bea1-4f4f-9aae-a5085bcf6567",
       "name": "getByCourse — time range: Start Time and End Time narrow every lookup exac",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -310,10 +310,10 @@
         "authentication": "accessToken",
         "resource": "gradeChangeLog",
         "operation": "getByCourse",
-        "courseId": "717",
+        "courseId": "885",
         "options": {
-          "start_time": "2026-11-15T16:38:24Z",
-          "end_time": "2026-11-15T16:38:34Z"
+          "start_time": "2026-11-15T17:29:13Z",
+          "end_time": "2026-11-15T17:29:25Z"
         },
         "pagination": {
           "returnAll": true
@@ -330,7 +330,7 @@
       "executeOnce": true
     },
     {
-      "id": "d223495a-1240-462f-997a-483b445cff3b",
+      "id": "dbe09ab6-56c9-4153-9c97-d1e78998e91c",
       "name": "getByGrader — time range: Start Time and End Time narrow every lookup exac",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -345,7 +345,7 @@
         "graderId": "1",
         "options": {
           "start_time": "2026-11-15T00:00:00Z",
-          "end_time": "2026-11-15T16:38:35Z"
+          "end_time": "2026-11-15T17:29:26Z"
         },
         "pagination": {
           "returnAll": true
@@ -362,7 +362,7 @@
       "executeOnce": true
     },
     {
-      "id": "51941888-d713-4f0d-ab6c-3b5019b25ed7",
+      "id": "1b16fcf0-50be-477d-a82f-2aa1fd013217",
       "name": "query — time range: Start Time and End Time narrow every lookup exac",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -375,10 +375,10 @@
         "resource": "gradeChangeLog",
         "operation": "query",
         "filters": {
-          "course_id": "717",
-          "assignment_id": "1823",
-          "start_time": "2026-11-15T16:38:24Z",
-          "end_time": "2026-11-15T16:38:33Z"
+          "course_id": "885",
+          "assignment_id": "2087",
+          "start_time": "2026-11-15T17:29:13Z",
+          "end_time": "2026-11-15T17:29:24Z"
         },
         "pagination": {
           "returnAll": true
@@ -395,7 +395,7 @@
       "executeOnce": true
     },
     {
-      "id": "9113a1b2-7b63-42fe-afcb-e32b13874dd1",
+      "id": "340c3e1f-34f3-41f3-8ba5-b5ff7d83abf6",
       "name": "getByCourse — time range: an end time in the past returns nothing",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -407,7 +407,7 @@
         "authentication": "accessToken",
         "resource": "gradeChangeLog",
         "operation": "getByCourse",
-        "courseId": "717",
+        "courseId": "885",
         "options": {
           "start_time": "2001-01-01T00:00:00Z",
           "end_time": "2001-12-31T00:00:00Z"
@@ -424,7 +424,7 @@
       "executeOnce": true
     },
     {
-      "id": "be0491f6-5db2-44ae-b695-22f1970d94a0",
+      "id": "399d83b1-8572-4a5a-802a-5619937c24ea",
       "name": "query — query: combines filters",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -437,9 +437,9 @@
         "resource": "gradeChangeLog",
         "operation": "query",
         "filters": {
-          "course_id": "717",
-          "assignment_id": "1823",
-          "student_id": "2154",
+          "course_id": "885",
+          "assignment_id": "2087",
+          "student_id": "2492",
           "grader_id": "1"
         },
         "pagination": {

@@ -2,7 +2,7 @@
   "name": "Canvas battery — login",
   "nodes": [
     {
-      "id": "f2cf28b7-ae12-44f8-98ab-234b1d663568",
+      "id": "0162d0c6-4d29-4422-8ef4-c50b65d8b76d",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "1c8b1735-b239-4e5b-97e6-45a2541efbaf",
+      "id": "add34ca7-5072-47a9-ae05-40c8a25829c8",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,13 +25,13 @@
         "assignments": {
           "assignments": [
             {
-              "id": "0458e791-f819-47b2-b398-7412f8c7bd3c",
+              "id": "cb92003a-9c5b-4a19-9b0c-058b918379c8",
               "name": "accountId",
               "value": "1",
               "type": "string"
             },
             {
-              "id": "6a211edd-ffd6-4fb5-b8a1-35bdeb99ec8b",
+              "id": "fb728190-3f74-4a71-9e35-aa2b93554957",
               "name": "multiLoginUserId",
               "value": "47",
               "type": "string"
@@ -42,7 +42,7 @@
       }
     },
     {
-      "id": "f4636730-b5bd-454e-ac93-4545d1e034a1",
+      "id": "fe09debd-cace-46ea-a701-cf0ab0a40afa",
       "name": "create — create: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -55,7 +55,7 @@
         "resource": "login",
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountId }}",
-        "userId": "2301",
+        "userId": "2612",
         "uniqueId": "=second-login_{{ $execution.id }}-5",
         "additionalFields": {
           "authenticationProviderId": "canvas",
@@ -76,7 +76,7 @@
       "executeOnce": true
     },
     {
-      "id": "54655759-0bc4-4fb2-95fa-6427a3d58365",
+      "id": "0447f096-7168-4835-8d81-a2bd9b047197",
       "name": "create — create: every declared user type is accepted, including the ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -106,7 +106,7 @@
       "executeOnce": true
     },
     {
-      "id": "f8abdf31-16f3-44a8-8b5a-af4366678ae2",
+      "id": "3d70c8b6-9886-4199-8865-1a17df9d00f4",
       "name": "create — create: every declared user type is accepted, including the  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -136,7 +136,7 @@
       "executeOnce": true
     },
     {
-      "id": "85f8298a-8869-45fb-9500-1b96273150c0",
+      "id": "fbc2bed4-de0a-4ec7-960b-939625667705",
       "name": "create — create: every declared user type is accepted, including the  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -166,7 +166,7 @@
       "executeOnce": true
     },
     {
-      "id": "0b08c58b-2816-4dde-863f-ac8ef36a7077",
+      "id": "95e5520f-e73b-452e-a65e-d1ce5849cda2",
       "name": "create — create: every declared user type is accepted, including the  (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -196,7 +196,7 @@
       "executeOnce": true
     },
     {
-      "id": "fb7daec9-3390-48c8-885d-1528744acaff",
+      "id": "45e381d0-3d8b-41e6-b299-6e442df006ff",
       "name": "create — create: every declared user type is accepted, including the  (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -226,7 +226,7 @@
       "executeOnce": true
     },
     {
-      "id": "b2ca905e-2729-4c8d-ad30-cd14ed8a0311",
+      "id": "a452315d-7113-46a9-b2d0-f7d0b2b708dc",
       "name": "create — create: every declared user type is accepted, including the  (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -256,7 +256,7 @@
       "executeOnce": true
     },
     {
-      "id": "e2c7f031-84de-49d6-9b49-f52f12ae007a",
+      "id": "79843af2-fe70-411d-bddf-a9be0c60ce06",
       "name": "getAll — getAll: by user and by account return the logins of the user",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -282,7 +282,7 @@
       "executeOnce": true
     },
     {
-      "id": "d91b13ae-5bd1-47ee-bfc7-f3059fe60040",
+      "id": "a32c869a-5f58-43cd-9903-56a1a80b131f",
       "name": "getAll — getAll: by user and by account return the logins of the user (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -309,7 +309,7 @@
       "executeOnce": true
     },
     {
-      "id": "12ca5784-da83-4ca5-95b1-94a34b7d0c6d",
+      "id": "ad6afec4-87d9-49f6-bb26-33789af5bc94",
       "name": "getAll — getAll: a user with several logins (one on another provider,",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -339,7 +339,7 @@
       "executeOnce": true
     },
     {
-      "id": "6e5d51de-7090-4303-88c2-e00c62cf663a",
+      "id": "ddd17aa8-1b4a-4020-8d2f-44f23b681c89",
       "name": "getAll — getAll: a user with several logins (one on another provider, (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -369,7 +369,7 @@
       "executeOnce": true
     },
     {
-      "id": "6e4c9748-0632-4e99-a0f6-b44a295664c7",
+      "id": "a7c45fda-f9e8-4480-b793-04dd8d74a428",
       "name": "update — update: every changeable field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -404,7 +404,7 @@
       "executeOnce": true
     },
     {
-      "id": "e0fdab05-22ae-44f1-b926-c7c6c59382af",
+      "id": "e95ec2fd-9e71-42e6-bf75-7ba464cc8e15",
       "name": "update — update: every changeable field reaches Canvas (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -433,7 +433,7 @@
       "executeOnce": true
     },
     {
-      "id": "54b92896-0353-4884-b749-c5d6130f13b6",
+      "id": "864310f4-db6d-4322-9065-baf3cc534e18",
       "name": "update — update: with Override SIS Stickiness off, a login ID chang",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -464,7 +464,7 @@
       "executeOnce": true
     },
     {
-      "id": "909dda3a-dae3-44b0-8f69-93d37a6288d5",
+      "id": "a1207b47-fb2a-4708-9154-d4454b03ab1a",
       "name": "update — update: empty values clear the SIS ID, the integration ID an",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -496,7 +496,7 @@
       "executeOnce": true
     },
     {
-      "id": "c459e8ee-8c26-4fa8-8cb0-c615a6a2bf8e",
+      "id": "ce809b0c-ee1d-453f-82ab-209690c2e363",
       "name": "resetPassword — resetPassword: starts the recovery for a known login and rep",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

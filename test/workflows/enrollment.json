@@ -2,7 +2,7 @@
   "name": "Canvas battery — enrollment",
   "nodes": [
     {
-      "id": "31a96ee3-e335-4fea-9b0d-149a661e6d39",
+      "id": "6a2a1e55-3541-450a-8e2a-423d9559bcae",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "18a9b36c-a69a-49d4-9484-72e135352ba5",
+      "id": "792a3f55-aad3-4652-935d-3a59b1ffaca3",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,19 +25,19 @@
         "assignments": {
           "assignments": [
             {
-              "id": "5f1c42fc-1f57-4265-b866-290be402343e",
+              "id": "38ed5682-2117-4e94-b682-b6bd0f9fbe46",
               "name": "largeCourseId",
               "value": "93",
               "type": "string"
             },
             {
-              "id": "46171844-4b77-46df-9e8e-de7ed5f42670",
+              "id": "011bb3b3-155d-4dc5-9566-13a78315e594",
               "name": "courseId",
               "value": "1",
               "type": "string"
             },
             {
-              "id": "7c7b9ae8-3d9d-4279-a46d-ae5973203d6a",
+              "id": "7200d22f-95d5-4d88-a09a-6572d5e2ca04",
               "name": "studentUserId",
               "value": "5",
               "type": "string"
@@ -48,7 +48,7 @@
       }
     },
     {
-      "id": "5b6c4846-f305-4891-9522-030716c4bd3c",
+      "id": "fd2b7f14-5669-4e72-bbf9-bf212c802ccd",
       "name": "create — create: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -60,11 +60,11 @@
         "authentication": "accessToken",
         "resource": "enrollment",
         "operation": "create",
-        "courseId": "740",
-        "userId": "2181",
+        "courseId": "906",
+        "userId": "2533",
         "enrollmentType": "StudentEnrollment",
         "additionalFields": {
-          "courseSectionId": "753",
+          "courseSectionId": "900",
           "endAt": "2030-06-30T23:59:00Z",
           "enrollmentState": "active",
           "limitPrivilegesToCourseSection": true,
@@ -85,7 +85,7 @@
       "executeOnce": true
     },
     {
-      "id": "b4e3626e-dc43-4e38-bd19-1b1f9db4a9dc",
+      "id": "2268b47d-c57f-477a-b812-a9ac8bb4a195",
       "name": "create — create: an observer linked to a student, and an inactive enr",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -98,10 +98,10 @@
         "resource": "enrollment",
         "operation": "create",
         "courseId": "={{ $('create — create: every optional field reaches Canvas').first().json.course_id }}",
-        "userId": "2186",
+        "userId": "2540",
         "enrollmentType": "ObserverEnrollment",
         "additionalFields": {
-          "associatedUserId": "2181",
+          "associatedUserId": "2533",
           "enrollmentState": "active"
         }
       },
@@ -116,7 +116,7 @@
       "executeOnce": true
     },
     {
-      "id": "9ea2ce57-3ff8-469a-b672-357ccb56aa08",
+      "id": "73a026bb-3a46-45c5-a47c-dec13995ba9f",
       "name": "create — create: an observer linked to a student, and an inactive enr (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -129,7 +129,7 @@
         "resource": "enrollment",
         "operation": "create",
         "courseId": "={{ $('create — create: an observer linked to a student, and an inactive enr').first().json.course_id }}",
-        "userId": "2187",
+        "userId": "2541",
         "enrollmentType": "StudentEnrollment",
         "additionalFields": {
           "enrollmentState": "inactive"
@@ -146,7 +146,7 @@
       "executeOnce": true
     },
     {
-      "id": "c0618bf3-0444-4f7a-a2eb-70a5e532cd44",
+      "id": "2be1ec81-3cd1-4fae-8b42-ea4d17a38d50",
       "name": "get — get: by ID through the root account, also for IDs from expre",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -172,7 +172,7 @@
       "executeOnce": true
     },
     {
-      "id": "13e20453-3592-48ad-a7db-dfbe295b7c3b",
+      "id": "b99e2658-1eb6-4df5-b7a9-df2dc6f58cb1",
       "name": "getAll — getAll: by course, with state, type, role, role ID and user ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -202,7 +202,7 @@
       "executeOnce": true
     },
     {
-      "id": "a7d74b7c-42fe-4151-bf35-5222b3c0abf2",
+      "id": "27c3f30e-4589-457d-98f6-0ed9e33d9e36",
       "name": "getAll — getAll: by course, with state, type, role, role ID and user  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -236,7 +236,7 @@
       "executeOnce": true
     },
     {
-      "id": "a16eec60-8c6e-4719-a1e6-d3adba33be75",
+      "id": "1a5b496e-07a5-4af1-b2b7-e1caa8ebb8ae",
       "name": "getAll — getAll: by course, with state, type, role, role ID and user  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -271,7 +271,7 @@
       "executeOnce": true
     },
     {
-      "id": "172359f7-a0ad-42a9-a070-0ae228fac95e",
+      "id": "aed36025-6c30-44f3-941e-ce1063bb8ed5",
       "name": "getAll — getAll: by course, with state, type, role, role ID and user  (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -305,7 +305,7 @@
       "executeOnce": true
     },
     {
-      "id": "cfd13aea-4b72-49bb-b3d7-9f559fca26a7",
+      "id": "51ee6a29-ea26-42ab-96b6-0840e9fc009e",
       "name": "getAll — getAll: by course, with state, type, role, role ID and user  (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -337,7 +337,7 @@
       "executeOnce": true
     },
     {
-      "id": "da0c4df1-19cc-4a2e-bfed-1ce9d559f61a",
+      "id": "8dd7ab28-3f94-4063-a5a4-be16428fcc4a",
       "name": "getAll — getAll: by course, with state, type, role, role ID and user  (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -352,7 +352,7 @@
         "listBy": "course",
         "courseId": "={{ $('getAll — getAll: by course, with state, type, role, role ID and user  (5)').first().json.course_id }}",
         "filters": {
-          "userId": "2186",
+          "userId": "2540",
           "include": [
             "observed_users",
             "can_be_removed",
@@ -375,7 +375,7 @@
       "executeOnce": true
     },
     {
-      "id": "44f059ce-bfe9-47ca-bc11-fd789ded82e6",
+      "id": "56f9d694-8c43-4678-a2b4-1b0c14ea02c8",
       "name": "getAll — getAll: by course, with state, type, role, role ID and user  (7)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -410,7 +410,7 @@
       "executeOnce": true
     },
     {
-      "id": "0c8b00ca-3247-40b8-b2f9-ada801e9a567",
+      "id": "605de58d-3440-4c88-bb3e-338f975ce967",
       "name": "getAll — getAll: by section and by user",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -436,7 +436,7 @@
       "executeOnce": true
     },
     {
-      "id": "ad277932-bfa3-4941-b3b5-16e8e1d6616a",
+      "id": "3f647d10-0a61-48de-a242-dff97dec6baa",
       "name": "getAll — getAll: by section and by user (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -465,7 +465,7 @@
       "executeOnce": true
     },
     {
-      "id": "b9de79bc-c598-4740-a167-a218c4ee269f",
+      "id": "3a818d4f-84f1-4db3-99bf-9f7ff53ed0b7",
       "name": "getAll — getAll: by section and by user (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -494,7 +494,7 @@
       "executeOnce": true
     },
     {
-      "id": "92f25442-c90c-421a-b098-73185aa4a526",
+      "id": "6cc27862-1cb3-44cd-b24b-85ee14149e98",
       "name": "getAll — getAll: pages through the enrollments of the large seeded co",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -528,7 +528,7 @@
       "executeOnce": true
     },
     {
-      "id": "74662206-6900-49a1-8100-9fd501d3c2ad",
+      "id": "f4a9d7a5-fa8d-4176-8dcc-7fa48c8855fa",
       "name": "getAll — getAll: pages through the enrollments of the large seeded co (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -559,7 +559,7 @@
       "executeOnce": true
     },
     {
-      "id": "6130a1ca-6e02-4e36-b2bf-3353d47555cb",
+      "id": "eaa0eded-e736-4aaa-963f-0c5fa13c1038",
       "name": "getAll — getAll: pages through the enrollments of the large seeded co (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -594,7 +594,7 @@
       "executeOnce": true
     },
     {
-      "id": "d29f962d-9898-4704-a397-9e97ed3dbb56",
+      "id": "3e51aee6-d46e-4e6b-af6f-0ffe2e2b97c7",
       "name": "getAll — getAll: SIS ID filters and states of the seeded main course ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -626,7 +626,7 @@
       "executeOnce": true
     },
     {
-      "id": "466ed6fc-2831-4133-84ad-a89e3ff81b83",
+      "id": "b1138783-5d36-4f49-afcb-dba7c35adc20",
       "name": "getAll — getAll: SIS ID filters and states of the seeded main course  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -658,7 +658,7 @@
       "executeOnce": true
     },
     {
-      "id": "fdb9a5a2-ad09-4da3-a2eb-5bde45cc6676",
+      "id": "00de7b27-7ad8-4d33-a86c-af1d78112b67",
       "name": "getAll — getAll: SIS ID filters and states of the seeded main course  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -690,7 +690,7 @@
       "executeOnce": true
     },
     {
-      "id": "452ab144-f39c-4a21-9dd2-827a67c61ffc",
+      "id": "4ec72a89-32e1-44bd-860b-4e0648afef48",
       "name": "getAll — getAll: SIS ID filters and states of the seeded main course  (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -722,7 +722,7 @@
       "executeOnce": true
     },
     {
-      "id": "e4968d41-fe5e-4efe-88e9-9fc514cbae25",
+      "id": "3ea8c55e-2fb5-4e7f-8fa6-439d4837a6ad",
       "name": "getAll — getAll: SIS ID filters and states of the seeded main course  (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -756,7 +756,7 @@
       "executeOnce": true
     },
     {
-      "id": "ea6fb0c3-b17f-46b8-b0c7-c31ebb572272",
+      "id": "7c33b55e-53e8-47f7-b2b0-3a60fc450647",
       "name": "getAll — getAll: SIS ID filters and states of the seeded main course  (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -790,7 +790,7 @@
       "executeOnce": true
     },
     {
-      "id": "1878e2b2-31b0-4720-b6a3-7752afc10f24",
+      "id": "5d742845-78a6-4cd0-bed3-a3f205e66f90",
       "name": "getAll — getAll: SIS ID filters and states of the seeded main course  (7)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -824,7 +824,7 @@
       "executeOnce": true
     },
     {
-      "id": "1c695d8a-55d0-49a5-8737-d57130b1c108",
+      "id": "69ad5582-1c45-4337-b026-6fac08f883fc",
       "name": "getAll — getAll: SIS ID filters and states of the seeded main course  (8)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -858,7 +858,7 @@
       "executeOnce": true
     },
     {
-      "id": "356c5217-7b61-4fef-aa56-d07dfe28b459",
+      "id": "c0b5e8b2-a605-422e-a998-4495eedb79ee",
       "name": "deactivate — deactivate, reactivate, conclude: change the state of an enr",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -884,7 +884,7 @@
       "executeOnce": true
     },
     {
-      "id": "b1db6b67-295a-4d0f-8342-833070b9bd16",
+      "id": "acca7ab0-0972-4d4d-be42-764be009da2b",
       "name": "reactivate — deactivate, reactivate, conclude: change the state of an enr",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -910,7 +910,7 @@
       "executeOnce": true
     },
     {
-      "id": "a481d455-69a4-4e48-913f-098fc603e153",
+      "id": "d3ad8b30-f8fb-425a-aa02-11f3b0467afb",
       "name": "conclude — deactivate, reactivate, conclude: change the state of an enr",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -936,7 +936,7 @@
       "executeOnce": true
     },
     {
-      "id": "075d79e0-8c5f-4ddc-bb2c-dc5a73fb6136",
+      "id": "8eb4cc12-82ca-489a-a663-8b765016fd3d",
       "name": "setLastAttended — setLastAttended: stores the date on the students enrollment",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -963,7 +963,7 @@
       "executeOnce": true
     },
     {
-      "id": "00f985e9-c0bc-4141-8964-2a917bfa203d",
+      "id": "e486171d-0361-4b77-8e11-a3518a3a093b",
       "name": "bulkEnroll — bulkEnroll: enrolls every user in every course as a student ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -975,9 +975,9 @@
         "authentication": "accessToken",
         "resource": "enrollment",
         "operation": "bulkEnroll",
-        "accountId": "213",
-        "userIds": "2215,2216,2217,2218",
-        "courseIds": " 764 , 766 , 767 "
+        "accountId": "260",
+        "userIds": "2552,2553,2554,2555",
+        "courseIds": " 922 , 923 , 924 "
       },
       "credentials": {
         "canvasApi": {
@@ -990,7 +990,7 @@
       "executeOnce": true
     },
     {
-      "id": "f691cf38-8365-4a56-b231-6110a56ed9f1",
+      "id": "2d6ea4e5-d777-490c-ac12-7e267c233aff",
       "name": "bulkEnroll — bulkEnroll: enrollment type and custom role; SIS IDs (root a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1002,7 +1002,7 @@
         "authentication": "accessToken",
         "resource": "enrollment",
         "operation": "bulkEnroll",
-        "accountId": "213",
+        "accountId": "260",
         "userIds": "=sis_user_id:SIS-BULK_{{ $execution.id }}-1",
         "courseIds": "=sis_course_id:SIS-INV-C_{{ $execution.id }}-3",
         "additionalFields": {
@@ -1021,7 +1021,7 @@
       "executeOnce": true
     },
     {
-      "id": "7e9c6072-149b-4598-b65c-1ac534533163",
+      "id": "7b8a7fc3-07f1-4426-9885-d4dda025a5c8",
       "name": "bulkEnroll — bulkEnroll: enrollment type and custom role; SIS IDs (root a (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1033,9 +1033,9 @@
         "authentication": "accessToken",
         "resource": "enrollment",
         "operation": "bulkEnroll",
-        "accountId": "213",
-        "userIds": "2220",
-        "courseIds": "768",
+        "accountId": "260",
+        "userIds": "2557",
+        "courseIds": "925",
         "additionalFields": {
           "roleId": "20"
         }
@@ -1051,7 +1051,7 @@
       "executeOnce": true
     },
     {
-      "id": "c56e8189-345c-495a-8227-a4e33a0e42ed",
+      "id": "2760c292-255b-48ce-b344-16e7af64973b",
       "name": "bulkEnroll — bulkEnroll: invitations created in bulk are answered by the ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1063,9 +1063,9 @@
         "authentication": "accessToken",
         "resource": "enrollment",
         "operation": "bulkEnroll",
-        "accountId": "213",
-        "userIds": "2214,99999999",
-        "courseIds": "764,769",
+        "accountId": "260",
+        "userIds": "2551,99999999",
+        "courseIds": "922,926",
         "additionalFields": {
           "enrollmentType": "DesignerEnrollment"
         }

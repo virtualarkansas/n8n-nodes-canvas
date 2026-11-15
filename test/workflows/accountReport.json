@@ -2,7 +2,7 @@
   "name": "Canvas battery — accountReport",
   "nodes": [
     {
-      "id": "7cf933bb-d134-442b-9bd8-aeb02d528391",
+      "id": "4088e4ad-26a9-4175-8807-c6d84d6f59c0",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "bfaf4c2d-2a14-4f35-bc3d-3c1f9f0e517f",
+      "id": "35837b8f-7197-4864-bf8c-0b5a3996a56e",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,19 +25,19 @@
         "assignments": {
           "assignments": [
             {
-              "id": "8c538b7b-1a3f-4ed8-8f3b-c8554c4a6179",
+              "id": "91b079f1-8cb4-43ce-8905-b0f322cfca69",
               "name": "accountId",
               "value": "1",
               "type": "string"
             },
             {
-              "id": "03dc2d16-e01c-46b2-9451-2655a321a7f5",
+              "id": "d15e39dc-03f2-4a63-b5da-ba93516d799d",
               "name": "subAccountId",
               "value": "3",
               "type": "string"
             },
             {
-              "id": "0601a03e-28c8-47b3-8a33-00719f8a96c6",
+              "id": "5d85db89-7f68-4b08-9d44-f7653286a1fc",
               "name": "deepSubAccountId",
               "value": "5",
               "type": "string"
@@ -48,7 +48,7 @@
       }
     },
     {
-      "id": "31fb5723-8f6d-4b5c-b050-4a831fc1b394",
+      "id": "34e530f0-0cca-4f4c-8fd7-e8e17f51ae7c",
       "name": "listAvailable — listAvailable: lists every report type with its parameters",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -73,7 +73,7 @@
       "executeOnce": true
     },
     {
-      "id": "a36c5572-f499-4e6c-8a4b-31d7bad8d911",
+      "id": "efacc65b-d4b0-4dcd-8a57-71dea0172e94",
       "name": "listAvailable — listAvailable: includes the HTML description and parameter f",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -104,7 +104,7 @@
       "executeOnce": true
     },
     {
-      "id": "839d1d53-35e6-4400-9ef2-cdb69760fde1",
+      "id": "11c816b6-39ac-4fd8-96c9-95c054adfe07",
       "name": "create — create: provisioning report with every file switched on; the",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -156,7 +156,7 @@
       "executeOnce": true
     },
     {
-      "id": "5fbe54b4-f62b-4f0f-8050-4e4302001083",
+      "id": "dbd194ed-fef1-4706-b3ad-4a15f7c2392f",
       "name": "get — create: provisioning report with every file switched on; the",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -183,7 +183,7 @@
       "executeOnce": true
     },
     {
-      "id": "0b4e52a1-e203-485a-a90d-77193978d059",
+      "id": "c7d9aa5e-c64b-4359-9706-28e59f5b7761",
       "name": "create — create: a single-file report is a plain CSV; SIS term IDs ar",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -214,7 +214,7 @@
       "executeOnce": true
     },
     {
-      "id": "f363a0dc-b9c8-4f94-92fa-54b4d1c17ccf",
+      "id": "5b404221-5ced-41be-96c3-2aa0ed26952d",
       "name": "get — create: a single-file report is a plain CSV; SIS term IDs ar",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -241,7 +241,7 @@
       "executeOnce": true
     },
     {
-      "id": "8986b77c-68f8-4f40-bc4e-c2e053c26d06",
+      "id": "7d39c170-d685-4468-88db-815c685c5864",
       "name": "create — create: date range, course and enrollment-state parameters (",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -278,7 +278,7 @@
       "executeOnce": true
     },
     {
-      "id": "4b7cb031-d8e1-411c-9804-2ffeb5ed851d",
+      "id": "2dd511d0-7eca-4423-8666-f07cb145d8a4",
       "name": "get — create: date range, course and enrollment-state parameters (",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -305,7 +305,7 @@
       "executeOnce": true
     },
     {
-      "id": "f98eb9b4-9893-4593-b672-ffbe27cf9d23",
+      "id": "083ddae2-abf8-4882-a42a-fe7fed5f1892",
       "name": "create — create: the remaining parameters and free-form Other Parame",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -336,7 +336,7 @@
       "executeOnce": true
     },
     {
-      "id": "16d23dcd-ac5d-4cf5-af3c-55813946a118",
+      "id": "ff972414-bcb4-49b9-a702-30d268b89c89",
       "name": "create — create: the remaining parameters and free-form Other Parame (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -365,7 +365,7 @@
       "executeOnce": true
     },
     {
-      "id": "cd1819ce-abb9-49f1-8e96-90feab60a806",
+      "id": "5f3970a3-440f-4c37-b254-50fe11056268",
       "name": "create — create: the remaining parameters and free-form Other Parame (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -395,7 +395,7 @@
       "executeOnce": true
     },
     {
-      "id": "7d0a3983-170a-4030-b6a3-16f4f8649a61",
+      "id": "a5882529-2806-477b-959d-370608d0b687",
       "name": "create — create: the remaining parameters and free-form Other Parame (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -424,7 +424,7 @@
       "executeOnce": true
     },
     {
-      "id": "f521b8ef-f64e-449a-a3a2-a0999c6d316e",
+      "id": "91bc1188-8b80-46e8-9c95-672872999baf",
       "name": "create — create: without parameters the report runs with its defaults",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -450,7 +450,7 @@
       "executeOnce": true
     },
     {
-      "id": "15cd4589-ea64-4e10-a230-53aa95acd34e",
+      "id": "80383e2a-cee3-4f00-8f42-1ed43fee365d",
       "name": "get — create: without parameters the report runs with its defaults",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -477,7 +477,7 @@
       "executeOnce": true
     },
     {
-      "id": "966a7626-753e-4ce6-8d12-a3927612b3d7",
+      "id": "d4ba79a0-d9cd-486b-8310-359592d69e34",
       "name": "get — create: starting the same report again while it runs is a 40",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -491,7 +491,7 @@
         "operation": "get",
         "accountId": "={{ $('Config').first().json.accountId }}",
         "reportType": "provisioning_csv",
-        "reportId": "130"
+        "reportId": "194"
       },
       "credentials": {
         "canvasApi": {
@@ -504,7 +504,7 @@
       "executeOnce": true
     },
     {
-      "id": "63a33c98-4855-4171-b328-bfa0ecc6a28e",
+      "id": "b8a0c083-582d-4c56-bf93-6bf58fa0f3e3",
       "name": "create — waitForCompletion: returns the finished report with its file",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -535,7 +535,7 @@
       "executeOnce": true
     },
     {
-      "id": "e599e069-9ca0-45ee-98d4-5ef9700ee846",
+      "id": "b40b38a7-211f-45a3-bb81-4d3c23a3d1a5",
       "name": "waitForCompletion — waitForCompletion: returns the finished report with its file",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -564,7 +564,7 @@
       "executeOnce": true
     },
     {
-      "id": "cba4f359-dc35-409d-ad32-259ebb577a04",
+      "id": "13569929-0f99-4b54-a713-fdd6c4721741",
       "name": "waitForCompletion — waitForCompletion: returns the finished report with its file (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -592,7 +592,7 @@
       "executeOnce": true
     },
     {
-      "id": "2d1c3b26-5eec-407a-8745-42020a14ef4b",
+      "id": "5fad29d5-fb90-4022-b1e0-3c5b4881b5ba",
       "name": "waitForCompletion — waitForCompletion: returns the finished report with its file (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -621,7 +621,7 @@
       "executeOnce": true
     },
     {
-      "id": "8f6539fe-d093-4307-bee2-0b77c8b0a792",
+      "id": "40ed7064-83a7-4e19-abbd-5c1e33c11ab9",
       "name": "get — waitForCompletion: returns the finished report with its file",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -650,7 +650,7 @@
       "executeOnce": true
     },
     {
-      "id": "972cd465-4951-4126-b255-0d79722cc3b7",
+      "id": "091d70d9-832d-4177-a891-0804b5f8abde",
       "name": "waitForCompletion — waitForCompletion: returns the finished report with its file (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -664,7 +664,7 @@
         "operation": "waitForCompletion",
         "accountId": "={{ $('Config').first().json.accountId }}",
         "reportType": "provisioning_csv",
-        "reportId": "132",
+        "reportId": "196",
         "downloadFile": true,
         "pollInterval": 2
       },
@@ -679,7 +679,7 @@
       "executeOnce": true
     },
     {
-      "id": "5b8884fc-3ea7-4c91-b9ad-87d3f714e8ae",
+      "id": "98e242e7-6aaa-49f6-9289-7d6cef4ab2ef",
       "name": "get — get: returns the report with its file once complete; several",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -693,7 +693,7 @@
         "operation": "get",
         "accountId": "={{ $('Config').first().json.accountId }}",
         "reportType": "unused_courses_csv",
-        "reportId": "133"
+        "reportId": "197"
       },
       "credentials": {
         "canvasApi": {
@@ -706,7 +706,7 @@
       "executeOnce": true
     },
     {
-      "id": "fad9543c-1deb-4bfd-9e33-4ed7285c6f61",
+      "id": "d8125e92-72ad-42c8-840f-359137d9b746",
       "name": "getAll — getAll: lists the runs of one report type, newest first, acr",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -735,7 +735,7 @@
       "executeOnce": true
     },
     {
-      "id": "668d642a-3616-4857-847a-dffcd70db2b9",
+      "id": "5af9f734-b75a-49fb-a486-be3332a2195a",
       "name": "getAll — getAll: lists the runs of one report type, newest first, acr (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -761,7 +761,7 @@
       "executeOnce": true
     },
     {
-      "id": "0b650a77-6447-4469-9645-dc1b17ade2e1",
+      "id": "be877a50-72ac-4642-9f6c-7baa730a4198",
       "name": "getAll — getAll: lists the runs of one report type, newest first, acr (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -791,7 +791,7 @@
       "executeOnce": true
     },
     {
-      "id": "e37e9fef-325d-437f-b8b6-8d6c21bf4454",
+      "id": "8f22c0aa-8642-4991-8e1c-cfb2b5b261c2",
       "name": "getAll — getAll: a report type that never ran yields no items",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -817,7 +817,7 @@
       "executeOnce": true
     },
     {
-      "id": "2a051725-27c0-4128-81b3-05e042d9bf5c",
+      "id": "07fde1b7-943d-42b1-a6b6-1e757a60e84e",
       "name": "abort — abort: stops a running report without deleting it",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -831,7 +831,7 @@
         "operation": "abort",
         "accountId": "={{ $('Config').first().json.accountId }}",
         "reportType": "provisioning_csv",
-        "reportId": "146"
+        "reportId": "210"
       },
       "credentials": {
         "canvasApi": {
@@ -844,7 +844,7 @@
       "executeOnce": true
     },
     {
-      "id": "dcb45ea5-cad9-40b5-be9c-5b059c5d209e",
+      "id": "76e0bdc9-1568-4c5a-ba30-6628c45531f7",
       "name": "get — delete: removes a finished report",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -858,7 +858,7 @@
         "operation": "get",
         "accountId": "={{ $('Config').first().json.subAccountId }}",
         "reportType": "public_courses_csv",
-        "reportId": "147"
+        "reportId": "211"
       },
       "credentials": {
         "canvasApi": {
@@ -871,7 +871,7 @@
       "executeOnce": true
     },
     {
-      "id": "360ed6d1-f47a-462c-a7c4-a21e96087e6a",
+      "id": "79fe52c9-9985-4f4e-85b5-0993ee1669b0",
       "name": "delete — delete: removes a finished report",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

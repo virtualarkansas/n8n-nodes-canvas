@@ -2,7 +2,7 @@
   "name": "Canvas battery — moduleItem",
   "nodes": [
     {
-      "id": "7777c04b-2849-432c-8892-faa29805a63a",
+      "id": "b541acca-17c2-46bb-933e-5ceaf52fe99f",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "0633d39c-7305-48e0-bdb8-ed8daaf5aaee",
+      "id": "690900b6-391b-499a-9c43-32b0001aeff2",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -23,13 +23,20 @@
       ],
       "parameters": {
         "assignments": {
-          "assignments": []
+          "assignments": [
+            {
+              "id": "0ca7e5e0-5c67-4a80-a3f0-4fc2d693adaa",
+              "name": "assignmentId",
+              "value": "1",
+              "type": "string"
+            }
+          ]
         },
         "options": {}
       }
     },
     {
-      "id": "10f1296c-e63f-447c-81fd-024a6acd90ca",
+      "id": "c1fe3574-d851-43aa-ad7c-d4de2191a71f",
       "name": "create — create: a page item with every optional field",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,7 +49,7 @@
         "resource": "moduleItem",
         "operation": "create",
         "courseId": "161",
-        "moduleId": "343",
+        "moduleId": "370",
         "type": "Page",
         "pageUrl": "=item-page-{{ $execution.id }}-3",
         "additionalFields": {
@@ -63,7 +70,7 @@
       "executeOnce": true
     },
     {
-      "id": "01eb06a3-540b-48cd-ab40-d6a46e0bb896",
+      "id": "e841cfd1-ccd6-4d94-bd06-6d3a0f6b7314",
       "name": "create — create: a minimum score given without a requirement type imp",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -78,7 +85,7 @@
         "courseId": "161",
         "moduleId": "={{ $('create — create: a page item with every optional field').first().json.module_id }}",
         "type": "Quiz",
-        "contentId": "266",
+        "contentId": "303",
         "additionalFields": {
           "completion_requirement_min_score": 3
         }
@@ -94,7 +101,7 @@
       "executeOnce": true
     },
     {
-      "id": "6879365c-e939-47e1-9624-4e81aa402207",
+      "id": "d7c3ddfc-3302-405a-83c5-da27862afe1b",
       "name": "create — create: discussion and file items",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -109,7 +116,7 @@
         "courseId": "161",
         "moduleId": "={{ $('create — create: a minimum score given without a requirement type imp').first().json.module_id }}",
         "type": "Discussion",
-        "contentId": "681",
+        "contentId": "764",
         "additionalFields": {
           "completion_requirement_type": "must_contribute"
         }
@@ -125,7 +132,7 @@
       "executeOnce": true
     },
     {
-      "id": "f171aaf0-9715-4e0c-8c9c-037b897033b1",
+      "id": "3171ea46-ab31-4675-856f-f23db6944101",
       "name": "create — create: discussion and file items (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -140,7 +147,7 @@
         "courseId": "161",
         "moduleId": "={{ $('create — create: discussion and file items').first().json.module_id }}",
         "type": "File",
-        "contentId": "3421",
+        "contentId": "3753",
         "additionalFields": {
           "completion_requirement_type": "must_view",
           "title": "Renamed through the item"
@@ -157,7 +164,7 @@
       "executeOnce": true
     },
     {
-      "id": "7e3ab981-2a3c-46bf-9dde-849917e151bc",
+      "id": "49e35939-3201-45b6-aeb0-53b2c7011a58",
       "name": "create — create: external URL, external tool and sub header items",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -191,7 +198,7 @@
       "executeOnce": true
     },
     {
-      "id": "74614dae-8234-4753-bd18-8e19aeb07709",
+      "id": "286fdd96-7bcd-4b57-8c3e-f6a62b465d93",
       "name": "create — create: external URL, external tool and sub header items (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -223,7 +230,7 @@
       "executeOnce": true
     },
     {
-      "id": "6244dd2b-e6bc-4e2d-8a8d-b8883cfdcdbd",
+      "id": "6c408c1e-b6d6-4fd4-a39b-fcc7ebc6deb7",
       "name": "create — create: external URL, external tool and sub header items (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -251,7 +258,7 @@
       "executeOnce": true
     },
     {
-      "id": "9c922487-959a-43fc-bb62-1d40b3df912f",
+      "id": "ab3c9b24-8c9c-46c6-907f-5f3a6b242b80",
       "name": "get — get: returns the item, with content details",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -265,7 +272,7 @@
         "operation": "get",
         "courseId": "161",
         "moduleId": "={{ $('create — create: external URL, external tool and sub header items (3)').first().json.module_id }}",
-        "itemId": "1081",
+        "itemId": "1151",
         "options": {
           "include": [
             "content_details"
@@ -283,7 +290,7 @@
       "executeOnce": true
     },
     {
-      "id": "bf1e6660-ae26-46e4-a0f9-29ee2f5472bf",
+      "id": "bc088a1a-f2ff-49d5-a624-443aec98a2da",
       "name": "get — get: returns the item, with content details (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -310,7 +317,7 @@
       "executeOnce": true
     },
     {
-      "id": "b1e69708-8ada-4bb0-9217-988e5f444d6d",
+      "id": "35a88e8f-b80f-4b52-8f82-cc30843b77bd",
       "name": "get — get: student ID adds the completion state of that student",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -343,7 +350,7 @@
       "executeOnce": true
     },
     {
-      "id": "5c7b42f7-164e-47d9-94fa-d5a83ef7838f",
+      "id": "b01c2495-e1b4-4a21-abf9-2df2dfd466cd",
       "name": "getAll — getAll: pages through more than 100 items in order",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -369,7 +376,7 @@
       "executeOnce": true
     },
     {
-      "id": "e31e7ad7-a1d6-4529-a315-3f14b4b36f34",
+      "id": "f1629a2f-c68b-469e-8447-34d1bce277c8",
       "name": "getAll — getAll: pages through more than 100 items in order (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -398,7 +405,7 @@
       "executeOnce": true
     },
     {
-      "id": "edc1d2b9-9b62-4862-a051-b62cb9af0195",
+      "id": "dab4a933-c645-4e94-b6a4-de558eb4d60f",
       "name": "getAll — getAll: pages through more than 100 items in order (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -428,7 +435,7 @@
       "executeOnce": true
     },
     {
-      "id": "68121705-6405-4ede-8648-a79d3169d6ed",
+      "id": "d9b7cc1c-34c9-48c8-9cd1-de8a0a36f92f",
       "name": "getAll — getAll: every option",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -460,7 +467,7 @@
       "executeOnce": true
     },
     {
-      "id": "4775cd06-efb4-453b-b31e-e7652df5ae3f",
+      "id": "26908a15-4b89-42d0-a111-6553a625ea67",
       "name": "getAll — getAll: every option (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -489,7 +496,7 @@
       "executeOnce": true
     },
     {
-      "id": "a33c749d-75f1-4afa-a324-8b4ec97b92b9",
+      "id": "57db8811-ad99-400c-8e42-0bb5febfc47a",
       "name": "getAll — getAll: every option (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -515,7 +522,7 @@
       "executeOnce": true
     },
     {
-      "id": "798ebaed-c4cf-4306-ad77-16d1b1d6e79d",
+      "id": "e2dbda15-2ef5-42d7-aeb7-fecdcc948b47",
       "name": "update — update: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -551,7 +558,7 @@
       "executeOnce": true
     },
     {
-      "id": "229359e0-0a4b-4a43-bde5-1f9dff656dbe",
+      "id": "6030a0c4-ccf9-407d-be78-85c9653d7215",
       "name": "update — update: requirement type, minimum score and removal of the r",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -581,7 +588,7 @@
       "executeOnce": true
     },
     {
-      "id": "1319ee82-47fd-4b30-a4d2-e6c1820120af",
+      "id": "725fe509-2de8-45e8-bc98-6eb1ba196d2f",
       "name": "update — update: requirement type, minimum score and removal of the r (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -612,7 +619,7 @@
       "executeOnce": true
     },
     {
-      "id": "034c926e-22a8-4fdb-b9a7-c143a9ef67e8",
+      "id": "bb5dd88a-d3bf-4577-a979-636d6b465fc7",
       "name": "update — update: requirement type, minimum score and removal of the r (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -642,7 +649,7 @@
       "executeOnce": true
     },
     {
-      "id": "8d545759-1f1a-4f97-b4ec-96ae42233e1f",
+      "id": "5c866ec7-7bcd-45fb-b658-21c991d8e07d",
       "name": "update — update: renaming an item renames the content; unpublishing u",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -673,7 +680,7 @@
       "executeOnce": true
     },
     {
-      "id": "9fb92497-31df-4705-93e7-562a0b7ee504",
+      "id": "ab0053a2-fec6-45a4-9048-2d77e860ec5b",
       "name": "update — update: move to module moves the item and keeps its requir",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -689,7 +696,7 @@
         "moduleId": "={{ $('update — update: renaming an item renames the content; unpublishing u').first().json.module_id }}",
         "itemId": "={{ $('create — create: discussion and file items').first().json.id }}",
         "updateFields": {
-          "module_id": "344"
+          "module_id": "369"
         }
       },
       "credentials": {
@@ -703,7 +710,7 @@
       "executeOnce": true
     },
     {
-      "id": "50907f4b-4186-4d75-8632-9f7e996c6d5b",
+      "id": "a1362c4b-4117-47bc-8410-8b4bfc13f19e",
       "name": "update — update: turning new tab off and back on",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -733,7 +740,7 @@
       "executeOnce": true
     },
     {
-      "id": "650280db-ce84-4d91-8255-103cf168308f",
+      "id": "cdbb2d32-36ce-41e7-a1ae-8d67705779da",
       "name": "update — update: turning new tab off and back on (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -763,7 +770,7 @@
       "executeOnce": true
     },
     {
-      "id": "6dc30524-7109-47d2-945e-19f5749611f8",
+      "id": "53171fd8-3d09-4e0d-9622-2395a92888d6",
       "name": "duplicate — duplicate: copies a page item and its page",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -789,7 +796,7 @@
       "executeOnce": true
     },
     {
-      "id": "e6a26d8f-3652-4dab-95a9-4eb99e7f0a85",
+      "id": "20f83641-5c99-455d-a142-7b2edf290c25",
       "name": "getSequence — getSequence: finds the item an asset belongs to, with its ne",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -816,7 +823,7 @@
       "executeOnce": true
     },
     {
-      "id": "a1072485-2808-41cd-9ff2-5fd37b4fd81c",
+      "id": "2f1cd9d3-8529-4813-a248-02a7e39e6f63",
       "name": "getSequence — getSequence: finds the item an asset belongs to, with its ne (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -843,7 +850,7 @@
       "executeOnce": true
     },
     {
-      "id": "26907a16-c730-4aa6-a782-65464daf7b53",
+      "id": "240d0ffe-52fd-4b1d-bddb-3b9de7538566",
       "name": "getSequence — getSequence: the other asset types, and an asset that is in ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -857,7 +864,7 @@
         "operation": "getSequence",
         "courseId": "161",
         "assetType": "Quiz",
-        "assetId": "266"
+        "assetId": "303"
       },
       "credentials": {
         "canvasApi": {
@@ -870,7 +877,7 @@
       "executeOnce": true
     },
     {
-      "id": "584a4d22-26cc-418d-9497-c4dc67abffd6",
+      "id": "eec92067-671f-4369-b7cf-6d4a3338cbd6",
       "name": "getSequence — getSequence: the other asset types, and an asset that is in  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -884,7 +891,7 @@
         "operation": "getSequence",
         "courseId": "161",
         "assetType": "File",
-        "assetId": "3421"
+        "assetId": "3753"
       },
       "credentials": {
         "canvasApi": {
@@ -897,7 +904,7 @@
       "executeOnce": true
     },
     {
-      "id": "48b80465-411b-44c8-9fca-22aa1238a77b",
+      "id": "28ae74e7-533d-4305-8ca3-f65260802b03",
       "name": "getSequence — getSequence: the other asset types, and an asset that is in  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -911,7 +918,7 @@
         "operation": "getSequence",
         "courseId": "161",
         "assetType": "Discussion",
-        "assetId": "681"
+        "assetId": "764"
       },
       "credentials": {
         "canvasApi": {
@@ -924,7 +931,7 @@
       "executeOnce": true
     },
     {
-      "id": "d9e504db-6958-46cc-b003-79adc2d88a96",
+      "id": "46860416-495b-4146-a2e1-8ba1189ff270",
       "name": "getSequence — getSequence: the other asset types, and an asset that is in  (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -951,7 +958,7 @@
       "executeOnce": true
     },
     {
-      "id": "6e41aed0-b094-4949-90f6-bb22d0b8bf09",
+      "id": "706c8515-d1e5-4d3b-98f4-40d36d5e8b02",
       "name": "getSequence — getSequence: the other asset types, and an asset that is in  (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -978,7 +985,7 @@
       "executeOnce": true
     },
     {
-      "id": "f7bdda42-1059-4a68-8729-67d4df305658",
+      "id": "e55eb5e6-7c9b-4e6e-a604-35edceaa3b3a",
       "name": "selectMasteryPath — selectMasteryPath: picks an assignment set for a student",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -993,7 +1000,7 @@
         "courseId": "161",
         "moduleId": "={{ $('getAll — getAll: every option (2)').first().json.module_id }}",
         "itemId": "560",
-        "assignmentSetId": "2",
+        "assignmentSetId": "={{ $('Config').first().json.assignmentId }}",
         "options": {
           "student_id": "6"
         }

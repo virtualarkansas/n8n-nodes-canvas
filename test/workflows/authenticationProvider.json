@@ -2,7 +2,7 @@
   "name": "Canvas battery — authenticationProvider",
   "nodes": [
     {
-      "id": "9ae5fd6e-e441-43a0-953e-9b5a5435045e",
+      "id": "52ef5317-78ff-4fc4-bbf0-973f6c788328",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "b0d05761-e192-481c-8a91-6a520ac3c11f",
+      "id": "c459f033-7d26-4821-8f86-c170178b10d9",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,19 +25,19 @@
         "assignments": {
           "assignments": [
             {
-              "id": "42570916-f9d5-46a1-901e-ad50228459bf",
+              "id": "a23b95c5-d95c-4d07-8a37-105f7fd5c17f",
               "name": "accountId",
               "value": "1",
               "type": "string"
             },
             {
-              "id": "5fbfb110-af75-448e-96b9-460c215eb6a6",
+              "id": "c0bd5ca7-a167-4e06-add0-25f197ac0749",
               "name": "authenticationProviderId",
               "value": "3",
               "type": "string"
             },
             {
-              "id": "8668c5b3-bb2a-4679-8525-5a53357df87f",
+              "id": "7c1f2f66-ca9c-40fe-9e53-56e8b7e79216",
               "name": "accountRubricId",
               "value": "2",
               "type": "string"
@@ -48,65 +48,12 @@
       }
     },
     {
-      "id": "873cdfce-1ee8-4620-a861-d98cec2b384e",
-      "name": "getAll — getAll: lists the active providers of the account; Limit and",
+      "id": "0d171201-a6e6-4288-bbbf-deaa809c99ef",
+      "name": "getAll — getAll: lists the active providers of the account (Canvas re",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
         460,
-        0
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "authenticationProvider",
-        "operation": "getAll",
-        "accountId": "={{ $('Config').first().json.accountId }}",
-        "returnAll": true
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "2806de05-976e-4de1-92f2-a8d6de74c0f6",
-      "name": "getAll — getAll: lists the active providers of the account; Limit and (2)",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        720,
-        0
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "authenticationProvider",
-        "operation": "getAll",
-        "accountId": "self",
-        "returnAll": false,
-        "limit": 2
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "d4219c20-8165-4d2f-a261-13838f1e90fe",
-      "name": "getAll — getAll: lists the active providers of the account; Limit and (3)",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        980,
         0
       ],
       "parameters": {
@@ -126,12 +73,41 @@
       "executeOnce": true
     },
     {
-      "id": "fec803a6-91cc-45d9-81ba-bc57e576b34d",
+      "id": "7cbc63c6-876c-45f3-bf06-c72dac3416f3",
+      "name": "getAll — getAll: lists the active providers of the account (Canvas re (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "getAll",
+        "accountId": "self",
+        "pagination": {
+          "perPage": 1,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4442f890-acbe-424d-a61e-54dba6740d9f",
       "name": "get — get: by ID and by provider type; a deleted provider is not f",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
+        980,
         0
       ],
       "parameters": {
@@ -152,12 +128,12 @@
       "executeOnce": true
     },
     {
-      "id": "05a0f821-71ec-40bb-81e1-4d83194b6c1d",
+      "id": "da4984d0-54d9-49e9-8e1a-41e1ee206da0",
       "name": "getSsoSettings — getSsoSettings: returns the account-level login settings",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
+        1240,
         0
       ],
       "parameters": {
@@ -177,12 +153,12 @@
       "executeOnce": true
     },
     {
-      "id": "cfbf8e7e-867e-4dde-802b-c939bb32fb89",
+      "id": "531ec01b-8002-4685-a9fc-839f70f9333f",
       "name": "create — create (SAML): every setting reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
+        1500,
         0
       ],
       "parameters": {
@@ -220,13 +196,13 @@
       "executeOnce": true
     },
     {
-      "id": "9688d441-40fa-45ce-baa9-189bfc52e988",
+      "id": "31fbd411-583f-43ad-8b9d-a60c35aef99a",
       "name": "create — create (apple): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
-        220
+        1760,
+        0
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -252,12 +228,12 @@
       "executeOnce": true
     },
     {
-      "id": "4677ec14-c0cb-4fee-8902-cb94753ac774",
+      "id": "c1032b03-d990-422b-954f-5eef8f5549fc",
       "name": "delete — create (apple): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
+        460,
         220
       ],
       "parameters": {
@@ -278,12 +254,12 @@
       "executeOnce": true
     },
     {
-      "id": "9a94e811-c5c0-46ab-822e-c81a1b710034",
+      "id": "b2e364d4-a910-4786-b35b-49477cdbb8e1",
       "name": "create — create (cas): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
+        720,
         220
       ],
       "parameters": {
@@ -309,12 +285,12 @@
       "executeOnce": true
     },
     {
-      "id": "2ce90028-407e-4dd0-91ef-e18aa4de5f70",
+      "id": "0738c6f9-7e30-41c5-92ad-b18810a6225c",
       "name": "delete — create (cas): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
+        980,
         220
       ],
       "parameters": {
@@ -335,12 +311,12 @@
       "executeOnce": true
     },
     {
-      "id": "1965f905-cf2b-4ccf-8ccc-84ea0cd4f4b6",
+      "id": "44ae1329-1c55-45a7-8ccb-736300a0d3f4",
       "name": "create — create (clever): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
+        1240,
         220
       ],
       "parameters": {
@@ -367,12 +343,12 @@
       "executeOnce": true
     },
     {
-      "id": "4878fb8f-b7ed-419b-90a9-ff56c3a8a122",
+      "id": "dbfd299c-5b58-4966-864e-31c4cbf60ca9",
       "name": "delete — create (clever): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
+        1500,
         220
       ],
       "parameters": {
@@ -393,13 +369,13 @@
       "executeOnce": true
     },
     {
-      "id": "22714687-8391-40fd-acc9-43e39944b88b",
+      "id": "4afedc39-6776-43b5-850e-4560d143c5df",
       "name": "create — create (facebook): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
-        440
+        1760,
+        220
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -424,12 +400,12 @@
       "executeOnce": true
     },
     {
-      "id": "1d49edf8-f1e3-420c-8048-7a16009f87f4",
+      "id": "390f42d3-b332-4fac-9b03-277b0fa97de2",
       "name": "delete — create (facebook): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
+        460,
         440
       ],
       "parameters": {
@@ -450,12 +426,12 @@
       "executeOnce": true
     },
     {
-      "id": "04880d63-3ec4-4ac2-8d20-260771ec5c43",
+      "id": "d681afbd-5552-4e2b-8e85-40ccf232e588",
       "name": "create — create (github): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
+        720,
         440
       ],
       "parameters": {
@@ -482,12 +458,12 @@
       "executeOnce": true
     },
     {
-      "id": "2f82262c-5a85-4f5a-be7c-d7898ae08d57",
+      "id": "fb9eba4e-20f1-4c11-80d7-57ee59d7e5c4",
       "name": "delete — create (github): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
+        980,
         440
       ],
       "parameters": {
@@ -508,12 +484,12 @@
       "executeOnce": true
     },
     {
-      "id": "5cc24f8a-60a8-47d2-8d42-fd3057125058",
+      "id": "0d66ca2b-c01c-4365-a0ec-f3f00f9d4a4d",
       "name": "create — create (google): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
+        1240,
         440
       ],
       "parameters": {
@@ -540,12 +516,12 @@
       "executeOnce": true
     },
     {
-      "id": "910d7f49-83a6-4352-9e35-0689eca53a19",
+      "id": "b2bb4cc4-c1c8-4e30-81ac-938f249e19f4",
       "name": "delete — create (google): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
+        1500,
         440
       ],
       "parameters": {
@@ -566,13 +542,13 @@
       "executeOnce": true
     },
     {
-      "id": "7accaa72-1d13-4535-884c-9b03d03907b2",
+      "id": "ebade982-a589-46ba-b56d-8ca1d86e8637",
       "name": "create — create (linkedin): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
-        660
+        1760,
+        440
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -597,12 +573,12 @@
       "executeOnce": true
     },
     {
-      "id": "f95c6b25-df13-4865-857f-4ec97598f730",
+      "id": "c9e113f1-b706-4881-8964-bf69a86c03f0",
       "name": "delete — create (linkedin): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
+        460,
         660
       ],
       "parameters": {
@@ -623,12 +599,12 @@
       "executeOnce": true
     },
     {
-      "id": "8dc4f3c8-43b4-4c6c-8ab1-96c7f6f40581",
+      "id": "1f612067-1703-4a8e-a6d4-d4a29842d456",
       "name": "create — create (microsoft): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
+        720,
         660
       ],
       "parameters": {
@@ -655,12 +631,12 @@
       "executeOnce": true
     },
     {
-      "id": "bbef88bf-a24e-484b-9c0f-eface4aae8de",
+      "id": "4b99be0d-90b4-4011-bf95-f4a73bdd43a5",
       "name": "delete — create (microsoft): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
+        980,
         660
       ],
       "parameters": {
@@ -681,12 +657,12 @@
       "executeOnce": true
     },
     {
-      "id": "32829b92-833b-400b-80b4-1721b09f518b",
+      "id": "45ab1410-7ab5-4919-a99a-d5505515e015",
       "name": "create — create (saml_idp_discovery): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
+        1240,
         660
       ],
       "parameters": {
@@ -710,12 +686,12 @@
       "executeOnce": true
     },
     {
-      "id": "06f7aea0-98b9-408c-8601-4393ea31e7c0",
+      "id": "90e29138-59eb-4e9d-850b-f37776e8149a",
       "name": "delete — create (saml_idp_discovery): its settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
+        1500,
         660
       ],
       "parameters": {
@@ -736,13 +712,13 @@
       "executeOnce": true
     },
     {
-      "id": "800cb2eb-abd1-4b01-845d-018cce196694",
+      "id": "33407867-74a4-436c-81a0-534b8888c9d0",
       "name": "create — create: Position inserts the provider into the list",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
-        880
+        1760,
+        660
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -752,7 +728,7 @@
         "authType": "cas",
         "additionalFields": {
           "auth_base": "https://cas2.n8nbat.example.edu/cas",
-          "position": 4
+          "position": 6
         }
       },
       "credentials": {
@@ -766,12 +742,12 @@
       "executeOnce": true
     },
     {
-      "id": "918b287d-493a-4c30-8266-017152bdb3b6",
+      "id": "9081100b-d251-485e-98d5-957b8065ea74",
       "name": "update — update (SAML): changed settings reach Canvas, the rest stays",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
+        460,
         880
       ],
       "parameters": {
@@ -804,12 +780,12 @@
       "executeOnce": true
     },
     {
-      "id": "c797c78e-21b9-4383-8959-7076712d101b",
+      "id": "a8312a73-39dc-4e73-acf7-131d1938e085",
       "name": "update — update (OpenID Connect and LDAP): settings reach Canvas; pro",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
+        720,
         880
       ],
       "parameters": {
@@ -836,12 +812,12 @@
       "executeOnce": true
     },
     {
-      "id": "e07eab76-1810-4e72-906c-2af9b9f22c23",
+      "id": "4e51e37f-fd60-42f2-9b8a-0f526af9efe5",
       "name": "update — update: Position moves the provider",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
+        980,
         880
       ],
       "parameters": {
@@ -849,9 +825,9 @@
         "resource": "authenticationProvider",
         "operation": "update",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
-        "providerId": "58",
+        "providerId": "82",
         "updateFields": {
-          "position": 5
+          "position": 7
         }
       },
       "credentials": {
@@ -865,12 +841,12 @@
       "executeOnce": true
     },
     {
-      "id": "283afdd8-3755-4ae9-95e9-2434b7395409",
+      "id": "bffd400e-4329-4f90-a88e-0ffc2f06fb3b",
       "name": "delete — delete: removes the provider from the list",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
+        1240,
         880
       ],
       "parameters": {
@@ -891,12 +867,12 @@
       "executeOnce": true
     },
     {
-      "id": "ee93e081-db21-4782-af49-1f06e3b24346",
+      "id": "5eeda8d6-84df-455b-9a5f-92edfa902c1c",
       "name": "delete — restore: brings a deleted provider back with its settings; a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
+        1500,
         880
       ],
       "parameters": {
@@ -917,13 +893,13 @@
       "executeOnce": true
     },
     {
-      "id": "6947fb63-e1b7-437f-9972-89acaf57c78f",
+      "id": "abd2c548-1e52-4901-a935-2a08cc0a2475",
       "name": "restore — restore: brings a deleted provider back with its settings; a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
-        1100
+        1760,
+        880
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -943,12 +919,12 @@
       "executeOnce": true
     },
     {
-      "id": "d577d7d4-5efe-45c8-9677-761228a43fca",
+      "id": "2f7db287-9d2b-4983-99b5-3548593b556a",
       "name": "updateSsoSettings — updateSsoSettings: every setting reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
+        460,
         1100
       ],
       "parameters": {
@@ -975,12 +951,12 @@
       "executeOnce": true
     },
     {
-      "id": "b3d0590d-efa4-4141-8044-39d1bcac67a8",
+      "id": "406254ec-7779-4b1d-a5ad-0e5b50a84ca0",
       "name": "updateSsoSettings — updateSsoSettings: settings left out stay, settings sent emp",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
+        720,
         1100
       ],
       "parameters": {
@@ -1004,12 +980,12 @@
       "executeOnce": true
     },
     {
-      "id": "4e2a216e-eff8-4801-9b41-a4bea9ad17a8",
+      "id": "fcba4447-87f5-4830-9acb-2297cf6e1cc4",
       "name": "updateSsoSettings — updateSsoSettings: settings left out stay, settings sent emp (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
+        980,
         1100
       ],
       "parameters": {
@@ -1051,36 +1027,25 @@
       "main": [
         [
           {
-            "node": "getAll — getAll: lists the active providers of the account; Limit and",
+            "node": "getAll — getAll: lists the active providers of the account (Canvas re",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "getAll — getAll: lists the active providers of the account; Limit and": {
+    "getAll — getAll: lists the active providers of the account (Canvas re": {
       "main": [
         [
           {
-            "node": "getAll — getAll: lists the active providers of the account; Limit and (2)",
+            "node": "getAll — getAll: lists the active providers of the account (Canvas re (2)",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "getAll — getAll: lists the active providers of the account; Limit and (2)": {
-      "main": [
-        [
-          {
-            "node": "getAll — getAll: lists the active providers of the account; Limit and (3)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "getAll — getAll: lists the active providers of the account; Limit and (3)": {
+    "getAll — getAll: lists the active providers of the account (Canvas re (2)": {
       "main": [
         [
           {

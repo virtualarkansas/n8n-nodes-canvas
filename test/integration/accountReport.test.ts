@@ -422,23 +422,38 @@ describe('accountReport', () => {
 
 	it('create: starting the same report again while it runs is a 409 conflict, not a second report', async () => {
 		const parameters = { users: true, courses: true, sections: true, enrollments: true, groups: true, include_deleted: true };
-		const result = await runNode({
-			resource: 'accountReport',
-			operation: 'create',
-			items: [{ n: 1 }, { n: 2 }],
-			params: {
-				accountId: root,
-				reportType: 'provisioning_csv',
-				additionalFields: parameters,
-				errorHandling: { onError: 'continueWithError' },
-				batchProcessing: { mode: 'individual' },
-				// The second request has to arrive while the first report is still being generated:
-				// no waiting for the rate limit quota between the two.
-				rateLimiting: { enabled: false },
-			},
-		});
+		// Canvas refuses a second report only while the first is queued or running. On a small
+		// database an idle job runner can finish the first before the second request arrives, and
+		// both are then created: try again until the second one meets a report that is still on its way.
+		let result: Awaited<ReturnType<typeof runNode>> | undefined;
+		for (let attempt = 0; attempt < 6; attempt++) {
+			const tried = await runNode({
+				resource: 'accountReport',
+				operation: 'create',
+				items: [{ n: 1 }, { n: 2 }],
+				params: {
+					accountId: root,
+					reportType: 'provisioning_csv',
+					additionalFields: parameters,
+					errorHandling: { onError: 'continueWithError' },
+					batchProcessing: { mode: 'individual' },
+					// The second request has to arrive while the first report is still being generated:
+					// no waiting for the rate limit quota between the two.
+					rateLimiting: { enabled: false },
+				},
+			});
+			for (const report of tried.success) remember(root, report);
+			if (tried.error.length > 0) {
+				result = tried;
+				break;
+			}
+			// Both were created: they are two reports of their own. Let them finish, then try again.
+			expect(new Set(tried.success.map((r) => r.id)).size).toBe(2);
+			for (const report of tried.success) await waitForReport(root, 'provisioning_csv', String(report.id));
+		}
+		if (!result) throw new Error('Canvas never met a running report in six attempts');
 		expect(result.success).toHaveLength(1);
-		const id = remember(root, result.success[0]);
+		const id = String(result.success[0].id);
 		expect(result.error).toHaveLength(1);
 		expect(result.error[0]).toMatchObject({
 			errorCode: 409,
