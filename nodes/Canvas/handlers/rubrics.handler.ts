@@ -698,6 +698,41 @@ export function handleOutcomeResultResource(
 			};
 		}
 
+		// The display settings of the Learning Mastery Gradebook, stored per user and course.
+		case 'getGradebookSettings':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/learning_mastery_gradebook_settings`,
+				dataKey: 'learning_mastery_gradebook_settings',
+			};
+
+		case 'updateGradebookSettings': {
+			const settings = getParamObject('settings');
+			if (Object.keys(settings).length === 0) {
+				throw new ApplicationError('Select at least one setting for outcomeResult updateGradebookSettings');
+			}
+			return {
+				method: 'PUT',
+				endpoint: `/api/v1/courses/${courseId}/learning_mastery_gradebook_settings`,
+				body: { learning_mastery_gradebook_settings: settings },
+				dataKey: 'learning_mastery_gradebook_settings',
+				// Without the feature Canvas answers 204 and stores nothing.
+				checkResponse: (data) => {
+					if (data === undefined || data === null || typeof data !== 'object') {
+						throw new ApplicationError(
+							'Canvas did not store the settings: the Learning Mastery Gradebook feature is not enabled for this course',
+						);
+					}
+				},
+			};
+		}
+
+		case 'getUserDetails':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/users/${getParam('userId')}/lmgb_user_details`,
+			};
+
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for outcomeResult`);
 	}

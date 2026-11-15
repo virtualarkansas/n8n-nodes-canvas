@@ -56,6 +56,13 @@ export const outcomeResultOperations: INodeProperties[] = [
 				action: 'Get contributing scores',
 			},
 			{
+				name: 'Get Gradebook Settings',
+				value: 'getGradebookSettings',
+				description:
+					"Get the current user's display settings of the Learning Mastery Gradebook of a course",
+				action: 'Get learning mastery gradebook settings',
+			},
+			{
 				name: 'Get Many',
 				value: 'getAll',
 				description: 'Get the outcome results of the students of a course, one item per result',
@@ -67,6 +74,20 @@ export const outcomeResultOperations: INodeProperties[] = [
 				description:
 					'Get the calculated outcome scores of a course, one item per student (or one for the whole course)',
 				action: 'Get outcome rollups',
+			},
+			{
+				name: 'Get User Details',
+				value: 'getUserDetails',
+				description:
+					'Get what the Learning Mastery Gradebook shows about a student: their sections in the course and their last login (the one before their current session)',
+				action: 'Get learning mastery gradebook details of a user',
+			},
+			{
+				name: 'Update Gradebook Settings',
+				value: 'updateGradebookSettings',
+				description:
+					"Update the current user's display settings of the Learning Mastery Gradebook of a course",
+				action: 'Update learning mastery gradebook settings',
 			},
 		],
 		default: 'getAll',
@@ -89,6 +110,147 @@ export const outcomeResultFields: INodeProperties[] = [
 			},
 		},
 		description: 'The ID of the course',
+	},
+
+	// ----------------------------------
+	//         outcomeResult: getGradebookSettings, updateGradebookSettings
+	// ----------------------------------
+	{
+		displayName:
+			'These settings are how the Learning Mastery Gradebook of the course is displayed for the user whose token is used (teachers and admins); other users have their own. The course needs the "Learning Mastery Gradebook" feature: without it Canvas answers with an empty response.',
+		name: 'gradebookSettingsNotice',
+		type: 'notice',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['outcomeResult'],
+				operation: ['getGradebookSettings', 'updateGradebookSettings'],
+			},
+		},
+	},
+	{
+		displayName: 'Settings',
+		name: 'settings',
+		type: 'collection',
+		placeholder: 'Add Setting',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['outcomeResult'],
+				operation: ['updateGradebookSettings'],
+			},
+		},
+		description: 'The settings to change (at least one). Settings that are not listed keep their value.',
+		options: [
+			{
+				displayName: 'Name Display Format',
+				name: 'name_display_format',
+				type: 'options',
+				options: [
+					{ name: 'First Name Last Name', value: 'first_last' },
+					{ name: 'Last Name, First Name', value: 'last_first' },
+				],
+				default: 'first_last',
+				description: 'How the names of the students are written',
+			},
+			{
+				displayName: 'Outcome Arrangement',
+				name: 'outcome_arrangement',
+				type: 'options',
+				options: [
+					{ name: 'Alphabetical', value: 'alphabetical' },
+					{ name: 'Custom', value: 'custom' },
+					{ name: 'Upload Order', value: 'upload_order' },
+				],
+				default: 'alphabetical',
+				description: 'The order of the outcome columns',
+			},
+			{
+				displayName: 'Score Display Format',
+				name: 'score_display_format',
+				type: 'options',
+				options: [
+					{ name: 'Icon and Label', value: 'icon_and_label' },
+					{ name: 'Icon and Points', value: 'icon_and_points' },
+					{ name: 'Icon Only', value: 'icon_only' },
+				],
+				default: 'icon_only',
+				description: 'How a score is shown in a cell',
+			},
+			{
+				displayName: 'Secondary Info Display',
+				name: 'secondary_info_display',
+				type: 'options',
+				options: [
+					{ name: 'Integration ID', value: 'integration_id' },
+					{ name: 'Login ID', value: 'login_id' },
+					{ name: 'None', value: 'none' },
+					{ name: 'SIS ID', value: 'sis_id' },
+				],
+				default: 'none',
+				description: 'What to show below the name of each student',
+			},
+			{
+				displayName: 'Show Outcomes with No Results',
+				name: 'show_outcomes_with_no_results',
+				type: 'boolean',
+				default: true,
+				description: 'Whether to show outcomes nobody has a result for',
+			},
+			{
+				displayName: 'Show Student Avatars',
+				name: 'show_student_avatars',
+				type: 'boolean',
+				default: true,
+				description: 'Whether to show the avatars of the students',
+			},
+			{
+				displayName: 'Show Students with No Results',
+				name: 'show_students_with_no_results',
+				type: 'boolean',
+				default: true,
+				description: 'Whether to show students without any outcome result',
+			},
+			{
+				displayName: 'Show Unpublished Assignments',
+				name: 'show_unpublished_assignments',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to include unpublished assignments',
+			},
+			{
+				displayName: 'Students Per Page',
+				name: 'students_per_page',
+				type: 'options',
+				options: [
+					{ name: '100', value: 100 },
+					{ name: '15', value: 15 },
+					{ name: '30', value: 30 },
+					{ name: '50', value: 50 },
+				],
+				default: 15,
+				description: 'How many students the gradebook shows on a page',
+			},
+		],
+	},
+
+	// ----------------------------------
+	//         outcomeResult: getUserDetails
+	// ----------------------------------
+	{
+		displayName: 'User ID',
+		name: 'userId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['outcomeResult'],
+				operation: ['getUserDetails'],
+			},
+		},
+		description:
+			'The numeric ID of the user (SIS IDs are not accepted here). Students can only ask about themselves.',
 	},
 
 	// ----------------------------------
