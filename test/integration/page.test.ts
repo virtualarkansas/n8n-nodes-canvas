@@ -423,10 +423,14 @@ describe('page', () => {
 		expect(reverted).toMatchObject({ revision_id: 4, body: '<p>group v1</p>' });
 		url = String(reverted.url);
 
-		// A front page has to be replaced before it can be deleted.
-		const other = await canvas().post<Json>(`${groupBase}/pages`, {
-			wiki_page: { title: unique('Group front'), published: true, front_page: true },
+		// A front page has to be replaced before it can be deleted: a new page created as the front page.
+		const [other] = await runOk({
+			resource: 'page',
+			operation: 'create',
+			params: { ...group, title: unique('Group front'), additionalFields: { published: true, front_page: true } },
 		});
+		expect(await pageFromCanvas(String(other.url), groupBase)).toMatchObject({ front_page: true });
+		expect((await pageFromCanvas(url, groupBase)).front_page).toBe(false);
 		const [deleted] = await runOk({ resource: 'page', operation: 'delete', params: { ...group, pageUrl: url } });
 		expect(deleted.page_id).toBe(created.page_id);
 		expect((await canvas().request('GET', `${groupBase}/pages/${url}`)).status).toBe(404);
