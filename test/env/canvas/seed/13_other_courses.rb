@@ -80,7 +80,9 @@ Seed.step("other.second") do
   second = Seed.course(:second)
   teacher = Seed.user(:teacher)
   students = Seed.users(:second_students)
-  hw = second.assignment_groups.active.order(:id).first
+  # Canvas creates the default group of a course only when somebody first looks at its
+  # assignments; on a new database nobody has.
+  hw = second.assignment_groups.active.order(:id).first || second.assignment_groups.create!(name: "Assignments", position: 1)
   hw.update!(name: "Homework", group_weight: 40)
   tests = second.assignment_groups.create!(name: "Tests & Quizzes", group_weight: 60, position: 2)
   second.update!(group_weighting_scheme: "percent")

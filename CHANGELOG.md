@@ -178,6 +178,10 @@ corrected. Where that changed what you see in the node:
   prerequisites and completion requirements, calendar event series, group category limits,
   notification preferences for other users, developer key inheritance.
 - Descriptions and defaults that did not match Canvas' behaviour.
+- Unusable input from expressions is refused with a message that names the field (a text where
+  the rows of a collection are expected, an object in a list of IDs) instead of failing with an
+  internal error or sending `[object Object]`; JSON fields accept surrounding whitespace and treat
+  an empty value the same way everywhere.
 - As an AI agent tool the node answered with nothing when an item failed in one of the "Continue"
   error modes, or in Debug Mode (n8n hands an agent the first output only). Failed items and debug
   requests are now part of the tool's answer.
