@@ -6,11 +6,24 @@ import type { Json } from '../../lib/n8n';
  * The Canvas instance and its persona tokens are shared with other test files and
  * people. When the shared quota of a token is drained, the node's pre-flight check
  * gives up ("rate limit quota is still below the threshold") before it sends the
- * request. That says nothing about the operation under test, so such a run is
- * repeated once the quota had time to recover. Nothing is repeated when any item
- * of the run went through.
+ * request. That says nothing about the operation under test, so:
+ *
+ *  - such a run is repeated once the quota had time to recover (nothing is repeated
+ *    when any item of the run went through);
+ *  - on a heavily shared instance, BATTERY_RATE_LIMIT_THRESHOLD=<n> makes the runs of
+ *    these files use that pre-flight threshold instead of the node's default (300),
+ *    unless a test sets its own rate limiting options.
  */
 const QUOTA_EXHAUSTED = /rate limit quota is still below the threshold/i;
+const THRESHOLD = process.env.BATTERY_RATE_LIMIT_THRESHOLD;
+
+function withSharedInstanceSettings(opts: RunNodeOptions): RunNodeOptions {
+	const params = (opts.params ?? {}) as Json;
+	if (THRESHOLD === undefined || THRESHOLD === '' || params.rateLimiting !== undefined) {
+		return opts;
+	}
+	return { ...opts, params: { ...params, rateLimiting: { threshold: Number(THRESHOLD) } } };
+}
 
 function blockedByQuota(result: RunNodeResult): boolean {
 	if (result.success.length > 0) return false;
@@ -21,8 +34,9 @@ function blockedByQuota(result: RunNodeResult): boolean {
 }
 
 export async function runNode(opts: RunNodeOptions): Promise<RunNodeResult> {
+	const run = withSharedInstanceSettings(opts);
 	for (let attempt = 1; ; attempt++) {
-		const result = await harnessRunNode(opts);
+		const result = await harnessRunNode(run);
 		if (attempt >= 4 || !blockedByQuota(result)) return result;
 		await new Promise((r) => setTimeout(r, 20_000));
 	}

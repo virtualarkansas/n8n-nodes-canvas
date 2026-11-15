@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { canvas, CanvasClient, fx, unique } from '../lib/canvas';
 import { runNode, runOk } from './support/run';
 import type { Json } from '../lib/n8n';
@@ -36,6 +36,12 @@ describe('quiz', () => {
 		});
 		assignmentGroupId = String(group.id);
 	}, FIXTURE_TIMEOUT);
+
+	afterAll(async () => {
+		if (assignmentGroupId) {
+			await canvas().request('DELETE', `/api/v1/courses/${courseId}/assignment_groups/${assignmentGroupId}`);
+		}
+	});
 
 	it('create: every optional field of a graded quiz reaches Canvas', async () => {
 		const [created] = await runOk({

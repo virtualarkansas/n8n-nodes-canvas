@@ -540,9 +540,11 @@ describe('quizSubmission', () => {
 	});
 
 	it('getAllOutstanding + gradeOutstanding: an attempt left open past the lock date gets turned in', async () => {
-		// The quiz locks a few seconds after the student starts; the student never submits.
-		const lockAt = new Date(Date.now() + 15_000).toISOString();
-		const quiz = await createQuiz(courseId, { title: unique('Locks soon'), lock_at: lockAt }, [MULTIPLE_CHOICE]);
+		// The quiz locks shortly after the student starts; the student never submits.
+		// (The lock date is set once the quiz is ready, so a slow instance does not eat the margin.)
+		const quiz = await createQuiz(courseId, { title: unique('Locks soon') }, [MULTIPLE_CHOICE]);
+		const lockAt = new Date(Date.now() + 45_000).toISOString();
+		await canvas().put(`/api/v1/courses/${courseId}/quizzes/${quiz.id}`, { quiz: { lock_at: lockAt } });
 		const params = { courseId, quizId: quiz.id };
 		const path = `/api/v1/courses/${courseId}/quizzes/${quiz.id}/outstanding_quiz_submissions`;
 
@@ -610,7 +612,7 @@ describe('quizSubmission', () => {
 			expect(forbidden.error[0]).toMatchObject({ errorType: 'FORBIDDEN', operation });
 		}
 		await deleteQuiz(courseId, quiz.id);
-	});
+	}, 360_000);
 
 	it('take a whole quiz through the node as a student (start → complete)', async () => {
 		const quiz = await createQuiz(courseId, { title: unique('One go') }, [MULTIPLE_CHOICE]);
