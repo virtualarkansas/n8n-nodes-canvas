@@ -70,14 +70,14 @@ async function withLock<T>(name: string, fn: () => Promise<T>): Promise<T> {
 
 const pad = (n: number): string => String(n).padStart(3, '0');
 
-async function ensureCourse(key: string, name: string): Promise<string> {
+async function ensureCourse(key: string, name: string, extra: Json = {}): Promise<string> {
 	const sisId = `${PREFIX}-${key}`;
 	const found = await canvas().request('GET', `/api/v1/courses/sis_course_id:${sisId}`);
 	if (found.status === 200) {
 		return String((found.data as Json).id);
 	}
 	const created = await canvas().post<Json>(`/api/v1/accounts/${fx('accountId')}/courses`, {
-		course: { name, course_code: sisId, sis_course_id: sisId },
+		course: { name, course_code: sisId, sis_course_id: sisId, ...extra },
 		offer: true,
 	});
 	return String(created.id);
@@ -332,12 +332,72 @@ export interface AssignmentsBattery {
 	bulkGroupId: string;
 	/** IDs of all assignment groups created for the battery (more than 10). */
 	groupIds: string[];
+	/** Own teachers of the course (moderated grading needs real instructors). */
+	teacherIds: string[];
+	/** Default section and a second section. */
+	sectionIds: string[];
+	/** Group set with one group holding the student persona. */
+	groupCategoryId: string;
+	studentGroupId: string;
+	/**
+	 * A small course in the seeded term that has grading periods, with one assignment
+	 * due in each of the two periods (both in the same assignment group).
+	 */
+	periods: {
+		courseId: string;
+		assignmentGroupId: string;
+		firstPeriodId: string;
+		secondPeriodId: string;
+		firstAssignmentId: string;
+		secondAssignmentId: string;
+	};
+}
+
+/** Find or create a battery user by SIS ID. */
+async function ensureUser(sisId: string, name: string): Promise<string> {
+	const found = await canvas().request('GET', `/api/v1/users/sis_user_id:${sisId}`);
+	if (found.status === 200) return String((found.data as Json).id);
+	const login = `${sisId.toLowerCase()}@example.edu`;
+	const created = await canvas().post<Json>(`/api/v1/accounts/${fx('accountId')}/users`, {
+		user: { name, skip_registration: true },
+		pseudonym: { unique_id: login, sis_user_id: sisId, send_confirmation: false },
+		communication_channel: { type: 'email', address: login, skip_confirmation: true },
+	});
+	return String(created.id);
+}
+
+async function ensureTeachers(courseId: string, userIds: string[]): Promise<void> {
+	const enrolled = await canvas().getAll<Json>(`/api/v1/courses/${courseId}/enrollments?type[]=TeacherEnrollment`);
+	const have = new Set(enrolled.map((e) => String(e.user_id)));
+	for (const userId of userIds.filter((id) => !have.has(id))) {
+		await canvas().post(`/api/v1/courses/${courseId}/enrollments`, {
+			enrollment: { user_id: userId, type: 'TeacherEnrollment', enrollment_state: 'active', notify: false },
+		});
+	}
 }
 
 export function ensureAssignmentsBattery(): Promise<AssignmentsBattery> {
 	return withLock('assignments', async () => {
 		const courseId = await ensureCourse('B', 'W5682 assignments battery');
 		await ensureStudents(courseId, [fx('studentUserId'), fx('student2UserId')]);
+		const teacherIds = [
+			await ensureUser(`${PREFIX}-T-001`, 'W5682 Teacher 001'),
+			await ensureUser(`${PREFIX}-T-002`, 'W5682 Teacher 002'),
+			await ensureUser(`${PREFIX}-T-003`, 'W5682 Teacher 003'),
+		];
+		await ensureTeachers(courseId, teacherIds);
+
+		const sections = await canvas().getAll<Json>(`/api/v1/courses/${courseId}/sections`);
+		let second = sections.find((s) => s.name === 'W5682 second section');
+		second ??= await canvas().post<Json>(`/api/v1/courses/${courseId}/sections`, {
+			course_section: { name: 'W5682 second section' },
+		});
+		const first = sections.find((s) => s.id !== second!.id) ?? sections[0];
+		const sectionIds = [String(first.id), String(second.id)];
+
+		const studentGroupId = await ensureGroup(courseId, 'W5682 assignment group', [fx('studentUserId')]);
+		const group = await canvas().get<Json>(`/api/v1/groups/${studentGroupId}`);
+		const groupCategoryId = String(group.group_category_id);
 
 		const groups = await canvas().getAll<Json>(`/api/v1/courses/${courseId}/assignment_groups`);
 		const byName = new Map(groups.map((g) => [String(g.name), g]));
@@ -366,8 +426,55 @@ export function ensureAssignmentsBattery(): Promise<AssignmentsBattery> {
 				},
 			});
 		});
-		return { courseId, bulkGroupId, groupIds };
+		const periods = await ensurePeriodsCourse();
+		return { courseId, bulkGroupId, groupIds, teacherIds, sectionIds, groupCategoryId, studentGroupId, periods };
 	});
+}
+
+async function ensurePeriodsCourse(): Promise<AssignmentsBattery['periods']> {
+	// The seeded "Fall 2026" term uses a grading period set with two quarters.
+	const courseId = await ensureCourse('B2', 'W5682 grading periods battery', { term_id: fx('termId') });
+	const groups = await canvas().getAll<Json>(`/api/v1/courses/${courseId}/assignment_groups`);
+	let group = groups.find((g) => g.name === 'Periods group');
+	group ??= await canvas().post<Json>(`/api/v1/courses/${courseId}/assignment_groups`, { name: 'Periods group' });
+	const assignmentGroupId = String(group.id);
+	const assignments = await canvas().getAll<Json>(`/api/v1/courses/${courseId}/assignments`);
+	const assignmentNamed = async (name: string, dueAt: string): Promise<string> => {
+		const found = assignments.find((a) => a.name === name);
+		if (found) return String(found.id);
+		const created = await canvas().post<Json>(`/api/v1/courses/${courseId}/assignments`, {
+			assignment: {
+				name,
+				assignment_group_id: assignmentGroupId,
+				due_at: dueAt,
+				points_possible: 10,
+				submission_types: ['online_text_entry'],
+				published: true,
+			},
+		});
+		return String(created.id);
+	};
+	const periods = {
+		courseId,
+		assignmentGroupId,
+		firstPeriodId: fx('gradingPeriodId'),
+		secondPeriodId: fx('currentGradingPeriodId'),
+		firstAssignmentId: await assignmentNamed('Due in the first period', '2026-09-15T12:00:00Z'),
+		secondAssignmentId: await assignmentNamed('Due in the second period', '2026-11-20T12:00:00Z'),
+	};
+	// Canvas assigns assignments to grading periods through the submissions of the students,
+	// so the course needs a student; the assignment then shows up in its period shortly after.
+	await ensureStudents(courseId, [await ensureUser(`${PREFIX}-P-001`, 'W5682 Period Student 001')]);
+	const deadline = Date.now() + 3 * 60_000;
+	for (;;) {
+		const group = await canvas().get<Json>(
+			`/api/v1/courses/${courseId}/assignment_groups/${assignmentGroupId}?include[]=assignments&grading_period_id=${periods.firstPeriodId}`,
+		);
+		if (((group.assignments ?? []) as Json[]).length === 1) break;
+		if (Date.now() > deadline) throw new Error('The periods course never sorted its assignments into grading periods');
+		await new Promise((r) => setTimeout(r, 3000));
+	}
+	return periods;
 }
 
 // ---------------------------------------------------------------------------
@@ -393,17 +500,9 @@ export function ensureSubmissionsBattery(): Promise<SubmissionsBattery> {
 	return withLock('submissions', async () => {
 		const courseId = await ensureCourse('C', 'W5682 submissions battery');
 
-		const users = await pool(Array.from({ length: BULK_STUDENTS }, (_, i) => i + 1), 6, async (n) => {
-			const sisId = `${PREFIX}-S-${pad(n)}`;
-			const found = await canvas().request('GET', `/api/v1/users/sis_user_id:${sisId}`);
-			if (found.status === 200) return String((found.data as Json).id);
-			const created = await canvas().post<Json>(`/api/v1/accounts/${fx('accountId')}/users`, {
-				user: { name: `W5682 Student ${pad(n)}`, skip_registration: true },
-				pseudonym: { unique_id: `w5682.student${pad(n)}@example.edu`, sis_user_id: sisId, send_confirmation: false },
-				communication_channel: { type: 'email', address: `w5682.student${pad(n)}@example.edu`, skip_confirmation: true },
-			});
-			return String(created.id);
-		});
+		const users = await pool(Array.from({ length: BULK_STUDENTS }, (_, i) => i + 1), 6, (n) =>
+			ensureUser(`${PREFIX}-S-${pad(n)}`, `W5682 Student ${pad(n)}`),
+		);
 		await ensureStudents(courseId, [...users, fx('studentUserId'), fx('student2UserId')]);
 
 		const sections = await canvas().getAll<Json>(`/api/v1/courses/${courseId}/sections`);
