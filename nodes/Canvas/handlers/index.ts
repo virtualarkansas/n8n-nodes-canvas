@@ -17,6 +17,7 @@ import {
 	buildUserObserveeRequest,
 	buildUserCustomDataRequest,
 } from './users.handler';
+import { buildErrorReportRequest } from './errorReports.handler';
 
 // Enrollments group
 import {
@@ -240,6 +241,7 @@ export const resourceHandlers: Record<string, ResourceHandler> = {
 	communicationChannel: buildCommunicationChannelRequest,
 	userObservee: buildUserObserveeRequest,
 	userCustomData: buildUserCustomDataRequest,
+	errorReport: buildErrorReportRequest,
 
 	// Enrollments group
 	enrollment: buildEnrollmentRequest,

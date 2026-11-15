@@ -57,6 +57,7 @@ export const canvasResources: ICanvasResource[] = [
 	{ name: 'Enrollment', value: 'enrollment', operations: descriptions.enrollmentOperations, fields: descriptions.enrollmentFields },
 	{ name: 'Enrollment Term', value: 'enrollmentTerm', operations: descriptions.enrollmentTermOperations, fields: descriptions.enrollmentTermFields },
 	{ name: 'ePortfolio', value: 'ePortfolio', operations: descriptions.ePortfolioOperations, fields: descriptions.ePortfolioFields },
+	{ name: 'Error Report', value: 'errorReport', operations: descriptions.errorReportOperations, fields: descriptions.errorReportFields },
 	{ name: 'External Tool', value: 'externalTool', operations: descriptions.externalToolOperations, fields: descriptions.externalToolFields },
 	{ name: 'Favorite', value: 'favorite', operations: descriptions.favoriteOperations, fields: descriptions.favoriteFields },
 	{ name: 'Feature Flag', value: 'featureFlag', operations: descriptions.featureFlagOperations, fields: descriptions.featureFlagFields },
