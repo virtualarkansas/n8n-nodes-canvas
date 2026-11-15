@@ -808,6 +808,20 @@ describe('assignment', () => {
 		expect(actual).not.toHaveProperty('lock_at');
 		expect(actual).not.toHaveProperty('unlock_at');
 
+		// Availability dates through Update, then the due date alone again.
+		await runOk({
+			resource: 'assignment',
+			operation: 'updateOverride',
+			params: {
+				...base,
+				overrideId: String(students.id),
+				updateFields: { due_at: '2033-01-12T12:00:00Z', unlock_at: '2033-01-01T08:00:00Z', lock_at: '2033-01-20T20:00:00Z' },
+			},
+		});
+		expect(
+			await canvas().get<Json>(`/api/v1/courses/${courseId}/assignments/${groupAssignmentId}/overrides/${String(students.id)}`),
+		).toMatchObject({ due_at: '2033-01-12T12:00:00Z', unlock_at: '2033-01-01T08:00:00Z', lock_at: '2033-01-20T20:00:00Z' });
+
 		const twice = await runNode({
 			resource: 'assignment',
 			operation: 'createOverride',
