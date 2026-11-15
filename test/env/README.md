@@ -15,6 +15,20 @@ nothing (empty database, new n8n user folder) for release 0.2.0.
 git clone --depth 1 --branch prod https://github.com/instructure/canvas-lms.git ../canvas-lms
 ```
 
+The battery and the route fixture (`test/fixtures/canvas-routes.json`) were last produced with
+commit `44bfdc26` of that branch (release `stable/2026-04-22`). To build exactly that Canvas:
+
+```bash
+git -C ../canvas-lms fetch --depth 1 origin 44bfdc264d5fe6a942ebdb5f10a0eb63ee04df3a
+```
+
+```bash
+git -C ../canvas-lms checkout FETCH_HEAD
+```
+
+With a newer Canvas, regenerate the route fixture after step 1 (`test/tools/dump-routes.rb` says
+how), so the unit route audit checks the node against the Canvas you run.
+
 ```bash
 CANVAS_SRC=../canvas-lms test/env/canvas/up.sh build
 ```

@@ -37,6 +37,7 @@ npx tsx test/tools/describe.ts <resource> [operation]   # What an operation offe
 npx tsx test/tools/coverage.ts                          # Regenerate test/COVERAGE.md
 npx tsx test/tools/export-workflows.ts                  # Regenerate test/workflows/
 npx tsx test/tools/route-gaps.ts                        # Regenerate test/ROUTE_GAPS.md
+npx tsx test/tools/request-snapshot.ts                  # Regenerate the request snapshot after an intended handler change
 npx tsx test/tools/description-diff.ts [version]        # What changed for saved workflows since a release
 ```
 
@@ -128,7 +129,7 @@ Helpers for reading parameters live once in `handlers/shared.ts` (contract pinne
 
 ## Testing
 
-- **Unit** (`npm test`): request layer, trigger parsing, UI definition integrity, and the route audit, which checks every operation for every context value against the route table dumped from a real Canvas (`test/fixtures/canvas-routes.json`).
+- **Unit** (`npm test`): request layer, the node run against a fake n8n (`nodeExecute.test.ts`: what input values can do to a request, list paging, hints), trigger parsing, UI definition integrity, the route audit, which checks every operation for every context value against the route table dumped from a real Canvas (`test/fixtures/canvas-routes.json`, produced by `test/tools/dump-routes.rb`), and the request snapshot (`test/fixtures/request-snapshot.json`): method, path, query and body of every operation. A handler change that alters a request fails `npm test` until the snapshot is regenerated and the diff reviewed.
 - **Integration** (`npm run test:integration`): every operation run by a real n8n instance against a local Canvas seeded with a large, messy data set; writes are verified by reading back from Canvas directly. Environment scripts are in `test/env/`.
 - Test against the local instance or a Canvas Free-for-Teacher sandbox, never a production instance.
 

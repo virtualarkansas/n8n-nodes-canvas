@@ -79,7 +79,10 @@ Node-level behaviour (item processing, error modes, pagination options, rate lim
 
 Every node execution is appended to `test/.results/ops.jsonl`; `npx tsx test/tools/coverage.ts` turns that into `test/COVERAGE.md`: per operation, whether it was executed successfully, only produced errors, was skipped (with the reason) or was never run.
 
-Other generated reports:
+Other generated files (each tool's header says when to run it):
+
+- `npx tsx test/tools/request-snapshot.ts` → `test/fixtures/request-snapshot.json`: the request every operation builds for the catalog's sample values. `npm test` compares the handlers with it, which is what guards query strings and bodies in CI, where no Canvas runs. After an intended change to a handler, regenerate it and review the diff.
+- `test/tools/dump-routes.rb` (run inside the Canvas container) → `test/fixtures/canvas-routes.json`: Canvas' route table, behind the unit route audit and `ROUTE_GAPS.md`. Regenerate it when the local Canvas is built from a newer `canvas-lms`.
 
 - `npx tsx test/tools/route-gaps.ts` → `test/ROUTE_GAPS.md`: the Canvas API endpoints (documented and undocumented) no operation reaches, from the route table of a real Canvas.
 - `npx tsx test/tools/export-workflows.ts` → `test/workflows/`: one importable example workflow per resource, built from the runs the battery executed successfully; `npx tsx test/tools/verify-workflows.ts` imports and runs them.
