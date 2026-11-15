@@ -68,7 +68,7 @@ Seed.step("enroll.main") do
     e.add(main, u, :student, section: secs[i % 4])
     active << u
   end
-  # the same student in two sections; a student who also TAs another section
+  # the same student in two sections (twice)
   multi = e.add(main, active[5], :student, section: p6, multi: true)
   e.add(main, active[6], :student, section: p2, multi: true)
   # non-active states

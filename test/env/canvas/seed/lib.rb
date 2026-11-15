@@ -443,9 +443,8 @@ module Seed
         req["Content-Type"] = content_type || "application/octet-stream"
         req.body = raw
       elsif params && !%i[get delete].include?(method)
-        req.set_form_data(flatten_params(params).to_h { |k, v| [k, v] }) if flatten_params(params).map(&:first).uniq.size == flatten_params(params).size
-        req.body = URI.encode_www_form(flatten_params(params)) unless req.body
-        req["Content-Type"] ||= "application/x-www-form-urlencoded"
+        req.body = URI.encode_www_form(flatten_params(params))
+        req["Content-Type"] = "application/x-www-form-urlencoded"
       end
       res = Net::HTTP.start(uri.host, uri.port, read_timeout: 180, open_timeout: 15) { |h| h.request(req) }
       body = res.body.to_s
