@@ -536,7 +536,41 @@ describe('cross-cutting', () => {
 			expect((await snapshot()).length).toBeGreaterThan(200);
 		});
 
-		it('defaults: 10 per page, 5 pages, so exactly the first 50', async () => {
+		it('Limit and Return All on the operation; a list that was cut short says so in the execution', async () => {
+			/** The hints n8n shows with the node's output. */
+			const hintsOf = (result: RunNodeResult): string[] => {
+				const runData = (((result.execution.raw.data as Json | undefined)?.resultData as Json | undefined)?.runData ?? {}) as Record<
+					string,
+					Array<{ hints?: Array<{ message: string }> }>
+				>;
+				return (runData.Canvas?.[0]?.hints ?? []).map((hint) => hint.message);
+			};
+			const list = (params: Json): Promise<RunNodeResult> =>
+				run({ resource: 'enrollment', operation: 'getAll', params: { listBy: 'course', courseId: large(), ...params } });
+
+			const before = await snapshot();
+			const [byDefault, limited, everything] = await Promise.all([
+				list({}),
+				list({ returnAll: false, limit: 120 }),
+				list({ returnAll: true }),
+			]);
+			const after = await snapshot();
+
+			expect(byDefault.success).toHaveLength(50);
+			expect(limited.success).toHaveLength(120);
+			expect(ids(limited.success).slice(0, 50)).toEqual(ids(byDefault.success));
+			expectSameList(ids(everything.success), before, after);
+
+			// A partial list never passes for a complete one.
+			for (const partial of [byDefault, limited]) {
+				expect(hintsOf(partial)).toHaveLength(1);
+				expect(hintsOf(partial)[0]).toContain('incomplete');
+				expect(hintsOf(partial)[0]).toContain('Return All');
+			}
+			expect(hintsOf(everything)).toEqual([]);
+		});
+
+		it('defaults: the first 50 records', async () => {
 			const before = await snapshot();
 			const listed = await listEnrollments();
 			expect(listed).toHaveLength(50);
@@ -611,14 +645,21 @@ describe('cross-cutting', () => {
 			const threePages = await runOk({ resource: 'course', operation: 'getAll', persona: 'teacher', params: { pagination: { perPage: 5, maxPages: 3 } } });
 			expect(threePages).toHaveLength(15);
 			expect(new Set(threePages.map((c) => c.id)).size).toBe(15);
-			const all = await runOk({ resource: 'course', operation: 'getAll', persona: 'teacher', params: { pagination: { returnAll: true, perPage: 8 } } });
-			// Other files enrol the shared teacher in courses of their own while this runs: everything that
-			// was there before and after must be listed, once, and nothing that was there at neither time.
-			const after = (await asTeacher.getAll<Json>('/api/v1/courses')).map((c) => Number(c.id));
-			const listed = all.map((c) => Number(c.id));
-			expect(new Set(listed).size).toBe(listed.length);
-			expect(expected.filter((id) => after.includes(id) && !listed.includes(id))).toEqual([]);
-			expect(listed.filter((id) => !expected.includes(id) && !after.includes(id))).toEqual([]);
+			// Other files enrol the shared teacher in courses of their own while this runs, and a list that
+			// pages by number shifts when a record is added or removed while it is read (Canvas then skips
+			// or repeats one). So the complete list is compared in a moment when nothing changed around it.
+			const courseIds = async (): Promise<number[]> => (await asTeacher.getAll<Json>('/api/v1/courses')).map((c) => Number(c.id)).sort((a, b) => a - b);
+			let quiet = false;
+			for (let attempt = 0; attempt < 8 && !quiet; attempt++) {
+				const before = await courseIds();
+				const all = await runOk({ resource: 'course', operation: 'getAll', persona: 'teacher', params: { pagination: { returnAll: true, perPage: 8 } } });
+				const after = await courseIds();
+				quiet = JSON.stringify(before) === JSON.stringify(after);
+				if (quiet) {
+					expect(all.map((c) => Number(c.id)).sort((a, b) => a - b)).toEqual(before);
+				}
+			}
+			expect(quiet, 'the list of the teacher never stood still long enough to compare').toBe(true);
 		});
 
 		it('a list of exactly one page, an empty list, and a list Canvas does not paginate at all', async () => {
