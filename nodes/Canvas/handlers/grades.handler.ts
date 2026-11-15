@@ -79,7 +79,7 @@ export function handleCustomGradebookColumnResource(
 			};
 
 		case 'bulkUpdateData': {
-			const dataEntries = collectionRows(getParamObject('columnData'), 'dataEntry');
+			const dataEntries = collectionRows(getParamObject('columnData'), 'dataEntry', 'Column Data');
 
 			if (dataEntries.length === 0) {
 				throw new ApplicationError(
@@ -196,7 +196,11 @@ export function handleGradingPeriodResource(
 			// course's term.
 			const endpoint = `/api/v1/grading_period_sets/${getParam('gradingPeriodSetId')}/grading_periods/batch_update`;
 
-			const gradingPeriodEntries = collectionRows(getParamObject('gradingPeriods'), 'gradingPeriod');
+			const gradingPeriodEntries = collectionRows(
+				getParamObject('gradingPeriods'),
+				'gradingPeriod',
+				'Grading Periods',
+			);
 
 			if (gradingPeriodEntries.length === 0) {
 				throw new ApplicationError(
@@ -298,7 +302,7 @@ export function handleGradingPeriodSetResource(
 
 /** Rows of the Grading Scheme collection as `grading_scheme_entry[]`. */
 function gradingSchemeEntries(collection: Record<string, unknown>): IDataObject[] {
-	return collectionRows(collection, 'gradeEntry').map((entry) => ({
+	return collectionRows(collection, 'gradeEntry', 'Grading Scheme').map((entry) => ({
 		name: entry.name,
 		value: entry.value,
 	}));

@@ -1,6 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { parseJson, toList } from './shared';
+import { collectionRows, parseJson, toList } from './shared';
 
 type Fields = Record<string, unknown>;
 
@@ -17,9 +17,7 @@ function buildAssignmentFields(fields: Fields): Fields {
 	}
 
 	if ('integration_data' in assignment) {
-		const data = parseJson(assignment.integration_data, 'Integration Data must be valid JSON', {
-			asTyped: true,
-		});
+		const data = parseJson(assignment.integration_data, 'Integration Data must be valid JSON');
 		if (data === undefined) {
 			delete assignment.integration_data;
 		} else {
@@ -59,7 +57,7 @@ function buildOverrideFields(fields: Fields): Fields {
  * has to contain is left to Canvas, which reports problems per entry.
  */
 function parseOverrideBatch(value: string, example: string): Fields[] {
-	const parsed = parseJson(value, 'Overrides must be valid JSON', { asTyped: true });
+	const parsed = parseJson(value, 'Overrides must be valid JSON');
 	if (!Array.isArray(parsed) || parsed.length === 0) {
 		throw new ApplicationError(`Overrides must be a JSON array with at least one entry, e.g. ${example}`);
 	}
@@ -207,7 +205,7 @@ export function handleAssignmentResource(
 		}
 
 		case 'bulkUpdateDates': {
-			const dates = parseJson(getParam('dates'), 'Dates must be valid JSON', { asTyped: true });
+			const dates = parseJson(getParam('dates'), 'Dates must be valid JSON');
 			if (!Array.isArray(dates) || dates.length === 0) {
 				throw new ApplicationError(
 					'Dates must be a JSON array with at least one entry, e.g. [{"id": 1, "all_dates": [{"base": true, "due_at": "2030-01-31T23:59:00Z"}]}]',
@@ -296,7 +294,7 @@ function buildAssignmentGroupFields(fields: Fields): Fields {
 		['rules', 'Rules'],
 	]) {
 		if (key in group) {
-			const parsed = parseJson(group[key], `${label} must be valid JSON`, { asTyped: true });
+			const parsed = parseJson(group[key], `${label} must be valid JSON`);
 			if (parsed === undefined) {
 				delete group[key];
 			} else {
@@ -380,11 +378,11 @@ export function handleAssignmentExtensionResource(
 
 	switch (operation) {
 		case 'setExtensions': {
-			const extensionsData = getParamObject('extensions');
-			const extensionValues = (extensionsData.extensionValues as Array<{
-				user_id: string | number;
-				extra_attempts: number;
-			}>) || [];
+			const extensionValues = collectionRows(
+				getParamObject('extensions'),
+				'extensionValues',
+				'Extensions',
+			);
 
 			if (extensionValues.length === 0) {
 				throw new ApplicationError(

@@ -1,6 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { parseJsonObjectFor, toList } from './shared';
+import { parseJson, parseJsonObjectFor, toList } from './shared';
 
 // ============================================
 // EXTERNAL TOOL
@@ -450,14 +450,11 @@ export function handleLtiResourceLinkResource(
 		}
 
 		case 'bulkCreate': {
-			const resourceLinksJson = getParam('resourceLinks');
-			let resourceLinks: unknown;
-			try {
-				resourceLinks = JSON.parse(resourceLinksJson);
-			} catch {
-				throw new ApplicationError(
-					'Invalid JSON in resourceLinks field for ltiResourceLink bulkCreate',
-				);
+			const invalidJson = 'Invalid JSON in resourceLinks field for ltiResourceLink bulkCreate';
+			const resourceLinks = parseJson(getParam('resourceLinks'), invalidJson);
+			if (resourceLinks === undefined) {
+				// Left empty.
+				throw new ApplicationError(invalidJson);
 			}
 
 			if (!Array.isArray(resourceLinks)) {

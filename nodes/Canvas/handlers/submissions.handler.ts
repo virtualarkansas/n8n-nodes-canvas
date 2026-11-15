@@ -1,6 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { parseJson, toList } from './shared';
+import { collectionRows, parseJson, parseJsonObject, toList } from './shared';
 
 type Fields = Record<string, unknown>;
 
@@ -37,16 +37,12 @@ function buildGradeData(entry: Fields): Fields {
 	if (entry.excuse === true) {
 		data.excuse = true;
 	}
-	const assessment = parseJson(entry.rubric_assessment, 'Rubric Assessment must be valid JSON', {
-		asTyped: true,
+	const assessment = parseJsonObject(entry.rubric_assessment, {
+		invalidJson: 'Rubric Assessment must be valid JSON',
+		notAnObject: 'Rubric Assessment must be a JSON object keyed by rubric criterion ID',
 	});
-	if (assessment !== undefined && assessment !== null) {
-		if (typeof assessment !== 'object' || Array.isArray(assessment)) {
-			throw new ApplicationError('Rubric Assessment must be a JSON object keyed by rubric criterion ID');
-		}
-		if (Object.keys(assessment).length > 0) {
-			data.rubric_assessment = assessment;
-		}
+	if (assessment !== undefined && Object.keys(assessment).length > 0) {
+		data.rubric_assessment = assessment;
 	}
 
 	// A comment is text, files, a media recording, or any combination of them.
@@ -206,9 +202,7 @@ export function handleSubmissionResource(
 				body.comment = { text_comment: comment, ...(group_comment ? { group_comment } : {}) };
 			}
 
-			const assessment = parseJson(rubric_assessment, 'Rubric Assessment must be valid JSON', {
-				asTyped: true,
-			});
+			const assessment = parseJson(rubric_assessment, 'Rubric Assessment must be valid JSON');
 			if (assessment !== undefined) {
 				body.rubric_assessment = assessment;
 			}
@@ -224,7 +218,7 @@ export function handleSubmissionResource(
 		}
 
 		case 'bulkGrade': {
-			const entries = ((getParamObject('grades').gradeValues ?? []) as Fields[]).filter(
+			const entries = collectionRows(getParamObject('grades'), 'gradeValues', 'Grades').filter(
 				(entry) => String(entry.student_id ?? '').trim() !== '',
 			);
 			if (entries.length === 0) {
@@ -242,7 +236,7 @@ export function handleSubmissionResource(
 		}
 
 		case 'bulkGradeMultiple': {
-			const entries = ((getParamObject('grades').gradeValues ?? []) as Fields[]).filter(
+			const entries = collectionRows(getParamObject('grades'), 'gradeValues', 'Grades').filter(
 				(entry) => String(entry.student_id ?? '').trim() !== '' || String(entry.assignment_id ?? '').trim() !== '',
 			);
 			if (entries.length === 0) {

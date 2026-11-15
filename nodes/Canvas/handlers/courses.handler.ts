@@ -1,7 +1,7 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IDataObject } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { takeKeys, toList, withoutBlanks } from './shared';
+import { collectionRows, takeKeys, toList, withoutBlanks } from './shared';
 
 // ============================================
 // Course
@@ -420,8 +420,8 @@ function buildCoursePaceBody(
 		delete pace.context_id;
 	}
 
-	const items = itemsParam.item as IPaceItem[] | undefined;
-	if (Array.isArray(items) && items.length > 0) {
+	const items = collectionRows(itemsParam, 'item', 'Module Item Durations') as IPaceItem[];
+	if (items.length > 0) {
 		pace.course_pace_module_items_attributes = items.map((item) => {
 			const attributes: Record<string, unknown> = {
 				module_item_id: item.module_item_id,

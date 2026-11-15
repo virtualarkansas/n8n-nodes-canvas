@@ -1,7 +1,7 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IDataObject } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { toList } from './shared';
+import { parseJson, toList } from './shared';
 
 // ============================================
 // Quiz Submission User List
@@ -43,8 +43,8 @@ export function buildQuizAssignmentOverrideRequest(
 	getParamObject: GetParamObject,
 ): IRequestConfig {
 	const course = `/api/v1/courses/${getParam('courseId')}`;
-	// IDs separated by commas or whitespace. An array from an expression is read as its text form.
-	const quizIds = toList(String(getParamObject('options').quiz_ids ?? ''), /[\s,]+/);
+	// IDs separated by commas or whitespace.
+	const quizIds = toList(getParamObject('options').quiz_ids, /[\s,]+/);
 	// Canvas reads the first element of an array: quiz_assignment_overrides[][quiz_ids][]=...
 	const qs: Record<string, unknown> =
 		quizIds.length > 0 ? { quiz_assignment_overrides: [{ quiz_ids: quizIds }] } : {};
@@ -103,12 +103,10 @@ export function buildQuizSubmissionQuestionRequest(
 		case 'getAll':
 			return { method: 'GET', endpoint: base, qs: getParamObject('options'), dataKey };
 		case 'answer': {
-			let answers: unknown;
-			try {
-				answers = JSON.parse(getParam('answers', '[]'));
-			} catch {
-				throw new ApplicationError('Answers must be a JSON array, e.g. [{"question_id": 12, "answer": "Hello"}]');
-			}
+			const answers = parseJson(
+				getParam('answers'),
+				'Answers must be a JSON array, e.g. [{"question_id": 12, "answer": "Hello"}]',
+			);
 			if (!Array.isArray(answers) || answers.length === 0) {
 				throw new ApplicationError('At least one answer is required for quizSubmissionQuestion answer');
 			}

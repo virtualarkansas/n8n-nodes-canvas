@@ -44,6 +44,17 @@ export function downloadIfAsked(
 	return { ...fields, binaryPropertyName: getParam('binaryPropertyName', 'data') || 'data' };
 }
 
+/** A value as it is shown in an error message: its JSON text, cut off after 60 characters. */
+function shown(value: unknown): string {
+	let text: string;
+	try {
+		text = JSON.stringify(value) ?? String(value);
+	} catch {
+		text = String(value);
+	}
+	return text.length > 60 ? `${text.slice(0, 60)}…` : text;
+}
+
 // ============================================
 // Lists
 // ============================================
@@ -51,9 +62,13 @@ export function downloadIfAsked(
 /**
  * A list field as an array of trimmed, non-empty strings.
  *
- * Accepts what the UI and expressions produce: separated text (`"1, 2 ,3"`), an array
- * (every entry is turned into text and trimmed, but not split again), or a single
- * number or boolean. undefined and null give `[]`.
+ * Accepts what the UI and expressions produce: separated text (`"1, 2 ,3"`), an array of
+ * single values (every entry is turned into text and trimmed, but not split again), or a
+ * single number or boolean. undefined and null give `[]`; entries of an array that are
+ * undefined or null are dropped.
+ *
+ * Throws an ApplicationError for anything that is not a list of single values: an object,
+ * or an array with an entry that is an object or another array.
  *
  * `separator` is a comma unless given, e.g. `/[\n,]/` for "one entry per line or commas".
  */
@@ -61,8 +76,28 @@ export function toList(value: unknown, separator: string | RegExp = ','): string
 	if (value === undefined || value === null) {
 		return [];
 	}
-	const entries = Array.isArray(value) ? value : String(value).split(separator);
-	return entries.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
+	if (!Array.isArray(value) && typeof value === 'object') {
+		throw new ApplicationError(
+			`A list of single values (text or numbers) was expected, but the value is ${shown(value)}`,
+		);
+	}
+	const entries: unknown[] = Array.isArray(value) ? value : String(value).split(separator);
+	const list: string[] = [];
+	for (const entry of entries) {
+		if (entry === undefined || entry === null) {
+			continue;
+		}
+		if (typeof entry === 'object') {
+			throw new ApplicationError(
+				`A list of single values (text or numbers) was expected, but one entry is ${shown(entry)}`,
+			);
+		}
+		const text = String(entry).trim();
+		if (text !== '') {
+			list.push(text);
+		}
+	}
+	return list;
 }
 
 // ============================================
@@ -176,16 +211,39 @@ export function mapFields(
 }
 
 /**
- * The rows of a fixedCollection with multiple values (`{ <group>: [ {...}, ... ] }`).
- * Returns the array stored under `group` itself (not a copy), or `[]` when the
- * collection is not an object or has no array there.
+ * The rows of a fixedCollection with multiple values (`{ <group>: [ {...}, ... ] }`),
+ * checked. Returns the array stored under `group` itself (not a copy); a collection or a
+ * group that is missing or left empty (undefined, null, `''`) has no rows.
+ *
+ * Throws an ApplicationError that names the field (`label`, its display name) when the
+ * collection is not an object, the group is not an array, or a row is not an object.
  */
-export function collectionRows(collection: unknown, group: string): IDataObject[] {
-	if (collection === null || typeof collection !== 'object') {
+export function collectionRows(collection: unknown, group: string, label: string): IDataObject[] {
+	if (isBlank(collection)) {
 		return [];
 	}
-	const rows = (collection as Record<string, unknown>)[group];
-	return Array.isArray(rows) ? (rows as IDataObject[]) : [];
+	if (!isPlainObject(collection)) {
+		throw new ApplicationError(
+			`${label} must be an object with its entries under "${group}", got ${shown(collection)}`,
+		);
+	}
+	const rows = collection[group];
+	if (isBlank(rows)) {
+		return [];
+	}
+	if (!Array.isArray(rows)) {
+		throw new ApplicationError(
+			`${label} must be a list of entries (one object per entry), got ${shown(rows)}`,
+		);
+	}
+	rows.forEach((row, index) => {
+		if (!isPlainObject(row)) {
+			throw new ApplicationError(
+				`${label}: entry ${index + 1} must be an object with the fields of an entry, got ${shown(row)}`,
+			);
+		}
+	});
+	return rows as IDataObject[];
 }
 
 // ============================================
@@ -197,95 +255,65 @@ export function isPlainObject(value: unknown): value is Record<string, unknown> 
 	return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-/** How the text of a `json` field is handed to the JSON parser. */
-export interface ParseJsonOptions {
-	/**
-	 * Parse the text exactly as it was typed. By default it is trimmed first, which also
-	 * removes what JSON itself does not accept around a document (a byte order mark,
-	 * no-break spaces): with `asTyped` such text is invalid JSON.
-	 */
-	asTyped?: boolean;
-}
-
-function parseText(text: string, invalidJson: string, asTyped: boolean | undefined): unknown {
+/**
+ * The value of a `json` field that may hold any JSON value.
+ *
+ * One rule for every such field: it was left empty, and the result is undefined, when the
+ * value is undefined, null, `''` or text of only whitespace. Other text (typed in the
+ * editor) is trimmed and parsed, so the text `null` gives null; text that is not JSON
+ * throws an ApplicationError with `invalidJson` as its message. Anything else (an object,
+ * array, number or boolean from an expression) is returned as it is.
+ */
+export function parseJson(value: unknown, invalidJson: string): unknown {
+	if (value === undefined || value === null) {
+		return undefined;
+	}
+	if (typeof value !== 'string') {
+		return value;
+	}
+	const text = value.trim();
+	if (text === '') {
+		return undefined;
+	}
 	try {
-		return JSON.parse(asTyped ? text : text.trim()) as unknown;
+		return JSON.parse(text) as unknown;
 	} catch {
 		throw new ApplicationError(invalidJson);
 	}
 }
 
-/**
- * The value of a `json` field that may hold any JSON value.
- *
- * Text (typed in the editor) is parsed; text that is empty or only whitespace gives
- * undefined; text that is not JSON throws an ApplicationError with `invalidJson` as its
- * message. Anything that is not text (an object, array or number from an expression,
- * but also null and undefined) is returned as it is.
- */
-export function parseJson(
-	value: unknown,
-	invalidJson: string,
-	options: ParseJsonOptions = {},
-): unknown {
-	if (typeof value !== 'string') {
-		return value;
-	}
-	if (value.trim() === '') {
-		return undefined;
-	}
-	return parseText(value, invalidJson, options.asTyped);
-}
-
-/** Messages and rules of `parseJsonObject`. */
-export interface JsonObjectRules extends ParseJsonOptions {
-	/** Error message for text that is not JSON. */
+/** The two error messages of `parseJsonObject`. */
+export interface JsonObjectMessages {
+	/** For text that is not JSON. */
 	invalidJson: string;
-	/** Error message for a value that is not an object: an array, a number, text, JSON `null`. */
+	/** For a value that is not an object: an array, a number, text, the JSON text `null`. */
 	notAnObject: string;
-	/** Text of only whitespace is invalid JSON. By default it counts as left empty. */
-	whitespaceIsInvalid?: boolean;
-	/** The JSON text `null` counts as left empty. By default it is not an object. */
-	nullTextIsEmpty?: boolean;
 }
 
 /**
- * The value of a `json` field that has to hold an object.
- *
- * Accepts text from the editor (parsed) or an object from an expression (returned as it
- * is, not copied). Returns undefined when the field was left empty: undefined, null,
- * `''` or, unless `whitespaceIsInvalid`, text of only whitespace. Throws an
- * ApplicationError with `rules.invalidJson` for text that is not JSON and with
- * `rules.notAnObject` for anything that is not an object.
+ * The value of a `json` field that has to hold an object: `parseJson` (same rule for
+ * "left empty", which gives undefined), plus an ApplicationError with
+ * `messages.notAnObject` for anything that is not an object. An object from an
+ * expression is returned as it is, not copied.
  */
 export function parseJsonObject(
 	value: unknown,
-	rules: JsonObjectRules,
+	messages: JsonObjectMessages,
 ): Record<string, unknown> | undefined {
-	if (isBlank(value)) {
+	const parsed = parseJson(value, messages.invalidJson);
+	if (parsed === undefined) {
 		return undefined;
 	}
-	let parsed: unknown = value;
-	if (typeof value === 'string') {
-		if (!rules.whitespaceIsInvalid && value.trim() === '') {
-			return undefined;
-		}
-		parsed = parseText(value, rules.invalidJson, rules.asTyped);
-		if (parsed === null && rules.nullTextIsEmpty) {
-			return undefined;
-		}
-	}
 	if (!isPlainObject(parsed)) {
-		throw new ApplicationError(rules.notAnObject);
+		throw new ApplicationError(messages.notAnObject);
 	}
 	return parsed;
 }
 
 /**
- * `parseJsonObject` for fields whose errors name the field only. Returns `{}` when the
- * field was left empty (undefined, null, empty or whitespace-only text); the text is
- * parsed as typed. Messages: `Invalid JSON in <fieldLabel>. Expected a JSON object.`
- * and `Invalid value in <fieldLabel>. Expected a JSON object.`
+ * `parseJsonObject` for fields whose errors name the field only; `{}` when the field was
+ * left empty. Messages: `Invalid JSON in <fieldLabel>. Expected a JSON object.` and
+ * `Invalid value in <fieldLabel>. Expected a JSON object.`
  */
 export function parseJsonObjectOrEmpty(
 	value: unknown,
@@ -295,16 +323,14 @@ export function parseJsonObjectOrEmpty(
 		parseJsonObject(value, {
 			invalidJson: `Invalid JSON in ${fieldLabel}. Expected a JSON object.`,
 			notAnObject: `Invalid value in ${fieldLabel}. Expected a JSON object.`,
-			asTyped: true,
 		}) ?? {}
 	);
 }
 
 /**
- * `parseJsonObject` for fields whose errors name the field and the operation
- * (`context`, e.g. "externalTool create"). Returns undefined only for undefined, null
- * and `''`: whitespace-only text is invalid JSON here, and the text is parsed as typed.
- * Messages: `Invalid JSON in <fieldLabel> field for <context>` and
+ * `parseJsonObject` for fields whose errors name the field and the operation (`context`,
+ * e.g. "externalTool create"); undefined when the field was left empty. Messages:
+ * `Invalid JSON in <fieldLabel> field for <context>` and
  * `<fieldLabel> must be a JSON object for <context>`.
  */
 export function parseJsonObjectFor(
@@ -315,7 +341,5 @@ export function parseJsonObjectFor(
 	return parseJsonObject(value, {
 		invalidJson: `Invalid JSON in ${fieldLabel} field for ${context}`,
 		notAnObject: `${fieldLabel} must be a JSON object for ${context}`,
-		asTyped: true,
-		whitespaceIsInvalid: true,
 	});
 }

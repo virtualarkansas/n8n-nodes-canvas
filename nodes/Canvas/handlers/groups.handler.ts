@@ -334,10 +334,10 @@ export function buildGroupCategoryRequest(
 			};
 
 		case 'bulkManageDifferentiationTags': {
-			const create = collectionRows(getParamObject('tagsToCreate'), 'tags')
+			const create = collectionRows(getParamObject('tagsToCreate'), 'tags', 'Tags to Create')
 				.filter((row) => !isBlankOrWhitespace(row.name))
 				.map((row) => ({ name: String(row.name) }));
-			const update = collectionRows(getParamObject('tagsToRename'), 'tags')
+			const update = collectionRows(getParamObject('tagsToRename'), 'tags', 'Tags to Rename')
 				.filter((row) => !isBlankOrWhitespace(row.id) && !isBlankOrWhitespace(row.name))
 				.map((row) => ({ id: String(row.id).trim(), name: String(row.name) }));
 			const remove = toList(getParam('tagIdsToDelete')).map((id) => ({ id }));

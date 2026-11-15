@@ -1,7 +1,7 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
 import { buildUploadSource } from './submissions.handler';
-import { parseJson, toList } from './shared';
+import { collectionRows, parseJson, parseJsonObject, toList } from './shared';
 
 // ============================================
 // Helpers
@@ -92,8 +92,7 @@ export function handleQuizResource(
 			};
 
 		case 'reorder': {
-			const orderData = getParamObject('orderItems');
-			const items = (orderData.items as Array<{ id: string | number; type: string }>) || [];
+			const items = collectionRows(getParamObject('orderItems'), 'items', 'Order Items');
 
 			if (items.length === 0) {
 				throw new ApplicationError(
@@ -301,8 +300,7 @@ export function handleQuizQuestionGroupResource(
 			};
 
 		case 'reorder': {
-			const orderData = getParamObject('questionOrder');
-			const questions = (orderData.questions as Array<{ id: string | number }>) || [];
+			const questions = collectionRows(getParamObject('questionOrder'), 'questions', 'Question Order');
 
 			if (questions.length === 0) {
 				throw new ApplicationError(
@@ -427,19 +425,13 @@ export function handleQuizSubmissionResource(
 				entry.fudge_points = updateFields.fudge_points;
 			}
 
-			const questions = parseJson(
-				updateFields.questions,
-				'Invalid JSON in questions field for quizSubmission updateScore',
-			);
-			if (questions !== undefined && questions !== null) {
-				if (typeof questions !== 'object' || Array.isArray(questions)) {
-					throw new ApplicationError(
-						'The questions field for quizSubmission updateScore must be a JSON object keyed by question ID',
-					);
-				}
-				if (Object.keys(questions as Record<string, unknown>).length > 0) {
-					entry.questions = questions;
-				}
+			const questions = parseJsonObject(updateFields.questions, {
+				invalidJson: 'Invalid JSON in questions field for quizSubmission updateScore',
+				notAnObject:
+					'The questions field for quizSubmission updateScore must be a JSON object keyed by question ID',
+			});
+			if (questions !== undefined && Object.keys(questions).length > 0) {
+				entry.questions = questions;
 			}
 
 			return {
@@ -589,23 +581,13 @@ export function handleQuizStatisticsResource(
 // QUIZ EXTENSION
 // ============================================
 
-interface IQuizExtensionEntry {
-	user_id: string | number;
-	extra_attempts?: number | string;
-	extra_time?: number | string;
-	manually_unlocked?: boolean;
-	extend_from_now?: number | string;
-	extend_from_end_at?: number | string;
-}
-
 /**
  * Build the `quiz_extensions` array. Extra attempts / extra time / manually
  * unlocked are sent as entered (the operation sets them); the two "extend"
  * values are only sent when they are positive.
  */
 function buildExtensionEntries(getParamObject: GetParamObject, label: string): Array<Record<string, unknown>> {
-	const extensionsData = getParamObject('extensions');
-	const extensionValues = (extensionsData.extensionValues as IQuizExtensionEntry[]) || [];
+	const extensionValues = collectionRows(getParamObject('extensions'), 'extensionValues', 'Extensions');
 
 	if (extensionValues.length === 0) {
 		throw new ApplicationError(`At least one extension entry is required for ${label}`);

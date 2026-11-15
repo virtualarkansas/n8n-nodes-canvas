@@ -1,7 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
-import type { IDataObject } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { isBlankOrWhitespace, toList } from './shared';
+import { collectionRows, isBlankOrWhitespace, toList } from './shared';
 
 // ============================================
 // Gradebook (bulk actions)
@@ -48,10 +47,11 @@ export function buildGradebookRequest(
 		}
 
 		case 'updateFinalGradeOverrides': {
-			const rows = getParamObject('overrideScores').score;
-			const entries = (Array.isArray(rows) ? (rows as IDataObject[]) : []).filter(
-				(row) => !isBlankOrWhitespace(row.student_id),
-			);
+			const entries = collectionRows(
+				getParamObject('overrideScores'),
+				'score',
+				'Override Scores',
+			).filter((row) => !isBlankOrWhitespace(row.student_id));
 			if (entries.length === 0) {
 				throw new ApplicationError(
 					'Add at least one override score with a student ID for gradebook updateFinalGradeOverrides',

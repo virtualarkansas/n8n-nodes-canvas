@@ -11,7 +11,7 @@ function sectionTimes(fields: Record<string, unknown>): void {
 	if (fields.child_event_data === undefined) {
 		return;
 	}
-	const rows = collectionRows(fields.child_event_data, 'times')
+	const rows = collectionRows(fields.child_event_data, 'times', 'Section Times')
 		.filter((row) => !isBlank(row.context_code) && !isBlank(row.start_at) && !isBlank(row.end_at))
 		.map((row) => ({
 			context_code: String(row.context_code).trim(),
@@ -145,7 +145,7 @@ export function buildCalendarEventRequest(
 		case 'setTimetable': {
 			// Canvas wants the entries grouped by section: { all: [...], "<section ID>": [...] }.
 			const timetables: Record<string, Array<Record<string, unknown>>> = {};
-			for (const row of collectionRows(getParamObject('timetables'), 'timetable')) {
+			for (const row of collectionRows(getParamObject('timetables'), 'timetable', 'Timetable')) {
 				const weekdays = toList(row.weekdays);
 				if (weekdays.length === 0 || isBlank(row.start_time) || isBlank(row.end_time)) {
 					throw new ApplicationError('Every timetable entry needs Weekdays, a Start Time and an End Time');
@@ -172,7 +172,7 @@ export function buildCalendarEventRequest(
 		}
 
 		case 'setTimetableEvents': {
-			const events = collectionRows(getParamObject('events'), 'event').map((row) => {
+			const events = collectionRows(getParamObject('events'), 'event', 'Events').map((row) => {
 				if (isBlank(row.start_at) || isBlank(row.end_at)) {
 					throw new ApplicationError('Every timetable event needs a Start At and an End At');
 				}
@@ -224,7 +224,7 @@ function appointmentGroupAttributes(fields: Record<string, unknown>, operation: 
 
 	// Time slots: [[start, end], [start, end], ...]
 	if (fields.new_appointments !== undefined) {
-		const slots = collectionRows(fields.new_appointments, 'slots')
+		const slots = collectionRows(fields.new_appointments, 'slots', 'Time Slots')
 			.filter((slot) => !isBlank(slot.start_at) && !isBlank(slot.end_at))
 			.map((slot) => [slot.start_at, slot.end_at]);
 		if (slots.length > 0) {
@@ -416,7 +416,7 @@ export function buildBlackoutDateRequest(
 		}
 
 		case 'replaceAll': {
-			const dates = collectionRows(getParamObject('blackoutDates'), 'dates')
+			const dates = collectionRows(getParamObject('blackoutDates'), 'dates', 'Blackout Dates')
 				.filter((row) => !isBlank(row.id) || !isBlank(row.event_title) || !isBlank(row.start_date))
 				.map((row) => {
 					const entry: Record<string, unknown> = {

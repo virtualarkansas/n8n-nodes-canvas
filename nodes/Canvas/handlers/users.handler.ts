@@ -1,6 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { mapFields, toList } from './shared';
+import { collectionRows, mapFields, parseJson, toList } from './shared';
 
 // ============================================
 // USER
@@ -235,10 +235,9 @@ export function buildUserRequest(
 			};
 
 		case 'updateDashboardPositions': {
-			const entries = getParamObject('positions').position;
 			const positions: Record<string, number> = {};
-			for (const entry of (Array.isArray(entries) ? entries : []) as Array<Record<string, unknown>>) {
-				const asset = String(entry?.assetString ?? '').trim();
+			for (const entry of collectionRows(getParamObject('positions'), 'position', 'Positions')) {
+				const asset = String(entry.assetString ?? '').trim();
 				if (asset === '') continue;
 				const position = Number(entry.position);
 				if (!Number.isInteger(position)) {
@@ -394,17 +393,15 @@ function customDataScopePath(scope: unknown): string {
 
 /** The value of the "Data (JSON)" field: any JSON value, as text from the editor. */
 function parseCustomData(text: string): unknown {
-	if (text.trim() === '') {
+	const data = parseJson(
+		text,
+		'Data is not valid JSON. Put plain text in double quotes ("like this"); ' +
+			'pass a value from an expression as JSON text: {{ JSON.stringify($json.value) }}',
+	);
+	if (data === undefined) {
 		throw new ApplicationError('Enter the data to store (any JSON value)');
 	}
-	try {
-		return JSON.parse(text);
-	} catch {
-		throw new ApplicationError(
-			'Data is not valid JSON. Put plain text in double quotes ("like this"); ' +
-				'pass a value from an expression as JSON text: {{ JSON.stringify($json.value) }}',
-		);
-	}
+	return data;
 }
 
 export function buildUserCustomDataRequest(
