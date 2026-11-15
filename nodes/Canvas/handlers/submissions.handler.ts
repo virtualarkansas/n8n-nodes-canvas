@@ -1,21 +1,12 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { parseJson, toList } from './shared';
 
 type Fields = Record<string, unknown>;
 
-/**
- * Turn a comma-separated string (or an array coming from an expression) into
- * a list of trimmed, non-empty strings. Canvas expects real arrays for
- * parameters documented as `name[]`.
- */
-function splitList(value: unknown): string[] {
-	const parts = Array.isArray(value) ? value : String(value ?? '').split(',');
-	return parts.map((part) => String(part).trim()).filter((part) => part !== '');
-}
-
 /** File IDs are integers in Canvas; anything that is not a number is a mistake worth reporting. */
 function toIdList(value: unknown, label: string): number[] {
-	return splitList(value).map((part) => {
+	return toList(value).map((part) => {
 		const id = Number(part);
 		if (!Number.isInteger(id) || id <= 0) {
 			throw new ApplicationError(`${label} must be a comma-separated list of numeric IDs (got "${part}")`);
@@ -24,23 +15,9 @@ function toIdList(value: unknown, label: string): number[] {
 	});
 }
 
-function parseJsonField(value: unknown, label: string): unknown {
-	if (typeof value !== 'string') {
-		return value;
-	}
-	if (value.trim() === '') {
-		return undefined;
-	}
-	try {
-		return JSON.parse(value);
-	} catch {
-		throw new ApplicationError(`${label} must be valid JSON`);
-	}
-}
-
 /** IDs are numbers in Canvas; anything else in a list of IDs is a mistake worth reporting. */
 function toNumericIdStrings(value: unknown, label: string): string[] {
-	return splitList(value).map((part) => {
+	return toList(value).map((part) => {
 		if (!/^\d+$/.test(part)) {
 			throw new ApplicationError(`${label} must be a comma-separated list of numeric IDs (got "${part}")`);
 		}
@@ -60,7 +37,9 @@ function buildGradeData(entry: Fields): Fields {
 	if (entry.excuse === true) {
 		data.excuse = true;
 	}
-	const assessment = parseJsonField(entry.rubric_assessment, 'Rubric Assessment');
+	const assessment = parseJson(entry.rubric_assessment, 'Rubric Assessment must be valid JSON', {
+		asTyped: true,
+	});
 	if (assessment !== undefined && assessment !== null) {
 		if (typeof assessment !== 'object' || Array.isArray(assessment)) {
 			throw new ApplicationError('Rubric Assessment must be a JSON object keyed by rubric criterion ID');
@@ -186,12 +165,12 @@ export function handleSubmissionResource(
 		case 'getAllForStudents': {
 			const qs: Fields = getParamObject('options');
 			// Without student IDs Canvas returns the submissions of the user of the credential.
-			const studentIds = splitList(getParam('studentIds'));
+			const studentIds = toList(getParam('studentIds'));
 			if (studentIds.length > 0) {
 				qs.student_ids = studentIds;
 			}
 			if ('assignment_ids' in qs) {
-				const ids = splitList(qs.assignment_ids);
+				const ids = toList(qs.assignment_ids);
 				if (ids.length > 0) {
 					qs.assignment_ids = ids;
 				} else {
@@ -227,7 +206,9 @@ export function handleSubmissionResource(
 				body.comment = { text_comment: comment, ...(group_comment ? { group_comment } : {}) };
 			}
 
-			const assessment = parseJsonField(rubric_assessment, 'Rubric Assessment');
+			const assessment = parseJson(rubric_assessment, 'Rubric Assessment must be valid JSON', {
+				asTyped: true,
+			});
 			if (assessment !== undefined) {
 				body.rubric_assessment = assessment;
 			}

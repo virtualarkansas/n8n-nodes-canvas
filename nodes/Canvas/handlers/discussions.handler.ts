@@ -1,5 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { parseJsonObject, toList } from './shared';
 
 // ============================================
 // Helpers
@@ -14,38 +15,6 @@ function getContextBasePath(getParam: GetParam): string {
 	return `/api/v1/courses/${getParam('courseId')}`;
 }
 
-/** Split a comma-separated list (or an array from an expression) into trimmed, non-empty entries. */
-function splitList(value: unknown): string[] {
-	const entries = Array.isArray(value) ? value : String(value ?? '').split(',');
-	return entries.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
-}
-
-/**
- * Read a JSON field that may arrive as text (typed in the UI) or already
- * parsed (from an expression). Returns undefined when it was left empty.
- */
-function parseJsonObject(value: unknown, label: string): Record<string, unknown> | undefined {
-	let parsed = value;
-	if (typeof value === 'string') {
-		const text = value.trim();
-		if (text === '') {
-			return undefined;
-		}
-		try {
-			parsed = JSON.parse(text) as unknown;
-		} catch {
-			throw new ApplicationError(`${label} must be valid JSON`);
-		}
-	}
-	if (parsed === undefined || parsed === null) {
-		return undefined;
-	}
-	if (typeof parsed !== 'object' || Array.isArray(parsed)) {
-		throw new ApplicationError(`${label} must be a JSON object`);
-	}
-	return parsed as Record<string, unknown>;
-}
-
 /**
  * Topic fields as Canvas wants them: everything flat, the assignment as a sub-object.
  *
@@ -55,7 +24,7 @@ function parseJsonObject(value: unknown, label: string): Record<string, unknown>
 function buildTopicBody(fields: Record<string, unknown>): Record<string, unknown> {
 	const body = { ...fields };
 	if (body.specific_sections !== undefined) {
-		const sections = splitList(body.specific_sections);
+		const sections = toList(body.specific_sections);
 		if (sections.length > 0) {
 			body.specific_sections = sections.join(',');
 		} else {
@@ -70,7 +39,11 @@ function buildTopicBody(fields: Record<string, unknown>): Record<string, unknown
 		body.group_category_id = null;
 	}
 	if (body.assignment !== undefined) {
-		const assignment = parseJsonObject(body.assignment, 'Assignment');
+		const assignment = parseJsonObject(body.assignment, {
+			invalidJson: 'Assignment must be valid JSON',
+			notAnObject: 'Assignment must be a JSON object',
+			nullTextIsEmpty: true,
+		});
 		if (assignment === undefined || Object.keys(assignment).length === 0) {
 			delete body.assignment;
 		} else {
@@ -120,7 +93,7 @@ export function buildDiscussionTopicRequest(
 			const qs = getParamObject('options');
 			// Canvas takes several states as one comma-separated value.
 			if (qs.scope !== undefined) {
-				const scope = splitList(qs.scope);
+				const scope = toList(qs.scope);
 				if (scope.length > 0) {
 					qs.scope = scope.join(',');
 				} else {
@@ -148,7 +121,7 @@ export function buildDiscussionTopicRequest(
 			};
 
 		case 'reorderPinned': {
-			const order = splitList(getParam('order'));
+			const order = toList(getParam('order'));
 			if (order.length === 0) {
 				throw new ApplicationError('At least one topic ID is required for discussionTopic reorderPinned');
 			}
@@ -229,7 +202,7 @@ export function buildDiscussionTopicRequest(
 			};
 
 		case 'getEntriesById': {
-			const ids = splitList(getParam('entryIds'));
+			const ids = toList(getParam('entryIds'));
 			if (ids.length === 0) {
 				throw new ApplicationError('At least one entry ID is required for discussionTopic getEntriesById');
 			}
@@ -319,7 +292,7 @@ export function buildAnnouncementRequest(
 
 		case 'getAll': {
 			// Canvas wants context codes ("course_123"); a bare course ID is accepted too.
-			const contextCodes = splitList(getParam('contextCodes')).map((code) =>
+			const contextCodes = toList(getParam('contextCodes')).map((code) =>
 				/^\d+$/.test(code) ? `course_${code}` : code,
 			);
 			if (contextCodes.length === 0) {

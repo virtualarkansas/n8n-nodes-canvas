@@ -1,17 +1,8 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { toList } from './shared';
 
 type Fields = Record<string, unknown>;
-
-/**
- * Turn a comma-separated string (or an array coming from an expression) into
- * a list of trimmed, non-empty strings. Canvas expects real arrays for
- * parameters documented as `name[]`.
- */
-function splitList(value: unknown): string[] {
-	const parts = Array.isArray(value) ? value : String(value ?? '').split(',');
-	return parts.map((part) => String(part).trim()).filter((part) => part !== '');
-}
 
 // ============================================
 // MODULE
@@ -30,7 +21,7 @@ export function handleModuleResource(
 			const module: Fields = { name: getParam('name'), ...getParamObject('additionalFields') };
 			if ('prerequisite_module_ids' in module) {
 				// module[prerequisite_module_ids][] must be an array; Canvas fails on a plain string.
-				const ids = splitList(module.prerequisite_module_ids);
+				const ids = toList(module.prerequisite_module_ids);
 				if (ids.length > 0) {
 					module.prerequisite_module_ids = ids;
 				} else {
@@ -68,7 +59,7 @@ export function handleModuleResource(
 			const module: Fields = getParamObject('updateFields');
 			if ('prerequisite_module_ids' in module) {
 				// An empty value removes all prerequisites (Canvas treats a blank value as "none").
-				const ids = splitList(module.prerequisite_module_ids);
+				const ids = toList(module.prerequisite_module_ids);
 				module.prerequisite_module_ids = ids.length > 0 ? ids : '';
 			}
 			return {
@@ -103,7 +94,7 @@ export function handleModuleResource(
 				const override: Fields = {};
 				const id = String(entry.id ?? '').trim();
 				const sectionId = String(entry.course_section_id ?? '').trim();
-				const studentIds = splitList(entry.student_ids);
+				const studentIds = toList(entry.student_ids);
 				if (id) {
 					override.id = id;
 				}
@@ -303,7 +294,7 @@ function getPageContextBasePath(getParam: GetParam): string {
  */
 function normalizePageFields(fields: Fields): Fields {
 	if ('editing_roles' in fields) {
-		fields.editing_roles = splitList(fields.editing_roles).join(',');
+		fields.editing_roles = toList(fields.editing_roles).join(',');
 	}
 	return fields;
 }

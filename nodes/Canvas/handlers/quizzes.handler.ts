@@ -1,29 +1,11 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
 import { buildUploadSource } from './submissions.handler';
+import { parseJson, toList } from './shared';
 
 // ============================================
 // Helpers
 // ============================================
-
-/**
- * Parse a JSON field that may arrive as a string (typed in the UI) or already
- * as an object/array (from an expression).
- */
-function parseJsonField(value: unknown, label: string): unknown {
-	if (typeof value !== 'string') {
-		return value;
-	}
-	const text = value.trim();
-	if (text === '') {
-		return undefined;
-	}
-	try {
-		return JSON.parse(text) as unknown;
-	} catch {
-		throw new ApplicationError(`Invalid JSON in ${label}`);
-	}
-}
 
 /** Whole number from a parameter that the node hands over as a string. */
 function toInteger(value: string, label: string): number {
@@ -32,17 +14,6 @@ function toInteger(value: string, label: string): number {
 		throw new ApplicationError(`${label} must be a whole number, got "${value}"`);
 	}
 	return parsed;
-}
-
-/** Split a comma-separated list of IDs into an array, dropping blanks. */
-function splitList(value: unknown): string[] {
-	if (Array.isArray(value)) {
-		return value.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
-	}
-	return String(value ?? '')
-		.split(',')
-		.map((entry) => entry.trim())
-		.filter((entry) => entry !== '');
 }
 
 /**
@@ -190,7 +161,10 @@ function normalizeQuestionFields(
 	operation: string,
 ): Record<string, unknown> {
 	if (fields.answers !== undefined) {
-		const answers = parseJsonField(fields.answers, `answers field for quizQuestion ${operation}`);
+		const answers = parseJson(
+			fields.answers,
+			`Invalid JSON in answers field for quizQuestion ${operation}`,
+		);
 		if (answers === undefined) {
 			delete fields.answers;
 		} else if (!Array.isArray(answers)) {
@@ -390,7 +364,7 @@ export function handleQuizSubmissionResource(
 			if (options.attempt !== undefined && options.attempt !== '' && Number(options.attempt) > 0) {
 				qs.attempt = options.attempt;
 			}
-			const include = splitList(options.include);
+			const include = toList(options.include);
 			if (include.length > 0) {
 				// The associations come back next to `quiz_submissions`, so the compound
 				// document is returned as it is instead of being unwrapped.
@@ -453,9 +427,9 @@ export function handleQuizSubmissionResource(
 				entry.fudge_points = updateFields.fudge_points;
 			}
 
-			const questions = parseJsonField(
+			const questions = parseJson(
 				updateFields.questions,
-				'questions field for quizSubmission updateScore',
+				'Invalid JSON in questions field for quizSubmission updateScore',
 			);
 			if (questions !== undefined && questions !== null) {
 				if (typeof questions !== 'object' || Array.isArray(questions)) {
@@ -484,7 +458,7 @@ export function handleQuizSubmissionResource(
 			};
 
 		case 'gradeOutstanding': {
-			const ids = splitList(getParam('quizSubmissionIds'));
+			const ids = toList(getParam('quizSubmissionIds'));
 			if (ids.length === 0) {
 				throw new ApplicationError(
 					'At least one quiz submission ID is required for quizSubmission gradeOutstanding',
@@ -594,7 +568,7 @@ export function handleQuizStatisticsResource(
 			if (options.all_versions !== undefined) {
 				qs.all_versions = options.all_versions;
 			}
-			const sectionIds = splitList(options.section_ids);
+			const sectionIds = toList(options.section_ids);
 			if (sectionIds.length > 0) {
 				qs.section_ids = sectionIds;
 			}

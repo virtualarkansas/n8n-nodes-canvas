@@ -1,43 +1,7 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IDataObject } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-
-// ============================================
-// Helpers
-// ============================================
-
-/**
- * Remove request-level arguments from a collection and return them.
- * The UI keeps them with the record's fields, Canvas reads them next to the record object.
- */
-function takeKeys(fields: Record<string, unknown>, keys: string[]): Record<string, unknown> {
-	const taken: Record<string, unknown> = {};
-	for (const key of keys) {
-		if (fields[key] !== undefined) {
-			taken[key] = fields[key];
-			delete fields[key];
-		}
-	}
-	return taken;
-}
-
-/** Drop options that were added in the UI but left empty, so they do not reach Canvas as blank filters. */
-function withoutBlanks(fields: Record<string, unknown>): Record<string, unknown> {
-	const result: Record<string, unknown> = {};
-	for (const [key, value] of Object.entries(fields)) {
-		if (value === undefined || value === null || value === '') continue;
-		if (Array.isArray(value) && value.length === 0) continue;
-		result[key] = value;
-	}
-	return result;
-}
-
-/** "a, b ,c" (or an array coming from an expression) -> ['a', 'b', 'c']. */
-function toList(value: unknown): string[] {
-	if (value === undefined || value === null) return [];
-	const entries = Array.isArray(value) ? value : String(value).split(',');
-	return entries.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
-}
+import { takeKeys, toList, withoutBlanks } from './shared';
 
 // ============================================
 // Course

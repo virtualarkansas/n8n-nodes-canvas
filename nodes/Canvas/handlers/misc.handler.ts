@@ -1,17 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-
-/**
- * A list option may arrive as an array (multi-select, or an expression that
- * resolves to an array) or as comma-separated text. Empty entries are dropped.
- */
-function toList(value: unknown): string[] {
-	if (value === undefined || value === null) {
-		return [];
-	}
-	const entries = Array.isArray(value) ? value : String(value).split(',');
-	return entries.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
-}
+import { isBlank, parseJson, toList } from './shared';
 
 /**
  * An ID placed in the request path. Canvas accepts SIS IDs there (`sis_user_id:...`) and
@@ -23,11 +12,6 @@ function pathId(value: string): string {
 	return encodeURIComponent(value.trim()).replace(/%3A/gi, ':');
 }
 
-/** True when an optional field was filled in (booleans and numbers count, '' does not). */
-function isSet(value: unknown): boolean {
-	return value !== undefined && value !== null && value !== '';
-}
-
 // ============================================
 // Bookmark
 // ============================================
@@ -37,18 +21,7 @@ function isSet(value: unknown): boolean {
  * it and send the structure itself; sending the text would store one long string.
  */
 function parseBookmarkData(value: unknown): unknown {
-	if (typeof value !== 'string') {
-		return value;
-	}
-	const text = value.trim();
-	if (text === '') {
-		return undefined;
-	}
-	try {
-		return JSON.parse(text) as unknown;
-	} catch {
-		throw new ApplicationError('Bookmark "Data" must be valid JSON, for example {"active_tab": 1}');
-	}
+	return parseJson(value, 'Bookmark "Data" must be valid JSON, for example {"active_tab": 1}');
 }
 
 export function buildBookmarkRequest(
@@ -70,7 +43,7 @@ export function buildBookmarkRequest(
 			if (data !== undefined) {
 				body.data = data;
 			}
-			if (isSet(additionalFields.position)) {
+			if (!isBlank(additionalFields.position)) {
 				body.position = additionalFields.position;
 			}
 
@@ -107,7 +80,7 @@ export function buildBookmarkRequest(
 			if (data !== undefined) {
 				body.data = data;
 			}
-			if (isSet(updateFields.position)) {
+			if (!isBlank(updateFields.position)) {
 				body.position = updateFields.position;
 			}
 
@@ -235,10 +208,10 @@ export function buildFavoriteRequest(
 			if (options.exclude_enrollments === true) {
 				qs.exclude = ['enrollments'];
 			}
-			if (isSet(options.observed_user_id)) {
+			if (!isBlank(options.observed_user_id)) {
 				qs.observed_user_id = String(options.observed_user_id).trim();
 			}
-			if (isSet(options.sort)) {
+			if (!isBlank(options.sort)) {
 				qs.sort = options.sort;
 			}
 
@@ -384,16 +357,16 @@ export function buildPlannerRequest(
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
 
-			if (isSet(options.start_date)) {
+			if (!isBlank(options.start_date)) {
 				qs.start_date = options.start_date;
 			}
-			if (isSet(options.end_date)) {
+			if (!isBlank(options.end_date)) {
 				qs.end_date = options.end_date;
 			}
-			if (isSet(options.filter)) {
+			if (!isBlank(options.filter)) {
 				qs.filter = options.filter;
 			}
-			if (isSet(options.observed_user_id)) {
+			if (!isBlank(options.observed_user_id)) {
 				qs.observed_user_id = String(options.observed_user_id).trim();
 			}
 			const contextCodes = toList(options.context_codes);
@@ -406,7 +379,7 @@ export function buildPlannerRequest(
 			}
 
 			// Another user's planner (an observer reading a linked student) has its own route.
-			const userId = isSet(options.user_id) ? String(options.user_id).trim() : '';
+			const userId = isBlank(options.user_id) ? '' : String(options.user_id).trim();
 
 			return {
 				method: 'GET',
@@ -429,16 +402,16 @@ export function buildPlannerRequest(
 			if (title !== '') {
 				body.title = title;
 			}
-			if (isSet(additionalFields.details)) {
+			if (!isBlank(additionalFields.details)) {
 				body.details = additionalFields.details;
 			}
-			if (isSet(additionalFields.course_id)) {
+			if (!isBlank(additionalFields.course_id)) {
 				body.course_id = String(additionalFields.course_id).trim();
 			}
-			if (isSet(additionalFields.linked_object_type)) {
+			if (!isBlank(additionalFields.linked_object_type)) {
 				body.linked_object_type = additionalFields.linked_object_type;
 			}
-			if (isSet(additionalFields.linked_object_id)) {
+			if (!isBlank(additionalFields.linked_object_id)) {
 				body.linked_object_id = String(additionalFields.linked_object_id).trim();
 			}
 
@@ -459,10 +432,10 @@ export function buildPlannerRequest(
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
 
-			if (isSet(options.start_date)) {
+			if (!isBlank(options.start_date)) {
 				qs.start_date = options.start_date;
 			}
-			if (isSet(options.end_date)) {
+			if (!isBlank(options.end_date)) {
 				qs.end_date = options.end_date;
 			}
 			const contextCodes = toList(options.context_codes);
@@ -585,7 +558,7 @@ export function buildPollRequest(
 				question: getParam('question'),
 			};
 
-			if (isSet(additionalFields.description)) {
+			if (!isBlank(additionalFields.description)) {
 				poll.description = additionalFields.description;
 			}
 
@@ -616,7 +589,7 @@ export function buildPollRequest(
 			const updateFields = getParamObject('updateFields');
 			const poll: Record<string, unknown> = {};
 
-			if (isSet(updateFields.question)) {
+			if (!isBlank(updateFields.question)) {
 				poll.question = updateFields.question;
 			}
 			// An empty description is meaningful: it clears the text.

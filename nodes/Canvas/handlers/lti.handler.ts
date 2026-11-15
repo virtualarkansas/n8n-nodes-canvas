@@ -1,44 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-
-// ============================================
-// Helpers
-// ============================================
-
-/**
- * Parse a JSON field of the UI into an object. Collections hand the value over as
- * the text the user typed (or as an object when it comes from an expression).
- * Returns undefined for an empty value so the argument is left out of the request.
- */
-function parseJsonObject(
-	value: unknown,
-	fieldLabel: string,
-	context: string,
-): Record<string, unknown> | undefined {
-	if (value === undefined || value === null || value === '') {
-		return undefined;
-	}
-	let parsed: unknown = value;
-	if (typeof value === 'string') {
-		try {
-			parsed = JSON.parse(value);
-		} catch {
-			throw new ApplicationError(`Invalid JSON in ${fieldLabel} field for ${context}`);
-		}
-	}
-	if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-		throw new ApplicationError(`${fieldLabel} must be a JSON object for ${context}`);
-	}
-	return parsed as Record<string, unknown>;
-}
-
-/** Split a comma-separated list of IDs into trimmed, non-empty entries. */
-function splitList(value: string): string[] {
-	return value
-		.split(',')
-		.map((entry) => entry.trim())
-		.filter((entry) => entry !== '');
-}
+import { parseJsonObjectFor, toList } from './shared';
 
 // ============================================
 // EXTERNAL TOOL
@@ -78,12 +40,12 @@ function buildExternalToolSettings(
 	const body: Record<string, unknown> = {};
 	for (const [key, value] of Object.entries(fields)) {
 		if (key === 'custom_fields') {
-			const customFields = parseJsonObject(value, 'Custom Fields', context);
+			const customFields = parseJsonObjectFor(value, 'Custom Fields', context);
 			if (customFields !== undefined) {
 				body.custom_fields = customFields;
 			}
 		} else if (key === 'placements') {
-			const placements = parseJsonObject(value, 'Placements', context);
+			const placements = parseJsonObjectFor(value, 'Placements', context);
 			// A placement set to null is removed from the tool by Canvas.
 			Object.assign(body, placements ?? {});
 		} else {
@@ -176,7 +138,7 @@ export function handleExternalToolResource(
 		}
 
 		case 'getVisibleCourseNavTools': {
-			const courseIds = splitList(getParam('courseIds'));
+			const courseIds = toList(getParam('courseIds'));
 			if (courseIds.length === 0) {
 				throw new ApplicationError(
 					'At least one course ID is required for externalTool getVisibleCourseNavTools',
@@ -342,7 +304,7 @@ export function handleLtiRegistrationResource(
 		const body: Record<string, unknown> = {};
 		for (const [key, value] of Object.entries(fields)) {
 			if (key === 'configuration' || key === 'overlay') {
-				const parsed = parseJsonObject(
+				const parsed = parseJsonObjectFor(
 					value,
 					key === 'configuration' ? 'Configuration' : 'Overlay',
 					context,
@@ -369,7 +331,7 @@ export function handleLtiRegistrationResource(
 			};
 
 		case 'create': {
-			const configuration = parseJsonObject(
+			const configuration = parseJsonObjectFor(
 				getParam('configuration'),
 				'Configuration',
 				'ltiRegistration create',
@@ -476,7 +438,7 @@ export function handleLtiResourceLinkResource(
 			if (additionalFields.title !== undefined && additionalFields.title !== '') {
 				body.title = additionalFields.title;
 			}
-			const custom = parseJsonObject(additionalFields.custom, 'Custom', 'ltiResourceLink create');
+			const custom = parseJsonObjectFor(additionalFields.custom, 'Custom', 'ltiResourceLink create');
 			if (custom !== undefined && Object.keys(custom).length > 0) {
 				body.custom = custom;
 			}
@@ -543,7 +505,7 @@ export function handleLtiResourceLinkResource(
 			const body: Record<string, unknown> = {};
 			for (const [key, value] of Object.entries(updateFields)) {
 				if (key === 'custom') {
-					const custom = parseJsonObject(value, 'Custom', 'ltiResourceLink update');
+					const custom = parseJsonObjectFor(value, 'Custom', 'ltiResourceLink update');
 					if (custom !== undefined) {
 						body.custom = custom;
 					}

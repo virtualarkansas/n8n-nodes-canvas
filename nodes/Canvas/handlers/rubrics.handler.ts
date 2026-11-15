@@ -2,43 +2,7 @@ import { ApplicationError } from 'n8n-workflow';
 import type { IDataObject } from 'n8n-workflow';
 import { buildMultipartBody } from '../GenericFunctions';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-
-/**
- * IDs typed as "1, 2,3" (or handed over as an array / a single number by an
- * expression) as a clean list. Canvas wants real arrays for `ids[]` arguments.
- */
-function toIdList(value: unknown): string[] {
-	if (value === undefined || value === null) {
-		return [];
-	}
-	const parts = Array.isArray(value) ? value : String(value).split(',');
-	return parts.map((part) => String(part).trim()).filter((part) => part !== '');
-}
-
-/** True for values a user left empty in a (fixed) collection. */
-function isBlank(value: unknown): boolean {
-	return value === undefined || value === null || value === '';
-}
-
-/** Rows of a `multipleValues` fixed collection. */
-function collectionRows(collection: unknown, key: string): IDataObject[] {
-	if (collection === null || typeof collection !== 'object') {
-		return [];
-	}
-	const rows = (collection as Record<string, unknown>)[key];
-	return Array.isArray(rows) ? (rows as IDataObject[]) : [];
-}
-
-/** Copy the keys that were filled in. */
-function pick(source: Record<string, unknown>, keys: string[]): Record<string, unknown> {
-	const out: Record<string, unknown> = {};
-	for (const key of keys) {
-		if (!isBlank(source[key])) {
-			out[key] = source[key];
-		}
-	}
-	return out;
-}
+import { collectionRows, isBlank, pickFilled, toList } from './shared';
 
 /** Canvas reads Ruby hashes keyed by position for rubric criteria and ratings, not arrays. */
 function byIndex(rows: Array<Record<string, unknown>>): Record<string, Record<string, unknown>> {
@@ -72,7 +36,7 @@ function rubricCriteria(collection: Record<string, unknown>): Record<string, Rec
 	const criteria = collectionRows(collection, 'criterion').map((item) => {
 		const criterion: Record<string, unknown> = {
 			description: item.description,
-			...pick(item, ['id', 'long_description', 'learning_outcome_id', 'mastery_points']),
+			...pickFilled(item, ['id', 'long_description', 'learning_outcome_id', 'mastery_points']),
 		};
 		if (item.criterion_use_range === true) {
 			criterion.criterion_use_range = true;
@@ -84,7 +48,7 @@ function rubricCriteria(collection: Record<string, unknown>): Record<string, Rec
 		const ratings = collectionRows(item.ratings, 'rating').map((rating) => ({
 			description: rating.description,
 			points: rating.points ?? 0,
-			...pick(rating, ['id', 'long_description']),
+			...pickFilled(rating, ['id', 'long_description']),
 		}));
 		if (ratings.length === 0) {
 			const points = Number(item.points ?? 0);
@@ -178,7 +142,7 @@ function rubricAssessment(getParam: GetParam, getParamObject: GetParamObject): R
 		if (criterionId === '') {
 			continue;
 		}
-		const entry: Record<string, unknown> = pick(row, ['points', 'rating_id', 'comments']);
+		const entry: Record<string, unknown> = pickFilled(row, ['points', 'rating_id', 'comments']);
 		if (row.save_comment === true) {
 			entry.save_comment = '1';
 		}
@@ -310,7 +274,7 @@ export function handleRubricResource(
 						: `${assessmentsPath}/${getParam('rubricAssessmentId')}`,
 				body: {
 					rubric_assessment: rubricAssessment(getParam, getParamObject),
-					...pick(options, ['provisional', 'final', 'graded_anonymously']),
+					...pickFilled(options, ['provisional', 'final', 'graded_anonymously']),
 				},
 			};
 		}
@@ -650,11 +614,11 @@ export function handleOutcomeImportResource(
 /** Filters shared by the outcome result endpoints. */
 function outcomeResultFilters(options: Record<string, unknown>): Record<string, unknown> {
 	const qs: Record<string, unknown> = {};
-	const userIds = toIdList(options.user_ids);
+	const userIds = toList(options.user_ids);
 	if (userIds.length > 0) {
 		qs.user_ids = userIds;
 	}
-	const outcomeIds = toIdList(options.outcome_ids);
+	const outcomeIds = toList(options.outcome_ids);
 	if (outcomeIds.length > 0) {
 		qs.outcome_ids = outcomeIds;
 	}
@@ -734,7 +698,7 @@ export function handleOutcomeResultResource(
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
 
-			const userIds = toIdList(options.user_ids);
+			const userIds = toList(options.user_ids);
 			if (userIds.length > 0) {
 				qs.user_ids = userIds;
 			}
@@ -757,11 +721,11 @@ export function handleOutcomeResultResource(
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
 
-			const outcomeIds = toIdList(options.outcome_ids);
+			const outcomeIds = toList(options.outcome_ids);
 			if (outcomeIds.length > 0) {
 				qs.outcome_ids = outcomeIds;
 			}
-			const studentIds = toIdList(options.student_ids);
+			const studentIds = toList(options.student_ids);
 			if (studentIds.length > 0) {
 				qs.student_ids = studentIds;
 			}
@@ -791,7 +755,7 @@ export function handleOutcomeResultResource(
 		}
 
 		case 'assignOutcomeOrder': {
-			const outcomeIds = toIdList(getParam('outcomeIds'));
+			const outcomeIds = toList(getParam('outcomeIds'));
 			if (outcomeIds.length === 0) {
 				throw new ApplicationError('Enter at least one outcome ID, in the order the outcomes should appear');
 			}

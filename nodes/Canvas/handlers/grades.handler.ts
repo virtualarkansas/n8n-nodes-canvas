@@ -1,29 +1,7 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IDataObject } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-
-/**
- * IDs typed as "1, 2,3" (or handed over as an array / a single number by an
- * expression) as a clean list. Canvas wants real arrays for `ids[]` arguments.
- */
-function toIdList(value: unknown): string[] {
-	if (value === undefined || value === null) {
-		return [];
-	}
-	const parts = Array.isArray(value) ? value : String(value).split(',');
-	return parts.map((part) => String(part).trim()).filter((part) => part !== '');
-}
-
-/** True for values a user left empty in a fixed collection row. */
-function isBlank(value: unknown): boolean {
-	return value === undefined || value === null || value === '';
-}
-
-/** Rows of a `multipleValues` fixed collection. */
-function collectionRows(collection: Record<string, unknown>, key: string): IDataObject[] {
-	const rows = collection[key];
-	return Array.isArray(rows) ? (rows as IDataObject[]) : [];
-}
+import { collectionRows, isBlank, toList } from './shared';
 
 // ============================================
 // CUSTOM GRADEBOOK COLUMN
@@ -72,7 +50,7 @@ export function handleCustomGradebookColumnResource(
 			};
 
 		case 'reorder': {
-			const orderIds = toIdList(getParam('order'));
+			const orderIds = toList(getParam('order'));
 			if (orderIds.length === 0) {
 				throw new ApplicationError(
 					'At least one column ID is required for customGradebookColumn reorder',
@@ -262,7 +240,7 @@ export function handleGradingPeriodSetResource(
 					...setFields,
 				},
 			};
-			const enrollmentTermIds = toIdList(termIds);
+			const enrollmentTermIds = toList(termIds);
 			if (enrollmentTermIds.length > 0) {
 				body.enrollment_term_ids = enrollmentTermIds;
 			}
@@ -303,7 +281,7 @@ export function handleGradingPeriodSetResource(
 				method: 'PATCH',
 				body: {
 					// Always sent: Canvas replaces the terms of the set with this list on every update.
-					enrollment_term_ids: toIdList(getParam('enrollmentTermIds')),
+					enrollment_term_ids: toList(getParam('enrollmentTermIds')),
 					grading_period_set: updateFields,
 				},
 			};
@@ -462,7 +440,7 @@ export function handleModeratedGradingResource(
 			};
 
 		case 'selectStudentsForModeration': {
-			const studentIds = toIdList(getParam('studentIds'));
+			const studentIds = toList(getParam('studentIds'));
 			if (studentIds.length === 0) {
 				throw new ApplicationError(
 					'At least one student ID is required for moderatedGrading selectStudentsForModeration',
@@ -506,7 +484,7 @@ export function handleModeratedGradingResource(
 
 		case 'bulkSelectProvisionalGrades': {
 			// Canvas works out the student of each provisional grade itself.
-			const provisionalGradeIds = toIdList(getParam('provisionalGradeIds'));
+			const provisionalGradeIds = toList(getParam('provisionalGradeIds'));
 
 			if (provisionalGradeIds.length === 0) {
 				throw new ApplicationError(

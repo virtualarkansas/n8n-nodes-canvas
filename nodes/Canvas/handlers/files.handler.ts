@@ -1,17 +1,8 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { toList } from './shared';
 
 type Fields = Record<string, unknown>;
-
-/**
- * Turn a comma-separated string (or an array coming from an expression) into
- * a list of trimmed, non-empty strings. Canvas expects real arrays for
- * parameters documented as `name[]`.
- */
-function splitList(value: unknown): string[] {
-	const parts = Array.isArray(value) ? value : String(value ?? '').split(',');
-	return parts.map((part) => String(part).trim()).filter((part) => part !== '');
-}
 
 // ============================================
 // FILE
@@ -44,7 +35,7 @@ function buildFileListQuery(options: Fields): Fields {
 
 	for (const key of ['content_types', 'exclude_content_types']) {
 		if (key in qs) {
-			const types = splitList(qs[key]);
+			const types = toList(qs[key]);
 			if (types.length > 0) {
 				qs[key] = types;
 			} else {
@@ -64,8 +55,8 @@ function buildFileListQuery(options: Fields): Fields {
 
 /** file_ids[] / folder_ids[] of the usage rights endpoints. */
 function buildUsageRightsTargets(getParam: GetParam): Fields {
-	const fileIds = splitList(getParam('fileIds'));
-	const folderIds = splitList(getParam('folderIds'));
+	const fileIds = toList(getParam('fileIds'));
+	const folderIds = toList(getParam('folderIds'));
 	if (fileIds.length === 0 && folderIds.length === 0) {
 		throw new ApplicationError('At least one file ID or folder ID is required to change usage rights');
 	}
