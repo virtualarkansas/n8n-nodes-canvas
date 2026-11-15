@@ -312,6 +312,32 @@ describe('appointmentGroup', () => {
 		slotIds = (actual.appointments as Json[]).map((a) => String(a.id));
 	});
 
+	it('update: sections are only taken for a course added in the same request', async () => {
+		const secondCourseId = secondCourseCode.replace('course_', '');
+		const section = await canvas().post<Json>(`/api/v1/courses/${secondCourseId}/sections`, { course_section: { name: unique('Appointment section') } });
+		const own = await teacher.post<Json>('/api/v1/appointment_groups', {
+			appointment_group: { context_codes: [courseCode], title: unique('Section-limited talks') },
+		});
+		try {
+			await runOk({
+				resource: 'appointmentGroup',
+				operation: 'update',
+				persona: asTeacher,
+				params: {
+					appointmentGroupId: String(own.id),
+					updateFields: { context_codes: secondCourseCode, sub_context_codes: `course_section_${String(section.id)}, ${sectionCodes[0]}` },
+				},
+			});
+			const actual = await detail(String(own.id));
+			expect((actual.all_context_codes as string[]).sort()).toEqual([courseCode, secondCourseCode].sort());
+			// The section of the added course is taken; the section of the course that was already there is not.
+			expect(actual.sub_context_codes).toEqual([`course_section_${String(section.id)}`]);
+		} finally {
+			await teacher.request('DELETE', `/api/v1/appointment_groups/${String(own.id)}`);
+			await canvas().request('DELETE', `/api/v1/sections/${String(section.id)}`);
+		}
+	});
+
 	it('update: "Publish" makes the group available (and cannot be undone)', async () => {
 		const [published] = await runOk({
 			resource: 'appointmentGroup',
