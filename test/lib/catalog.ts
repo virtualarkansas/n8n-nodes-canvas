@@ -1,5 +1,7 @@
 import type { INodeProperties, INodePropertyCollection, INodePropertyOptions } from 'n8n-workflow';
-import { Canvas } from '../../nodes/Canvas/Canvas.node';
+// With the extension: next to Canvas.node.ts lives Canvas.node.json (the codex file), and
+// some loaders pick that one for an extension-less import.
+import { Canvas } from '../../nodes/Canvas/Canvas.node.js';
 import { resourceHandlers } from '../../nodes/Canvas/handlers';
 import type { IRequestConfig } from '../../nodes/Canvas/types/Canvas.types';
 

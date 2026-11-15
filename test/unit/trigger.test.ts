@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { idsMatch, parseCanvasEvent, toLocalId } from '../../nodes/Canvas/CanvasTrigger.node';
+import { idsMatch, parseCanvasEvent, toLocalId } from '../../nodes/Canvas/CanvasTrigger.node.js';
 import { canvasLiveEvents } from '../../nodes/Canvas/CanvasTriggerEvents';
 
 describe('trigger: Canvas IDs', () => {
