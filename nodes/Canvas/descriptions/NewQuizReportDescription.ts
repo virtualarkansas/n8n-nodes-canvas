@@ -15,7 +15,8 @@ export const newQuizReportOperations: INodeProperties[] = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create a new quiz report',
+				description:
+					'Start generating a report for a new quiz. Returns a Progress object; poll it (Progress > Get) until it is completed to get the URL of the report.',
 				action: 'Create a new quiz report',
 			},
 		],
