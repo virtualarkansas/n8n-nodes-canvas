@@ -1,6 +1,13 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { downloadIfAsked, pollUntil, stateIn } from './shared';
+import {
+	downloadIfAsked,
+	isBlank,
+	parseJsonObjectOrEmpty,
+	pollUntil,
+	stateIn,
+	toList,
+} from './shared';
 
 /** Where a report keeps its generated file. A report that is not complete has none. */
 const REPORT_FILE = {
@@ -9,46 +16,6 @@ const REPORT_FILE = {
 	contentTypeField: 'attachment.content-type',
 	optional: true,
 };
-
-// ============================================
-// Shared helpers
-// ============================================
-
-/** "1, 2 ,3" (or an array from an expression) -> ['1', '2', '3']; empty entries are dropped. */
-function toList(value: unknown): string[] {
-	if (value === undefined || value === null) {
-		return [];
-	}
-	const entries = Array.isArray(value) ? value : String(value).split(',');
-	return entries.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
-}
-
-/** A `json` field arrives as text from the editor and as an object from an expression. */
-function parseJsonObject(value: unknown, fieldLabel: string): Record<string, unknown> {
-	if (value === undefined || value === null) {
-		return {};
-	}
-	let parsed: unknown = value;
-	if (typeof value === 'string') {
-		if (value.trim() === '') {
-			return {};
-		}
-		try {
-			parsed = JSON.parse(value);
-		} catch {
-			throw new ApplicationError(`Invalid JSON in ${fieldLabel}. Expected a JSON object.`);
-		}
-	}
-	if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-		throw new ApplicationError(`Invalid value in ${fieldLabel}. Expected a JSON object.`);
-	}
-	return parsed as Record<string, unknown>;
-}
-
-/** Text and date fields that were added to a collection but left empty are not sent. */
-function isBlank(value: unknown): boolean {
-	return value === undefined || value === null || value === '';
-}
 
 // ============================================
 // Account
@@ -99,7 +66,10 @@ export function buildAccountRequest(
 			const account: Record<string, unknown> = {};
 			for (const [key, value] of Object.entries(updateFields)) {
 				if (key === 'settings' || key === 'services') {
-					const parsed = parseJsonObject(value, key === 'settings' ? 'Settings (JSON)' : 'Services (JSON)');
+					const parsed = parseJsonObjectOrEmpty(
+						value,
+						key === 'settings' ? 'Settings (JSON)' : 'Services (JSON)',
+					);
 					if (Object.keys(parsed).length > 0) {
 						account[key] = parsed;
 					}
@@ -303,7 +273,7 @@ export function buildAccountReportRequest(
 			// Reports added by plugins take parameters this node cannot know about.
 			Object.assign(
 				parameters,
-				parseJsonObject(additionalFields.extra_parameters, 'Other Parameters (JSON)'),
+				parseJsonObjectOrEmpty(additionalFields.extra_parameters, 'Other Parameters (JSON)'),
 			);
 
 			return {
@@ -681,7 +651,7 @@ export function buildRoleRequest(
 			if (!isBlank(additionalFields.base_role_type)) {
 				body.base_role_type = additionalFields.base_role_type;
 			}
-			const permissions = parseJsonObject(additionalFields.permissions, 'Permissions');
+			const permissions = parseJsonObjectOrEmpty(additionalFields.permissions, 'Permissions');
 			if (Object.keys(permissions).length > 0) {
 				body.permissions = permissions;
 			}
@@ -730,7 +700,7 @@ export function buildRoleRequest(
 			if (!isBlank(updateFields.label)) {
 				body.label = updateFields.label;
 			}
-			const permissions = parseJsonObject(updateFields.permissions, 'Permissions');
+			const permissions = parseJsonObjectOrEmpty(updateFields.permissions, 'Permissions');
 			if (Object.keys(permissions).length > 0) {
 				body.permissions = permissions;
 			}

@@ -1,23 +1,16 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IDataObject, IHttpRequestMethods } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { parseJsonObject } from './shared';
 
-/** A `json` field arrives as text from the editor and as an object from an expression. */
-function parseJsonObject(raw: string, label: string): Record<string, unknown> {
-	const text = raw.trim();
-	if (text === '') {
-		return {};
-	}
-	let parsed: unknown;
-	try {
-		parsed = JSON.parse(text);
-	} catch {
-		throw new ApplicationError(`${label} must be valid JSON`);
-	}
-	if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-		throw new ApplicationError(`${label} must be a JSON object, e.g. {"key": "value"}`);
-	}
-	return parsed as Record<string, unknown>;
+/** The object typed into one of the JSON fields of these operations; `{}` when it was left empty. */
+function jsonObjectParam(text: string, label: string): Record<string, unknown> {
+	return (
+		parseJsonObject(text, {
+			invalidJson: `${label} must be valid JSON`,
+			notAnObject: `${label} must be a JSON object, e.g. {"key": "value"}`,
+		}) ?? {}
+	);
 }
 
 // ============================================
@@ -57,10 +50,10 @@ export function buildApiRequestRequest(
 	const request: IRequestConfig = {
 		method: method as IHttpRequestMethods,
 		endpoint: path,
-		qs: parseJsonObject(getParam('query', '{}'), 'Query Parameters'),
+		qs: jsonObjectParam(getParam('query', '{}'), 'Query Parameters'),
 	};
 	if (method !== 'GET') {
-		request.body = parseJsonObject(getParam('body', '{}'), 'Body');
+		request.body = jsonObjectParam(getParam('body', '{}'), 'Body');
 	}
 	const dataKey = String(getParamObject('options').dataKey ?? '').trim();
 	if (dataKey) {
@@ -89,7 +82,7 @@ export function buildGraphqlRequest(
 	const options = getParamObject('options');
 	const body: IDataObject = {
 		query,
-		variables: parseJsonObject(getParam('variables', '{}'), 'Variables') as IDataObject,
+		variables: jsonObjectParam(getParam('variables', '{}'), 'Variables') as IDataObject,
 	};
 
 	return {

@@ -1,37 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-
-// ============================================
-// Helpers
-// ============================================
-
-/**
- * Copy the fields of a UI collection into a Canvas object under Canvas' own names.
- * Only fields the user actually added are copied. With `keepBlank` an empty string
- * is sent as well, which is how Canvas clears a value on update.
- */
-function mapFields(
-	source: Record<string, unknown>,
-	names: Record<string, string>,
-	keepBlank = false,
-): Record<string, unknown> {
-	const target: Record<string, unknown> = {};
-	for (const [uiName, canvasName] of Object.entries(names)) {
-		const value = source[uiName];
-		if (value === undefined || value === null) continue;
-		if (value === '' && !keepBlank) continue;
-		if (Array.isArray(value) && value.length === 0) continue;
-		target[canvasName] = value;
-	}
-	return target;
-}
-
-/** "a, b ,c" (or an array coming from an expression) -> ['a', 'b', 'c']. */
-function toList(value: unknown): string[] {
-	if (value === undefined || value === null) return [];
-	const entries = Array.isArray(value) ? value : String(value).split(',');
-	return entries.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
-}
+import { mapFields, toList } from './shared';
 
 // ============================================
 // Enrollment

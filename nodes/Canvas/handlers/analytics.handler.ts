@@ -1,28 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { pollUntil, stateIn } from './shared';
-
-/** Drop options the user added but left empty; Canvas treats `key=` as a value. */
-function withoutEmpty(options: Record<string, unknown>): Record<string, unknown> {
-	const result: Record<string, unknown> = {};
-	for (const [key, value] of Object.entries(options)) {
-		if (value === undefined || value === null || value === '') continue;
-		if (Array.isArray(value) && value.length === 0) continue;
-		result[key] = value;
-	}
-	return result;
-}
-
-/** Split a comma-separated list into trimmed, non-empty entries. */
-function splitList(value: unknown): string[] {
-	if (Array.isArray(value)) {
-		return value.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
-	}
-	return String(value ?? '')
-		.split(',')
-		.map((entry) => entry.trim())
-		.filter((entry) => entry !== '');
-}
+import { pollUntil, stateIn, toList, withoutBlanks } from './shared';
 
 // ============================================
 // ANALYTICS
@@ -59,14 +37,14 @@ export function handleAnalyticsResource(
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/courses/${getParam('courseId')}/analytics/assignments`,
-				qs: withoutEmpty(getParamObject('options')),
+				qs: withoutBlanks(getParamObject('options')),
 			};
 
 		case 'getStudentSummaries':
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/courses/${getParam('courseId')}/analytics/student_summaries`,
-				qs: withoutEmpty(getParamObject('options')),
+				qs: withoutBlanks(getParamObject('options')),
 			};
 
 		// ----------------------------------
@@ -165,7 +143,7 @@ export function handleProgressResource(
 			return {
 				method: 'POST',
 				endpoint: `/api/v1/progress/${progressId}/cancel`,
-				body: withoutEmpty(getParamObject('options')),
+				body: withoutBlanks(getParamObject('options')),
 			};
 
 		case 'getLti':
@@ -193,10 +171,10 @@ export function handleSearchResource(
 		case 'findRecipients': {
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
-			for (const [key, value] of Object.entries(withoutEmpty(options))) {
+			for (const [key, value] of Object.entries(withoutBlanks(options))) {
 				if (key === 'exclude') {
 					// "1, 2, course_3" -> exclude[]=1&exclude[]=2&exclude[]=course_3
-					const exclude = splitList(value);
+					const exclude = toList(value);
 					if (exclude.length > 0) {
 						qs.exclude = exclude;
 					}
@@ -254,7 +232,7 @@ export function handleSmartSearchResource(
 				endpoint: `/api/v1/courses/${getParam('courseId')}/smartsearch`,
 				qs: {
 					q: getParam('query'),
-					...withoutEmpty(getParamObject('options')),
+					...withoutBlanks(getParamObject('options')),
 				},
 				// { "results": [...], "status": "index_incomplete", "indexing_progress": 40 }
 				dataKey: 'results',

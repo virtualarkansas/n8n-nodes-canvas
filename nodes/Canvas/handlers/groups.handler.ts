@@ -1,55 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-
-/**
- * Split a comma-separated field into trimmed, non-empty entries.
- * Accepts what the UI and expressions produce: "1, 2", an array, or a single number.
- */
-function toList(value: unknown): string[] {
-	if (value === undefined || value === null) {
-		return [];
-	}
-	const entries = Array.isArray(value) ? value : String(value).split(',');
-	return entries.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
-}
-
-/** Keep only the listed keys of a collection (options that do not apply to the chosen context are not sent). */
-function pick(fields: Record<string, unknown>, keys: string[]): Record<string, unknown> {
-	const out: Record<string, unknown> = {};
-	for (const key of keys) {
-		if (fields[key] !== undefined) {
-			out[key] = fields[key];
-		}
-	}
-	return out;
-}
-
-/**
- * Remove request-level arguments from a collection and return them.
- * The UI keeps them with the record's fields, Canvas reads them next to the record.
- */
-function takeKeys(fields: Record<string, unknown>, keys: string[]): Record<string, unknown> {
-	const taken: Record<string, unknown> = {};
-	for (const key of keys) {
-		if (fields[key] !== undefined) {
-			taken[key] = fields[key];
-			delete fields[key];
-		}
-	}
-	return taken;
-}
-
-/** The entries of a fixedCollection with multiple values (`{ <group>: [ {...}, ... ] }`). */
-function collectionRows(value: unknown, group: string): Array<Record<string, unknown>> {
-	if (value === null || typeof value !== 'object') {
-		return [];
-	}
-	const rows = (value as Record<string, unknown>)[group];
-	return Array.isArray(rows) ? (rows as Array<Record<string, unknown>>) : [];
-}
-
-const isBlank = (value: unknown): boolean =>
-	value === undefined || value === null || String(value).trim() === '';
+import { collectionRows, isBlankOrWhitespace, pickDefined, takeKeys, toList } from './shared';
 
 /**
  * A CSV import file. Canvas reads it from the request body itself, so it is handed to the
@@ -126,19 +77,19 @@ export function buildGroupRequest(
 					return {
 						method: 'GET',
 						endpoint: `/api/v1/accounts/${getParam('accountId')}/groups`,
-						qs: pick(options, ['collaboration_state', 'include', 'only_own_groups']),
+						qs: pickDefined(options, ['collaboration_state', 'include', 'only_own_groups']),
 					};
 				case 'course':
 					return {
 						method: 'GET',
 						endpoint: `/api/v1/courses/${getParam('courseId')}/groups`,
-						qs: pick(options, ['collaboration_state', 'include', 'only_own_groups']),
+						qs: pickDefined(options, ['collaboration_state', 'include', 'only_own_groups']),
 					};
 				case 'self':
 					return {
 						method: 'GET',
 						endpoint: '/api/v1/users/self/groups',
-						qs: pick(options, ['context_type', 'include']),
+						qs: pickDefined(options, ['context_type', 'include']),
 					};
 				default:
 					throw new ApplicationError(`Unknown group context: ${context}`);
@@ -384,19 +335,19 @@ export function buildGroupCategoryRequest(
 
 		case 'bulkManageDifferentiationTags': {
 			const create = collectionRows(getParamObject('tagsToCreate'), 'tags')
-				.filter((row) => !isBlank(row.name))
+				.filter((row) => !isBlankOrWhitespace(row.name))
 				.map((row) => ({ name: String(row.name) }));
 			const update = collectionRows(getParamObject('tagsToRename'), 'tags')
-				.filter((row) => !isBlank(row.id) && !isBlank(row.name))
+				.filter((row) => !isBlankOrWhitespace(row.id) && !isBlankOrWhitespace(row.name))
 				.map((row) => ({ id: String(row.id).trim(), name: String(row.name) }));
 			const remove = toList(getParam('tagIdsToDelete')).map((id) => ({ id }));
 
 			const tagSet: Record<string, unknown> = {};
-			if (!isBlank(groupCategoryId)) {
+			if (!isBlankOrWhitespace(groupCategoryId)) {
 				tagSet.id = groupCategoryId;
 			}
 			const tagSetName = getParam('tagSetName');
-			if (!isBlank(tagSetName)) {
+			if (!isBlankOrWhitespace(tagSetName)) {
 				tagSet.name = tagSetName;
 			}
 			if (Object.keys(tagSet).length === 0) {

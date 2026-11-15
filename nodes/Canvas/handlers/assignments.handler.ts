@@ -1,35 +1,8 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { parseJson, toList } from './shared';
 
 type Fields = Record<string, unknown>;
-
-/**
- * Turn a comma-separated string (or an array coming from an expression) into
- * a list of trimmed, non-empty strings. Canvas expects real arrays for
- * parameters documented as `name[]`.
- */
-function splitList(value: unknown): string[] {
-	const parts = Array.isArray(value) ? value : String(value ?? '').split(',');
-	return parts.map((part) => String(part).trim()).filter((part) => part !== '');
-}
-
-/**
- * Read a JSON field of the UI (a string in the editor, already an object when
- * it comes from an expression).
- */
-function parseJsonField(value: unknown, label: string): unknown {
-	if (typeof value !== 'string') {
-		return value;
-	}
-	if (value.trim() === '') {
-		return undefined;
-	}
-	try {
-		return JSON.parse(value);
-	} catch {
-		throw new ApplicationError(`${label} must be valid JSON`);
-	}
-}
 
 // ============================================
 // ASSIGNMENT
@@ -40,11 +13,13 @@ function buildAssignmentFields(fields: Fields): Fields {
 	const assignment: Fields = { ...fields };
 
 	if ('allowed_extensions' in assignment) {
-		assignment.allowed_extensions = splitList(assignment.allowed_extensions);
+		assignment.allowed_extensions = toList(assignment.allowed_extensions);
 	}
 
 	if ('integration_data' in assignment) {
-		const data = parseJsonField(assignment.integration_data, 'Integration Data');
+		const data = parseJson(assignment.integration_data, 'Integration Data must be valid JSON', {
+			asTyped: true,
+		});
 		if (data === undefined) {
 			delete assignment.integration_data;
 		} else {
@@ -73,7 +48,7 @@ function buildAssignmentFields(fields: Fields): Fields {
 function buildOverrideFields(fields: Fields): Fields {
 	const override: Fields = { ...fields };
 	if ('student_ids' in override) {
-		override.student_ids = splitList(override.student_ids);
+		override.student_ids = toList(override.student_ids);
 	}
 	return override;
 }
@@ -84,7 +59,7 @@ function buildOverrideFields(fields: Fields): Fields {
  * has to contain is left to Canvas, which reports problems per entry.
  */
 function parseOverrideBatch(value: string, example: string): Fields[] {
-	const parsed = parseJsonField(value, 'Overrides');
+	const parsed = parseJson(value, 'Overrides must be valid JSON', { asTyped: true });
 	if (!Array.isArray(parsed) || parsed.length === 0) {
 		throw new ApplicationError(`Overrides must be a JSON array with at least one entry, e.g. ${example}`);
 	}
@@ -94,7 +69,7 @@ function parseOverrideBatch(value: string, example: string): Fields[] {
 		}
 		const override = { ...(entry as Fields) };
 		if ('student_ids' in override) {
-			override.student_ids = splitList(override.student_ids);
+			override.student_ids = toList(override.student_ids);
 		}
 		return override;
 	});
@@ -187,7 +162,7 @@ export function handleAssignmentResource(
 			delete qs.user_id;
 
 			if ('assignment_ids' in qs) {
-				const ids = splitList(qs.assignment_ids);
+				const ids = toList(qs.assignment_ids);
 				if (ids.length > 0) {
 					qs.assignment_ids = ids;
 				} else {
@@ -232,7 +207,7 @@ export function handleAssignmentResource(
 		}
 
 		case 'bulkUpdateDates': {
-			const dates = parseJsonField(getParam('dates'), 'Dates');
+			const dates = parseJson(getParam('dates'), 'Dates must be valid JSON', { asTyped: true });
 			if (!Array.isArray(dates) || dates.length === 0) {
 				throw new ApplicationError(
 					'Dates must be a JSON array with at least one entry, e.g. [{"id": 1, "all_dates": [{"base": true, "due_at": "2030-01-31T23:59:00Z"}]}]',
@@ -282,7 +257,7 @@ export function handleAssignmentResource(
 			} else if (target === 'group') {
 				override.group_id = getParam('groupId');
 			} else {
-				override.student_ids = splitList(getParam('studentIds'));
+				override.student_ids = toList(getParam('studentIds'));
 			}
 			return {
 				endpoint: `/api/v1/courses/${courseId}/assignments/${assignmentId}/overrides`,
@@ -321,7 +296,7 @@ function buildAssignmentGroupFields(fields: Fields): Fields {
 		['rules', 'Rules'],
 	]) {
 		if (key in group) {
-			const parsed = parseJsonField(group[key], label);
+			const parsed = parseJson(group[key], `${label} must be valid JSON`, { asTyped: true });
 			if (parsed === undefined) {
 				delete group[key];
 			} else {
@@ -365,7 +340,7 @@ export function handleAssignmentGroupResource(
 		case 'getAll': {
 			const qs: Fields = getParamObject('options');
 			if ('assignment_ids' in qs) {
-				const ids = splitList(qs.assignment_ids);
+				const ids = toList(qs.assignment_ids);
 				if (ids.length > 0) {
 					qs.assignment_ids = ids;
 				} else {

@@ -1,6 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { downloadIfAsked, pollUntil, stateIn } from './shared';
+import { downloadIfAsked, isBlank, parseJsonObjectFor, pollUntil, stateIn, toList } from './shared';
 
 /** Where a content export keeps its generated file. An export that is not finished has none. */
 const EXPORT_FILE = {
@@ -9,51 +9,6 @@ const EXPORT_FILE = {
 	contentTypeField: 'attachment.content-type',
 	optional: true,
 };
-
-// ============================================
-// Helpers
-// ============================================
-
-/** Split a comma-separated list (or an array from an expression) into trimmed, non-empty entries. */
-function splitList(value: unknown): string[] {
-	if (Array.isArray(value)) {
-		return value.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
-	}
-	return String(value ?? '')
-		.split(',')
-		.map((entry) => entry.trim())
-		.filter((entry) => entry !== '');
-}
-
-function isEmpty(value: unknown): boolean {
-	return value === undefined || value === null || value === '';
-}
-
-/**
- * Parse a JSON field of the UI into an object (it arrives as text, or as an
- * object when it comes from an expression). Empty input yields undefined.
- */
-function parseJsonObject(
-	value: unknown,
-	fieldLabel: string,
-	context: string,
-): Record<string, unknown> | undefined {
-	if (isEmpty(value)) {
-		return undefined;
-	}
-	let parsed: unknown = value;
-	if (typeof value === 'string') {
-		try {
-			parsed = JSON.parse(value);
-		} catch {
-			throw new ApplicationError(`Invalid JSON in ${fieldLabel} field for ${context}`);
-		}
-	}
-	if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-		throw new ApplicationError(`${fieldLabel} must be a JSON object for ${context}`);
-	}
-	return parsed as Record<string, unknown>;
-}
 
 // ============================================
 // CONTENT EXPORT
@@ -96,11 +51,11 @@ export function handleContentExportResource(
 			const select: Record<string, string[]> = {};
 			for (const [key, value] of Object.entries(additionalFields)) {
 				if (key.startsWith('select_')) {
-					const ids = splitList(value);
+					const ids = toList(value);
 					if (ids.length > 0) {
 						select[key.slice('select_'.length)] = ids;
 					}
-				} else if (!isEmpty(value)) {
+				} else if (!isBlank(value)) {
 					body[key] = value;
 				}
 			}
@@ -141,7 +96,7 @@ export function handleContentExportResource(
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/courses/${getParam('courseId')}/content_list`,
-				qs: isEmpty(options.type) ? {} : { type: options.type },
+				qs: isBlank(options.type) ? {} : { type: options.type },
 			};
 		}
 
@@ -199,7 +154,7 @@ const MIGRATION_SETTINGS = new Set([
  * of Get Selective Data) into { all_assignments: "1", wiki_pages: { id_abc: "1" } }.
  */
 function buildCopyParameters(value: unknown): Record<string, unknown> | undefined {
-	const properties = splitList(value);
+	const properties = toList(value);
 	if (properties.length === 0) {
 		return undefined;
 	}
@@ -244,11 +199,11 @@ function buildMigrationBody(
 	const preAttachment: Record<string, unknown> = {};
 
 	for (const [key, value] of Object.entries(fields)) {
-		if (isEmpty(value)) {
+		if (isBlank(value)) {
 			continue;
 		}
 		if (key === 'date_shift_options_day_substitutions') {
-			const substitutions = parseJsonObject(value, 'Day Substitutions', context);
+			const substitutions = parseJsonObjectFor(value, 'Day Substitutions', context);
 			if (substitutions !== undefined && Object.keys(substitutions).length > 0) {
 				dateShiftOptions.day_substitutions = substitutions;
 			}
@@ -257,12 +212,12 @@ function buildMigrationBody(
 		} else if (key.startsWith('pre_attachment_')) {
 			preAttachment[key.slice('pre_attachment_'.length)] = value;
 		} else if (key === 'select') {
-			const select = parseJsonObject(value, 'Select', context);
+			const select = parseJsonObjectFor(value, 'Select', context);
 			if (select !== undefined && Object.keys(select).length > 0) {
 				body.select = select;
 			}
 		} else if (key === 'importer_skips') {
-			const skips = splitList(value);
+			const skips = toList(value);
 			if (skips.length > 0) {
 				settings.importer_skips = skips;
 			}
@@ -359,7 +314,7 @@ export function handleContentMigrationResource(
 			return {
 				method: 'GET',
 				endpoint: `${basePath}/content_migrations/${getParam('contentMigrationId')}/selective_data`,
-				qs: isEmpty(options.type) ? {} : { type: options.type },
+				qs: isBlank(options.type) ? {} : { type: options.type },
 			};
 		}
 
@@ -417,7 +372,7 @@ export function handleContentShareResource(
 	const ownBase = '/api/v1/users/self/content_shares';
 
 	const receiverIds = (): string[] => {
-		const ids = splitList(getParam('receiverIds'));
+		const ids = toList(getParam('receiverIds'));
 		if (ids.length === 0) {
 			throw new ApplicationError(
 				`At least one receiver ID is required for contentShare ${operation}`,
@@ -517,8 +472,8 @@ export function handleBlueprintCourseResource(
 
 		case 'updateAssociations': {
 			const body: Record<string, unknown> = {};
-			const courseIdsToAdd = splitList(getParam('courseIdsToAdd'));
-			const courseIdsToRemove = splitList(getParam('courseIdsToRemove'));
+			const courseIdsToAdd = toList(getParam('courseIdsToAdd'));
+			const courseIdsToRemove = toList(getParam('courseIdsToRemove'));
 
 			if (courseIdsToAdd.length > 0) {
 				body.course_ids_to_add = courseIdsToAdd;
@@ -537,7 +492,7 @@ export function handleBlueprintCourseResource(
 		case 'beginMigration': {
 			const body: Record<string, unknown> = {};
 			for (const [key, value] of Object.entries(getParamObject('additionalFields'))) {
-				if (!isEmpty(value)) {
+				if (!isBlank(value)) {
 					body[key] = value;
 				}
 			}

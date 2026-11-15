@@ -1,6 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { pollUntil, stateIn } from './shared';
+import { isBlank, pollUntil, stateIn, toList } from './shared';
 
 /** States in which Canvas is done with a SIS import. */
 const SIS_IMPORT_FINISHED = [
@@ -17,21 +17,8 @@ const SIS_IMPORT_FINISHED = [
 // Shared helpers
 // ============================================
 
-function isBlank(value: unknown): boolean {
-	return value === undefined || value === null || value === '';
-}
-
 function isOn(value: unknown): boolean {
 	return value === true || value === 'true';
-}
-
-/** "a, b" or an array from an expression -> ['a', 'b']. */
-function toList(value: unknown): string[] {
-	if (value === undefined || value === null) {
-		return [];
-	}
-	const entries = Array.isArray(value) ? value : String(value).split(',');
-	return entries.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
 }
 
 // ============================================

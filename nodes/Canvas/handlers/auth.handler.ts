@@ -1,44 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-
-// ============================================
-// Shared helpers
-// ============================================
-
-/** "a, b ,c", text with one entry per line, or an array from an expression -> ['a', 'b', 'c']. */
-function toList(value: unknown, separator: RegExp = /,/): string[] {
-	if (value === undefined || value === null) {
-		return [];
-	}
-	const entries = Array.isArray(value) ? value : String(value).split(separator);
-	return entries.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
-}
-
-function isBlank(value: unknown): boolean {
-	return value === undefined || value === null || value === '';
-}
-
-/** A `json` field arrives as text from the editor and as an object from an expression. */
-function parseJsonObject(value: unknown, fieldLabel: string): Record<string, unknown> {
-	if (value === undefined || value === null) {
-		return {};
-	}
-	let parsed: unknown = value;
-	if (typeof value === 'string') {
-		if (value.trim() === '') {
-			return {};
-		}
-		try {
-			parsed = JSON.parse(value);
-		} catch {
-			throw new ApplicationError(`Invalid JSON in ${fieldLabel}. Expected a JSON object.`);
-		}
-	}
-	if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-		throw new ApplicationError(`Invalid value in ${fieldLabel}. Expected a JSON object.`);
-	}
-	return parsed as Record<string, unknown>;
-}
+import { isBlank, parseJsonObjectOrEmpty, toList } from './shared';
 
 // ============================================
 // ACCESS TOKEN
@@ -167,7 +129,7 @@ function providerSettings(fields: Record<string, unknown>): Record<string, unkno
 	const settings: Record<string, unknown> = {};
 	for (const [key, value] of Object.entries(fields)) {
 		if (key === 'federated_attributes') {
-			settings.federated_attributes = parseJsonObject(value, 'Federated Attributes');
+			settings.federated_attributes = parseJsonObjectOrEmpty(value, 'Federated Attributes');
 		} else if (!isBlank(value)) {
 			settings[key] = value;
 		}

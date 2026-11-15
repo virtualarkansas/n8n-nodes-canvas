@@ -1,18 +1,7 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IDataObject } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-
-/**
- * Split a comma-separated field into trimmed, non-empty entries.
- * Accepts what the UI and expressions produce: "1, 2", an array, or a single number.
- */
-function toList(value: unknown): string[] {
-	if (value === undefined || value === null) {
-		return [];
-	}
-	const entries = Array.isArray(value) ? value : String(value).split(',');
-	return entries.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
-}
+import { toList } from './shared';
 
 /** Replace comma-separated fields of a collection by arrays (dropping the ones left empty). */
 function listFields(fields: Record<string, unknown>, names: string[]): void {

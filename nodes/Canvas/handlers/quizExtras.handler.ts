@@ -1,13 +1,7 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IDataObject } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-
-function splitIds(value: unknown): string[] {
-	return String(value ?? '')
-		.split(/[\s,]+/)
-		.map((id) => id.trim())
-		.filter((id) => id !== '');
-}
+import { toList } from './shared';
 
 // ============================================
 // Quiz Submission User List
@@ -49,7 +43,8 @@ export function buildQuizAssignmentOverrideRequest(
 	getParamObject: GetParamObject,
 ): IRequestConfig {
 	const course = `/api/v1/courses/${getParam('courseId')}`;
-	const quizIds = splitIds(getParamObject('options').quiz_ids);
+	// IDs separated by commas or whitespace. An array from an expression is read as its text form.
+	const quizIds = toList(String(getParamObject('options').quiz_ids ?? ''), /[\s,]+/);
 	// Canvas reads the first element of an array: quiz_assignment_overrides[][quiz_ids][]=...
 	const qs: Record<string, unknown> =
 		quizIds.length > 0 ? { quiz_assignment_overrides: [{ quiz_ids: quizIds }] } : {};

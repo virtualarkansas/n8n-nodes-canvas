@@ -1,28 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-
-/**
- * Split a comma-separated field into trimmed, non-empty entries.
- * Accepts what the UI and expressions produce: "a, b", an array, or a single number.
- */
-function toList(value: unknown): string[] {
-	if (value === undefined || value === null) {
-		return [];
-	}
-	const entries = Array.isArray(value) ? value : String(value).split(',');
-	return entries.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
-}
-
-/** The entries of a fixedCollection with multiple values (`{ <group>: [ {...}, ... ] }`). */
-function collectionRows(value: unknown, group: string): Array<Record<string, unknown>> {
-	if (value === null || typeof value !== 'object') {
-		return [];
-	}
-	const rows = (value as Record<string, unknown>)[group];
-	return Array.isArray(rows) ? (rows as Array<Record<string, unknown>>) : [];
-}
-
-const isBlank = (value: unknown): boolean => value === undefined || value === null || value === '';
+import { collectionRows, isBlank, toList } from './shared';
 
 // ============================================
 // Calendar Event

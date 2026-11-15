@@ -1,5 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { isPlainObject, parseJson } from './shared';
 
 /**
  * New Quizzes is a hosted Instructure service behind /api/quiz/v1. Request
@@ -10,32 +11,6 @@ import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.t
 // ============================================
 // Helpers
 // ============================================
-
-/**
- * Read a JSON field that may arrive as text (typed in the UI) or already
- * parsed (from an expression). Returns undefined when it was left empty.
- */
-function parseJsonField(value: unknown, label: string): unknown {
-	if (value === undefined || value === null) {
-		return undefined;
-	}
-	if (typeof value !== 'string') {
-		return value;
-	}
-	const text = value.trim();
-	if (text === '') {
-		return undefined;
-	}
-	try {
-		return JSON.parse(text) as unknown;
-	} catch {
-		throw new ApplicationError(`${label} must be valid JSON`);
-	}
-}
-
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-	return value !== null && typeof value === 'object' && !Array.isArray(value);
-}
 
 /** Canvas IDs are integers in these JSON bodies; anything else (a SIS ID) is passed on as text. */
 function toId(value: string): string | number {
@@ -124,7 +99,8 @@ function buildNewQuizBody(fields: Record<string, unknown>): Record<string, unkno
 		}
 	}
 
-	const filters = parseJsonField(fields.filters, 'IP Filters');
+	// In this file null (an expression that found nothing) counts as left empty: `?? undefined`.
+	const filters = parseJson(fields.filters ?? undefined, 'IP Filters must be valid JSON');
 	if (filters !== undefined) {
 		// Accept the list of ranges itself, or the documented { "ips": [...] } wrapper.
 		const ips = isPlainObject(filters) ? filters.ips : filters;
@@ -136,7 +112,10 @@ function buildNewQuizBody(fields: Record<string, unknown>): Record<string, unkno
 		settings.filters = { ips };
 	}
 
-	const resultView = parseJsonField(fields.result_view_settings, 'Result View Settings');
+	const resultView = parseJson(
+		fields.result_view_settings ?? undefined,
+		'Result View Settings must be valid JSON',
+	);
 	if (resultView !== undefined) {
 		if (!isPlainObject(resultView)) {
 			throw new ApplicationError('Result View Settings must be a JSON object');
@@ -246,7 +225,7 @@ function buildNewQuizItem(fields: Record<string, unknown>): Record<string, unkno
 		if (fields[key] !== undefined) entry[target] = fields[key];
 	}
 	for (const [key, label] of Object.entries(ENTRY_JSON_FIELDS)) {
-		const parsed = parseJsonField(fields[key], label);
+		const parsed = parseJson(fields[key] ?? undefined, `${label} must be valid JSON`);
 		if (parsed === undefined) continue;
 		if (!isPlainObject(parsed)) {
 			throw new ApplicationError(`${label} must be a JSON object`);
