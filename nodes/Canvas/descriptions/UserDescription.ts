@@ -160,7 +160,8 @@ export const userOperations: INodeProperties[] = [
 			{
 				name: 'Set Custom Color',
 				value: 'setColor',
-				description: 'Set the color in which a user sees a course, group or other context',
+				description:
+					'Set the color in which a user sees a course, group or other context. Canvas keeps all colors of a user in one record: to set several colors of the same user in one run, switch Batch Processing to Individual, or changes sent at the same time overwrite each other.',
 				action: 'Set a custom color of a user',
 			},
 			{

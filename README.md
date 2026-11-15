@@ -394,6 +394,10 @@ Requests that get no answer are given up after five minutes (n8n's request timeo
   **Batch Delay** (default 1000 ms) between groups
 - **Individual Mode**: one item after the other
 
+Items of a batch are sent at the same time. When several items change the same Canvas record
+(several colors or settings of one user, the same course, the same page), use Individual Mode:
+Canvas may otherwise overwrite one change with another.
+
 ### Request Options
 
 - **Act as User ID**: carry out the request as another user (Canvas calls this masquerading; the

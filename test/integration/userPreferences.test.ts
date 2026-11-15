@@ -193,7 +193,14 @@ describe('user: preferences and sessions', () => {
 			resource: 'user',
 			operation: 'setColor',
 			items: colors,
-			params: { userId: Number(id), assetString: '={{ $json.asset }}', hexcode: '={{ $json.color }}' },
+			params: {
+				userId: Number(id),
+				assetString: '={{ $json.asset }}',
+				hexcode: '={{ $json.color }}',
+				// Canvas keeps all colors of a user in one record: requests sent at the same time
+				// overwrite each other (a lost update), so they go one after the other.
+				batchProcessing: { mode: 'individual' },
+			},
 		});
 		expect(result.ok).toBe(true);
 		expect(result.error).toEqual([]);
