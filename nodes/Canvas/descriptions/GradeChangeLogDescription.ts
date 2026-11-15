@@ -67,7 +67,7 @@ const timeRange: INodeProperties[] = [
 export const gradeChangeLogFields: INodeProperties[] = [
 	{
 		displayName:
-			'The grade change log is available to account administrators. Each change becomes one item; the related users, courses and assignments are not included.',
+			'The grade change log is available to account administrators. Each change becomes one item.',
 		name: 'gradeChangeLogNotice',
 		type: 'notice',
 		default: '',
@@ -132,6 +132,19 @@ export const gradeChangeLogFields: INodeProperties[] = [
 			},
 		},
 		description: 'The ID of the student whose grades changed',
+	},
+	{
+		displayName: 'Include Linked Records',
+		name: 'includeLinked',
+		type: 'boolean',
+		default: true,
+		displayOptions: {
+			show: {
+				resource: ['gradeChangeLog'],
+			},
+		},
+		description:
+			'Whether to add to every event a "linked" object with the records its "links" point to (course, assignment, student, grader, page view), as Canvas sends them with the event. Keeps the names of deleted records that cannot be looked up later.',
 	},
 	{
 		displayName: 'Options',

@@ -44,6 +44,63 @@ export function downloadIfAsked(
 	return { ...fields, binaryPropertyName: getParam('binaryPropertyName', 'data') || 'data' };
 }
 
+/**
+ * Reshape the records of one page with that page's whole response at hand (the
+ * `pageTransform` hint: lists under `dataKey` whose page carries more than the list).
+ */
+export type PageTransform = (records: IDataObject[], page: IDataObject) => IDataObject[];
+
+/** A request config that may carry the `pageTransform` hint. */
+export type WithPageTransform = IRequestConfig & { pageTransform?: PageTransform };
+
+/**
+ * The `pageTransform` of the audit logs (authentication, grade change, course): Canvas
+ * answers each page with `{ events: [...], linked: { users: [...], courses: [...] } }`,
+ * where every event names the records it refers to in `links` (`{ user: 5, course: "3" }`)
+ * and `linked` holds those records for that page only. Gives every event a `linked`
+ * object with, for each of its links, the record (or null when Canvas sent none, e.g.
+ * a page view that is not kept). `collections` maps a link name to the collection of
+ * `linked` that holds it (`student` → `users`); links not named there are left alone.
+ */
+export function attachLinkedRecords(collections: Record<string, string>): PageTransform {
+	return (records, page) => {
+		const linked = isPlainObject(page.linked) ? page.linked : {};
+		const lookup = (collection: string, id: unknown): IDataObject | null => {
+			const list = linked[collection];
+			if (!Array.isArray(list) || id === undefined || id === null || id === '') {
+				return null;
+			}
+			const found = list.find((entry) => isPlainObject(entry) && String(entry.id) === String(id));
+			return (found as IDataObject | undefined) ?? null;
+		};
+		return records.map((record) => {
+			const links = isPlainObject(record?.links) ? record.links : undefined;
+			if (!links) {
+				return record;
+			}
+			const resolved: IDataObject = {};
+			for (const [name, id] of Object.entries(links)) {
+				const collection = collections[name];
+				if (collection) {
+					resolved[name] = lookup(collection, id);
+				}
+			}
+			return { ...record, linked: resolved };
+		});
+	};
+}
+
+/**
+ * `attachLinkedRecords` unless the user switched "Include Linked Records" (`includeLinked`,
+ * on by default) off.
+ */
+export function linkedIfAsked(
+	getParam: GetParam,
+	collections: Record<string, string>,
+): PageTransform | undefined {
+	return getParam('includeLinked', 'true') === 'false' ? undefined : attachLinkedRecords(collections);
+}
+
 /** A value as it is shown in an error message: its JSON text, cut off after 60 characters. */
 function shown(value: unknown): string {
 	let text: string;

@@ -59,6 +59,19 @@ export const courseAuditLogFields: INodeProperties[] = [
 		description: 'The ID of the course',
 	},
 	{
+		displayName: 'Include Linked Records',
+		name: 'includeLinked',
+		type: 'boolean',
+		default: true,
+		displayOptions: {
+			show: {
+				resource: ['courseAuditLog'],
+			},
+		},
+		description:
+			'Whether to add to every event a "linked" object with the records its "links" point to (course, the course copied from or to, user, page view), as Canvas sends them with the event. Keeps the names of deleted records that cannot be looked up later.',
+	},
+	{
 		displayName: 'Options',
 		name: 'options',
 		type: 'collection',

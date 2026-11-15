@@ -2,6 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { canvas, fx, unique } from '../lib/canvas';
 import { runNode, runOk } from '../lib/harness';
 import type { Json } from '../lib/n8n';
+import { COURSE_LINKS, expectedLinked, GRADE_CHANGE_LINKS } from './support/auditLinked';
 
 /**
  * Resources: gradebookHistory, gradeChangeLog, courseAuditLog.
@@ -190,7 +191,7 @@ describe('gradeChangeLog', () => {
 		expect(events[0]).toHaveProperty('grade_after');
 		expect(events[0]).toHaveProperty('links');
 		// The wrapper object must not leak through as an item.
-		expect(events.some((e) => 'events' in e || 'linked' in e)).toBe(false);
+		expect(events.some((e) => 'events' in e)).toBe(false);
 
 		const limited = await runOk({ resource: 'gradeChangeLog', operation: 'getByCourse', params: { courseId, pagination: { perPage: 5, maxPages: 2 } } });
 		expect(limited).toHaveLength(10);
@@ -212,6 +213,39 @@ describe('gradeChangeLog', () => {
 			params: { graderId, options: { start_time: `${today}T00:00:00Z` }, pagination: { returnAll: true } },
 		});
 		expect(ids(byGrader)).toEqual(ids(expectedByGrader));
+	});
+
+	it('every change carries the course, assignment, student and grader it refers to, from its own page', async () => {
+		const path = `/api/v1/audit/grade_change/courses/${courseId}`;
+		const expected = await expectedLinked(path, GRADE_CHANGE_LINKS);
+		// Pages of 4 here, of 7 in the direct read: each change must keep the records of its own page.
+		const events = await runOk({
+			resource: 'gradeChangeLog',
+			operation: 'getByCourse',
+			params: { courseId, pagination: { returnAll: true, perPage: 4 } },
+		});
+		expect(events).toHaveLength(expected.size);
+		for (const item of events) {
+			const { linked, ...event } = item;
+			const direct = expected.get(String(item.id))!;
+			expect(event).toEqual(direct.event);
+			expect(linked).toEqual(direct.linked);
+			const l = linked as Json;
+			expect(String((l.course as Json).id)).toBe(courseId);
+			expect(String((l.assignment as Json).id)).toBe(String((item.links as Json).assignment));
+			expect((l.assignment as Json).name).toMatch(/^Audited /);
+			expect(String((l.student as Json).id)).toBe(String((item.links as Json).student));
+			expect((l.student as Json).name).toMatch(/^Audit Student /);
+			expect(String((l.grader as Json).id)).toBe(graderId);
+		}
+
+		const bare = await runOk({
+			resource: 'gradeChangeLog',
+			operation: 'query',
+			params: { filters: { course_id: courseId, student_id: students[2] }, includeLinked: false, pagination: { returnAll: true } },
+		});
+		expect(bare.length).toBeGreaterThan(0);
+		for (const item of bare) expect(item).toEqual(expected.get(String(item.id))!.event);
 	});
 
 	it('time range: an end time in the past returns nothing', async () => {
@@ -291,6 +325,44 @@ describe('courseAuditLog', () => {
 			params: { accountId: fx('accountId'), options: { start_time: '2001-01-01T00:00:00Z', end_time: '2001-02-01T00:00:00Z' } },
 		});
 		expect(none).toEqual([]);
+	});
+
+	it('every event carries its course, user and the course it was reset to, from its own page', async () => {
+		// Resetting a course is logged on the old course with a link to the new one ("reset_to").
+		const c = canvas();
+		const old = await c.post<Json>(`/api/v1/accounts/${fx('accountId')}/courses`, { course: { name: unique('Audit reset course') } });
+		const fresh = await c.post<Json>(`/api/v1/courses/${old.id}/reset_content`);
+		try {
+			const path = `/api/v1/audit/course/courses/${old.id}`;
+			const expected = await expectedLinked(path, COURSE_LINKS, 1);
+			const events = await runOk({
+				resource: 'courseAuditLog',
+				operation: 'getByCourse',
+				params: { courseId: String(old.id), pagination: { returnAll: true, perPage: 2 } },
+			});
+			expect(events).toHaveLength(expected.size);
+			for (const item of events) {
+				const { linked, ...event } = item;
+				expect(event).toEqual(expected.get(String(item.id))!.event);
+				expect(linked).toEqual(expected.get(String(item.id))!.linked);
+				expect((linked as Json).course).toMatchObject({ id: String(old.id) });
+				expect((linked as Json).user).toMatchObject({ id: graderId });
+			}
+			const reset = events.find((e) => e.event_type === 'reset_to');
+			expect(reset, 'the reset must be logged').toBeDefined();
+			expect((reset!.linked as Json).reset_to).toMatchObject({ id: String(fresh.id), name: old.name });
+
+			const bare = await runOk({
+				resource: 'courseAuditLog',
+				operation: 'getByAccount',
+				params: { accountId: fx('accountId'), includeLinked: false, options: { start_time: String(reset!.created_at) }, pagination: { perPage: 5, maxPages: 1 } },
+			});
+			expect(bare.length).toBeGreaterThan(0);
+			for (const item of bare) expect(item).not.toHaveProperty('linked');
+		} finally {
+			await c.request('DELETE', `/api/v1/courses/${fresh.id}?event=delete`);
+			await c.request('DELETE', `/api/v1/courses/${old.id}?event=delete`);
+		}
 	});
 
 	it('errors: a student is refused', async () => {

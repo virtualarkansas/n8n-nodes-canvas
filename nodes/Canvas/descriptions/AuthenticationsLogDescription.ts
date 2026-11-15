@@ -124,6 +124,20 @@ export const authenticationsLogFields: INodeProperties[] = [
 		description: 'Max number of results to return',
 	},
 	{
+		displayName: 'Include Linked Records',
+		name: 'includeLinked',
+		type: 'boolean',
+		default: true,
+		displayOptions: {
+			show: {
+				resource: ['authenticationsLog'],
+				operation: ['getAllByAccount', 'getAllByLogin', 'getAllByUser'],
+			},
+		},
+		description:
+			'Whether to add to every event a "linked" object with the records its "links" point to (login, account, user, page view), as Canvas sends them with the event. Keeps the names of deleted records that cannot be looked up later.',
+	},
+	{
 		displayName: 'Options',
 		name: 'options',
 		type: 'collection',

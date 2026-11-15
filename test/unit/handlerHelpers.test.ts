@@ -1,10 +1,12 @@
 import { ApplicationError } from 'n8n-workflow';
 import { describe, expect, it } from 'vitest';
 import {
+	attachLinkedRecords,
 	collectionRows,
 	isBlank,
 	isBlankOrWhitespace,
 	isPlainObject,
+	linkedIfAsked,
 	mapFields,
 	parseJson,
 	parseJsonObject,
@@ -485,5 +487,40 @@ describe('parseJsonObjectFor', () => {
 				'Placements must be a JSON object for externalTool create',
 			);
 		}
+	});
+});
+
+describe('attachLinkedRecords', () => {
+	const transform = attachLinkedRecords({ user: 'users', student: 'users', course: 'courses', page_view: 'page_views' });
+	const page = {
+		events: [],
+		linked: {
+			users: [{ id: 5, name: 'Ann' }, { id: '7', name: 'Bob' }],
+			courses: [{ id: '3', name: 'Math' }],
+			page_views: [],
+		},
+	};
+
+	it('resolves every named link against the page, matching IDs as text', () => {
+		const [event] = transform(
+			[{ id: 'e1', links: { user: '5', student: 7, course: 3, page_view: null, sis_batch: '9' } }],
+			page,
+		);
+		expect(event).toEqual({
+			id: 'e1',
+			links: { user: '5', student: 7, course: 3, page_view: null, sis_batch: '9' },
+			linked: { user: { id: 5, name: 'Ann' }, student: { id: '7', name: 'Bob' }, course: { id: '3', name: 'Math' }, page_view: null },
+		});
+	});
+
+	it('gives null for a record the page does not hold, and leaves events without links alone', () => {
+		const out = transform([{ id: 'e2', links: { user: 99 } }, { id: 'e3' }], { events: [] });
+		expect(out).toEqual([{ id: 'e2', links: { user: 99 }, linked: { user: null } }, { id: 'e3' }]);
+	});
+
+	it('is on unless Include Linked Records is switched off', () => {
+		expect(linkedIfAsked(() => 'false', {})).toBeUndefined();
+		expect(linkedIfAsked((_name, fallback) => fallback ?? '', {})).toBeTypeOf('function');
+		expect(linkedIfAsked(() => 'true', {})).toBeTypeOf('function');
 	});
 });

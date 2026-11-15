@@ -1,6 +1,7 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { isBlank, parseJsonObjectOrEmpty, toList } from './shared';
+import { isBlank, linkedIfAsked, parseJsonObjectOrEmpty, toList } from './shared';
+import type { WithPageTransform } from './shared';
 
 // ============================================
 // ACCESS TOKEN
@@ -237,33 +238,29 @@ export function buildAuthenticationsLogRequest(
 	}
 
 	// Canvas answers { links, events: [...], linked: { logins, accounts, users, page_views } };
-	// every event becomes one item.
-	const dataKey = 'events';
+	// every event becomes one item, with the records it refers to unless switched off.
+	const list = (endpoint: string): WithPageTransform => ({
+		endpoint,
+		method: 'GET',
+		qs,
+		dataKey: 'events',
+		pageTransform: linkedIfAsked(getParam, {
+			login: 'logins',
+			account: 'accounts',
+			user: 'users',
+			page_view: 'page_views',
+		}),
+	});
 
 	switch (operation) {
 		case 'getAllByAccount':
-			return {
-				endpoint: `/api/v1/audit/authentication/accounts/${getParam('accountId')}`,
-				method: 'GET',
-				qs,
-				dataKey,
-			};
+			return list(`/api/v1/audit/authentication/accounts/${getParam('accountId')}`);
 
 		case 'getAllByLogin':
-			return {
-				endpoint: `/api/v1/audit/authentication/logins/${getParam('loginId')}`,
-				method: 'GET',
-				qs,
-				dataKey,
-			};
+			return list(`/api/v1/audit/authentication/logins/${getParam('loginId')}`);
 
 		case 'getAllByUser':
-			return {
-				endpoint: `/api/v1/audit/authentication/users/${getParam('userId')}`,
-				method: 'GET',
-				qs,
-				dataKey,
-			};
+			return list(`/api/v1/audit/authentication/users/${getParam('userId')}`);
 
 		default:
 			throw new ApplicationError(
