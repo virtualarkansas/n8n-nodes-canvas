@@ -1,0 +1,1599 @@
+{
+  "name": "Canvas battery — page",
+  "nodes": [
+    {
+      "id": "cd742d3a-9336-4ab4-95d5-4444790c0433",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "53720305-2562-43b0-a93c-d986aa72551e",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "03c790cf-c274-4b37-b0c1-35cbe3b45a7a",
+      "name": "create — create: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "create",
+        "courseId": "161",
+        "title": "=Página ünï 页面 🚀 \"quoted\" & <b>tags</b> / slash? {{ $execution.id }}-1",
+        "additionalFields": {
+          "body": "<h2>Überschrift</h2><p>Text with <strong>markup</strong>, “quotes” &amp; emoji 🎓</p>",
+          "editing_roles": [
+            "students",
+            "teachers"
+          ],
+          "notify_of_update": true,
+          "publish_at": "2031-01-02T03:04:00Z",
+          "published": false,
+          "student_todo_at": "2031-05-06T07:08:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dc81a8af-b8f3-48c1-9238-695994459133",
+      "name": "create — create: minimal page is unpublished and editable by teachers",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "create",
+        "courseId": "161",
+        "title": "=Minimal page {{ $execution.id }}-2"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2723ece8-f5ee-4708-8d62-3bbe8d36954f",
+      "name": "get — get: by URL, by numeric ID and by page_id: reference",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "get",
+        "courseId": "161",
+        "pageUrl": "={{ $('create — create: every optional field reaches Canvas').first().json.url }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c95a782c-0a57-4903-bfa8-67839a4e9685",
+      "name": "get — get: by URL, by numeric ID and by page_id: reference (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "get",
+        "courseId": "161",
+        "pageUrl": "page_id:616"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a88b675b-d502-4dea-a6ba-3a61cd7b9e02",
+      "name": "get — get: page URLs with characters that need encoding",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "get",
+        "courseId": "161",
+        "pageUrl": "=sfh-at-`rby-at-{{ $execution.id }}-5"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6319ea80-feae-48c9-9cda-664b397b0afe",
+      "name": "delete — get: page URLs with characters that need encoding",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "delete",
+        "courseId": "161",
+        "pageUrl": "={{ $('get — get: page URLs with characters that need encoding').first().json.url }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "76d02982-2a15-401e-be78-714761f707c7",
+      "name": "getAll — getAll: pages through more than 100 pages without duplicates",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getAll",
+        "courseId": "161",
+        "options": {
+          "sort": "title",
+          "order": "asc"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "00a6bc58-c04d-4d67-841f-20ee0bc2230e",
+      "name": "getAll — getAll: pages through more than 100 pages without duplicates (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getAll",
+        "courseId": "161",
+        "options": {
+          "sort": "title",
+          "order": "asc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3fc85e76-9537-4435-a0c9-f9e5a8c8ed47",
+      "name": "getAll — getAll: pages through more than 100 pages without duplicates (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getAll",
+        "courseId": "161",
+        "options": {
+          "sort": "title",
+          "order": "asc"
+        },
+        "pagination": {
+          "perPage": 9,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "17e2e253-5938-4165-9123-587b66220bf0",
+      "name": "getAll — getAll: sort, order, search term, published filter and body ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getAll",
+        "courseId": "161",
+        "options": {
+          "search_term": "Bulk page",
+          "sort": "title",
+          "order": "desc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f465d3ee-abbd-45dc-985e-05623cda0255",
+      "name": "getAll — getAll: sort, order, search term, published filter and body  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getAll",
+        "courseId": "161",
+        "options": {
+          "search_term": "Bulk page",
+          "published": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f30990f9-4151-4398-bdfa-f24c9085c605",
+      "name": "getAll — getAll: sort, order, search term, published filter and body  (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getAll",
+        "courseId": "161",
+        "options": {
+          "search_term": "Bulk page",
+          "published": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0f3bd902-e8d9-48ca-9a00-9d165ef1a9ff",
+      "name": "getAll — getAll: sort, order, search term, published filter and body  (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getAll",
+        "courseId": "161",
+        "options": {
+          "search_term": "Bulk page 01",
+          "include": [
+            "body"
+          ],
+          "sort": "created_at"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8eebd2f6-0a74-4b53-8a84-2e28d63c1f5e",
+      "name": "getAll — getAll: sort, order, search term, published filter and body  (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getAll",
+        "courseId": "161",
+        "options": {
+          "sort": "updated_at",
+          "order": "desc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "219672f5-ae2e-4969-90d9-a58f6258432f",
+      "name": "getAll — getAll: sort, order, search term, published filter and body  (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getAll",
+        "courseId": "161",
+        "options": {
+          "search_term": "there is no page with this title zzz"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7a329a82-d5b0-4b67-b385-1e32eb17e199",
+      "name": "update — update: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "update",
+        "courseId": "161",
+        "pageUrl": "={{ $('getAll — getAll: sort, order, search term, published filter and body  (5)').first().json.url }}",
+        "updateFields": {
+          "body": "<p>Second version</p>",
+          "editing_roles": [
+            "teachers",
+            "students",
+            "public"
+          ],
+          "notify_of_update": true,
+          "publish_at": "2032-02-03T04:05:00Z",
+          "student_todo_at": "2032-06-07T08:09:00Z",
+          "title": "=Página ünï 页面 🚀 \"quoted\" & <b>tags</b> / slash? {{ $execution.id }}-1 (renamed)"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f6871d9a-7fc5-4eb4-b5cf-63e0300a66bd",
+      "name": "update — update: publish, make it the front page, remove the to-do da",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "update",
+        "courseId": "161",
+        "pageUrl": "={{ $('update — update: every optional field reaches Canvas').first().json.url }}",
+        "updateFields": {
+          "published": true,
+          "front_page": true,
+          "student_planner_checkbox": false,
+          "body": "<p>Third version</p>"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "29d2a2e8-4e65-4067-9da5-1a85b2fad229",
+      "name": "getFrontPage — getFrontPage: returns the front page of the course",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getFrontPage",
+        "courseId": "161"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "60f56470-e4d1-4f30-bd2d-a0356d508b45",
+      "name": "updateFrontPage — updateFrontPage: changes the front page without knowing its ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "updateFrontPage",
+        "courseId": "161",
+        "updateFields": {
+          "body": "<p>Front page body</p>",
+          "editing_roles": [
+            "teachers"
+          ],
+          "notify_of_update": false,
+          "published": true,
+          "title": "=Página ünï 页面 🚀 \"quoted\" & <b>tags</b> / slash? {{ $execution.id }}-1 (front)"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c470c4f7-f44c-4f57-a0a2-911c3b213655",
+      "name": "update — update: an unknown page URL creates that page (Canvas updat",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "update",
+        "courseId": "161",
+        "pageUrl": "=upsert-{{ $execution.id }}-6",
+        "updateFields": {
+          "body": "<p>made by update</p>"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "82779e95-cbcb-4d6b-b7fc-50e9a476fc62",
+      "name": "duplicate — duplicate: copies the page",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "duplicate",
+        "courseId": "161",
+        "pageUrl": "={{ $('updateFrontPage — updateFrontPage: changes the front page without knowing its ').first().json.url }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "100096b0-752f-40b0-907e-912271bd602b",
+      "name": "listRevisions — listRevisions: returns every revision, newest first, and pag",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "listRevisions",
+        "courseId": "161",
+        "pageUrl": "={{ $('updateFrontPage — updateFrontPage: changes the front page without knowing its ').first().json.url }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "77107435-eb2f-4b33-84da-57746136ae95",
+      "name": "listRevisions — listRevisions: returns every revision, newest first, and pag (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "listRevisions",
+        "courseId": "161",
+        "pageUrl": "page_id:616",
+        "pagination": {
+          "perPage": 1,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d981fc90-9129-4c74-848d-f8eb5b7e6606",
+      "name": "getRevision — getRevision: latest by default, a specific revision, with or",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getRevision",
+        "courseId": "161",
+        "pageUrl": "={{ $('updateFrontPage — updateFrontPage: changes the front page without knowing its ').first().json.url }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "46753c9e-6e7e-4578-b6a0-7d579b643196",
+      "name": "getRevision — getRevision: latest by default, a specific revision, with or (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getRevision",
+        "courseId": "161",
+        "pageUrl": "={{ $('getRevision — getRevision: latest by default, a specific revision, with or').first().json.url }}",
+        "revisionId": "2",
+        "options": {
+          "summary": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "49591680-86c5-4060-b520-80081c6de5a1",
+      "name": "revert — revert: restores an earlier revision as a new revision",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "revert",
+        "courseId": "161",
+        "pageUrl": "={{ $('getRevision — getRevision: latest by default, a specific revision, with or').first().json.url }}",
+        "revisionId": "={{ $('getRevision — getRevision: latest by default, a specific revision, with or (2)').first().json.revision_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ba9cfe16-7507-488a-b314-896832fc3a35",
+      "name": "create — group context: create, get, list, update, revisions, front p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "create",
+        "contextType": "group",
+        "groupId": "131",
+        "title": "=Group page ünï {{ $execution.id }}-7",
+        "additionalFields": {
+          "body": "<p>group v1</p>",
+          "editing_roles": [
+            "members"
+          ],
+          "published": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "251d154c-cfdc-406b-880a-de65b3cb3057",
+      "name": "get — group context: create, get, list, update, revisions, front p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "get",
+        "contextType": "group",
+        "groupId": "131",
+        "pageUrl": "={{ $('create — group context: create, get, list, update, revisions, front p').first().json.url }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d5080cdc-4455-4b44-85ce-85fb12c0081d",
+      "name": "getAll — group context: create, get, list, update, revisions, front p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getAll",
+        "contextType": "group",
+        "groupId": "131",
+        "options": {
+          "search_term": "=Group page ünï {{ $execution.id }}-7",
+          "include": [
+            "body"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ab0ddbe8-5a57-43ce-9ef6-c25e18390d0d",
+      "name": "update — group context: create, get, list, update, revisions, front p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "update",
+        "contextType": "group",
+        "groupId": "131",
+        "pageUrl": "={{ $('getAll — group context: create, get, list, update, revisions, front p').first().json.url }}",
+        "updateFields": {
+          "body": "<p>group v2</p>",
+          "title": "=Group page ünï {{ $execution.id }}-7 2",
+          "front_page": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4f735bc9-8f99-4c23-beae-e8737203cf19",
+      "name": "getFrontPage — group context: create, get, list, update, revisions, front p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getFrontPage",
+        "contextType": "group",
+        "groupId": "131"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0fb446aa-1fb1-4c0f-b007-b34e79149ddc",
+      "name": "updateFrontPage — group context: create, get, list, update, revisions, front p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "updateFrontPage",
+        "contextType": "group",
+        "groupId": "131",
+        "updateFields": {
+          "body": "<p>group v3</p>"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b701ed8a-4d4d-455c-bc4e-35b478bcd782",
+      "name": "listRevisions — group context: create, get, list, update, revisions, front p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "listRevisions",
+        "contextType": "group",
+        "groupId": "131",
+        "pageUrl": "={{ $('updateFrontPage — group context: create, get, list, update, revisions, front p').first().json.url }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0145321e-b027-4405-998f-a04223185e75",
+      "name": "getRevision — group context: create, get, list, update, revisions, front p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "getRevision",
+        "contextType": "group",
+        "groupId": "131",
+        "pageUrl": "={{ $('updateFrontPage — group context: create, get, list, update, revisions, front p').first().json.url }}",
+        "revisionId": "1",
+        "options": {
+          "summary": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3a084ef8-b195-4d98-8bc3-30166aff7204",
+      "name": "revert — group context: create, get, list, update, revisions, front p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "revert",
+        "contextType": "group",
+        "groupId": "131",
+        "pageUrl": "={{ $('updateFrontPage — group context: create, get, list, update, revisions, front p').first().json.url }}",
+        "revisionId": "={{ $('getRevision — group context: create, get, list, update, revisions, front p').first().json.revision_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9d94be88-155f-4839-afff-0dcd3cafb0c9",
+      "name": "create — group context: create, get, list, update, revisions, front p (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "create",
+        "contextType": "group",
+        "groupId": "131",
+        "title": "=Group front {{ $execution.id }}-8",
+        "additionalFields": {
+          "published": true,
+          "front_page": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "382a15d4-5a21-4548-9ecf-dfe53b91e628",
+      "name": "delete — group context: create, get, list, update, revisions, front p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "delete",
+        "contextType": "group",
+        "groupId": "131",
+        "pageUrl": "={{ $('revert — group context: create, get, list, update, revisions, front p').first().json.url }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "01052f5a-98e4-467d-936d-f159ee65606e",
+      "name": "delete — delete: removes the page",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "delete",
+        "courseId": "161",
+        "pageUrl": "={{ $('revert — revert: restores an earlier revision as a new revision').first().json.url }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create: minimal page is unpublished and editable by teachers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: minimal page is unpublished and editable by teachers": {
+      "main": [
+        [
+          {
+            "node": "get — get: by URL, by numeric ID and by page_id: reference",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: by URL, by numeric ID and by page_id: reference": {
+      "main": [
+        [
+          {
+            "node": "get — get: by URL, by numeric ID and by page_id: reference (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: by URL, by numeric ID and by page_id: reference (2)": {
+      "main": [
+        [
+          {
+            "node": "get — get: page URLs with characters that need encoding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: page URLs with characters that need encoding": {
+      "main": [
+        [
+          {
+            "node": "delete — get: page URLs with characters that need encoding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — get: page URLs with characters that need encoding": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more than 100 pages without duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more than 100 pages without duplicates": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more than 100 pages without duplicates (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more than 100 pages without duplicates (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more than 100 pages without duplicates (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more than 100 pages without duplicates (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: sort, order, search term, published filter and body ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: sort, order, search term, published filter and body ": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: sort, order, search term, published filter and body  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: sort, order, search term, published filter and body  (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: sort, order, search term, published filter and body  (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: sort, order, search term, published filter and body  (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: sort, order, search term, published filter and body  (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: sort, order, search term, published filter and body  (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: sort, order, search term, published filter and body  (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: sort, order, search term, published filter and body  (5)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: sort, order, search term, published filter and body  (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: sort, order, search term, published filter and body  (6)": {
+      "main": [
+        [
+          {
+            "node": "update — update: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: publish, make it the front page, remove the to-do da",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: publish, make it the front page, remove the to-do da": {
+      "main": [
+        [
+          {
+            "node": "getFrontPage — getFrontPage: returns the front page of the course",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getFrontPage — getFrontPage: returns the front page of the course": {
+      "main": [
+        [
+          {
+            "node": "updateFrontPage — updateFrontPage: changes the front page without knowing its ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateFrontPage — updateFrontPage: changes the front page without knowing its ": {
+      "main": [
+        [
+          {
+            "node": "update — update: an unknown page URL creates that page (Canvas updat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: an unknown page URL creates that page (Canvas updat": {
+      "main": [
+        [
+          {
+            "node": "duplicate — duplicate: copies the page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "duplicate — duplicate: copies the page": {
+      "main": [
+        [
+          {
+            "node": "listRevisions — listRevisions: returns every revision, newest first, and pag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listRevisions — listRevisions: returns every revision, newest first, and pag": {
+      "main": [
+        [
+          {
+            "node": "listRevisions — listRevisions: returns every revision, newest first, and pag (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listRevisions — listRevisions: returns every revision, newest first, and pag (2)": {
+      "main": [
+        [
+          {
+            "node": "getRevision — getRevision: latest by default, a specific revision, with or",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getRevision — getRevision: latest by default, a specific revision, with or": {
+      "main": [
+        [
+          {
+            "node": "getRevision — getRevision: latest by default, a specific revision, with or (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getRevision — getRevision: latest by default, a specific revision, with or (2)": {
+      "main": [
+        [
+          {
+            "node": "revert — revert: restores an earlier revision as a new revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "revert — revert: restores an earlier revision as a new revision": {
+      "main": [
+        [
+          {
+            "node": "create — group context: create, get, list, update, revisions, front p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — group context: create, get, list, update, revisions, front p": {
+      "main": [
+        [
+          {
+            "node": "get — group context: create, get, list, update, revisions, front p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — group context: create, get, list, update, revisions, front p": {
+      "main": [
+        [
+          {
+            "node": "getAll — group context: create, get, list, update, revisions, front p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — group context: create, get, list, update, revisions, front p": {
+      "main": [
+        [
+          {
+            "node": "update — group context: create, get, list, update, revisions, front p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — group context: create, get, list, update, revisions, front p": {
+      "main": [
+        [
+          {
+            "node": "getFrontPage — group context: create, get, list, update, revisions, front p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getFrontPage — group context: create, get, list, update, revisions, front p": {
+      "main": [
+        [
+          {
+            "node": "updateFrontPage — group context: create, get, list, update, revisions, front p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateFrontPage — group context: create, get, list, update, revisions, front p": {
+      "main": [
+        [
+          {
+            "node": "listRevisions — group context: create, get, list, update, revisions, front p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listRevisions — group context: create, get, list, update, revisions, front p": {
+      "main": [
+        [
+          {
+            "node": "getRevision — group context: create, get, list, update, revisions, front p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getRevision — group context: create, get, list, update, revisions, front p": {
+      "main": [
+        [
+          {
+            "node": "revert — group context: create, get, list, update, revisions, front p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "revert — group context: create, get, list, update, revisions, front p": {
+      "main": [
+        [
+          {
+            "node": "create — group context: create, get, list, update, revisions, front p (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — group context: create, get, list, update, revisions, front p (2)": {
+      "main": [
+        [
+          {
+            "node": "delete — group context: create, get, list, update, revisions, front p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — group context: create, get, list, update, revisions, front p": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes the page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

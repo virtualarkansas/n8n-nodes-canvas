@@ -1,0 +1,649 @@
+{
+  "name": "Canvas battery — admin",
+  "nodes": [
+    {
+      "id": "8b763f5a-d12b-4148-a9fc-4ad643606b2c",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "54b01657-8e6b-40e7-834c-6099ffc2f8a4",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df96e778-3373-4b37-8132-cc47284d19e3",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            },
+            {
+              "id": "b0ac6c77-a049-4c75-a4ad-3f55c4f0e277",
+              "name": "accountRoleId",
+              "value": "23",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "9821ee8c-e841-4fe6-8c0f-f181c0fc1c0a",
+      "name": "create — create: every optional field reaches Canvas (custom role, no",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "create",
+        "accountId": "263",
+        "userId": "2564",
+        "additionalFields": {
+          "role_id": "23",
+          "send_confirmation": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b0213568-65a8-45de-82a2-432b8ab6ebee",
+      "name": "create — create: defaults to the Account Admin role and notifies the ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "create",
+        "accountId": "263",
+        "userId": "=sis_user_id:n8nbat_AdminBat-{{ $execution.id }}-1_1"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2ff15335-5513-4fee-ab0d-3f6b2dd6a6fe",
+      "name": "create — create: Canvas does not validate the role: an unknown Role I",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "create",
+        "accountId": "263",
+        "userId": "2567",
+        "additionalFields": {
+          "role_id": "99999999",
+          "send_confirmation": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cdc57bb8-89fd-4929-af4f-c8212b05b738",
+      "name": "getAll — getAll: lists the admins of an account across pages, without",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "getAll",
+        "accountId": "263",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ec5a35e3-4aea-4594-8c72-6d6c5129f80f",
+      "name": "getAll — getAll: lists the admins of an account across pages, without (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "getAll",
+        "accountId": "263"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c9762007-b3f8-4b28-b974-887c1e9a3e5c",
+      "name": "getAll — getAll: lists the admins of an account across pages, without (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "getAll",
+        "accountId": "263",
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b34ddd6f-ea12-4551-9485-9ec480a73b70",
+      "name": "getAll — getAll: filters by user IDs (several, with spaces, SIS IDs) ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "getAll",
+        "accountId": "263",
+        "options": {
+          "user_id": "=2564, 2570 ,sis_user_id:n8nbat_AdminBat-{{ $execution.id }}-1_6"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e4abef47-f79c-49ba-9759-cb710b4a1b93",
+      "name": "getAll — getAll: filters by user IDs (several, with spaces, SIS IDs)  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "getAll",
+        "accountId": "263",
+        "options": {
+          "search_term": "Zoë Ünïcødé"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c39a9a7d-acec-4901-9ec2-1d1e204ade64",
+      "name": "getAll — getAll: filters by user IDs (several, with spaces, SIS IDs)  (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "getAll",
+        "accountId": "263",
+        "options": {
+          "search_term": "zzz-nobody-zzz"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f97f2812-25a5-482e-a027-f095d544d132",
+      "name": "getAll — getAll: the seeded root account admins, read only",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "getAll",
+        "accountId": "self",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1961d4fb-93ef-44b1-908d-fa1dcfe2fac0",
+      "name": "getSelfRoles — getSelfRoles: lists the roles of the tokens user in an acco",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "getSelfRoles",
+        "accountId": "={{ $('Config').first().json.accountId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "04390365-9436-412a-961a-74d6057c6c7e",
+      "name": "delete — delete: removes one role and leaves the users other role in",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "delete",
+        "accountId": "263",
+        "userId": "2565",
+        "roleId": "={{ $('Config').first().json.accountRoleId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6c2982df-be98-4e31-b4d6-9d757dbad73f",
+      "name": "delete — delete: without a role ID the Account Admin role is removed;",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "delete",
+        "accountId": "263",
+        "userId": "=sis_user_id:n8nbat_AdminBat-{{ $execution.id }}-1_1"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "951e853d-1d40-43df-a1b8-6db214926cf5",
+      "name": "getAll — delete: without a role ID the Account Admin role is removed;",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "getAll",
+        "accountId": "263",
+        "options": {
+          "include_deleted": true,
+          "user_id": "2565"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "98579cdb-2cb9-41b5-bc59-331dba8f9c70",
+      "name": "getAll — delete: without a role ID the Account Admin role is removed; (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "admin",
+        "operation": "getAll",
+        "accountId": "263",
+        "options": {
+          "include_deleted": false,
+          "user_id": "2565"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field reaches Canvas (custom role, no",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas (custom role, no": {
+      "main": [
+        [
+          {
+            "node": "create — create: defaults to the Account Admin role and notifies the ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: defaults to the Account Admin role and notifies the ": {
+      "main": [
+        [
+          {
+            "node": "create — create: Canvas does not validate the role: an unknown Role I",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: Canvas does not validate the role: an unknown Role I": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the admins of an account across pages, without",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the admins of an account across pages, without": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the admins of an account across pages, without (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the admins of an account across pages, without (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the admins of an account across pages, without (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the admins of an account across pages, without (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: filters by user IDs (several, with spaces, SIS IDs) ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: filters by user IDs (several, with spaces, SIS IDs) ": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: filters by user IDs (several, with spaces, SIS IDs)  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: filters by user IDs (several, with spaces, SIS IDs)  (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: filters by user IDs (several, with spaces, SIS IDs)  (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: filters by user IDs (several, with spaces, SIS IDs)  (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: the seeded root account admins, read only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: the seeded root account admins, read only": {
+      "main": [
+        [
+          {
+            "node": "getSelfRoles — getSelfRoles: lists the roles of the tokens user in an acco",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSelfRoles — getSelfRoles: lists the roles of the tokens user in an acco": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes one role and leaves the users other role in",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — delete: removes one role and leaves the users other role in": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: without a role ID the Account Admin role is removed;",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — delete: without a role ID the Account Admin role is removed;": {
+      "main": [
+        [
+          {
+            "node": "getAll — delete: without a role ID the Account Admin role is removed;",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — delete: without a role ID the Account Admin role is removed;": {
+      "main": [
+        [
+          {
+            "node": "getAll — delete: without a role ID the Account Admin role is removed; (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

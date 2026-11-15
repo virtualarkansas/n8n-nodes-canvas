@@ -1,0 +1,183 @@
+import type { INodeProperties } from 'n8n-workflow';
+
+import * as descriptions from './descriptions';
+import { PAGED_LIST_OPERATIONS } from './listOperations';
+
+/**
+ * Every Canvas resource the node offers: its label in the Resource dropdown and its
+ * operation and field definitions. To add a resource, create its description file,
+ * export it from descriptions/index.ts, add its handler to handlers/index.ts and add
+ * one line here (kept in alphabetical order of the label).
+ */
+export interface ICanvasResource {
+	name: string;
+	value: string;
+	operations: INodeProperties[];
+	fields: INodeProperties[];
+}
+
+/** True when a field is shown for the operation (or for every operation of its resource). */
+function shownFor(field: INodeProperties, operation: string): boolean {
+	const operations = field.displayOptions?.show?.operation as string[] | undefined;
+	return operations === undefined || operations.includes(operation);
+}
+
+/**
+ * n8n's standard pair of fields for a list operation: everything, or the first N records.
+ * `only` narrows when they are shown further (the Custom API Request pages GET requests only).
+ */
+function listFields(resource: string, operations: string[], only: Record<string, string[]> = {}): INodeProperties[] {
+	const show = { resource: [resource], operation: operations, ...only };
+	return [
+		{
+			displayName: 'Return All',
+			name: 'returnAll',
+			type: 'boolean',
+			default: false,
+			description: 'Whether to return all results or only up to a given limit',
+			displayOptions: { show },
+		},
+		{
+			displayName: 'Limit',
+			name: 'limit',
+			type: 'number',
+			typeOptions: { minValue: 1 },
+			default: 50,
+			description: 'Max number of results to return',
+			displayOptions: { show: { ...show, returnAll: [false] } },
+		},
+	];
+}
+
+/** Add Return All / Limit to the paged list operations of a resource that do not define them themselves. */
+function withListFields(resource: ICanvasResource): ICanvasResource {
+	const operations = (PAGED_LIST_OPERATIONS[resource.value] ?? []).filter(
+		(operation) => !resource.fields.some((field) => field.name === 'returnAll' && shownFor(field, operation)),
+	);
+	if (operations.length === 0) {
+		return resource;
+	}
+	const only: Record<string, string[]> = resource.value === 'apiRequest' ? { method: ['GET'] } : {};
+	return { ...resource, fields: [...resource.fields, ...listFields(resource.value, operations, only)] };
+}
+
+const resources: ICanvasResource[] = [
+	{ name: 'Access Token', value: 'accessToken', operations: descriptions.accessTokenOperations, fields: descriptions.accessTokenFields },
+	{ name: 'Account', value: 'account', operations: descriptions.accountOperations, fields: descriptions.accountFields },
+	{ name: 'Account Calendar', value: 'accountCalendar', operations: descriptions.accountCalendarOperations, fields: descriptions.accountCalendarFields },
+	{ name: 'Account Notification', value: 'accountNotification', operations: descriptions.accountNotificationOperations, fields: descriptions.accountNotificationFields },
+	{ name: 'Account Report', value: 'accountReport', operations: descriptions.accountReportOperations, fields: descriptions.accountReportFields },
+	{ name: 'Admin', value: 'admin', operations: descriptions.adminOperations, fields: descriptions.adminFields },
+	{ name: 'Analytics', value: 'analytics', operations: descriptions.analyticsOperations, fields: descriptions.analyticsFields },
+	{ name: 'Announcement', value: 'announcement', operations: descriptions.announcementOperations, fields: descriptions.announcementFields },
+	{ name: 'Announcement External Feed', value: 'announcementExternalFeed', operations: descriptions.announcementExternalFeedOperations, fields: descriptions.announcementExternalFeedFields },
+	{ name: 'API Token Scope', value: 'apiTokenScope', operations: descriptions.apiTokenScopeOperations, fields: descriptions.apiTokenScopeFields },
+	{ name: 'Appointment Group', value: 'appointmentGroup', operations: descriptions.appointmentGroupOperations, fields: descriptions.appointmentGroupFields },
+	{ name: 'Assignment', value: 'assignment', operations: descriptions.assignmentOperations, fields: descriptions.assignmentFields },
+	{ name: 'Assignment Extension', value: 'assignmentExtension', operations: descriptions.assignmentExtensionOperations, fields: descriptions.assignmentExtensionFields },
+	{ name: 'Assignment Group', value: 'assignmentGroup', operations: descriptions.assignmentGroupOperations, fields: descriptions.assignmentGroupFields },
+	{ name: 'Authentication Provider', value: 'authenticationProvider', operations: descriptions.authenticationProviderOperations, fields: descriptions.authenticationProviderFields },
+	{ name: 'Authentications Log', value: 'authenticationsLog', operations: descriptions.authenticationsLogOperations, fields: descriptions.authenticationsLogFields },
+	{ name: 'Blackout Date', value: 'blackoutDate', operations: descriptions.blackoutDateOperations, fields: descriptions.blackoutDateFields },
+	{ name: 'Blueprint Course', value: 'blueprintCourse', operations: descriptions.blueprintCourseOperations, fields: descriptions.blueprintCourseFields },
+	{ name: 'Bookmark', value: 'bookmark', operations: descriptions.bookmarkOperations, fields: descriptions.bookmarkFields },
+	{ name: 'Brand Config', value: 'brandConfig', operations: descriptions.brandConfigOperations, fields: descriptions.brandConfigFields },
+	{ name: 'Calendar Event', value: 'calendarEvent', operations: descriptions.calendarEventOperations, fields: descriptions.calendarEventFields },
+	{ name: 'Collaboration', value: 'collaboration', operations: descriptions.collaborationOperations, fields: descriptions.collaborationFields },
+	{ name: 'Comm Message', value: 'commMessage', operations: descriptions.commMessageOperations, fields: descriptions.commMessageFields },
+	{ name: 'Communication Channel', value: 'communicationChannel', operations: descriptions.communicationChannelOperations, fields: descriptions.communicationChannelFields },
+	{ name: 'Conference', value: 'conference', operations: descriptions.conferenceOperations, fields: descriptions.conferenceFields },
+	{ name: 'Content Export', value: 'contentExport', operations: descriptions.contentExportOperations, fields: descriptions.contentExportFields },
+	{ name: 'Content Migration', value: 'contentMigration', operations: descriptions.contentMigrationOperations, fields: descriptions.contentMigrationFields },
+	{ name: 'Content Share', value: 'contentShare', operations: descriptions.contentShareOperations, fields: descriptions.contentShareFields },
+	{ name: 'Conversation', value: 'conversation', operations: descriptions.conversationOperations, fields: descriptions.conversationFields },
+	{ name: 'Course', value: 'course', operations: descriptions.courseOperations, fields: descriptions.courseFields },
+	{ name: 'Course Audit Log', value: 'courseAuditLog', operations: descriptions.courseAuditLogOperations, fields: descriptions.courseAuditLogFields },
+	{ name: 'Course Nickname', value: 'courseNickname', operations: descriptions.courseNicknameOperations, fields: descriptions.courseNicknameFields },
+	{ name: 'Course Pace', value: 'coursePace', operations: descriptions.coursePaceOperations, fields: descriptions.coursePaceFields },
+	{ name: 'Course Report', value: 'courseReport', operations: descriptions.courseReportOperations, fields: descriptions.courseReportFields },
+	{ name: 'CSP Setting', value: 'cspSetting', operations: descriptions.cspSettingOperations, fields: descriptions.cspSettingFields },
+	{ name: 'Custom API Request', value: 'apiRequest', operations: descriptions.apiRequestOperations, fields: descriptions.apiRequestFields },
+	{ name: 'Custom Gradebook Column', value: 'customGradebookColumn', operations: descriptions.customGradebookColumnOperations, fields: descriptions.customGradebookColumnFields },
+	{ name: 'Developer Key', value: 'developerKey', operations: descriptions.developerKeyOperations, fields: descriptions.developerKeyFields },
+	{ name: 'Developer Key Account Binding', value: 'developerKeyAccountBinding', operations: descriptions.developerKeyAccountBindingOperations, fields: descriptions.developerKeyAccountBindingFields },
+	{ name: 'Discussion Topic', value: 'discussionTopic', operations: descriptions.discussionTopicOperations, fields: descriptions.discussionTopicFields },
+	{ name: 'Enrollment', value: 'enrollment', operations: descriptions.enrollmentOperations, fields: descriptions.enrollmentFields },
+	{ name: 'Enrollment Term', value: 'enrollmentTerm', operations: descriptions.enrollmentTermOperations, fields: descriptions.enrollmentTermFields },
+	{ name: 'ePortfolio', value: 'ePortfolio', operations: descriptions.ePortfolioOperations, fields: descriptions.ePortfolioFields },
+	{ name: 'Error Report', value: 'errorReport', operations: descriptions.errorReportOperations, fields: descriptions.errorReportFields },
+	{ name: 'External Tool', value: 'externalTool', operations: descriptions.externalToolOperations, fields: descriptions.externalToolFields },
+	{ name: 'Favorite', value: 'favorite', operations: descriptions.favoriteOperations, fields: descriptions.favoriteFields },
+	{ name: 'Feature Flag', value: 'featureFlag', operations: descriptions.featureFlagOperations, fields: descriptions.featureFlagFields },
+	{ name: 'File', value: 'file', operations: descriptions.fileOperations, fields: descriptions.fileFields },
+	{ name: 'Folder', value: 'folder', operations: descriptions.folderOperations, fields: descriptions.folderFields },
+	{ name: 'Grade Change Log', value: 'gradeChangeLog', operations: descriptions.gradeChangeLogOperations, fields: descriptions.gradeChangeLogFields },
+	{ name: 'Gradebook', value: 'gradebook', operations: descriptions.gradebookOperations, fields: descriptions.gradebookFields },
+	{ name: 'Gradebook History', value: 'gradebookHistory', operations: descriptions.gradebookHistoryOperations, fields: descriptions.gradebookHistoryFields },
+	{ name: 'Grading Period', value: 'gradingPeriod', operations: descriptions.gradingPeriodOperations, fields: descriptions.gradingPeriodFields },
+	{ name: 'Grading Period Set', value: 'gradingPeriodSet', operations: descriptions.gradingPeriodSetOperations, fields: descriptions.gradingPeriodSetFields },
+	{ name: 'Grading Standard', value: 'gradingStandard', operations: descriptions.gradingStandardOperations, fields: descriptions.gradingStandardFields },
+	{ name: 'GraphQL', value: 'graphql', operations: descriptions.graphqlOperations, fields: descriptions.graphqlFields },
+	{ name: 'Group', value: 'group', operations: descriptions.groupOperations, fields: descriptions.groupFields },
+	{ name: 'Group Category', value: 'groupCategory', operations: descriptions.groupCategoryOperations, fields: descriptions.groupCategoryFields },
+	{ name: 'History', value: 'history', operations: descriptions.historyOperations, fields: descriptions.historyFields },
+	{ name: 'Late Policy', value: 'latePolicy', operations: descriptions.latePolicyOperations, fields: descriptions.latePolicyFields },
+	{ name: 'Learning Object Date', value: 'learningObjectDate', operations: descriptions.learningObjectDateOperations, fields: descriptions.learningObjectDateFields },
+	{ name: 'Line Item', value: 'lineItem', operations: descriptions.lineItemOperations, fields: descriptions.lineItemFields },
+	{ name: 'Live Assessment', value: 'liveAssessment', operations: descriptions.liveAssessmentOperations, fields: descriptions.liveAssessmentFields },
+	{ name: 'Login', value: 'login', operations: descriptions.loginOperations, fields: descriptions.loginFields },
+	{ name: 'LTI Registration', value: 'ltiRegistration', operations: descriptions.ltiRegistrationOperations, fields: descriptions.ltiRegistrationFields },
+	{ name: 'LTI Resource Link', value: 'ltiResourceLink', operations: descriptions.ltiResourceLinkOperations, fields: descriptions.ltiResourceLinkFields },
+	{ name: 'Media Object', value: 'mediaObject', operations: descriptions.mediaObjectOperations, fields: descriptions.mediaObjectFields },
+	{ name: 'Moderated Grading', value: 'moderatedGrading', operations: descriptions.moderatedGradingOperations, fields: descriptions.moderatedGradingFields },
+	{ name: 'Module', value: 'module', operations: descriptions.moduleOperations, fields: descriptions.moduleFields },
+	{ name: 'Module Item', value: 'moduleItem', operations: descriptions.moduleItemOperations, fields: descriptions.moduleItemFields },
+	{ name: 'New Quiz', value: 'newQuiz', operations: descriptions.newQuizOperations, fields: descriptions.newQuizFields },
+	{ name: 'New Quiz Accommodation', value: 'newQuizAccommodations', operations: descriptions.newQuizAccommodationsOperations, fields: descriptions.newQuizAccommodationsFields },
+	{ name: 'New Quiz Item', value: 'newQuizItem', operations: descriptions.newQuizItemOperations, fields: descriptions.newQuizItemFields },
+	{ name: 'New Quiz Report', value: 'newQuizReport', operations: descriptions.newQuizReportOperations, fields: descriptions.newQuizReportFields },
+	{ name: 'Notification Preference', value: 'notificationPreference', operations: descriptions.notificationPreferenceOperations, fields: descriptions.notificationPreferenceFields },
+	{ name: 'Outcome', value: 'outcome', operations: descriptions.outcomeOperations, fields: descriptions.outcomeFields },
+	{ name: 'Outcome Group', value: 'outcomeGroup', operations: descriptions.outcomeGroupOperations, fields: descriptions.outcomeGroupFields },
+	{ name: 'Outcome Import', value: 'outcomeImport', operations: descriptions.outcomeImportOperations, fields: descriptions.outcomeImportFields },
+	{ name: 'Outcome Result', value: 'outcomeResult', operations: descriptions.outcomeResultOperations, fields: descriptions.outcomeResultFields },
+	{ name: 'Page', value: 'page', operations: descriptions.pageOperations, fields: descriptions.pageFields },
+	{ name: 'Peer Review', value: 'peerReview', operations: descriptions.peerReviewOperations, fields: descriptions.peerReviewFields },
+	{ name: 'Planner', value: 'planner', operations: descriptions.plannerOperations, fields: descriptions.plannerFields },
+	{ name: 'Poll', value: 'poll', operations: descriptions.pollOperations, fields: descriptions.pollFields },
+	{ name: 'Poll Choice', value: 'pollChoice', operations: descriptions.pollChoiceOperations, fields: descriptions.pollChoiceFields },
+	{ name: 'Poll Session', value: 'pollSession', operations: descriptions.pollSessionOperations, fields: descriptions.pollSessionFields },
+	{ name: 'Poll Submission', value: 'pollSubmission', operations: descriptions.pollSubmissionOperations, fields: descriptions.pollSubmissionFields },
+	{ name: 'Proficiency Rating', value: 'proficiencyRating', operations: descriptions.proficiencyRatingOperations, fields: descriptions.proficiencyRatingFields },
+	{ name: 'Progress', value: 'progress', operations: descriptions.progressOperations, fields: descriptions.progressFields },
+	{ name: 'Question Bank', value: 'questionBank', operations: descriptions.questionBankOperations, fields: descriptions.questionBankFields },
+	{ name: 'Quiz', value: 'quiz', operations: descriptions.quizOperations, fields: descriptions.quizFields },
+	{ name: 'Quiz Assignment Override', value: 'quizAssignmentOverride', operations: descriptions.quizAssignmentOverrideOperations, fields: descriptions.quizAssignmentOverrideFields },
+	{ name: 'Quiz Extension', value: 'quizExtension', operations: descriptions.quizExtensionOperations, fields: descriptions.quizExtensionFields },
+	{ name: 'Quiz IP Filter', value: 'quizIpFilter', operations: descriptions.quizIpFilterOperations, fields: descriptions.quizIpFilterFields },
+	{ name: 'Quiz Question', value: 'quizQuestion', operations: descriptions.quizQuestionOperations, fields: descriptions.quizQuestionFields },
+	{ name: 'Quiz Question Group', value: 'quizQuestionGroup', operations: descriptions.quizQuestionGroupOperations, fields: descriptions.quizQuestionGroupFields },
+	{ name: 'Quiz Report', value: 'quizReport', operations: descriptions.quizReportOperations, fields: descriptions.quizReportFields },
+	{ name: 'Quiz Statistic', value: 'quizStatistics', operations: descriptions.quizStatisticsOperations, fields: descriptions.quizStatisticsFields },
+	{ name: 'Quiz Submission', value: 'quizSubmission', operations: descriptions.quizSubmissionOperations, fields: descriptions.quizSubmissionFields },
+	{ name: 'Quiz Submission Event', value: 'quizSubmissionEvent', operations: descriptions.quizSubmissionEventOperations, fields: descriptions.quizSubmissionEventFields },
+	{ name: 'Quiz Submission Question', value: 'quizSubmissionQuestion', operations: descriptions.quizSubmissionQuestionOperations, fields: descriptions.quizSubmissionQuestionFields },
+	{ name: 'Role', value: 'role', operations: descriptions.roleOperations, fields: descriptions.roleFields },
+	{ name: 'Rubric', value: 'rubric', operations: descriptions.rubricOperations, fields: descriptions.rubricFields },
+	{ name: 'Search', value: 'search', operations: descriptions.searchOperations, fields: descriptions.searchFields },
+	{ name: 'Section', value: 'section', operations: descriptions.sectionOperations, fields: descriptions.sectionFields },
+	{ name: 'SIS Import', value: 'sisImport', operations: descriptions.sisImportOperations, fields: descriptions.sisImportFields },
+	{ name: 'SIS Import Error', value: 'sisImportError', operations: descriptions.sisImportErrorOperations, fields: descriptions.sisImportErrorFields },
+	{ name: 'SIS Integration', value: 'sisIntegration', operations: descriptions.sisIntegrationOperations, fields: descriptions.sisIntegrationFields },
+	{ name: 'Smart Search', value: 'smartSearch', operations: descriptions.smartSearchOperations, fields: descriptions.smartSearchFields },
+	{ name: 'Submission', value: 'submission', operations: descriptions.submissionOperations, fields: descriptions.submissionFields },
+	{ name: 'Submission Comment', value: 'submissionComment', operations: descriptions.submissionCommentOperations, fields: descriptions.submissionCommentFields },
+	{ name: 'Tab', value: 'tab', operations: descriptions.tabOperations, fields: descriptions.tabFields },
+	{ name: 'User', value: 'user', operations: descriptions.userOperations, fields: descriptions.userFields },
+	{ name: 'User Custom Data', value: 'userCustomData', operations: descriptions.userCustomDataOperations, fields: descriptions.userCustomDataFields },
+	{ name: 'User Observee', value: 'userObservee', operations: descriptions.userObserveeOperations, fields: descriptions.userObserveeFields },
+	{ name: 'Web Zip Export', value: 'webZipExport', operations: descriptions.webZipExportOperations, fields: descriptions.webZipExportFields },
+	{ name: 'What-If Grade', value: 'whatIfGrade', operations: descriptions.whatIfGradeOperations, fields: descriptions.whatIfGradeFields },
+];
+
+export const canvasResources: ICanvasResource[] = resources.map(withListFields);

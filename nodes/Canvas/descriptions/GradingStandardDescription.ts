@@ -175,12 +175,13 @@ export const gradingStandardFields: INodeProperties[] = [
 						type: 'number',
 						required: true,
 						default: 0,
-						description: 'The lower bound threshold value (as a decimal, e.g., 0.9 for 90%)',
+						description:
+							'The lowest score that earns this grade: a percentage (90 for 90%), or points when the scheme is points based. The lowest grade must have the value 0 and no two grades may share a value.',
 					},
 				],
 			},
 		],
-		description: 'The grading scheme entries defining grade cutoffs',
+		description: 'The grades of the scheme with their lower bounds',
 	},
 	{
 		displayName: 'Additional Fields',
@@ -200,14 +201,15 @@ export const gradingStandardFields: INodeProperties[] = [
 				name: 'points_based',
 				type: 'boolean',
 				default: false,
-				description: 'Whether the grading standard is point-based instead of percentage-based',
+				description: 'Whether the grade values are points instead of percentages',
 			},
 			{
 				displayName: 'Scaling Factor',
 				name: 'scaling_factor',
 				type: 'number',
 				default: 1,
-				description: 'Maximum points for point-based schemes (defaults to 1)',
+				description:
+					'The points that correspond to 100% in a points based scheme (for example 4 for a 4-point scale). Canvas only accepts 1 when the scheme is not points based.',
 			},
 		],
 	},
@@ -229,6 +231,22 @@ export const gradingStandardFields: INodeProperties[] = [
 		},
 		options: [
 			{
+				displayName: 'Points Based',
+				name: 'points_based',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether the grade values are points instead of percentages. Canvas rebuilds the scheme when this changes: send the complete Grading Scheme as well.',
+			},
+			{
+				displayName: 'Scaling Factor',
+				name: 'scaling_factor',
+				type: 'number',
+				default: 1,
+				description:
+					'The points that correspond to 100% in a points based scheme. Canvas rebuilds the scheme when this changes: send the complete Grading Scheme as well.',
+			},
+			{
 				displayName: 'Title',
 				name: 'title',
 				type: 'string',
@@ -236,5 +254,48 @@ export const gradingStandardFields: INodeProperties[] = [
 				description: 'The title of the grading standard',
 			},
 		],
+	},
+	{
+		displayName: 'Grading Scheme',
+		name: 'gradingScheme',
+		type: 'fixedCollection',
+		placeholder: 'Add Grade Entry',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['gradingStandard'],
+				operation: ['update'],
+			},
+		},
+		typeOptions: {
+			multipleValues: true,
+		},
+		options: [
+			{
+				displayName: 'Grade Entry',
+				name: 'gradeEntry',
+				values: [
+					{
+						displayName: 'Name',
+						name: 'name',
+						type: 'string',
+						required: true,
+						default: '',
+						description: 'The letter grade or classification (e.g., A, B+, Pass)',
+					},
+					{
+						displayName: 'Value',
+						name: 'value',
+						type: 'number',
+						required: true,
+						default: 0,
+						description:
+							'The lowest score that earns this grade: a percentage (90 for 90%), or points when the scheme is points based. The lowest grade must have the value 0 and no two grades may share a value.',
+					},
+				],
+			},
+		],
+		description:
+			'Replaces all grades of the scheme (leave empty to keep them). Canvas refuses to change the grades of a scheme that has been used for grading.',
 	},
 ];

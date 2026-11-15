@@ -1,0 +1,784 @@
+{
+  "name": "Canvas battery — search",
+  "nodes": [
+    {
+      "id": "3db3a932-ac86-4e84-a87e-8991fad5a643",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "52ce80e7-7ec0-4cf5-9d5a-50d335f06ede",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "81af6287-0a90-463f-9d6b-509b683eefe7",
+      "name": "findRecipients — pages through the students of a large course",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "findRecipients",
+        "options": {
+          "context": "course_93_students",
+          "type": "user"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "94ec3b02-d128-4a02-ad88-26941f57da34",
+      "name": "findRecipients — pages through the students of a large course (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "findRecipients",
+        "options": {
+          "context": "course_93_students",
+          "type": "user"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "95dcfdc4-70e9-4fc5-b992-1f0531b13d65",
+      "name": "findRecipients — pages through the students of a large course (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "findRecipients",
+        "options": {
+          "context": "course_93_students",
+          "type": "user"
+        },
+        "pagination": {
+          "perPage": 7,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "30913fba-c865-47a2-930d-ea8fe21c8a96",
+      "name": "findRecipients — search terms: every word must match; names with accents, apo",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "findRecipients",
+        "options": {
+          "context": "course_1",
+          "search": "Zoë"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9340039e-88fa-49b2-935e-83be95742727",
+      "name": "findRecipients — search terms: every word must match; names with accents, apo (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "findRecipients",
+        "options": {
+          "context": "course_1",
+          "search": "O'Malley"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0fd90713-a965-4865-b251-98b13a0c0a11",
+      "name": "findRecipients — search terms: every word must match; names with accents, apo (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "findRecipients",
+        "options": {
+          "context": "course_1",
+          "search": "Zoë Quinn"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3ae88930-d66a-45c0-b210-b30f878f4cb5",
+      "name": "findRecipients — search terms: every word must match; names with accents, apo (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "findRecipients",
+        "options": {
+          "context": "course_1",
+          "search": "محمد"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "18684fae-def3-4c90-904e-510d0c5cc5e3",
+      "name": "findRecipients — search terms: every word must match; names with accents, apo (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "findRecipients",
+        "options": {
+          "context": "course_1",
+          "search": "persona"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "040df566-3e3b-4ad2-aacb-2390392a8ec1",
+      "name": "findRecipients — search terms: every word must match; names with accents, apo (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "findRecipients",
+        "options": {
+          "context": "course_1",
+          "search": "Zoë zzz-no-such-word"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "54898d43-7889-4645-84c0-bff200d863bf",
+      "name": "findRecipients — exclude: users by number, contexts by prefixed ID",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "findRecipients",
+        "options": {
+          "context": "course_1_teachers",
+          "exclude": " 1 , 2,"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b143bfef-2452-49d5-b2d4-b81d497089e2",
+      "name": "findRecipients — without a search term, a context or a user ID there is nothi",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "findRecipients"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3aa29275-01e6-4c43-9432-19d5bb221e10",
+      "name": "findRecipients — a student only finds the people and contexts they can messag",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "findRecipients",
+        "options": {
+          "search": "=Search stranger {{ $execution.id }}-2",
+          "type": "user"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c1f13139-53eb-445e-9e60-e439c3089679",
+      "name": "listAllCourses — lists the indexed, published courses; filters by search term",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "listAllCourses",
+        "options": {
+          "search": "cataloge49d6f9b"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "93df8cb2-2b55-46b4-8732-59afc600f646",
+      "name": "listAllCourses — lists the indexed, published courses; filters by search term (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "listAllCourses",
+        "options": {
+          "search": "cataloge49d6f9b"
+        },
+        "pagination": {
+          "perPage": 5,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f23e20cb-3e49-4bc5-865f-fa1ee88764cb",
+      "name": "listAllCourses — lists the indexed, published courses; filters by search term (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "listAllCourses",
+        "options": {
+          "search": "cataloge49d6f9b",
+          "public_only": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c372f5cf-6e82-46ba-892d-cd23d95d7714",
+      "name": "listAllCourses — lists the indexed, published courses; filters by search term (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "listAllCourses",
+        "options": {
+          "search": "cataloge49d6f9b",
+          "public_only": true,
+          "open_enrollment_only": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1ef2ea8c-0be7-4f28-afe7-7b69789798a6",
+      "name": "listAllCourses — lists the indexed, published courses; filters by search term (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "listAllCourses",
+        "options": {
+          "search": "cataloge49d6f9b",
+          "public_only": false,
+          "open_enrollment_only": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "84e6712e-2c4c-4fb5-a93e-d02998732012",
+      "name": "listAllCourses — lists the indexed, published courses; filters by search term (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "search",
+        "operation": "listAllCourses",
+        "options": {
+          "search": "cataloge49d6f9b no such course"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "findRecipients — pages through the students of a large course",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "findRecipients — pages through the students of a large course": {
+      "main": [
+        [
+          {
+            "node": "findRecipients — pages through the students of a large course (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "findRecipients — pages through the students of a large course (2)": {
+      "main": [
+        [
+          {
+            "node": "findRecipients — pages through the students of a large course (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "findRecipients — pages through the students of a large course (3)": {
+      "main": [
+        [
+          {
+            "node": "findRecipients — search terms: every word must match; names with accents, apo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "findRecipients — search terms: every word must match; names with accents, apo": {
+      "main": [
+        [
+          {
+            "node": "findRecipients — search terms: every word must match; names with accents, apo (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "findRecipients — search terms: every word must match; names with accents, apo (2)": {
+      "main": [
+        [
+          {
+            "node": "findRecipients — search terms: every word must match; names with accents, apo (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "findRecipients — search terms: every word must match; names with accents, apo (3)": {
+      "main": [
+        [
+          {
+            "node": "findRecipients — search terms: every word must match; names with accents, apo (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "findRecipients — search terms: every word must match; names with accents, apo (4)": {
+      "main": [
+        [
+          {
+            "node": "findRecipients — search terms: every word must match; names with accents, apo (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "findRecipients — search terms: every word must match; names with accents, apo (5)": {
+      "main": [
+        [
+          {
+            "node": "findRecipients — search terms: every word must match; names with accents, apo (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "findRecipients — search terms: every word must match; names with accents, apo (6)": {
+      "main": [
+        [
+          {
+            "node": "findRecipients — exclude: users by number, contexts by prefixed ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "findRecipients — exclude: users by number, contexts by prefixed ID": {
+      "main": [
+        [
+          {
+            "node": "findRecipients — without a search term, a context or a user ID there is nothi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "findRecipients — without a search term, a context or a user ID there is nothi": {
+      "main": [
+        [
+          {
+            "node": "findRecipients — a student only finds the people and contexts they can messag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "findRecipients — a student only finds the people and contexts they can messag": {
+      "main": [
+        [
+          {
+            "node": "listAllCourses — lists the indexed, published courses; filters by search term",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listAllCourses — lists the indexed, published courses; filters by search term": {
+      "main": [
+        [
+          {
+            "node": "listAllCourses — lists the indexed, published courses; filters by search term (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listAllCourses — lists the indexed, published courses; filters by search term (2)": {
+      "main": [
+        [
+          {
+            "node": "listAllCourses — lists the indexed, published courses; filters by search term (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listAllCourses — lists the indexed, published courses; filters by search term (3)": {
+      "main": [
+        [
+          {
+            "node": "listAllCourses — lists the indexed, published courses; filters by search term (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listAllCourses — lists the indexed, published courses; filters by search term (4)": {
+      "main": [
+        [
+          {
+            "node": "listAllCourses — lists the indexed, published courses; filters by search term (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listAllCourses — lists the indexed, published courses; filters by search term (5)": {
+      "main": [
+        [
+          {
+            "node": "listAllCourses — lists the indexed, published courses; filters by search term (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

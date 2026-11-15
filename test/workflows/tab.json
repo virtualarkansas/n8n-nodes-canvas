@@ -1,0 +1,522 @@
+{
+  "name": "Canvas battery — tab",
+  "nodes": [
+    {
+      "id": "edd08562-1ca8-4714-9ad0-bcdb922e7e91",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "36c147a9-236d-4a36-9e67-ab86956ceed1",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "e4dc4f32-e9f5-4d4f-9b52-a97b979d5941",
+      "name": "getAll — getAll: lists the tabs of every context type",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "tab",
+        "operation": "getAll",
+        "contextType": "course",
+        "contextId": "996"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "27315e2b-f16c-4e4f-9e0c-3c465b9793ad",
+      "name": "getAll — getAll: lists the tabs of every context type (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "tab",
+        "operation": "getAll",
+        "contextType": "account",
+        "contextId": "1"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0162d049-7498-45fb-ba2d-6dca33ac289d",
+      "name": "getAll — getAll: lists the tabs of every context type (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "tab",
+        "operation": "getAll",
+        "contextType": "group",
+        "contextId": "967"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "344a438a-f07e-4b6c-9cf5-cbb20c751a27",
+      "name": "getAll — getAll: lists the tabs of every context type (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "tab",
+        "operation": "getAll",
+        "contextType": "user",
+        "contextId": "1"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bfb28143-c7a3-4426-8ed8-500413b94999",
+      "name": "getAll — getAll: the tab list is never cut off, whatever the paginati",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "tab",
+        "operation": "getAll",
+        "contextType": "course",
+        "contextId": "996",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e40d1deb-36ef-4737-8356-1e7b6315f972",
+      "name": "getAll — getAll: the tab list is never cut off, whatever the paginati (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "tab",
+        "operation": "getAll",
+        "contextType": "course",
+        "contextId": "996",
+        "pagination": {
+          "perPage": 3,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f77c01b2-5ba3-484d-8a9d-082be3d4f5e2",
+      "name": "getAll — getAll: Course Subject Tabs returns the home page tabs of ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "tab",
+        "operation": "getAll",
+        "contextType": "course",
+        "contextId": "997",
+        "options": {
+          "include": []
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fad2fc9a-a4c1-471d-a7a3-4601033ab514",
+      "name": "getAll — getAll: Course Subject Tabs returns the home page tabs of  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "tab",
+        "operation": "getAll",
+        "contextType": "course",
+        "contextId": "997",
+        "options": {
+          "include": [
+            "course_subject_tabs"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ba821954-1368-4927-a502-915f80edc8ed",
+      "name": "update — update: hides a tab, then shows it again",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "tab",
+        "operation": "update",
+        "contextId": "996",
+        "tabId": "discussions",
+        "updateFields": {
+          "hidden": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "010313a4-7261-44b3-a090-e22f8cad8d2f",
+      "name": "update — update: hides a tab, then shows it again (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "tab",
+        "operation": "update",
+        "contextId": "996",
+        "tabId": "={{ $('update — update: hides a tab, then shows it again').first().json.id }}",
+        "updateFields": {
+          "hidden": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c1ff62f6-f5d1-417d-9615-b8ab391b83e6",
+      "name": "update — update: moves a tab and hides it in one call",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "tab",
+        "operation": "update",
+        "contextId": "996",
+        "tabId": "people",
+        "updateFields": {
+          "position": 2,
+          "hidden": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d2a21089-5531-43eb-9061-6686866ae213",
+      "name": "update — update: moves a tab and hides it in one call (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "tab",
+        "operation": "update",
+        "contextId": "996",
+        "tabId": "={{ $('update — update: moves a tab and hides it in one call').first().json.id }}",
+        "updateFields": {
+          "position": 18,
+          "hidden": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the tabs of every context type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the tabs of every context type": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the tabs of every context type (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the tabs of every context type (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the tabs of every context type (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the tabs of every context type (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the tabs of every context type (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the tabs of every context type (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: the tab list is never cut off, whatever the paginati",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: the tab list is never cut off, whatever the paginati": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: the tab list is never cut off, whatever the paginati (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: the tab list is never cut off, whatever the paginati (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Course Subject Tabs returns the home page tabs of ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Course Subject Tabs returns the home page tabs of ": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Course Subject Tabs returns the home page tabs of  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Course Subject Tabs returns the home page tabs of  (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: hides a tab, then shows it again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: hides a tab, then shows it again": {
+      "main": [
+        [
+          {
+            "node": "update — update: hides a tab, then shows it again (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: hides a tab, then shows it again (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: moves a tab and hides it in one call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: moves a tab and hides it in one call": {
+      "main": [
+        [
+          {
+            "node": "update — update: moves a tab and hides it in one call (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -1,5 +1,5 @@
-# Dependencies
-node_modules/
+# Dependencies (also when node_modules is a link, as in a git worktree that shares the main checkout's)
+node_modules
 
 # Build output
 dist/
@@ -17,8 +17,9 @@ Thumbs.db
 .env
 .env.local
 
-# Claude Code local settings
+# Claude Code local settings and worktrees
 .claude/settings.local.json
+.claude/worktrees/
 
 # n8n
 .n8n/
@@ -33,3 +34,7 @@ coverage/
 # Release artifacts
 *.tgz
 *.tar.gz
+
+# Battery state (tokens, IDs)
+test/.state.json
+test/.results/

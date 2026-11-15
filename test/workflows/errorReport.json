@@ -1,0 +1,92 @@
+{
+  "name": "Canvas battery — errorReport",
+  "nodes": [
+    {
+      "id": "4ce09fc2-9656-459a-9992-b86a8037a4dd",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "a9c7e352-aef0-4d3a-b614-fa46c51ce2b7",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "7acd4723-61c5-4bc3-86a7-73c74c40004b",
+      "name": "create — create: every field is stored with the report, for the user ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "errorReport",
+        "operation": "create",
+        "subject": "=Battery report: Ünïcødé 测试 \"quoted\" & <b>tags</b> 🎓 {{ $execution.id }}-1",
+        "additionalFields": {
+          "comments": "First line\nSecond line with \"quotes\", <script>alert(1)</script> & an umlaut: ä",
+          "email": "reporter+battery@example.edu",
+          "httpEnv": "{\"app\":\"enrollment sync\",\"version\":\"1.4\",\"nested\":{\"attempts\":3,\"tags\":[\"a\",\"b\"]}}",
+          "userPerceivedSeverity": "workaround_possible",
+          "url": "http://localhost:3000/courses/1/assignments?filter=a%20b&x=1"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every field is stored with the report, for the user ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -1,0 +1,1027 @@
+{
+  "name": "Canvas battery — section",
+  "nodes": [
+    {
+      "id": "c7207c5a-af51-49ed-9397-8dd0c063d0bd",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "8481b635-698d-4331-9504-0c1b8c1ac8fd",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "76e4af4a-9a99-493f-9891-9ed0ffefca78",
+              "name": "sectionId",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "4acafcd8-ba50-43c9-95ee-67281abc176c",
+      "name": "create — create: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "create",
+        "courseId": "952",
+        "name": "=Battery Section Ünïcødé 分科 \"quoted\" & <b>tags</b> 🧪 {{ $execution.id }}-2",
+        "additionalFields": {
+          "end_at": "2031-06-30T23:59:00Z",
+          "integration_id": "=SEC-INT_{{ $execution.id }}-30",
+          "restrict_enrollments_to_section_dates": true,
+          "sis_section_id": "=SEC-SIS_{{ $execution.id }}-1",
+          "start_at": "2030-01-15T08:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c328568b-ccb1-4277-907a-fbde2b55a772",
+      "name": "create — create: Enable SIS Reactivation revives a deleted section ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "create",
+        "courseId": "={{ $('create — create: every optional field reaches Canvas').first().json.course_id }}",
+        "name": "Ignored for a revived section",
+        "additionalFields": {
+          "sis_section_id": "=SEC-REVIVE_{{ $execution.id }}-32",
+          "enable_sis_reactivation": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a5fad0c0-8087-4085-8f0f-c5741014359a",
+      "name": "get — get: returns the section with every include",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "get",
+        "sectionId": "={{ $('Config').first().json.sectionId }}",
+        "options": {
+          "include": [
+            "avatar_url",
+            "enrollments",
+            "passback_status",
+            "permissions",
+            "students",
+            "total_students"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8e681f09-9f47-4aa8-aff2-9d5d5af4de58",
+      "name": "get — get: accepts SIS IDs, and numeric IDs arriving from expressi",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "get",
+        "sectionId": "sis_section_id:BIO101-P1"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1ffc1ded-1672-4214-80ce-6e8b4273d46a",
+      "name": "update — update: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "update",
+        "sectionId": "={{ $('create — create: every optional field reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "end_at": "2032-07-31T23:59:00Z",
+          "integration_id": "=SEC-INT2_{{ $execution.id }}-33",
+          "name": "=Battery Section Ünïcødé 分科 \"quoted\" & <b>tags</b> 🧪 {{ $execution.id }}-2 (renamed)",
+          "override_sis_stickiness": true,
+          "restrict_enrollments_to_section_dates": false,
+          "sis_section_id": "=SEC-SIS_{{ $execution.id }}-1_v2",
+          "start_at": "2030-02-01T08:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9b795059-89ef-498a-a98e-8df3acdee9c8",
+      "name": "update — update: with Override SIS Stickiness off, Canvas only chan",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "update",
+        "sectionId": "={{ $('update — update: every optional field reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "name": "Must not be applied",
+          "start_at": "2035-01-01T00:00:00Z",
+          "restrict_enrollments_to_section_dates": true,
+          "override_sis_stickiness": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "77ef77e2-9b6c-4523-a07e-6e6e4b343b31",
+      "name": "update — update: empty values clear dates and SIS IDs",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "update",
+        "sectionId": "={{ $('update — update: with Override SIS Stickiness off, Canvas only chan').first().json.id }}",
+        "updateFields": {
+          "start_at": "",
+          "end_at": "",
+          "sis_section_id": "",
+          "integration_id": ""
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6ea24d19-467d-4fbd-83e0-e5457451be2b",
+      "name": "getAll — getAll: pages through a course with more sections than one p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "getAll",
+        "courseId": "={{ $('update — update: empty values clear dates and SIS IDs').first().json.course_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7dcfbedb-6cee-408e-9ed7-165a72bd1032",
+      "name": "getAll — getAll: pages through a course with more sections than one p (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: pages through a course with more sections than one p').first().json.course_id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "765328a9-3e00-4a9d-b95e-951641298bc5",
+      "name": "getAll — getAll: pages through a course with more sections than one p (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: pages through a course with more sections than one p (2)').first().json.course_id }}",
+        "pagination": {
+          "perPage": 5,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "930c8e63-7848-42d0-bed1-610b0ea0ec81",
+      "name": "getAll — getAll: search term and includes are applied",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: pages through a course with more sections than one p (3)').first().json.course_id }}",
+        "options": {
+          "search_term": "Bulk 07",
+          "include": [
+            "total_students",
+            "permissions"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "438935a9-ce2b-4a13-a07b-ea5bed7da788",
+      "name": "getAll — getAll: search term and includes are applied (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: search term and includes are applied').first().json.course_id }}",
+        "options": {
+          "search_term": "zz-no-such-section-zz"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3f9d77d0-6fd6-4b7b-8149-108e38fcec3d",
+      "name": "getAll — getAll: search term and includes are applied (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: search term and includes are applied').first().json.course_id }}",
+        "options": {
+          "search_term": "",
+          "include": []
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "edd1ce0c-d79f-4b59-804d-3224f1159871",
+      "name": "getAll — getAll: student totals of the large seeded course match Canv",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "getAll",
+        "courseId": "sis_course_id:FRSH-100-ALL",
+        "options": {
+          "include": [
+            "total_students"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3a527511-31f7-45b6-8094-493591a32a31",
+      "name": "listUsers — listUsers: returns every user of a section exactly once, hon",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "listUsers",
+        "sectionId": "={{ $('get — get: accepts SIS IDs, and numeric IDs arriving from expressi').first().json.id }}",
+        "options": {
+          "include": [
+            "avatar_url",
+            "uuid"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dea1ce9d-8b7c-4c3c-9c7b-9e4083bc921a",
+      "name": "listUsers — listUsers: returns every user of a section exactly once, hon (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "listUsers",
+        "sectionId": "={{ $('listUsers — listUsers: returns every user of a section exactly once, hon').first().json.id }}",
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "df812185-47dd-42e2-831f-24e4acfff6dd",
+      "name": "listUsers — listUsers: returns every user of a section exactly once, hon (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "listUsers",
+        "sectionId": "={{ $('listUsers — listUsers: returns every user of a section exactly once, hon (2)').first().json.id }}",
+        "options": {
+          "enrollment_type": "teacher"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5adff11e-6d91-4888-9b07-080d94621f7c",
+      "name": "listUsers — listUsers: returns every user of a section exactly once, hon (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "listUsers",
+        "sectionId": "={{ $('listUsers — listUsers: returns every user of a section exactly once, hon (3)').first().json.id }}",
+        "options": {
+          "search_term": "Lin M. Bianchi",
+          "exclude_inactive": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "684d7dc2-3328-4476-b6af-72fc090e8e1a",
+      "name": "listUsers — listUsers: an empty section yields no items and no error",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "listUsers",
+        "sectionId": "972"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "61a153f2-6da1-4c4d-8875-3670a95d634c",
+      "name": "crosslist — crosslist: moves the section to another course",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "crosslist",
+        "sectionId": "={{ $('getAll — getAll: search term and includes are applied (3)').first().json.id }}",
+        "newCourseId": "953",
+        "options": {
+          "override_sis_stickiness": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "773021da-1be1-4b61-81c9-130191bf0c5c",
+      "name": "decrosslist — decrosslist: with Override SIS Stickiness off Canvas leave",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "decrosslist",
+        "sectionId": "={{ $('crosslist — crosslist: moves the section to another course').first().json.id }}",
+        "options": {
+          "override_sis_stickiness": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b8862d23-d0e2-4f84-b6ce-82272efb06b0",
+      "name": "decrosslist — decrosslist: returns the section to its original course",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "decrosslist",
+        "sectionId": "={{ $('decrosslist — decrosslist: with Override SIS Stickiness off Canvas leave').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "50a6a963-2b52-41ed-ad26-740ee8bf0c29",
+      "name": "crosslist — crosslist: with Override SIS Stickiness off nothing moves;",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "crosslist",
+        "sectionId": "={{ $('decrosslist — decrosslist: returns the section to its original course').first().json.id }}",
+        "newCourseId": "={{ $('decrosslist — decrosslist: with Override SIS Stickiness off Canvas leave').first().json.course_id }}",
+        "options": {
+          "override_sis_stickiness": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ed392ff1-0b92-4741-ae12-f1e51575ab5c",
+      "name": "delete — delete: removes a section once its enrollments are gone",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "section",
+        "operation": "delete",
+        "sectionId": "={{ $('crosslist — crosslist: with Override SIS Stickiness off nothing moves;').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create: Enable SIS Reactivation revives a deleted section ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: Enable SIS Reactivation revives a deleted section ": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns the section with every include",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns the section with every include": {
+      "main": [
+        [
+          {
+            "node": "get — get: accepts SIS IDs, and numeric IDs arriving from expressi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: accepts SIS IDs, and numeric IDs arriving from expressi": {
+      "main": [
+        [
+          {
+            "node": "update — update: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: with Override SIS Stickiness off, Canvas only chan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: with Override SIS Stickiness off, Canvas only chan": {
+      "main": [
+        [
+          {
+            "node": "update — update: empty values clear dates and SIS IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: empty values clear dates and SIS IDs": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through a course with more sections than one p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through a course with more sections than one p": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through a course with more sections than one p (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through a course with more sections than one p (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through a course with more sections than one p (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through a course with more sections than one p (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search term and includes are applied",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search term and includes are applied": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search term and includes are applied (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search term and includes are applied (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search term and includes are applied (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search term and includes are applied (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: student totals of the large seeded course match Canv",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: student totals of the large seeded course match Canv": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers: returns every user of a section exactly once, hon",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers: returns every user of a section exactly once, hon": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers: returns every user of a section exactly once, hon (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers: returns every user of a section exactly once, hon (2)": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers: returns every user of a section exactly once, hon (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers: returns every user of a section exactly once, hon (3)": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers: returns every user of a section exactly once, hon (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers: returns every user of a section exactly once, hon (4)": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers: an empty section yields no items and no error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers: an empty section yields no items and no error": {
+      "main": [
+        [
+          {
+            "node": "crosslist — crosslist: moves the section to another course",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "crosslist — crosslist: moves the section to another course": {
+      "main": [
+        [
+          {
+            "node": "decrosslist — decrosslist: with Override SIS Stickiness off Canvas leave",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "decrosslist — decrosslist: with Override SIS Stickiness off Canvas leave": {
+      "main": [
+        [
+          {
+            "node": "decrosslist — decrosslist: returns the section to its original course",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "decrosslist — decrosslist: returns the section to its original course": {
+      "main": [
+        [
+          {
+            "node": "crosslist — crosslist: with Override SIS Stickiness off nothing moves;",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "crosslist — crosslist: with Override SIS Stickiness off nothing moves;": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes a section once its enrollments are gone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

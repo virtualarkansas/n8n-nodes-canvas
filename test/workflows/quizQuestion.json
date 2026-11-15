@@ -1,0 +1,1014 @@
+{
+  "name": "Canvas battery — quizQuestion",
+  "nodes": [
+    {
+      "id": "c78f0963-434e-4cec-8fea-7aa820f7a7d9",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "01a9b580-04cc-459d-ab0c-3303e5ed83ff",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "6b843459-4b33-4c59-a388-c14188c107aa",
+      "name": "create — create: every optional field reaches Canvas (answers typed a",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "299",
+        "questionName": "=Prime numbers \"quoted\" & <b>bold</b> ñ 素数 {{ $execution.id }}-2",
+        "questionText": "<p>Which of these is <em>not</em> prime? ¿Cuál? 🤔</p>",
+        "questionType": "multiple_choice_question",
+        "additionalFields": {
+          "answers": "[{\"answer_text\":\"7\",\"answer_weight\":0},{\"answer_text\":\"9\",\"answer_weight\":100,\"answer_comment\":\"Nine is 3 × 3\"},{\"answer_text\":\"11\",\"answer_weight\":0,\"answer_comment_html\":\"<em>prime</em>\"}]",
+          "correct_comments": "Right!",
+          "correct_comments_html": "<p><strong>Right!</strong></p>",
+          "incorrect_comments": "Not quite.",
+          "incorrect_comments_html": "<p><em>Not quite.</em></p>",
+          "neutral_comments": "See chapter 2.",
+          "neutral_comments_html": "<p>See <a href=\"https://example.com/ch2\">chapter 2</a>.</p>",
+          "points_possible": 2.5,
+          "quiz_group_id": "75"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e26a1e79-e764-4aec-ab77-92ffa566662d",
+      "name": "create — create: each question type keeps its answers",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: every optional field reaches Canvas (answers typed a').first().json.quiz_id }}",
+        "questionName": "Type multiple_answers_question",
+        "questionText": "Pick the even numbers",
+        "questionType": "multiple_answers_question",
+        "additionalFields": {
+          "answers": "[{\"answer_text\":\"2\",\"answer_weight\":100},{\"answer_text\":\"3\",\"answer_weight\":0},{\"answer_text\":\"4\",\"answer_weight\":100}]"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7cd1927e-fe48-4907-9f47-9ff9ba167b51",
+      "name": "create — create: each question type keeps its answers (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: each question type keeps its answers').first().json.quiz_id }}",
+        "questionName": "Type short_answer_question",
+        "questionText": "Capital of France?",
+        "questionType": "short_answer_question",
+        "additionalFields": {
+          "answers": "[{\"answer_text\":\"Paris\",\"answer_weight\":100},{\"answer_text\":\"paris\",\"answer_weight\":100}]"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "811196a1-3d15-4159-aa58-03d1e6e126cc",
+      "name": "create — create: each question type keeps its answers (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: each question type keeps its answers (2)').first().json.quiz_id }}",
+        "questionName": "Type fill_in_multiple_blanks_question",
+        "questionText": "Roses are [color1], violets are [color2].",
+        "questionType": "fill_in_multiple_blanks_question",
+        "additionalFields": {
+          "answers": "[{\"answer_text\":\"red\",\"answer_weight\":100,\"blank_id\":\"color1\"},{\"answer_text\":\"blue\",\"answer_weight\":100,\"blank_id\":\"color2\"}]"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d9f2c84d-26d4-400a-8e1e-61cc3aa62a4f",
+      "name": "create — create: each question type keeps its answers (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: each question type keeps its answers (3)').first().json.quiz_id }}",
+        "questionName": "Type multiple_dropdowns_question",
+        "questionText": "Water is [state] at 20 °C.",
+        "questionType": "multiple_dropdowns_question",
+        "additionalFields": {
+          "answers": "[{\"answer_text\":\"liquid\",\"answer_weight\":100,\"blank_id\":\"state\"},{\"answer_text\":\"solid\",\"answer_weight\":0,\"blank_id\":\"state\"}]"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a76913b9-975e-491d-ba80-7ee0f9d5279b",
+      "name": "create — create: each question type keeps its answers (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: each question type keeps its answers (4)').first().json.quiz_id }}",
+        "questionName": "Type matching_question",
+        "questionText": "Match the city to its state",
+        "questionType": "matching_question",
+        "additionalFields": {
+          "answers": "[{\"answer_match_left\":\"Salt Lake City\",\"answer_match_right\":\"Utah\"},{\"answer_match_left\":\"Austin\",\"answer_match_right\":\"Texas\"}]",
+          "matching_answer_incorrect_matches": "Nevada\nCalifornia"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e325605e-6fb9-4c8c-a7ce-e9be90def53b",
+      "name": "create — create: each question type keeps its answers (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: each question type keeps its answers (5)').first().json.quiz_id }}",
+        "questionName": "Type numerical_question",
+        "questionText": "Give π to two decimals",
+        "questionType": "numerical_question",
+        "additionalFields": {
+          "answers": "[{\"numerical_answer_type\":\"exact_answer\",\"answer_exact\":3.14,\"answer_error_margin\":0.01},{\"numerical_answer_type\":\"range_answer\",\"answer_range_start\":3,\"answer_range_end\":4}]"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "585b889b-2dd2-4bf1-9f63-7fc1450828e6",
+      "name": "create — create: each question type keeps its answers (7)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: each question type keeps its answers (6)').first().json.quiz_id }}",
+        "questionName": "Type essay_question",
+        "questionText": "Explain osmosis.",
+        "questionType": "essay_question",
+        "additionalFields": {
+          "points_possible": 10
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e6348534-a5cf-4b4b-a005-9847efc6c082",
+      "name": "create — create: each question type keeps its answers (8)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: each question type keeps its answers (7)').first().json.quiz_id }}",
+        "questionName": "Type file_upload_question",
+        "questionText": "Upload your lab report.",
+        "questionType": "file_upload_question",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c5d6cb30-6a86-441f-9668-be41bac8898d",
+      "name": "create — create: each question type keeps its answers (9)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: each question type keeps its answers (8)').first().json.quiz_id }}",
+        "questionName": "Type text_only_question",
+        "questionText": "<p>Read the following passage carefully.</p>",
+        "questionType": "text_only_question",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d2631b89-a2fa-4caf-90d0-66d63afaf02b",
+      "name": "create — create: each question type keeps its answers (10)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: each question type keeps its answers (9)').first().json.quiz_id }}",
+        "questionName": "Type calculated_question",
+        "questionText": "What is 5 plus [x]?",
+        "questionType": "calculated_question",
+        "additionalFields": {
+          "answers": "[{\"variables\":[{\"name\":\"x\",\"value\":2}],\"answer_text\":7}]"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "397700b7-354c-4bd9-a85d-8e1674888394",
+      "name": "update — update: every field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "update",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: each question type keeps its answers (10)').first().json.quiz_id }}",
+        "questionId": "={{ $('create — create: every optional field reaches Canvas (answers typed a').first().json.id }}",
+        "updateFields": {
+          "answers": "[{\"answer_text\":\"Mercury\",\"answer_weight\":100,\"answer_comment\":\"Closest to the sun\"},{\"answer_text\":\"Venus\",\"answer_weight\":100},{\"answer_text\":\"Sirius\",\"answer_weight\":0}]",
+          "correct_comments": "Yes",
+          "correct_comments_html": "<p>Yes</p>",
+          "incorrect_comments": "No",
+          "incorrect_comments_html": "<p>No</p>",
+          "neutral_comments": "Planets orbit stars.",
+          "neutral_comments_html": "<p>Planets orbit stars.</p>",
+          "points_possible": 4,
+          "question_name": "Planets — updated",
+          "question_text": "<p>Select the planets.</p>",
+          "question_type": "multiple_answers_question",
+          "quiz_group_id": "75"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "92ca88e6-d387-49b8-8210-b53a56628b8a",
+      "name": "update — update: Canvas merges onto the question as first created, no",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "update",
+        "courseId": "119",
+        "quizId": "={{ $('update — update: every field reaches Canvas').first().json.quiz_id }}",
+        "questionId": "494",
+        "updateFields": {
+          "points_possible": 9
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3747cc3c-9c8f-41c0-a647-4f6d36528b83",
+      "name": "update — update: Canvas merges onto the question as first created, no (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "update",
+        "courseId": "119",
+        "quizId": "={{ $('update — update: Canvas merges onto the question as first created, no').first().json.quiz_id }}",
+        "questionId": "={{ $('update — update: Canvas merges onto the question as first created, no').first().json.id }}",
+        "updateFields": {
+          "question_name": "Renamed"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ed5c0b4b-70ee-4650-8539-f5da4be39747",
+      "name": "update — update: Canvas merges onto the question as first created, no (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "update",
+        "courseId": "119",
+        "quizId": "={{ $('update — update: Canvas merges onto the question as first created, no (2)').first().json.quiz_id }}",
+        "questionId": "={{ $('update — update: Canvas merges onto the question as first created, no (2)').first().json.id }}",
+        "updateFields": {
+          "question_name": "Renamed",
+          "points_possible": 9
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f087e87f-f997-4f9f-b8d5-2020eaae3e35",
+      "name": "getAll — getAll: pages through a quiz with more questions than one pa",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "getAll",
+        "courseId": "122",
+        "quizId": "108"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "12523e0b-b424-4b62-9cdd-81ba3064836a",
+      "name": "getAll — getAll: pages through a quiz with more questions than one pa (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "getAll",
+        "courseId": "122",
+        "quizId": "={{ $('getAll — getAll: pages through a quiz with more questions than one pa').first().json.quiz_id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0e994f9a-814a-4488-be01-51722c509938",
+      "name": "getAll — getAll: pages through a quiz with more questions than one pa (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "getAll",
+        "courseId": "122",
+        "quizId": "={{ $('getAll — getAll: pages through a quiz with more questions than one pa (2)').first().json.quiz_id }}",
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "40bf4dbb-0b7b-48b2-ba96-6128f8ba0c49",
+      "name": "getAll — getAll: a quiz without questions gives no items",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "getAll",
+        "courseId": "119",
+        "quizId": "301"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "28822d6f-430b-4708-8405-1f79cc80637a",
+      "name": "getAll — getAll: with a quiz submission, returns the questions as tha",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "getAll",
+        "courseId": "119",
+        "quizId": "302"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "55ff327a-d638-4947-85f2-fe3f2a3d86f5",
+      "name": "getAll — getAll: with a quiz submission, returns the questions as tha (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "getAll",
+        "courseId": "119",
+        "quizId": "={{ $('getAll — getAll: with a quiz submission, returns the questions as tha').first().json.quiz_id }}",
+        "options": {
+          "quiz_submission_id": "550",
+          "quiz_submission_attempt": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c84cb11f-e572-4939-a302-62cdef9d3556",
+      "name": "getAll — getAll: with a quiz submission, returns the questions as tha (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "getAll",
+        "courseId": "119",
+        "quizId": "={{ $('getAll — getAll: with a quiz submission, returns the questions as tha (2)').first().json.quiz_id }}",
+        "options": {
+          "quiz_submission_id": 550
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1f967440-1d18-45c7-a14a-a2f3e05e283f",
+      "name": "delete — delete: removes the question",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestion",
+        "operation": "delete",
+        "courseId": "119",
+        "quizId": "={{ $('update — update: Canvas merges onto the question as first created, no (3)').first().json.quiz_id }}",
+        "questionId": "={{ $('update — update: every field reaches Canvas').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field reaches Canvas (answers typed a",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas (answers typed a": {
+      "main": [
+        [
+          {
+            "node": "create — create: each question type keeps its answers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: each question type keeps its answers": {
+      "main": [
+        [
+          {
+            "node": "create — create: each question type keeps its answers (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: each question type keeps its answers (2)": {
+      "main": [
+        [
+          {
+            "node": "create — create: each question type keeps its answers (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: each question type keeps its answers (3)": {
+      "main": [
+        [
+          {
+            "node": "create — create: each question type keeps its answers (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: each question type keeps its answers (4)": {
+      "main": [
+        [
+          {
+            "node": "create — create: each question type keeps its answers (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: each question type keeps its answers (5)": {
+      "main": [
+        [
+          {
+            "node": "create — create: each question type keeps its answers (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: each question type keeps its answers (6)": {
+      "main": [
+        [
+          {
+            "node": "create — create: each question type keeps its answers (7)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: each question type keeps its answers (7)": {
+      "main": [
+        [
+          {
+            "node": "create — create: each question type keeps its answers (8)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: each question type keeps its answers (8)": {
+      "main": [
+        [
+          {
+            "node": "create — create: each question type keeps its answers (9)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: each question type keeps its answers (9)": {
+      "main": [
+        [
+          {
+            "node": "create — create: each question type keeps its answers (10)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: each question type keeps its answers (10)": {
+      "main": [
+        [
+          {
+            "node": "update — update: every field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: Canvas merges onto the question as first created, no",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Canvas merges onto the question as first created, no": {
+      "main": [
+        [
+          {
+            "node": "update — update: Canvas merges onto the question as first created, no (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Canvas merges onto the question as first created, no (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: Canvas merges onto the question as first created, no (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Canvas merges onto the question as first created, no (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through a quiz with more questions than one pa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through a quiz with more questions than one pa": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through a quiz with more questions than one pa (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through a quiz with more questions than one pa (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through a quiz with more questions than one pa (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through a quiz with more questions than one pa (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: a quiz without questions gives no items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: a quiz without questions gives no items": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: with a quiz submission, returns the questions as tha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: with a quiz submission, returns the questions as tha": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: with a quiz submission, returns the questions as tha (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: with a quiz submission, returns the questions as tha (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: with a quiz submission, returns the questions as tha (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: with a quiz submission, returns the questions as tha (3)": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes the question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

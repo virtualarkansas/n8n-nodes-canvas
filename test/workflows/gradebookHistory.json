@@ -1,0 +1,373 @@
+{
+  "name": "Canvas battery — gradebookHistory",
+  "nodes": [
+    {
+      "id": "9d27940a-6dbc-44a6-92dd-8d4b9911b18c",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "1e32a498-5c44-48b3-b6b4-40cfe866cddb",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "3831e243-b5de-4f43-9f20-49dff7f26053",
+      "name": "getDays — getDays: one entry per day with every grader and assignment,",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradebookHistory",
+        "operation": "getDays",
+        "courseId": "885",
+        "pagination": {}
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ea19720c-b652-45a3-9a89-3b8dc45d8fa2",
+      "name": "getDays — getDays: one entry per day with every grader and assignment, (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradebookHistory",
+        "operation": "getDays",
+        "courseId": "885",
+        "pagination": {
+          "perPage": 5,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1bd93d08-60d3-4604-9d89-aca529a4f49e",
+      "name": "getDayDetails — getDayDetails: every grader once with all their assignments,",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradebookHistory",
+        "operation": "getDayDetails",
+        "courseId": "885",
+        "date": "2026-11-15",
+        "pagination": {
+          "perPage": 3,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e07ef10f-c005-4d07-9f6a-8deabbbc75e6",
+      "name": "getDayDetails — getDayDetails: every grader once with all their assignments, (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradebookHistory",
+        "operation": "getDayDetails",
+        "courseId": "885",
+        "date": "2026-11-15T15:30:00Z",
+        "pagination": {
+          "perPage": 3,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2fd3825c-2e06-4bad-bb2b-6db67b8dcef9",
+      "name": "getSubmissions — getSubmissions: returns the graded submissions with their ve",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradebookHistory",
+        "operation": "getSubmissions",
+        "courseId": "885",
+        "date": "2026-11-15",
+        "graderId": "1",
+        "assignmentId": "2087",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a3df4085-3b7d-4a6b-a54c-e50a3dd71259",
+      "name": "getFeed — getFeed: pages through every submission version, with filter",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradebookHistory",
+        "operation": "getFeed",
+        "courseId": "885",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "71bac70d-b06a-4cf1-ba98-5949506d3b67",
+      "name": "getFeed — getFeed: pages through every submission version, with filter (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradebookHistory",
+        "operation": "getFeed",
+        "courseId": "885",
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b149e0c7-ede6-45d0-93a8-fcc038e8a34f",
+      "name": "getFeed — getFeed: pages through every submission version, with filter (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradebookHistory",
+        "operation": "getFeed",
+        "courseId": "885",
+        "options": {
+          "assignment_id": "2088",
+          "user_id": "2491",
+          "ascending": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getDays — getDays: one entry per day with every grader and assignment,",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getDays — getDays: one entry per day with every grader and assignment,": {
+      "main": [
+        [
+          {
+            "node": "getDays — getDays: one entry per day with every grader and assignment, (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getDays — getDays: one entry per day with every grader and assignment, (2)": {
+      "main": [
+        [
+          {
+            "node": "getDayDetails — getDayDetails: every grader once with all their assignments,",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getDayDetails — getDayDetails: every grader once with all their assignments,": {
+      "main": [
+        [
+          {
+            "node": "getDayDetails — getDayDetails: every grader once with all their assignments, (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getDayDetails — getDayDetails: every grader once with all their assignments, (2)": {
+      "main": [
+        [
+          {
+            "node": "getSubmissions — getSubmissions: returns the graded submissions with their ve",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSubmissions — getSubmissions: returns the graded submissions with their ve": {
+      "main": [
+        [
+          {
+            "node": "getFeed — getFeed: pages through every submission version, with filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getFeed — getFeed: pages through every submission version, with filter": {
+      "main": [
+        [
+          {
+            "node": "getFeed — getFeed: pages through every submission version, with filter (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getFeed — getFeed: pages through every submission version, with filter (2)": {
+      "main": [
+        [
+          {
+            "node": "getFeed — getFeed: pages through every submission version, with filter (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

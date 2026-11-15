@@ -43,6 +43,12 @@ export const roleOperations: INodeProperties[] = [
 				action: 'Get many roles',
 			},
 			{
+				name: 'Get Permissions',
+				value: 'getPermissions',
+				description: 'List the permissions that can be granted to roles in an account',
+				action: 'Get assignable permissions',
+			},
+			{
 				name: 'Update',
 				value: 'update',
 				description: 'Update a role',
@@ -66,10 +72,45 @@ export const roleFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['role'],
-				operation: ['create', 'get', 'getAll', 'update', 'activate', 'deactivate'],
+				operation: [
+					'create',
+					'get',
+					'getAll',
+					'getPermissions',
+					'update',
+					'activate',
+					'deactivate',
+				],
 			},
 		},
 		description: 'The ID of the account',
+	},
+
+	// ----------------------------------
+	//         role: getPermissions
+	// ----------------------------------
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['role'],
+				operation: ['getPermissions'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Search Term',
+				name: 'search_term',
+				type: 'string',
+				default: '',
+				description:
+					'Only return permissions whose key, label or group contains this text (labels are localized)',
+			},
+		],
 	},
 
 	// ----------------------------------
@@ -177,7 +218,8 @@ export const roleFields: INodeProperties[] = [
 				name: 'permissions',
 				type: 'json',
 				default: '{}',
-				description: 'JSON object defining permission settings. Example: {"read_reports": {"enabled": true, "locked": false}}.',
+				description:
+					'JSON object of permission name to settings. Canvas only applies "enabled" together with "explicit": true. Example: {"read_reports": {"explicit": true, "enabled": true, "locked": false}}. Use Get Permissions for the permission names.',
 			},
 		],
 	},
@@ -210,7 +252,8 @@ export const roleFields: INodeProperties[] = [
 				name: 'permissions',
 				type: 'json',
 				default: '{}',
-				description: 'JSON object defining permission settings. Example: {"read_reports": {"enabled": true, "explicit": true}}.',
+				description:
+					'JSON object of permission name to settings. Canvas only applies "enabled" together with "explicit": true; "explicit": false removes the override so the default applies again. Example: {"read_reports": {"explicit": true, "enabled": true}}.',
 			},
 		],
 	},

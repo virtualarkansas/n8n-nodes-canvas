@@ -16,15 +16,21 @@ Create and push a new release for the n8n-nodes-canvas package.
 When you run this command, I will:
 
 1. **Show recent commits** since the last release so you can review what's changed
-2. **Update package.json** version to the specified version
-3. **Commit** the version bump
-4. **Push** the commit to origin/main
-5. **Create and push tag** `v{version}` to trigger the release workflow
+2. **Check `CHANGELOG.md`**: it needs a section headed `## {version}` (the release notes are taken
+   from it); replace "(unreleased)" with today's date, and run
+   `npx tsx test/tools/description-diff.ts <previous version>` to make sure every change that
+   affects saved workflows is listed
+3. **Update the version** in `package.json` and `package-lock.json` (`npm version {version} --no-git-tag-version`)
+4. **Run the checks** the release workflow runs: `npm run lint`, `npm run build`, `npm run typecheck`, `npm test`
+5. **Commit** the version bump
+6. **Push** the commit to origin/main
+7. **Create and push tag** `v{version}` to trigger the release workflow
 
 GitHub Actions will then:
-- Build the package
-- Generate a changelog from commits since the last tag
-- Create a GitHub Release with the .tgz artifact and changelog
+- Refuse to continue if the tag does not match the version in `package.json`
+- Lint, build, type-check and run the unit tests
+- Publish the package to npm (with provenance; dist-tag `latest`, or `alpha` / `beta` / `next` for pre-releases)
+- Create a GitHub Release with the .tgz artifact and the section of `CHANGELOG.md` for this version
 
 ## Version Format
 
@@ -40,11 +46,8 @@ GitHub Actions will then:
 
 ## Release Notes
 
-The GitHub Actions workflow automatically generates release notes from commit messages between tags. To have good release notes:
-
-- Use descriptive commit messages
-- The changelog will include all commits since the previous tag
-- Commits with "Co-Authored-By" lines are filtered from the changelog
+The release notes are the section of `CHANGELOG.md` headed `## {version}`. If there is none, the
+release only links to the changelog.
 
 ## Post-Release
 
@@ -55,9 +58,9 @@ https://github.com/virtualarkansas/n8n-nodes-canvas/releases
 
 If you need to release manually:
 ```bash
-# 1. Update version in package.json
+# 1. Update version in package.json and package-lock.json, and the heading in CHANGELOG.md
 # 2. Commit the change
-git add package.json
+git add package.json package-lock.json CHANGELOG.md
 git commit -m "chore: release v0.1.0-beta.2"
 
 # 3. Create and push tag

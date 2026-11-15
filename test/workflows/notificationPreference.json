@@ -1,0 +1,382 @@
+{
+  "name": "Canvas battery — notificationPreference",
+  "nodes": [
+    {
+      "id": "cebe0cdc-ef5f-4dfe-933c-9b9c7b711270",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "fdf25c84-cf83-4857-a281-734574c6d441",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "eb69676e-6f15-44cf-8a89-3ffac0a3e6cf",
+      "name": "getAll — getAll: every preference of the channel is returned, one ite",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "notificationPreference",
+        "operation": "getAll",
+        "userId": "636",
+        "channelId": "626"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f03dae3c-87bc-4d5f-a23e-80ea8bc5d668",
+      "name": "getAll — getAll: every preference of the channel is returned, one ite (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "notificationPreference",
+        "operation": "getAll",
+        "userId": "636",
+        "channelId": "626",
+        "pagination": {
+          "perPage": 5,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7e1552c8-27ae-4275-b96d-5d9ac75e0e93",
+      "name": "getAll — getAll / get: the channel can be identified by type and addr",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "notificationPreference",
+        "operation": "getAll",
+        "userId": "636",
+        "channelBy": "address",
+        "channelType": "email",
+        "channelAddress": " sbx.mwhvkyio.s03@example.edu "
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fb96f901-886b-4ed5-b659-c32be667e3c3",
+      "name": "get — getAll / get: the channel can be identified by type and addr",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "notificationPreference",
+        "operation": "get",
+        "userId": "636",
+        "channelBy": "address",
+        "channelType": "email",
+        "channelAddress": "sbx.mwhvkyio.s03@example.edu",
+        "notification": "new_announcement"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "56309643-c4dc-40b3-b6c6-e059c516fa09",
+      "name": "getCategories — getCategories: one item listing the category slugs",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "notificationPreference",
+        "operation": "getCategories",
+        "userId": "636",
+        "channelId": "626"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ddbc2f86-6b07-4768-82c9-7efac7fff0de",
+      "name": "update — update: an admin changes another users preference with Act",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "notificationPreference",
+        "operation": "update",
+        "channelId": "634",
+        "notification": "new_announcement",
+        "frequency": "weekly",
+        "options": {
+          "as_user_id": " 644 "
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "281eb5e0-338d-48a3-882d-fccf89401224",
+      "name": "updateByCategory — updateByCategory: categories whose slug differs from the ca",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "notificationPreference",
+        "operation": "updateByCategory",
+        "channelId": "634",
+        "category": "discussionentry",
+        "frequency": "daily",
+        "options": {
+          "as_user_id": "644"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d6ccf80e-0eb1-484b-a754-885de770da38",
+      "name": "updateMultiple — updateMultiple: several notifications with different frequen",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "notificationPreference",
+        "operation": "updateMultiple",
+        "channelBy": "address",
+        "channelType": "email",
+        "channelAddress": "sbx.mwhvkyio.s03@example.edu",
+        "preferences": {
+          "preferenceValues": [
+            {
+              "notification": "new_announcement",
+              "frequency": "immediately"
+            },
+            {
+              "notification": "assignment_due_date_changed",
+              "frequency": "immediately"
+            },
+            {
+              "notification": "submission_comment",
+              "frequency": "immediately"
+            }
+          ]
+        },
+        "options": {
+          "as_user_id": "636"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every preference of the channel is returned, one ite",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every preference of the channel is returned, one ite": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every preference of the channel is returned, one ite (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every preference of the channel is returned, one ite (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll / get: the channel can be identified by type and addr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll / get: the channel can be identified by type and addr": {
+      "main": [
+        [
+          {
+            "node": "get — getAll / get: the channel can be identified by type and addr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — getAll / get: the channel can be identified by type and addr": {
+      "main": [
+        [
+          {
+            "node": "getCategories — getCategories: one item listing the category slugs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCategories — getCategories: one item listing the category slugs": {
+      "main": [
+        [
+          {
+            "node": "update — update: an admin changes another users preference with Act",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: an admin changes another users preference with Act": {
+      "main": [
+        [
+          {
+            "node": "updateByCategory — updateByCategory: categories whose slug differs from the ca",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateByCategory — updateByCategory: categories whose slug differs from the ca": {
+      "main": [
+        [
+          {
+            "node": "updateMultiple — updateMultiple: several notifications with different frequen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

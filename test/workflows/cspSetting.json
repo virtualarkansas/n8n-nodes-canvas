@@ -1,0 +1,422 @@
+{
+  "name": "Canvas battery — cspSetting",
+  "nodes": [
+    {
+      "id": "2741a9f1-07fc-4b84-86cf-4cfbbb5105c8",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "8d16e36a-1e30-40a4-80a4-79ea4a7398ef",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "13620dd8-b5df-4a26-8616-62a55eef3709",
+      "name": "get — get: an untouched account inherits its policy",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "cspSetting",
+        "operation": "get",
+        "contextType": "account",
+        "accountId": "292"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0ca5976c-8433-4b87-bbf9-1505f0f9d7dc",
+      "name": "setStatus — setStatus: enables the policy explicitly on an account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "cspSetting",
+        "operation": "setStatus",
+        "contextType": "account",
+        "accountId": "292",
+        "status": "enabled"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "336fe73d-6d4b-4250-9431-60b5278b5141",
+      "name": "addDomain — addDomain and addDomains: extend the allowed domains, trimmi",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "cspSetting",
+        "operation": "addDomain",
+        "accountId": "292",
+        "domain": "  cdn.example.com "
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "79715fa2-1958-49d1-b06c-1fc8a8d6a345",
+      "name": "addDomains — addDomain and addDomains: extend the allowed domains, trimmi",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "cspSetting",
+        "operation": "addDomains",
+        "accountId": "292",
+        "domains": "*.example.org,  media.example.net\nfonts.example.io"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e5831ce9-7cc0-4537-89c1-a8438b8aadfb",
+      "name": "get — get: a course reports the policy it inherits, including the ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "cspSetting",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "1004"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "af63a3ee-dff7-4aac-8966-97bfbeede53a",
+      "name": "setStatus — setStatus: a course can opt out, and go back to inheriting",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "cspSetting",
+        "operation": "setStatus",
+        "contextType": "course",
+        "courseId": "1004",
+        "status": "disabled"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dd1d2796-48cd-4f61-a64e-16243d04878a",
+      "name": "setStatus — setStatus: a course can opt out, and go back to inheriting (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "cspSetting",
+        "operation": "setStatus",
+        "contextType": "course",
+        "courseId": "1004",
+        "status": "inherited"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "74c9fb3d-bcbd-4f27-932e-9d71e2117ffa",
+      "name": "lock — lock and unlock: change whether sub-accounts and courses may",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "cspSetting",
+        "operation": "lock",
+        "accountId": "292",
+        "settingsLocked": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8eacfeb6-06c4-4a38-9ac6-4722ea3ad52f",
+      "name": "lock — lock and unlock: change whether sub-accounts and courses may (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "cspSetting",
+        "operation": "lock",
+        "accountId": "292",
+        "settingsLocked": false
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d9c023d1-a603-4a24-bcb5-ae18bdbb2102",
+      "name": "removeDomain — removeDomain: removes one domain and leaves the rest",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "cspSetting",
+        "operation": "removeDomain",
+        "accountId": "292",
+        "domain": "*.example.org"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "get — get: an untouched account inherits its policy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: an untouched account inherits its policy": {
+      "main": [
+        [
+          {
+            "node": "setStatus — setStatus: enables the policy explicitly on an account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setStatus — setStatus: enables the policy explicitly on an account": {
+      "main": [
+        [
+          {
+            "node": "addDomain — addDomain and addDomains: extend the allowed domains, trimmi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "addDomain — addDomain and addDomains: extend the allowed domains, trimmi": {
+      "main": [
+        [
+          {
+            "node": "addDomains — addDomain and addDomains: extend the allowed domains, trimmi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "addDomains — addDomain and addDomains: extend the allowed domains, trimmi": {
+      "main": [
+        [
+          {
+            "node": "get — get: a course reports the policy it inherits, including the ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: a course reports the policy it inherits, including the ": {
+      "main": [
+        [
+          {
+            "node": "setStatus — setStatus: a course can opt out, and go back to inheriting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setStatus — setStatus: a course can opt out, and go back to inheriting": {
+      "main": [
+        [
+          {
+            "node": "setStatus — setStatus: a course can opt out, and go back to inheriting (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setStatus — setStatus: a course can opt out, and go back to inheriting (2)": {
+      "main": [
+        [
+          {
+            "node": "lock — lock and unlock: change whether sub-accounts and courses may",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "lock — lock and unlock: change whether sub-accounts and courses may": {
+      "main": [
+        [
+          {
+            "node": "lock — lock and unlock: change whether sub-accounts and courses may (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "lock — lock and unlock: change whether sub-accounts and courses may (2)": {
+      "main": [
+        [
+          {
+            "node": "removeDomain — removeDomain: removes one domain and leaves the rest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

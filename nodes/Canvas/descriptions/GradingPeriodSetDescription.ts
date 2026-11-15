@@ -21,19 +21,19 @@ export const gradingPeriodSetOperations: INodeProperties[] = [
 			{
 				name: 'Delete',
 				value: 'delete',
-				description: 'Delete a grading period set',
+				description: 'Delete a grading period set and its grading periods',
 				action: 'Delete a grading period set',
 			},
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many grading period sets',
+				description: 'Get the grading period sets of an account, each with its grading periods',
 				action: 'Get many grading period sets',
 			},
 			{
 				name: 'Update',
 				value: 'update',
-				description: 'Update a grading period set',
+				description: 'Update a grading period set and the terms that use it',
 				action: 'Update a grading period set',
 			},
 		],
@@ -56,7 +56,8 @@ export const gradingPeriodSetFields: INodeProperties[] = [
 				resource: ['gradingPeriodSet'],
 			},
 		},
-		description: 'The ID of the account',
+		description:
+			'The ID of the account. Grading period sets belong to the root account; Canvas only allows creating, updating and deleting them there.',
 	},
 
 	// ----------------------------------
@@ -112,21 +113,23 @@ export const gradingPeriodSetFields: INodeProperties[] = [
 				name: 'display_totals_for_all_grading_periods',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to display totals for all grading periods',
+				description: 'Whether to display totals for the "All Grading Periods" view',
 			},
 			{
 				displayName: 'Enrollment Term IDs',
 				name: 'enrollment_term_ids',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of enrollment term IDs to associate with this set',
+				placeholder: '12,15',
+				description:
+					'Comma-separated IDs of the enrollment terms that use this set. A term can use only one set; it is moved from its previous set.',
 			},
 			{
 				displayName: 'Weighted',
 				name: 'weighted',
 				type: 'boolean',
 				default: false,
-				description: 'Whether grading periods in this set are weighted',
+				description: 'Whether the grading periods of this set are weighted',
 			},
 		],
 	},
@@ -134,6 +137,21 @@ export const gradingPeriodSetFields: INodeProperties[] = [
 	// ----------------------------------
 	//         gradingPeriodSet: update
 	// ----------------------------------
+	{
+		displayName: 'Enrollment Term IDs',
+		name: 'enrollmentTermIds',
+		type: 'string',
+		default: '',
+		placeholder: '12,15',
+		displayOptions: {
+			show: {
+				resource: ['gradingPeriodSet'],
+				operation: ['update'],
+			},
+		},
+		description:
+			'Comma-separated IDs of all enrollment terms that use this set. Canvas replaces the terms of the set with this list on every update: leaving it empty detaches every term from the set.',
+	},
 	{
 		displayName: 'Update Fields',
 		name: 'updateFields',
@@ -146,20 +164,14 @@ export const gradingPeriodSetFields: INodeProperties[] = [
 				operation: ['update'],
 			},
 		},
+		description: 'Canvas requires at least one of these fields on every update',
 		options: [
 			{
 				displayName: 'Display Totals for All Grading Periods',
 				name: 'display_totals_for_all_grading_periods',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to display totals for all grading periods',
-			},
-			{
-				displayName: 'Enrollment Term IDs',
-				name: 'enrollment_term_ids',
-				type: 'string',
-				default: '',
-				description: 'Comma-separated list of enrollment term IDs to associate with this set',
+				description: 'Whether to display totals for the "All Grading Periods" view',
 			},
 			{
 				displayName: 'Title',
@@ -173,7 +185,7 @@ export const gradingPeriodSetFields: INodeProperties[] = [
 				name: 'weighted',
 				type: 'boolean',
 				default: false,
-				description: 'Whether grading periods in this set are weighted',
+				description: 'Whether the grading periods of this set are weighted',
 			},
 		],
 	},

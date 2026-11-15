@@ -1,0 +1,416 @@
+{
+  "name": "Canvas battery — sisIntegration",
+  "nodes": [
+    {
+      "id": "361f65ba-69e1-418b-ab30-472d92da8705",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "db7c95af-f5fb-4f50-9b39-f126feee8fb6",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a9a44206-ba69-4b36-a2c7-7e3b091737a2",
+      "name": "getAssignments — getAssignments (course): the published, flagged assignments ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisIntegration",
+        "operation": "getAssignments",
+        "context": "course",
+        "courseId": "987",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cc1e942e-caa5-4e95-996a-93a56ca606c2",
+      "name": "getAssignments — getAssignments (course): the published, flagged assignments  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisIntegration",
+        "operation": "getAssignments",
+        "context": "course",
+        "courseId": "={{ $('getAssignments — getAssignments (course): the published, flagged assignments ').first().json.course_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0441f57d-a8ad-4760-abf8-5c7a14a6cf80",
+      "name": "getAssignments — getAssignments (course): Student Overrides adds the overri",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisIntegration",
+        "operation": "getAssignments",
+        "context": "course",
+        "courseId": "={{ $('getAssignments — getAssignments (course): the published, flagged assignments  (2)').first().json.course_id }}",
+        "options": {
+          "include": [
+            "student_overrides"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c44fa9ea-e711-4b6d-9304-30702a85015f",
+      "name": "getAssignments — getAssignments (account): every published course below the a",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisIntegration",
+        "operation": "getAssignments",
+        "context": "account",
+        "accountId": "286",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c9a3c907-9025-4008-a9dd-ba2f8d15d604",
+      "name": "getAssignments — getAssignments (account): every published course below the a (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisIntegration",
+        "operation": "getAssignments",
+        "context": "account",
+        "accountId": "286",
+        "options": {
+          "ends_after": "2026-09-01T00:00:00Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "28951073-7669-47e9-ab34-b5ba9a81e509",
+      "name": "getAssignments — getAssignments (account): every published course below the a (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisIntegration",
+        "operation": "getAssignments",
+        "context": "account",
+        "accountId": "286",
+        "options": {
+          "starts_before": "2026-06-01T00:00:00Z",
+          "include": [
+            "student_overrides"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fafe7b9d-7a94-41b9-a46d-91ec3d19e1d1",
+      "name": "getAssignments — getAssignments (account): every published course below the a (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisIntegration",
+        "operation": "getAssignments",
+        "context": "account",
+        "accountId": "286",
+        "options": {
+          "starts_before": "2020-01-01T00:00:00Z",
+          "ends_after": "2040-01-01T00:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9bdc8d4b-eaa6-4b08-b3e4-40b165edcffd",
+      "name": "disablePostToSis — disablePostToSis: with a grading period only the assignments",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisIntegration",
+        "operation": "disablePostToSis",
+        "courseId": "={{ $('getAssignments — getAssignments (account): every published course below the a (2)').first().json.course_id }}",
+        "options": {
+          "grading_period_id": "1"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3ea5c3ef-c2b0-4917-bc1b-f561f4e3eefa",
+      "name": "disablePostToSis — disablePostToSis: without a grading period every published a",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisIntegration",
+        "operation": "disablePostToSis",
+        "courseId": "={{ $('getAssignments — getAssignments (account): every published course below the a (2)').first().json.course_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAssignments — getAssignments (course): the published, flagged assignments ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAssignments — getAssignments (course): the published, flagged assignments ": {
+      "main": [
+        [
+          {
+            "node": "getAssignments — getAssignments (course): the published, flagged assignments  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAssignments — getAssignments (course): the published, flagged assignments  (2)": {
+      "main": [
+        [
+          {
+            "node": "getAssignments — getAssignments (course): Student Overrides adds the overri",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAssignments — getAssignments (course): Student Overrides adds the overri": {
+      "main": [
+        [
+          {
+            "node": "getAssignments — getAssignments (account): every published course below the a",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAssignments — getAssignments (account): every published course below the a": {
+      "main": [
+        [
+          {
+            "node": "getAssignments — getAssignments (account): every published course below the a (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAssignments — getAssignments (account): every published course below the a (2)": {
+      "main": [
+        [
+          {
+            "node": "getAssignments — getAssignments (account): every published course below the a (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAssignments — getAssignments (account): every published course below the a (3)": {
+      "main": [
+        [
+          {
+            "node": "getAssignments — getAssignments (account): every published course below the a (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAssignments — getAssignments (account): every published course below the a (4)": {
+      "main": [
+        [
+          {
+            "node": "disablePostToSis — disablePostToSis: with a grading period only the assignments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "disablePostToSis — disablePostToSis: with a grading period only the assignments": {
+      "main": [
+        [
+          {
+            "node": "disablePostToSis — disablePostToSis: without a grading period every published a",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

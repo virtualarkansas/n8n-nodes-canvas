@@ -1,5 +1,14 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { downloadIfAsked, isBlank, parseJsonObjectFor, pollUntil, stateIn, toList } from './shared';
+
+/** Where a content export keeps its generated file. An export that is not finished has none. */
+const EXPORT_FILE = {
+	urlField: 'attachment.url',
+	fileNameField: 'attachment.filename',
+	contentTypeField: 'attachment.content-type',
+	optional: true,
+};
 
 // ============================================
 // CONTENT EXPORT
@@ -29,22 +38,29 @@ export function handleContentExportResource(
 	getParam: GetParam,
 	getParamObject: GetParamObject,
 ): IRequestConfig {
-	const basePath = getContentExportBasePath(getParam);
-
 	switch (operation) {
 		case 'create': {
+			const basePath = getContentExportBasePath(getParam);
 			const additionalFields = getParamObject('additionalFields');
 			const body: Record<string, unknown> = {
-				export_type: getParam('exportType'),
+				// Groups and users can only export their files as a zip.
+				export_type: getParam('exportType', 'zip'),
 			};
 
-			// Handle selective content export fields (select_*)
+			// "Select ..." fields become select[<type>][]=<id>: the objects to export.
+			const select: Record<string, string[]> = {};
 			for (const [key, value] of Object.entries(additionalFields)) {
-				if (key.startsWith('select_') && typeof value === 'string' && value) {
-					body[key] = (value as string).split(',').map((id) => id.trim());
-				} else {
+				if (key.startsWith('select_')) {
+					const ids = toList(value);
+					if (ids.length > 0) {
+						select[key.slice('select_'.length)] = ids;
+					}
+				} else if (!isBlank(value)) {
 					body[key] = value;
 				}
+			}
+			if (Object.keys(select).length > 0) {
+				body.select = select;
 			}
 
 			return {
@@ -57,14 +73,32 @@ export function handleContentExportResource(
 		case 'get':
 			return {
 				method: 'GET',
-				endpoint: `${basePath}/content_exports/${getParam('contentExportId')}`,
+				endpoint: `${getContentExportBasePath(getParam)}/content_exports/${getParam('contentExportId')}`,
+				download: downloadIfAsked(getParam, EXPORT_FILE),
+			};
+
+		case 'waitForCompletion':
+			return {
+				method: 'GET',
+				endpoint: `${getContentExportBasePath(getParam)}/content_exports/${getParam('contentExportId')}`,
+				poll: pollUntil(getParam, stateIn('workflow_state', ['exported', 'failed'])),
+				download: downloadIfAsked(getParam, EXPORT_FILE),
 			};
 
 		case 'getAll':
 			return {
 				method: 'GET',
-				endpoint: `${basePath}/content_exports`,
+				endpoint: `${getContentExportBasePath(getParam)}/content_exports`,
 			};
+
+		case 'getContentList': {
+			const options = getParamObject('options');
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${getParam('courseId')}/content_list`,
+				qs: isBlank(options.type) ? {} : { type: options.type },
+			};
+		}
 
 		default:
 			throw new ApplicationError(
@@ -98,6 +132,114 @@ function getContentMigrationBasePath(getParam: GetParam): string {
 	}
 }
 
+/** Fields of the UI that Canvas expects inside `settings[...]`. */
+const MIGRATION_SETTINGS = new Set([
+	'content_export_id',
+	'file_url',
+	'folder_id',
+	'import_blueprint_settings',
+	'importer_skips',
+	'insert_into_module_id',
+	'insert_into_module_position',
+	'insert_into_module_type',
+	'move_to_assignment_group_id',
+	'overwrite_quizzes',
+	'question_bank_id',
+	'question_bank_name',
+	'source_course_id',
+]);
+
+/**
+ * Turn "copy[all_assignments], copy[wiki_pages][id_abc]" (the `property` values
+ * of Get Selective Data) into { all_assignments: "1", wiki_pages: { id_abc: "1" } }.
+ */
+function buildCopyParameters(value: unknown): Record<string, unknown> | undefined {
+	const properties = toList(value);
+	if (properties.length === 0) {
+		return undefined;
+	}
+	const copy: Record<string, unknown> = {};
+	for (const property of properties) {
+		// "copy[assignments][id_x]" as Canvas reports it; "assignments[id_x]" or "all_assignments" work too.
+		const match = /^(?:copy(?=\[))?([^[\]]+)?((?:\[[^[\]]+\])*)$/.exec(property);
+		const keys = match
+			? [...(match[1] ? [match[1]] : []), ...(match[2] ? match[2].slice(1, -1).split('][') : [])]
+			: [];
+		if (keys.length === 0) {
+			throw new ApplicationError(
+				`Copy Properties: "${property}" is not a copy property (expected e.g. copy[all_assignments] or copy[assignments][id_...]) for contentMigration update`,
+			);
+		}
+		let target = copy;
+		keys.forEach((key, index) => {
+			if (index === keys.length - 1) {
+				target[key] = '1';
+			} else {
+				if (typeof target[key] !== 'object' || target[key] === null) {
+					target[key] = {};
+				}
+				target = target[key] as Record<string, unknown>;
+			}
+		});
+	}
+	return copy;
+}
+
+/**
+ * Build the arguments shared by create and update from the flat fields of the UI:
+ * settings[...], date_shift_options[...], pre_attachment[...], select and selective_import.
+ */
+function buildMigrationBody(
+	fields: Record<string, unknown>,
+	context: string,
+): Record<string, unknown> {
+	const body: Record<string, unknown> = {};
+	const settings: Record<string, unknown> = {};
+	const dateShiftOptions: Record<string, unknown> = {};
+	const preAttachment: Record<string, unknown> = {};
+
+	for (const [key, value] of Object.entries(fields)) {
+		if (isBlank(value)) {
+			continue;
+		}
+		if (key === 'date_shift_options_day_substitutions') {
+			const substitutions = parseJsonObjectFor(value, 'Day Substitutions', context);
+			if (substitutions !== undefined && Object.keys(substitutions).length > 0) {
+				dateShiftOptions.day_substitutions = substitutions;
+			}
+		} else if (key.startsWith('date_shift_options_')) {
+			dateShiftOptions[key.slice('date_shift_options_'.length)] = value;
+		} else if (key.startsWith('pre_attachment_')) {
+			preAttachment[key.slice('pre_attachment_'.length)] = value;
+		} else if (key === 'select') {
+			const select = parseJsonObjectFor(value, 'Select', context);
+			if (select !== undefined && Object.keys(select).length > 0) {
+				body.select = select;
+			}
+		} else if (key === 'importer_skips') {
+			const skips = toList(value);
+			if (skips.length > 0) {
+				settings.importer_skips = skips;
+			}
+		} else if (MIGRATION_SETTINGS.has(key)) {
+			settings[key] = value;
+		} else {
+			body[key] = value;
+		}
+	}
+
+	if (Object.keys(settings).length > 0) {
+		body.settings = settings;
+	}
+	if (Object.keys(dateShiftOptions).length > 0) {
+		body.date_shift_options = dateShiftOptions;
+	}
+	if (Object.keys(preAttachment).length > 0) {
+		body.pre_attachment = preAttachment;
+	}
+	return body;
+}
+
 export function handleContentMigrationResource(
 	operation: string,
 	getParam: GetParam,
@@ -106,37 +248,17 @@ export function handleContentMigrationResource(
 	switch (operation) {
 		case 'create': {
 			const basePath = getContentMigrationBasePath(getParam);
-			const additionalFields = getParamObject('additionalFields');
 			const migrationType = getParam('migrationType');
+			const body = buildMigrationBody(getParamObject('additionalFields'), 'contentMigration create');
+			body.migration_type = migrationType;
 
-			const body: Record<string, unknown> = {
-				migration_type: migrationType,
-			};
-
-			// For course_copy_importer, include the source course ID
+			// A course copy needs the course to copy from.
 			if (migrationType === 'course_copy_importer') {
-				body.settings = { source_course_id: getParam('sourceCourseId') };
+				body.settings = {
+					...((body.settings as Record<string, unknown> | undefined) ?? {}),
+					source_course_id: getParam('sourceCourseId'),
+				};
 			}
-
-			// Handle date_shift_options fields (nested under date_shift_options in the API)
-			const dateShiftOptions: Record<string, unknown> = {};
-			const regularFields: Record<string, unknown> = {};
-
-			for (const [key, value] of Object.entries(additionalFields)) {
-				if (key.startsWith('date_shift_options_')) {
-					const subKey = key.replace('date_shift_options_', '');
-					dateShiftOptions[subKey] = value;
-				} else {
-					regularFields[key] = value;
-				}
-			}
-
-			if (Object.keys(dateShiftOptions).length > 0) {
-				body.date_shift_options = dateShiftOptions;
-			}
-
-			// Merge remaining additional fields into body
-			Object.assign(body, regularFields);
 
 			return {
 				method: 'POST',
@@ -170,11 +292,35 @@ export function handleContentMigrationResource(
 			};
 		}
 
-		case 'getSelectiveData': {
+		case 'getIssue': {
 			const basePath = getContentMigrationBasePath(getParam);
 			return {
 				method: 'GET',
-				endpoint: `${basePath}/content_migrations/${getParam('contentMigrationId')}/content_list`,
+				endpoint: `${basePath}/content_migrations/${getParam('contentMigrationId')}/migration_issues/${getParam('issueId')}`,
+			};
+		}
+
+		case 'getIssues': {
+			const basePath = getContentMigrationBasePath(getParam);
+			return {
+				method: 'GET',
+				endpoint: `${basePath}/content_migrations/${getParam('contentMigrationId')}/migration_issues`,
+			};
+		}
+
+		case 'getSelectiveData': {
+			// Groups and users only have ZIP imports: nothing to select, and Canvas fails with a 500.
+			if (!['course', 'account'].includes(getParam('contextType', 'course'))) {
+				throw new ApplicationError(
+					'Get Selective Data is only for course and account migrations: groups and users only have ZIP imports, which have nothing to select',
+				);
+			}
+			const basePath = getContentMigrationBasePath(getParam);
+			const options = getParamObject('options');
+			return {
+				method: 'GET',
+				endpoint: `${basePath}/content_migrations/${getParam('contentMigrationId')}/selective_data`,
+				qs: isBlank(options.type) ? {} : { type: options.type },
 			};
 		}
 
@@ -188,11 +334,24 @@ export function handleContentMigrationResource(
 
 		case 'update': {
 			const basePath = getContentMigrationBasePath(getParam);
-			const updateFields = getParamObject('updateFields');
+			const body = buildMigrationBody(getParamObject('updateFields'), 'contentMigration update');
+			const copy = buildCopyParameters(getParam('copyProperties'));
+			if (copy !== undefined) {
+				body.copy = copy;
+			}
 			return {
 				method: 'PUT',
 				endpoint: `${basePath}/content_migrations/${getParam('contentMigrationId')}`,
-				body: updateFields,
+				body,
+			};
+		}
+
+		case 'updateIssue': {
+			const basePath = getContentMigrationBasePath(getParam);
+			return {
+				method: 'PUT',
+				endpoint: `${basePath}/content_migrations/${getParam('contentMigrationId')}/migration_issues/${getParam('issueId')}`,
+				body: { workflow_state: getParam('issueState', 'resolved') },
 			};
 		}
 
@@ -213,50 +372,57 @@ export function handleContentShareResource(
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	_getParamObject: GetParamObject,
 ): IRequestConfig {
-	const userId = getParam('userId', 'self');
-	const base = `/api/v1/users/${userId}/content_shares`;
+	// Reading works for other users (admins, linked observers); Canvas only lets
+	// a user create, change and remove their own shares.
+	const readBase = `/api/v1/users/${getParam('userId', 'self')}/content_shares`;
+	const ownBase = '/api/v1/users/self/content_shares';
+
+	const receiverIds = (): string[] => {
+		const ids = toList(getParam('receiverIds'));
+		if (ids.length === 0) {
+			throw new ApplicationError(
+				`At least one receiver ID is required for contentShare ${operation}`,
+			);
+		}
+		return ids;
+	};
 
 	switch (operation) {
-		case 'create': {
-			const receiverIds = getParam('receiverIds')
-				.split(',')
-				.map((id) => id.trim());
-
+		case 'create':
 			return {
 				method: 'POST',
-				endpoint: base,
+				endpoint: ownBase,
 				body: {
 					content_type: getParam('contentType'),
 					content_id: getParam('contentId'),
-					'receiver_ids[]': receiverIds,
+					receiver_ids: receiverIds(),
 				},
 			};
-		}
 
 		case 'get':
 			return {
 				method: 'GET',
-				endpoint: `${base}/${getParam('contentShareId')}`,
+				endpoint: `${readBase}/${getParam('contentShareId')}`,
 			};
 
 		case 'getAll': {
 			const shareType = getParam('shareType', 'received');
 			return {
 				method: 'GET',
-				endpoint: `${base}/${shareType}`,
+				endpoint: `${readBase}/${shareType}`,
 			};
 		}
 
 		case 'getUnreadCount':
 			return {
 				method: 'GET',
-				endpoint: `${base}/unread_count`,
+				endpoint: `${readBase}/unread_count`,
 			};
 
 		case 'update':
 			return {
 				method: 'PUT',
-				endpoint: `${base}/${getParam('contentShareId')}`,
+				endpoint: `${ownBase}/${getParam('contentShareId')}`,
 				body: {
 					read_state: getParam('readState'),
 				},
@@ -265,22 +431,17 @@ export function handleContentShareResource(
 		case 'delete':
 			return {
 				method: 'DELETE',
-				endpoint: `${base}/${getParam('contentShareId')}`,
+				endpoint: `${ownBase}/${getParam('contentShareId')}`,
 			};
 
-		case 'addUsers': {
-			const receiverIds = getParam('receiverIds')
-				.split(',')
-				.map((id) => id.trim());
-
+		case 'addUsers':
 			return {
 				method: 'POST',
-				endpoint: `${base}/${getParam('contentShareId')}/add_users`,
+				endpoint: `${ownBase}/${getParam('contentShareId')}/add_users`,
 				body: {
-					'receiver_ids[]': receiverIds,
+					receiver_ids: receiverIds(),
 				},
 			};
-		}
 
 		default:
 			throw new ApplicationError(
@@ -317,14 +478,14 @@ export function handleBlueprintCourseResource(
 
 		case 'updateAssociations': {
 			const body: Record<string, unknown> = {};
-			const courseIdsToAdd = getParam('courseIdsToAdd');
-			const courseIdsToRemove = getParam('courseIdsToRemove');
+			const courseIdsToAdd = toList(getParam('courseIdsToAdd'));
+			const courseIdsToRemove = toList(getParam('courseIdsToRemove'));
 
-			if (courseIdsToAdd) {
-				body['course_ids_to_add'] = courseIdsToAdd.split(',').map((id) => id.trim());
+			if (courseIdsToAdd.length > 0) {
+				body.course_ids_to_add = courseIdsToAdd;
 			}
-			if (courseIdsToRemove) {
-				body['course_ids_to_remove'] = courseIdsToRemove.split(',').map((id) => id.trim());
+			if (courseIdsToRemove.length > 0) {
+				body.course_ids_to_remove = courseIdsToRemove;
 			}
 
 			return {
@@ -335,11 +496,16 @@ export function handleBlueprintCourseResource(
 		}
 
 		case 'beginMigration': {
-			const additionalFields = getParamObject('additionalFields');
+			const body: Record<string, unknown> = {};
+			for (const [key, value] of Object.entries(getParamObject('additionalFields'))) {
+				if (!isBlank(value)) {
+					body[key] = value;
+				}
+			}
 			return {
 				method: 'POST',
 				endpoint: `${templateBase}/migrations`,
-				body: additionalFields,
+				body,
 			};
 		}
 
@@ -370,7 +536,7 @@ export function handleBlueprintCourseResource(
 		case 'setRestrictions': {
 			const contentType = getParam('contentType');
 			const contentId = getParam('contentId');
-			const restricted = getParam('restricted') === 'true';
+			const restricted = getParam('restricted', 'true') === 'true';
 
 			const body: Record<string, unknown> = {
 				content_type: contentType,

@@ -40,6 +40,12 @@ export {
 	courseReportFields,
 } from './CourseReportDescription';
 
+export { courseNicknameOperations, courseNicknameFields } from './CourseNicknameDescription';
+
+export { gradebookOperations, gradebookFields } from './GradebookDescription';
+
+export { webZipExportOperations, webZipExportFields } from './WebZipExportDescription';
+
 // User resource group descriptions
 export {
 	userOperations,
@@ -60,6 +66,8 @@ export {
 	userObserveeOperations,
 	userObserveeFields,
 } from './UserObserveeDescription';
+export { userCustomDataOperations, userCustomDataFields } from './UserCustomDataDescription';
+export { errorReportOperations, errorReportFields } from './ErrorReportDescription';
 
 // Enrollment resource group descriptions
 export {
@@ -479,3 +487,97 @@ export {
 	pollOperations,
 	pollFields,
 } from './PollDescription';
+
+// Audit log resource group descriptions
+export {
+	gradebookHistoryOperations,
+	gradebookHistoryFields,
+} from './GradebookHistoryDescription';
+
+export {
+	gradeChangeLogOperations,
+	gradeChangeLogFields,
+} from './GradeChangeLogDescription';
+
+export {
+	courseAuditLogOperations,
+	courseAuditLogFields,
+} from './CourseAuditLogDescription';
+
+// Polling resource group descriptions (the poll resource itself lives with the misc group)
+export {
+	pollChoiceOperations,
+	pollChoiceFields,
+} from './PollChoiceDescription';
+
+export {
+	pollSessionOperations,
+	pollSessionFields,
+} from './PollSessionDescription';
+
+export {
+	pollSubmissionOperations,
+	pollSubmissionFields,
+} from './PollSubmissionDescription';
+
+// Account security resource group descriptions
+export {
+	cspSettingOperations,
+	cspSettingFields,
+} from './CspSettingDescription';
+
+export {
+	developerKeyAccountBindingOperations,
+	developerKeyAccountBindingFields,
+} from './DeveloperKeyAccountBindingDescription';
+
+// Dates and assessment extras resource group descriptions
+export {
+	learningObjectDateOperations,
+	learningObjectDateFields,
+} from './LearningObjectDateDescription';
+
+export {
+	liveAssessmentOperations,
+	liveAssessmentFields,
+} from './LiveAssessmentDescription';
+
+export {
+	whatIfGradeOperations,
+	whatIfGradeFields,
+} from './WhatIfGradeDescription';
+
+// Quiz extras resource group descriptions
+export {
+	quizAssignmentOverrideOperations,
+	quizAssignmentOverrideFields,
+} from './QuizAssignmentOverrideDescription';
+
+export {
+	quizIpFilterOperations,
+	quizIpFilterFields,
+} from './QuizIpFilterDescription';
+
+export {
+	quizSubmissionEventOperations,
+	quizSubmissionEventFields,
+} from './QuizSubmissionEventDescription';
+
+export {
+	quizSubmissionQuestionOperations,
+	quizSubmissionQuestionFields,
+} from './QuizSubmissionQuestionDescription';
+
+export { questionBankOperations, questionBankFields } from './QuestionBankDescription';
+export { brandConfigOperations, brandConfigFields } from './BrandConfigDescription';
+
+// Generic requests resource group descriptions
+export {
+	apiRequestOperations,
+	apiRequestFields,
+} from './ApiRequestDescription';
+
+export {
+	graphqlOperations,
+	graphqlFields,
+} from './GraphqlDescription';

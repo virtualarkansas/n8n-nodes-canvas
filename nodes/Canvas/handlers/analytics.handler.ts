@@ -1,5 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { idFromUrl, pollUntil, stateIn, toList, withoutBlanks } from './shared';
 
 // ============================================
 // ANALYTICS
@@ -10,7 +11,7 @@ import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.t
  * Returns 'current', 'completed', or 'terms/{termId}'.
  */
 function buildTermFilterSegment(getParam: GetParam): string {
-	const termFilter = getParam('termFilter');
+	const termFilter = getParam('termFilter', 'current');
 	if (termFilter === 'term') {
 		return `terms/${getParam('termId')}`;
 	}
@@ -36,14 +37,14 @@ export function handleAnalyticsResource(
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/courses/${getParam('courseId')}/analytics/assignments`,
-				qs: getParamObject('options'),
+				qs: withoutBlanks(getParamObject('options')),
 			};
 
 		case 'getStudentSummaries':
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/courses/${getParam('courseId')}/analytics/student_summaries`,
-				qs: getParamObject('options'),
+				qs: withoutBlanks(getParamObject('options')),
 			};
 
 		// ----------------------------------
@@ -103,6 +104,8 @@ export function handleAnalyticsResource(
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/analytics/${termSegment}/statistics_by_subaccount`,
+				// { "accounts": [ { "name": ..., "id": ..., "courses": ... }, ... ] }
+				dataKey: 'accounts',
 			};
 		}
 
@@ -120,7 +123,8 @@ export function handleProgressResource(
 	getParam: GetParam,
 	getParamObject: GetParamObject,
 ): IRequestConfig {
-	const progressId = getParam('progressId');
+	// The ID, or the progress_url a background job answered with.
+	const progressId = idFromUrl(getParam('progressId'), 'progress', 'Progress ID');
 
 	switch (operation) {
 		case 'get':
@@ -129,17 +133,25 @@ export function handleProgressResource(
 				endpoint: `/api/v1/progress/${progressId}`,
 			};
 
+		case 'waitForCompletion':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/progress/${progressId}`,
+				poll: pollUntil(getParam, stateIn('workflow_state', ['completed', 'failed'])),
+			};
+
 		case 'cancel':
 			return {
 				method: 'POST',
 				endpoint: `/api/v1/progress/${progressId}/cancel`,
-				body: getParamObject('options'),
+				body: withoutBlanks(getParamObject('options')),
 			};
 
 		case 'getLti':
+			// LTI Advantage service: only an LTI Advantage access token is accepted here.
 			return {
 				method: 'GET',
-				endpoint: `/api/v1/courses/${getParam('courseId')}/progress/${progressId}`,
+				endpoint: `/api/lti/courses/${getParam('courseId')}/progress/${progressId}`,
 			};
 
 		default:
@@ -160,32 +172,45 @@ export function handleSearchResource(
 		case 'findRecipients': {
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
-
-			// Handle permissions as an array parameter
-			if (options.permissions) {
-				qs['permissions[]'] = options.permissions;
-				delete options.permissions;
+			for (const [key, value] of Object.entries(withoutBlanks(options))) {
+				if (key === 'exclude') {
+					// "1, 2, course_3" -> exclude[]=1&exclude[]=2&exclude[]=course_3
+					const exclude = toList(value);
+					if (exclude.length > 0) {
+						qs.exclude = exclude;
+					}
+				} else {
+					qs[key] = value;
+				}
 			}
-
-			// Handle exclude as comma-separated to array
-			if (options.exclude) {
-				qs['exclude[]'] = (options.exclude as string).split(',').map((id) => id.trim());
-				delete options.exclude;
-			}
-
 			return {
 				method: 'GET',
 				endpoint: '/api/v1/search/recipients',
-				qs: { ...options, ...qs },
+				qs,
 			};
 		}
 
-		case 'listAllCourses':
+		case 'listAllCourses': {
+			const options = getParamObject('options');
+			const qs: Record<string, unknown> = {};
+			if (options.search !== undefined && options.search !== '') {
+				qs.search = options.search;
+			}
+			// Canvas only checks whether these are present ("false" filters too): send them only when on.
+			if (options.public_only === true) {
+				qs.public_only = true;
+			}
+			if (options.open_enrollment_only === true) {
+				qs.open_enrollment_only = true;
+			}
 			return {
 				method: 'GET',
 				endpoint: '/api/v1/search/all_courses',
-				qs: getParamObject('options'),
+				qs,
+				// Canvas wraps every entry: [{ "course": { ... } }]
+				itemKey: 'course',
 			};
+		}
 
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for search`);
@@ -202,32 +227,17 @@ export function handleSmartSearchResource(
 	getParamObject: GetParamObject,
 ): IRequestConfig {
 	switch (operation) {
-		case 'search': {
-			const courseId = getParam('courseId');
-			const query = getParam('query');
-			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {
-				q: query,
-			};
-
-			// Handle filter as an array parameter
-			if (options.filter) {
-				qs['filter[]'] = options.filter;
-				delete options.filter;
-			}
-
-			// Handle include as an array parameter
-			if (options.include) {
-				qs['include[]'] = options.include;
-				delete options.include;
-			}
-
+		case 'search':
 			return {
 				method: 'GET',
-				endpoint: `/api/v1/courses/${courseId}/smartsearch`,
-				qs: { ...options, ...qs },
+				endpoint: `/api/v1/courses/${getParam('courseId')}/smartsearch`,
+				qs: {
+					q: getParam('query'),
+					...withoutBlanks(getParamObject('options')),
+				},
+				// { "results": [...], "status": "index_incomplete", "indexing_progress": 40 }
+				dataKey: 'results',
 			};
-		}
 
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for smartSearch`);
@@ -248,7 +258,7 @@ export function handleHistoryResource(
 		case 'getAll':
 			return {
 				method: 'GET',
-				endpoint: `/api/v1/users/${getParam('userId')}/history`,
+				endpoint: `/api/v1/users/${getParam('userId', 'self')}/history`,
 			};
 
 		default:

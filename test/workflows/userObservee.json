@@ -1,0 +1,452 @@
+{
+  "name": "Canvas battery — userObservee",
+  "nodes": [
+    {
+      "id": "e86b0531-348e-4357-825c-202056124a5b",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "381a9ecf-b286-4820-b547-4a54e8fdec0e",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ea671afb-f75c-49f0-88cf-5b43e954cebd",
+              "name": "studentUserId",
+              "value": "5",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "1e43f593-40f3-492f-8c03-aa2c4d9e9532",
+      "name": "add — add: with a root account; adding the same observee twice is ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userObservee",
+        "operation": "add",
+        "userId": "2622",
+        "observeeId": "2635",
+        "additionalFields": {
+          "rootAccountId": "1"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "26b6f295-051a-445b-a720-e1ed059d9a16",
+      "name": "getAll — getAll: pages through the observees",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userObservee",
+        "operation": "getAll",
+        "userId": "2622"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4758b6f4-e83e-47d8-9d23-4351223de4f3",
+      "name": "getAll — getAll: pages through the observees (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userObservee",
+        "operation": "getAll",
+        "userId": "2622",
+        "additionalFields": {
+          "include": [
+            "avatar_url"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "da1197f7-0627-4cab-8efb-909b111ee5b8",
+      "name": "getAll — getAll: pages through the observees (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userObservee",
+        "operation": "getAll",
+        "userId": "2622",
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2d214e5d-7e15-41f7-9fcc-e54ca3315279",
+      "name": "listObservers — getAll and listObservers: the seeded observer and student se",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userObservee",
+        "operation": "listObservers",
+        "userId": "={{ $('Config').first().json.studentUserId }}",
+        "additionalFields": {
+          "include": [
+            "avatar_url"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0e7f5092-91bc-4456-803a-6620f15477b9",
+      "name": "listObservers — getAll and listObservers: the seeded observer and student se (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userObservee",
+        "operation": "listObservers",
+        "userId": "2622"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3fed303a-8861-4dd7-bf9e-511a35f3d515",
+      "name": "get — get and getObserver: return the linked user from either side",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userObservee",
+        "operation": "get",
+        "userId": "2622",
+        "observeeId": "={{ $('getAll — getAll: pages through the observees (3)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "73bde4cb-6949-42ec-ac1f-344f69cee0a1",
+      "name": "getObserver — get and getObserver: return the linked user from either side",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userObservee",
+        "operation": "getObserver",
+        "userId": "={{ $('get — get and getObserver: return the linked user from either side').first().json.id }}",
+        "observerId": "2622"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ba174779-f684-49c2-9c50-96abae586306",
+      "name": "remove — remove: unlinks an observee; removing again is a 404",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userObservee",
+        "operation": "remove",
+        "userId": "={{ $('getObserver — get and getObserver: return the linked user from either side').first().json.id }}",
+        "observeeId": "={{ $('get — get and getObserver: return the linked user from either side').first().json.id }}",
+        "additionalFields": {
+          "rootAccountId": "1"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "21071b97-ee17-4811-8752-c9abcf567c18",
+      "name": "addWithCredentials — addWithCredentials: the observees login and password create",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userObservee",
+        "operation": "addWithCredentials",
+        "userId": "={{ $('getObserver — get and getObserver: return the linked user from either side').first().json.id }}",
+        "addMethod": "credentials",
+        "uniqueId": "=observee.{{ $execution.id }}-4@example.edu",
+        "password": "BatteryPass123!",
+        "additionalFields": {
+          "rootAccountId": "1"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "add — add: with a root account; adding the same observee twice is ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add — add: with a root account; adding the same observee twice is ": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through the observees",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through the observees": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through the observees (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through the observees (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through the observees (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through the observees (3)": {
+      "main": [
+        [
+          {
+            "node": "listObservers — getAll and listObservers: the seeded observer and student se",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listObservers — getAll and listObservers: the seeded observer and student se": {
+      "main": [
+        [
+          {
+            "node": "listObservers — getAll and listObservers: the seeded observer and student se (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listObservers — getAll and listObservers: the seeded observer and student se (2)": {
+      "main": [
+        [
+          {
+            "node": "get — get and getObserver: return the linked user from either side",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get and getObserver: return the linked user from either side": {
+      "main": [
+        [
+          {
+            "node": "getObserver — get and getObserver: return the linked user from either side",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getObserver — get and getObserver: return the linked user from either side": {
+      "main": [
+        [
+          {
+            "node": "remove — remove: unlinks an observee; removing again is a 404",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "remove — remove: unlinks an observee; removing again is a 404": {
+      "main": [
+        [
+          {
+            "node": "addWithCredentials — addWithCredentials: the observees login and password create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

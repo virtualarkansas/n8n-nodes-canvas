@@ -1,0 +1,286 @@
+{
+  "name": "Canvas battery — quizExtension",
+  "nodes": [
+    {
+      "id": "672eb921-61fe-40b4-ac2e-af170846f0b1",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "7ec0045d-c9fb-4c67-8b77-168e57cbb5e5",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "c593c3ea-5c8c-43fb-8f09-ee398a94ad6c",
+      "name": "setExtensions — setExtensions: the values are replaced, not added up; Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizExtension",
+        "operation": "setExtensions",
+        "courseId": "119",
+        "quizId": "309",
+        "extensions": {
+          "extensionValues": [
+            {
+              "user_id": " 5 ",
+              "extra_attempts": 5000,
+              "extra_time": 20000,
+              "manually_unlocked": false
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "719431f0-b160-49f3-b028-6def04c8e17c",
+      "name": "setExtensions — setExtensions: extending the time of an attempt in progress,",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizExtension",
+        "operation": "setExtensions",
+        "courseId": "119",
+        "quizId": "={{ $('setExtensions — setExtensions: the values are replaced, not added up; Canvas').first().json.quiz_id }}",
+        "extensions": {
+          "extensionValues": [
+            {
+              "user_id": "5",
+              "extra_attempts": 0,
+              "extra_time": 15
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "89bf5b75-a3c0-4664-b9bf-df6e99849d57",
+      "name": "setExtensions — setExtensions: extending the time of an attempt in progress, (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizExtension",
+        "operation": "setExtensions",
+        "courseId": "119",
+        "quizId": "={{ $('setExtensions — setExtensions: extending the time of an attempt in progress,').first().json.quiz_id }}",
+        "extensions": {
+          "extensionValues": [
+            {
+              "user_id": "5",
+              "extra_attempts": 0,
+              "extra_time": 15,
+              "extend_from_now": 0,
+              "extend_from_end_at": 10
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dc54c064-ae75-470c-af25-39e6dd76164e",
+      "name": "setExtensions — setExtensions: extending the time of an attempt in progress, (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizExtension",
+        "operation": "setExtensions",
+        "courseId": "119",
+        "quizId": "={{ $('setExtensions — setExtensions: extending the time of an attempt in progress, (2)').first().json.quiz_id }}",
+        "extensions": {
+          "extensionValues": [
+            {
+              "user_id": "5",
+              "extra_attempts": 0,
+              "extra_time": 15,
+              "extend_from_now": 90,
+              "extend_from_end_at": 0
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cddb7561-f819-4c9f-8707-7a6fbabd9276",
+      "name": "setExtensions — setExtensions: extending the time of an attempt in progress, (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizExtension",
+        "operation": "setExtensions",
+        "courseId": "119",
+        "quizId": "={{ $('setExtensions — setExtensions: extending the time of an attempt in progress, (3)').first().json.quiz_id }}",
+        "extensions": {
+          "extensionValues": [
+            {
+              "user_id": "5",
+              "extra_attempts": 0,
+              "extra_time": 15,
+              "extend_from_now": 30,
+              "extend_from_end_at": 600
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "setExtensions — setExtensions: the values are replaced, not added up; Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setExtensions — setExtensions: the values are replaced, not added up; Canvas": {
+      "main": [
+        [
+          {
+            "node": "setExtensions — setExtensions: extending the time of an attempt in progress,",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setExtensions — setExtensions: extending the time of an attempt in progress,": {
+      "main": [
+        [
+          {
+            "node": "setExtensions — setExtensions: extending the time of an attempt in progress, (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setExtensions — setExtensions: extending the time of an attempt in progress, (2)": {
+      "main": [
+        [
+          {
+            "node": "setExtensions — setExtensions: extending the time of an attempt in progress, (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setExtensions — setExtensions: extending the time of an attempt in progress, (3)": {
+      "main": [
+        [
+          {
+            "node": "setExtensions — setExtensions: extending the time of an attempt in progress, (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -1,0 +1,664 @@
+{
+  "name": "Canvas battery — developerKey",
+  "nodes": [
+    {
+      "id": "60dee11b-6d05-4213-9dd7-0a130946530a",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "b54be324-c30f-49b4-bcb3-ffee2d1082fe",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "14723698-5872-487b-bda9-723b0a585d3d",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            },
+            {
+              "id": "ad1a3c85-3523-49e5-8c41-3a60d01ed697",
+              "name": "accountRubricId",
+              "value": "2",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "198121cb-b989-465c-9992-c431b2d02825",
+      "name": "create — create: every optional field reaches Canvas; the secret is r",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "additionalFields": {
+          "name": "=n8nbat-key-{{ $execution.id }}-1 Ünïcødé 密钥 \"quoted\" & <b>tags</b>",
+          "email": "keys@n8nbat.example.edu",
+          "notes": "Line one\nLine two with \"quotes\" & <tags>",
+          "icon_url": "https://n8nbat.example.edu/icon.png?a=1&b=2",
+          "redirect_uris": "https://a.n8nbat.example.edu/callback, https://b.n8nbat.example.edu/callback",
+          "vendor_code": "N8NBAT",
+          "scopes": "url:GET|/api/v1/courses, url:GET|/api/v1/courses/:id",
+          "require_scopes": true,
+          "allow_includes": true,
+          "client_credentials_audience": "external",
+          "auto_expire_tokens": true,
+          "test_cluster_only": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a739b61f-66bf-4fad-bd2b-99c64890389d",
+      "name": "create — create: Visible only applies to Site Admin keys",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "additionalFields": {
+          "name": "=n8nbat-key-{{ $execution.id }}-1 visibility",
+          "visible": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2677506a-deb4-4bf1-bf88-a920f278b448",
+      "name": "create — create: Visible only applies to Site Admin keys (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "additionalFields": {
+          "name": "=n8nbat-key-{{ $execution.id }}-1 site admin",
+          "visible": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "657480a5-863a-4a3d-a956-066f46131d23",
+      "name": "update — create: Visible only applies to Site Admin keys",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "update",
+        "developerKeyId": "={{ $('create — create: Visible only applies to Site Admin keys (2)').first().json.id }}",
+        "updateFields": {
+          "visible": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d07ce720-7a68-4f7b-8282-e0f0f93075d9",
+      "name": "getAll — create: Visible only applies to Site Admin keys",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "returnAll": true,
+        "options": {
+          "inherited": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "285fecb3-ae88-4ab0-9131-5601d76fecbe",
+      "name": "getAll — getAll: lists the keys of the account; Return All and Limit ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "returnAll": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "aaa3d4f5-b7c6-49d5-a87b-9b611febf251",
+      "name": "getAll — getAll: lists the keys of the account; Return All and Limit  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "getAll",
+        "accountId": "self",
+        "returnAll": false,
+        "limit": 12,
+        "pagination": {
+          "perPage": 5
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "32183d9e-b955-45bc-9952-04ffb6fcec9e",
+      "name": "getAll — getAll: lists the keys of the account; Return All and Limit  (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "001239b8-803d-4b00-86f9-365ba0dee90b",
+      "name": "getAll — getAll: Inherited off lists the accounts own keys, on lis",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "returnAll": true,
+        "options": {
+          "inherited": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a814cc07-33eb-4f2d-aed2-08e1f369323c",
+      "name": "getAll — getAll: a single key by ID; an unknown ID yields nothing; a ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "options": {
+          "id": "99999999"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8f08192a-b984-4375-a98f-546b05826a7a",
+      "name": "setAccountBinding — setAccountBinding: switches a key on and off in the account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "setAccountBinding",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "developerKeyId": "={{ $('create — create: every optional field reaches Canvas; the secret is r').first().json.id }}",
+        "bindingState": "on"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c713ff2b-2dee-488b-87a5-0ffb0a68bab1",
+      "name": "setAccountBinding — setAccountBinding: switches a key on and off in the account (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "setAccountBinding",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "developerKeyId": "={{ $('create — create: every optional field reaches Canvas; the secret is r').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2739e8f8-a965-4170-9306-6b2cebe69ccf",
+      "name": "update — update: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "update",
+        "developerKeyId": "={{ $('create — create: every optional field reaches Canvas; the secret is r').first().json.id }}",
+        "updateFields": {
+          "name": "=n8nbat-key-{{ $execution.id }}-1 Ünïcødé 密钥 \"quoted\" & <b>tags</b> (renamed)",
+          "email": "keys2@n8nbat.example.edu",
+          "notes": "Changed",
+          "icon_url": "https://n8nbat.example.edu/icon2.png",
+          "redirect_uris": "https://c.n8nbat.example.edu/callback",
+          "vendor_code": "N8NBAT2",
+          "scopes": "url:GET|/api/v1/courses/:id, url:GET|/api/v1/no/such/endpoint",
+          "require_scopes": false,
+          "allow_includes": false,
+          "client_credentials_audience": "internal",
+          "auto_expire_tokens": false,
+          "test_cluster_only": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5a8a7500-999e-4abc-af70-d7f689a9da80",
+      "name": "update — update: deactivates and activates a key; the short ID works ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "update",
+        "developerKeyId": "167",
+        "updateFields": {
+          "event": "deactivate"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6f7264ab-b46e-4370-98b4-941e01605025",
+      "name": "delete — delete: a deleted key cannot be deleted again, and a teacher",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKey",
+        "operation": "delete",
+        "developerKeyId": "={{ $('update — update: deactivates and activates a key; the short ID works ').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field reaches Canvas; the secret is r",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas; the secret is r": {
+      "main": [
+        [
+          {
+            "node": "create — create: Visible only applies to Site Admin keys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: Visible only applies to Site Admin keys": {
+      "main": [
+        [
+          {
+            "node": "create — create: Visible only applies to Site Admin keys (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: Visible only applies to Site Admin keys (2)": {
+      "main": [
+        [
+          {
+            "node": "update — create: Visible only applies to Site Admin keys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — create: Visible only applies to Site Admin keys": {
+      "main": [
+        [
+          {
+            "node": "getAll — create: Visible only applies to Site Admin keys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — create: Visible only applies to Site Admin keys": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the keys of the account; Return All and Limit ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the keys of the account; Return All and Limit ": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the keys of the account; Return All and Limit  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the keys of the account; Return All and Limit  (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the keys of the account; Return All and Limit  (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the keys of the account; Return All and Limit  (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Inherited off lists the accounts own keys, on lis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Inherited off lists the accounts own keys, on lis": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: a single key by ID; an unknown ID yields nothing; a ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: a single key by ID; an unknown ID yields nothing; a ": {
+      "main": [
+        [
+          {
+            "node": "setAccountBinding — setAccountBinding: switches a key on and off in the account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setAccountBinding — setAccountBinding: switches a key on and off in the account": {
+      "main": [
+        [
+          {
+            "node": "setAccountBinding — setAccountBinding: switches a key on and off in the account (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setAccountBinding — setAccountBinding: switches a key on and off in the account (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: deactivates and activates a key; the short ID works ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: deactivates and activates a key; the short ID works ": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: a deleted key cannot be deleted again, and a teacher",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

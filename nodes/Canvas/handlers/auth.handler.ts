@@ -1,5 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { isBlank, linkedIfAsked, parseJsonObjectOrEmpty, toList } from './shared';
 
 // ============================================
 // ACCESS TOKEN
@@ -18,13 +19,12 @@ export function buildAccessTokenRequest(
 			const tokenBody: Record<string, unknown> = {
 				purpose: getParam('purpose'),
 			};
-			if (additionalFields.expires_at) {
+			if (!isBlank(additionalFields.expires_at)) {
 				tokenBody.expires_at = additionalFields.expires_at;
 			}
-			if (additionalFields.scopes) {
-				tokenBody.scopes = (additionalFields.scopes as string)
-					.split(',')
-					.map((s: string) => s.trim());
+			const scopes = toList(additionalFields.scopes);
+			if (scopes.length > 0) {
+				tokenBody.scopes = scopes;
 			}
 
 			return {
@@ -47,8 +47,9 @@ export function buildAccessTokenRequest(
 			};
 
 		case 'getAll':
+			// There is no GET /users/:id/tokens; the list of manually generated tokens lives here.
 			return {
-				endpoint: `/api/v1/users/${userId}/tokens`,
+				endpoint: `/api/v1/users/${userId}/user_generated_tokens`,
 				method: 'GET',
 			};
 
@@ -56,19 +57,21 @@ export function buildAccessTokenRequest(
 			const updateFields = getParamObject('updateFields');
 			const tokenUpdate: Record<string, unknown> = {};
 
-			if (updateFields.purpose) {
+			if (!isBlank(updateFields.purpose)) {
 				tokenUpdate.purpose = updateFields.purpose;
 			}
-			if (updateFields.expires_at) {
+			if (!isBlank(updateFields.expires_at)) {
 				tokenUpdate.expires_at = updateFields.expires_at;
 			}
-			if (updateFields.regenerate !== undefined) {
+			if (updateFields.regenerate !== undefined && updateFields.regenerate !== '') {
 				tokenUpdate.regenerate = updateFields.regenerate;
 			}
-			if (updateFields.scopes) {
-				tokenUpdate.scopes = (updateFields.scopes as string)
-					.split(',')
-					.map((s: string) => s.trim());
+			const scopes = toList(updateFields.scopes);
+			if (scopes.length > 0) {
+				tokenUpdate.scopes = scopes;
+			}
+			if (Object.keys(tokenUpdate).length === 0) {
+				throw new ApplicationError('Set at least one field to update on the access token');
 			}
 
 			return {
@@ -98,7 +101,7 @@ export function buildApiTokenScopeRequest(
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
 
-			if (options.group_by) {
+			if (!isBlank(options.group_by)) {
 				qs.group_by = options.group_by;
 			}
 
@@ -118,6 +121,22 @@ export function buildApiTokenScopeRequest(
 // AUTHENTICATION PROVIDER
 // ============================================
 
+/**
+ * Settings of a provider as Canvas expects them: empty text fields that were
+ * added but not filled in are left out, federated attributes are parsed.
+ */
+function providerSettings(fields: Record<string, unknown>): Record<string, unknown> {
+	const settings: Record<string, unknown> = {};
+	for (const [key, value] of Object.entries(fields)) {
+		if (key === 'federated_attributes') {
+			settings.federated_attributes = parseJsonObjectOrEmpty(value, 'Federated Attributes');
+		} else if (!isBlank(value)) {
+			settings[key] = value;
+		}
+	}
+	return settings;
+}
+
 export function buildAuthenticationProviderRequest(
 	operation: string,
 	getParam: GetParam,
@@ -126,28 +145,15 @@ export function buildAuthenticationProviderRequest(
 	const accountId = getParam('accountId');
 
 	switch (operation) {
-		case 'create': {
-			const additionalFields = getParamObject('additionalFields');
-			const body: Record<string, unknown> = {
-				auth_type: getParam('authType'),
-				...additionalFields,
-			};
-
-			// Parse federated_attributes from JSON string if present
-			if (body.federated_attributes && typeof body.federated_attributes === 'string') {
-				try {
-					body.federated_attributes = JSON.parse(body.federated_attributes as string);
-				} catch {
-					// Leave as-is if not valid JSON
-				}
-			}
-
+		case 'create':
 			return {
 				endpoint: `/api/v1/accounts/${accountId}/authentication_providers`,
 				method: 'POST',
-				body,
+				body: {
+					auth_type: getParam('authType'),
+					...providerSettings(getParamObject('additionalFields')),
+				},
 			};
-		}
 
 		case 'delete':
 			return {
@@ -175,26 +181,15 @@ export function buildAuthenticationProviderRequest(
 
 		case 'restore':
 			return {
-				endpoint: `/api/v1/accounts/${accountId}/authentication_providers/${getParam('providerId')}`,
+				endpoint: `/api/v1/accounts/${accountId}/authentication_providers/${getParam('providerId')}/restore`,
 				method: 'PUT',
-				body: { workflow_state: 'active' },
 			};
 
 		case 'update': {
-			const updateFields = getParamObject('updateFields');
-			const body: Record<string, unknown> = {
-				...updateFields,
-			};
-
-			// Parse federated_attributes from JSON string if present
-			if (body.federated_attributes && typeof body.federated_attributes === 'string') {
-				try {
-					body.federated_attributes = JSON.parse(body.federated_attributes as string);
-				} catch {
-					// Leave as-is if not valid JSON
-				}
+			const body = providerSettings(getParamObject('updateFields'));
+			if (Object.keys(body).length === 0) {
+				throw new ApplicationError('Set at least one field to update on the authentication provider');
 			}
-
 			return {
 				endpoint: `/api/v1/accounts/${accountId}/authentication_providers/${getParam('providerId')}`,
 				method: 'PUT',
@@ -203,12 +198,15 @@ export function buildAuthenticationProviderRequest(
 		}
 
 		case 'updateSsoSettings': {
+			// An empty value is meaningful here: Canvas un-sets a setting that is sent blank.
 			const ssoSettings = getParamObject('ssoSettings');
-
+			if (Object.keys(ssoSettings).length === 0) {
+				throw new ApplicationError('Add at least one SSO setting to update');
+			}
 			return {
 				endpoint: `/api/v1/accounts/${accountId}/sso_settings`,
 				method: 'PUT',
-				body: ssoSettings,
+				body: { sso_settings: ssoSettings },
 			};
 		}
 
@@ -231,34 +229,37 @@ export function buildAuthenticationsLogRequest(
 	const options = getParamObject('options');
 	const qs: Record<string, unknown> = {};
 
-	if (options.start_time) {
+	if (!isBlank(options.start_time)) {
 		qs.start_time = options.start_time;
 	}
-	if (options.end_time) {
+	if (!isBlank(options.end_time)) {
 		qs.end_time = options.end_time;
 	}
 
+	// Canvas answers { links, events: [...], linked: { logins, accounts, users, page_views } };
+	// every event becomes one item, with the records it refers to unless switched off.
+	const list = (endpoint: string): IRequestConfig => ({
+		endpoint,
+		method: 'GET',
+		qs,
+		dataKey: 'events',
+		pageTransform: linkedIfAsked(getParam, {
+			login: 'logins',
+			account: 'accounts',
+			user: 'users',
+			page_view: 'page_views',
+		}),
+	});
+
 	switch (operation) {
 		case 'getAllByAccount':
-			return {
-				endpoint: `/api/v1/audit/authentication/accounts/${getParam('accountId')}`,
-				method: 'GET',
-				qs,
-			};
+			return list(`/api/v1/audit/authentication/accounts/${getParam('accountId')}`);
 
 		case 'getAllByLogin':
-			return {
-				endpoint: `/api/v1/audit/authentication/logins/${getParam('loginId')}`,
-				method: 'GET',
-				qs,
-			};
+			return list(`/api/v1/audit/authentication/logins/${getParam('loginId')}`);
 
 		case 'getAllByUser':
-			return {
-				endpoint: `/api/v1/audit/authentication/users/${getParam('userId')}`,
-				method: 'GET',
-				qs,
-			};
+			return list(`/api/v1/audit/authentication/users/${getParam('userId')}`);
 
 		default:
 			throw new ApplicationError(
@@ -271,6 +272,46 @@ export function buildAuthenticationsLogRequest(
 // DEVELOPER KEY
 // ============================================
 
+const DEVELOPER_KEY_TEXT_FIELDS = [
+	'client_credentials_audience',
+	'email',
+	'icon_url',
+	'name',
+	'notes',
+	'vendor_code',
+];
+const DEVELOPER_KEY_BOOLEAN_FIELDS = [
+	'allow_includes',
+	'auto_expire_tokens',
+	'require_scopes',
+	'test_cluster_only',
+	'visible',
+];
+
+function developerKeySettings(fields: Record<string, unknown>): Record<string, unknown> {
+	const developerKey: Record<string, unknown> = {};
+	for (const key of DEVELOPER_KEY_TEXT_FIELDS) {
+		if (!isBlank(fields[key])) {
+			developerKey[key] = fields[key];
+		}
+	}
+	for (const key of DEVELOPER_KEY_BOOLEAN_FIELDS) {
+		if (fields[key] !== undefined && fields[key] !== '') {
+			developerKey[key] = fields[key];
+		}
+	}
+	// One URI per line or comma-separated; Canvas wants a list.
+	const redirectUris = toList(fields.redirect_uris, /[\n,]/);
+	if (redirectUris.length > 0) {
+		developerKey.redirect_uris = redirectUris;
+	}
+	const scopes = toList(fields.scopes, /[\n,]/);
+	if (scopes.length > 0) {
+		developerKey.scopes = scopes;
+	}
+	return developerKey;
+}
+
 export function buildDeveloperKeyRequest(
 	operation: string,
 	getParam: GetParam,
@@ -279,49 +320,10 @@ export function buildDeveloperKeyRequest(
 	switch (operation) {
 		case 'create': {
 			const accountId = getParam('accountId');
-			const additionalFields = getParamObject('additionalFields');
-			const developerKey: Record<string, unknown> = {};
-
-			if (additionalFields.name) {
-				developerKey.name = additionalFields.name;
-			}
-			if (additionalFields.email) {
-				developerKey.email = additionalFields.email;
-			}
-			if (additionalFields.notes) {
-				developerKey.notes = additionalFields.notes;
-			}
-			if (additionalFields.icon_url) {
-				developerKey.icon_url = additionalFields.icon_url;
-			}
-			if (additionalFields.redirect_uris) {
-				developerKey.redirect_uris = additionalFields.redirect_uris;
-			}
-			if (additionalFields.vendor_code) {
-				developerKey.vendor_code = additionalFields.vendor_code;
-			}
-			if (additionalFields.visible !== undefined) {
-				developerKey.visible = additionalFields.visible;
-			}
-			if (additionalFields.auto_expire_tokens !== undefined) {
-				developerKey.auto_expire_tokens = additionalFields.auto_expire_tokens;
-			}
-			if (additionalFields.scopes) {
-				developerKey.scopes = (additionalFields.scopes as string)
-					.split(',')
-					.map((s: string) => s.trim());
-			}
-			if (additionalFields.require_scopes !== undefined) {
-				developerKey.require_scopes = additionalFields.require_scopes;
-			}
-			if (additionalFields.allow_includes !== undefined) {
-				developerKey.allow_includes = additionalFields.allow_includes;
-			}
-			if (additionalFields.test_cluster_only !== undefined) {
-				developerKey.test_cluster_only = additionalFields.test_cluster_only;
-			}
-			if (additionalFields.client_credentials_audience) {
-				developerKey.client_credentials_audience = additionalFields.client_credentials_audience;
+			const developerKey = developerKeySettings(getParamObject('additionalFields'));
+			// Canvas answers "developer_key is missing" when no attribute is sent.
+			if (Object.keys(developerKey).length === 0) {
+				throw new ApplicationError('Set at least one field (for example Name) to create a developer key');
 			}
 
 			return {
@@ -342,8 +344,13 @@ export function buildDeveloperKeyRequest(
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
 
-			if (options.inherited !== undefined) {
-				qs.inherited = options.inherited;
+			// Canvas only checks that the parameter is present: "inherited=false" would still
+			// list the inherited keys.
+			if (options.inherited === true || options.inherited === 'true') {
+				qs.inherited = true;
+			}
+			if (!isBlank(options.id)) {
+				qs.id = options.id;
 			}
 
 			return {
@@ -353,50 +360,21 @@ export function buildDeveloperKeyRequest(
 			};
 		}
 
+		case 'setAccountBinding':
+			return {
+				endpoint: `/api/v1/accounts/${getParam('accountId')}/developer_keys/${getParam('developerKeyId')}/developer_key_account_bindings`,
+				method: 'POST',
+				body: { developer_key_account_binding: { workflow_state: getParam('bindingState', 'on') } },
+			};
+
 		case 'update': {
 			const updateFields = getParamObject('updateFields');
-			const developerKey: Record<string, unknown> = {};
-
-			if (updateFields.name) {
-				developerKey.name = updateFields.name;
+			const developerKey = developerKeySettings(updateFields);
+			if (!isBlank(updateFields.event)) {
+				developerKey.event = updateFields.event;
 			}
-			if (updateFields.email) {
-				developerKey.email = updateFields.email;
-			}
-			if (updateFields.notes) {
-				developerKey.notes = updateFields.notes;
-			}
-			if (updateFields.icon_url) {
-				developerKey.icon_url = updateFields.icon_url;
-			}
-			if (updateFields.redirect_uris) {
-				developerKey.redirect_uris = updateFields.redirect_uris;
-			}
-			if (updateFields.vendor_code) {
-				developerKey.vendor_code = updateFields.vendor_code;
-			}
-			if (updateFields.visible !== undefined) {
-				developerKey.visible = updateFields.visible;
-			}
-			if (updateFields.auto_expire_tokens !== undefined) {
-				developerKey.auto_expire_tokens = updateFields.auto_expire_tokens;
-			}
-			if (updateFields.scopes) {
-				developerKey.scopes = (updateFields.scopes as string)
-					.split(',')
-					.map((s: string) => s.trim());
-			}
-			if (updateFields.require_scopes !== undefined) {
-				developerKey.require_scopes = updateFields.require_scopes;
-			}
-			if (updateFields.allow_includes !== undefined) {
-				developerKey.allow_includes = updateFields.allow_includes;
-			}
-			if (updateFields.test_cluster_only !== undefined) {
-				developerKey.test_cluster_only = updateFields.test_cluster_only;
-			}
-			if (updateFields.client_credentials_audience) {
-				developerKey.client_credentials_audience = updateFields.client_credentials_audience;
+			if (Object.keys(developerKey).length === 0) {
+				throw new ApplicationError('Set at least one field to update on the developer key');
 			}
 
 			return {

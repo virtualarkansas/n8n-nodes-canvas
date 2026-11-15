@@ -1,0 +1,1966 @@
+{
+  "name": "Canvas battery — sisImport",
+  "nodes": [
+    {
+      "id": "d0983359-fd25-4ea2-bdf0-1aaf9be2659c",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "12abc4d6-78c2-4f1b-80d7-7f84b5446d03",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "33a22275-fca9-4652-9b5f-94d145c109d5",
+              "name": "accountRubricId",
+              "value": "2",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "8662d855-1753-4e7e-9221-3e5f139d1dd5",
+      "name": "create — create: imports CSV text; unicode, quoted fields and Windows",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "﻿user_id,login_id,first_name,last_name,email,status\r\nn8nbat_simwi3si3bmuf1_u1,n8nbat_simwi3si3bmuf1_u1@example.edu,Zoë,Ünïcødé 测试,n8nbat_simwi3si3bmuf1_u1@example.edu,active\r\nn8nbat_simwi3si3bmuf1_u2,n8nbat_simwi3si3bmuf1_u2@example.edu,\"Anne-Marie \"\"Annie\"\"\",\"O'Neil, Jr.\",n8nbat_simwi3si3bmuf1_u2@example.edu,active\r\nn8nbat_simwi3si3bmuf1_u3,n8nbat_simwi3si3bmuf1_u3@example.edu,محمد,الهاشمي,n8nbat_simwi3si3bmuf1_u3@example.edu,active\r\n",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d07c5153-193c-44e7-83e5-027c37931f9b",
+      "name": "get — create: imports CSV text; unicode, quoted fields and Windows",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — create: imports CSV text; unicode, quoted fields and Windows').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "55f1df4b-ca3b-499c-b822-d0be0bfd47ee",
+      "name": "create — create: the non-destructive options reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_opt1,n8nbat_simwi3si3bmuf1_opt1@example.edu,Option,One,n8nbat_simwi3si3bmuf1_opt1@example.edu,active\n",
+        "additionalFields": {
+          "extension": "csv",
+          "import_type": "instructure_csv",
+          "override_sis_stickiness": true,
+          "add_sis_stickiness": true,
+          "clear_sis_stickiness": false,
+          "skip_deletes": true,
+          "update_sis_id_if_login_claimed": true,
+          "change_threshold": 75,
+          "diff_row_count_threshold": 500,
+          "diffing_data_set_identifier": "n8nbat_simwi3si3bmuf1_series_options",
+          "diffing_remaster_data_set": true,
+          "diffing_drop_status": "inactive",
+          "diffing_user_remove_status": "suspended"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7060de3f-78e5-4456-bce2-c1b1e990f7b3",
+      "name": "get — create: the non-destructive options reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — create: the non-destructive options reach Canvas').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7136d90d-4c44-4c87-98d8-5d4c9a7cf474",
+      "name": "create — create: the non-destructive options reach Canvas (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_opt1,n8nbat_simwi3si3bmuf1_opt1@example.edu,Option,One,n8nbat_simwi3si3bmuf1_opt1@example.edu,active\n",
+        "additionalFields": {
+          "override_sis_stickiness": false,
+          "skip_deletes": false,
+          "update_sis_id_if_login_claimed": false,
+          "diffing_remaster_data_set": false,
+          "change_threshold": 0,
+          "diff_row_count_threshold": 0
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "43ab72d2-5f43-412f-ab0e-6a193c28268e",
+      "name": "get — create: the non-destructive options reach Canvas (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — create: the non-destructive options reach Canvas (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3d092a56-80d9-4a72-a37d-b89b66a16e53",
+      "name": "create — create: Skip Deletes keeps a user the file marks as deleted",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_u1,n8nbat_simwi3si3bmuf1_u1@example.edu,Zoë,Ünïcødé 测试,n8nbat_simwi3si3bmuf1_u1@example.edu,deleted\n",
+        "additionalFields": {
+          "skip_deletes": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2775ffb8-2dca-4e63-8229-065f9c9f0755",
+      "name": "get — create: Skip Deletes keeps a user the file marks as deleted",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — create: Skip Deletes keeps a user the file marks as deleted').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9239b7bb-808b-4c20-90a3-93ba62aec399",
+      "name": "create — create: values changed by hand are sticky unless Override SI",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_u2,n8nbat_simwi3si3bmuf1_u2@example.edu,From,SIS,n8nbat_simwi3si3bmuf1_u2@example.edu,active\n",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "97a54287-bd16-4501-9be3-e69d8d959294",
+      "name": "get — create: values changed by hand are sticky unless Override SI",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — create: values changed by hand are sticky unless Override SI').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fbd53890-ae1f-4447-8379-48fa233aadb3",
+      "name": "create — create: values changed by hand are sticky unless Override SI (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_u2,n8nbat_simwi3si3bmuf1_u2@example.edu,From,SIS,n8nbat_simwi3si3bmuf1_u2@example.edu,active\n",
+        "additionalFields": {
+          "override_sis_stickiness": true,
+          "clear_sis_stickiness": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "84d27814-c98d-49c2-a8e2-6d1b267c78fb",
+      "name": "get — create: values changed by hand are sticky unless Override SI (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — create: values changed by hand are sticky unless Override SI (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6433cc3d-3f2b-424e-aea7-ffd5e9595255",
+      "name": "create — create: values changed by hand are sticky unless Override SI (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_u2,n8nbat_simwi3si3bmuf1_u2@example.edu,Again,SIS,n8nbat_simwi3si3bmuf1_u2@example.edu,active\n",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "801051fb-e7e3-4de3-b648-919f26aefc47",
+      "name": "get — create: values changed by hand are sticky unless Override SI (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — create: values changed by hand are sticky unless Override SI (3)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c732076f-f59f-4614-8313-d11888cde359",
+      "name": "create — create: values changed by hand are sticky unless Override SI (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_u2,n8nbat_simwi3si3bmuf1_u2@example.edu,Sticky,Import,n8nbat_simwi3si3bmuf1_u2@example.edu,active\n",
+        "additionalFields": {
+          "override_sis_stickiness": true,
+          "add_sis_stickiness": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1663e50c-7d65-4289-af8f-dd43d3e5c904",
+      "name": "get — create: values changed by hand are sticky unless Override SI (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — create: values changed by hand are sticky unless Override SI (4)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5d8cce51-3b3f-4b89-ae9b-adf0fc8df5cf",
+      "name": "create — create: values changed by hand are sticky unless Override SI (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_u2,n8nbat_simwi3si3bmuf1_u2@example.edu,Ignored,Later,n8nbat_simwi3si3bmuf1_u2@example.edu,active\n",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7f89a0f8-25ac-42ef-bd64-d19a17921e30",
+      "name": "get — create: values changed by hand are sticky unless Override SI (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — create: values changed by hand are sticky unless Override SI (5)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c0276202-152d-4521-a9d4-9d8758fd297f",
+      "name": "create — create: Update SIS ID If Login Claimed moves a login that an",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_claimed_new,n8nbat_simwi3si3bmuf1_claimed@example.edu,Claimed,Login,n8nbat_simwi3si3bmuf1_claimed@example.edu,active\n",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "930a799c-2410-4136-ae6b-eedd16fe532a",
+      "name": "get — create: Update SIS ID If Login Claimed moves a login that an",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — create: Update SIS ID If Login Claimed moves a login that an').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a8a97c27-4839-4ccc-a118-6ea87b2c137f",
+      "name": "create — create: Update SIS ID If Login Claimed moves a login that an (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_claimed_new,n8nbat_simwi3si3bmuf1_claimed@example.edu,Claimed,Login,n8nbat_simwi3si3bmuf1_claimed@example.edu,active\n",
+        "additionalFields": {
+          "update_sis_id_if_login_claimed": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0e2bb215-2f94-49a1-b806-e93fcb790ef7",
+      "name": "get — create: Update SIS ID If Login Claimed moves a login that an (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — create: Update SIS ID If Login Claimed moves a login that an (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "62ce1eaf-5719-4877-b4fa-4a77c53e3e23",
+      "name": "create — create: diffing applies only the difference to the previous ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_d1,n8nbat_simwi3si3bmuf1_d1@example.edu,Diff,One,n8nbat_simwi3si3bmuf1_d1@example.edu,active\nn8nbat_simwi3si3bmuf1_d2,n8nbat_simwi3si3bmuf1_d2@example.edu,Diff,Two,n8nbat_simwi3si3bmuf1_d2@example.edu,active\n",
+        "additionalFields": {
+          "diffing_data_set_identifier": "n8nbat_simwi3si3bmuf1_series_diff"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7db8b7d3-be37-4311-9e93-67fe7ae05552",
+      "name": "get — create: diffing applies only the difference to the previous ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — create: diffing applies only the difference to the previous ').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fe1e6005-33e7-488f-9c0d-fa41028bb830",
+      "name": "create — create: diffing applies only the difference to the previous  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_d1,n8nbat_simwi3si3bmuf1_d1@example.edu,Diff,One,n8nbat_simwi3si3bmuf1_d1@example.edu,active\n",
+        "additionalFields": {
+          "diffing_data_set_identifier": "n8nbat_simwi3si3bmuf1_series_diff",
+          "diffing_user_remove_status": "suspended"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8de1a18b-c915-4d55-918e-f17cee0b9e49",
+      "name": "get — create: diffing applies only the difference to the previous  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — create: diffing applies only the difference to the previous  (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f1bdfc66-edae-4798-809c-063df0907b56",
+      "name": "get — create: binary files from a previous node: a CSV, a zip and ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "172"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c2544454-a401-4be5-8113-f2202db50ffd",
+      "name": "get — create: binary files from a previous node: a CSV, a zip and  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "173"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2845aad5-4eed-4814-900a-1cc9e8b20eaf",
+      "name": "get — create: binary files from a previous node: a CSV, a zip and  (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "174"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "83a8f3c6-adef-4e93-be20-261ea720494a",
+      "name": "create — waitForCompletion: several imports are waited for in one run",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_wait1,n8nbat_simwi3si3bmuf1_wait1@example.edu,Wait,One,n8nbat_simwi3si3bmuf1_wait1@example.edu,active\n",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "60ad9546-b222-4abb-8084-bd003bae3a8b",
+      "name": "create — waitForCompletion: several imports are waited for in one run (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "this,is,not\na,sis,file\n",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "16e39461-bce0-4b95-b893-59be28802d9f",
+      "name": "get — create: a zip file as Base64, from several items",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "178"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2e71b3a6-f1ca-441e-aa12-6f2cde362b09",
+      "name": "get — create: a zip file as Base64, from several items (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "177"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "da042911-ad7d-4bf7-bd55-dcb84b17b95a",
+      "name": "get — create: a file Canvas cannot use ends as a failed import; it",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "179"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "eccbb2d8-d482-4b23-ae6a-ff556a6994dd",
+      "name": "create — create: a file Canvas cannot use ends as a failed import; it",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_ok1,n8nbat_simwi3si3bmuf1_ok1@example.edu,Fine,Row,n8nbat_simwi3si3bmuf1_ok1@example.edu,active\nn8nbat_simwi3si3bmuf1_bad1,,No,Login,,active\n",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "530456db-958f-4192-81ae-d91e31a86eaa",
+      "name": "get — create: a file Canvas cannot use ends as a failed import; it (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — create: a file Canvas cannot use ends as a failed import; it').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4ea3f9b0-ed42-4ebe-9cd9-4b33ef5254f5",
+      "name": "getAll — getAll: one item per import, newest first, across pages",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "eaac5af3-4f90-4a00-859b-d0c1abff2c51",
+      "name": "getAll — getAll: one item per import, newest first, across pages (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c1690354-e120-4479-84b4-8f47fb89da4d",
+      "name": "getAll — getAll: one item per import, newest first, across pages (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0c60e230-86f7-4158-b2b3-81ba32f898ed",
+      "name": "getAll — getAll: filters by state and by creation time",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "options": {
+          "workflow_state": [
+            "failed_with_messages",
+            "imported_with_messages"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6563a4f6-c6ef-4088-a56a-40219858b5e5",
+      "name": "getAll — getAll: filters by state and by creation time (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "options": {
+          "created_since": "2026-11-15T17:24:24Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5f8acd51-1550-41cd-8457-b1078a09da09",
+      "name": "getAll — getAll: filters by state and by creation time (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "options": {
+          "created_before": "2026-11-15T17:24:24Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "310c3ca9-3c00-480a-b058-58f0c6e1b6d4",
+      "name": "getAll — getAll: filters by state and by creation time (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "options": {
+          "created_before": "2020-01-01T00:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6ddbee4e-c3bd-4dc2-9681-c828e6625033",
+      "name": "create — restoreStates: undoes the deletions of an import",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "fileSource": "text",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi3si3bmuf1_u3,n8nbat_simwi3si3bmuf1_u3@example.edu,محمد,الهاشمي,n8nbat_simwi3si3bmuf1_u3@example.edu,deleted\n",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3aba53df-0445-4c69-84da-e42cacb2c26b",
+      "name": "get — restoreStates: undoes the deletions of an import",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('create — restoreStates: undoes the deletions of an import').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1fe6e126-f484-4bb3-9a91-235f4ea1f68e",
+      "name": "restoreStates — restoreStates: undoes the deletions of an import",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "restoreStates",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "={{ $('get — restoreStates: undoes the deletions of an import').first().json.id }}",
+        "options": {
+          "undelete_only": true,
+          "unconclude_only": false,
+          "batch_mode": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7fa02092-4030-4664-8142-7883ab61c3fc",
+      "name": "getCurrent — getCurrent, abort and abortAllPending: while one import runs",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "getCurrent",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9e3aa117-a1c6-4118-b1ff-21d54103d405",
+      "name": "abort — getCurrent, abort and abortAllPending: while one import runs",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "abort",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "importId": "183"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "02705ae8-6a93-4c3c-b9d1-599f72dc9044",
+      "name": "abortAllPending — getCurrent, abort and abortAllPending: while one import runs",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImport",
+        "operation": "abortAllPending",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: imports CSV text; unicode, quoted fields and Windows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: imports CSV text; unicode, quoted fields and Windows": {
+      "main": [
+        [
+          {
+            "node": "get — create: imports CSV text; unicode, quoted fields and Windows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: imports CSV text; unicode, quoted fields and Windows": {
+      "main": [
+        [
+          {
+            "node": "create — create: the non-destructive options reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: the non-destructive options reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "get — create: the non-destructive options reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: the non-destructive options reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create: the non-destructive options reach Canvas (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: the non-destructive options reach Canvas (2)": {
+      "main": [
+        [
+          {
+            "node": "get — create: the non-destructive options reach Canvas (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: the non-destructive options reach Canvas (2)": {
+      "main": [
+        [
+          {
+            "node": "create — create: Skip Deletes keeps a user the file marks as deleted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: Skip Deletes keeps a user the file marks as deleted": {
+      "main": [
+        [
+          {
+            "node": "get — create: Skip Deletes keeps a user the file marks as deleted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: Skip Deletes keeps a user the file marks as deleted": {
+      "main": [
+        [
+          {
+            "node": "create — create: values changed by hand are sticky unless Override SI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: values changed by hand are sticky unless Override SI": {
+      "main": [
+        [
+          {
+            "node": "get — create: values changed by hand are sticky unless Override SI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: values changed by hand are sticky unless Override SI": {
+      "main": [
+        [
+          {
+            "node": "create — create: values changed by hand are sticky unless Override SI (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: values changed by hand are sticky unless Override SI (2)": {
+      "main": [
+        [
+          {
+            "node": "get — create: values changed by hand are sticky unless Override SI (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: values changed by hand are sticky unless Override SI (2)": {
+      "main": [
+        [
+          {
+            "node": "create — create: values changed by hand are sticky unless Override SI (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: values changed by hand are sticky unless Override SI (3)": {
+      "main": [
+        [
+          {
+            "node": "get — create: values changed by hand are sticky unless Override SI (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: values changed by hand are sticky unless Override SI (3)": {
+      "main": [
+        [
+          {
+            "node": "create — create: values changed by hand are sticky unless Override SI (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: values changed by hand are sticky unless Override SI (4)": {
+      "main": [
+        [
+          {
+            "node": "get — create: values changed by hand are sticky unless Override SI (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: values changed by hand are sticky unless Override SI (4)": {
+      "main": [
+        [
+          {
+            "node": "create — create: values changed by hand are sticky unless Override SI (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: values changed by hand are sticky unless Override SI (5)": {
+      "main": [
+        [
+          {
+            "node": "get — create: values changed by hand are sticky unless Override SI (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: values changed by hand are sticky unless Override SI (5)": {
+      "main": [
+        [
+          {
+            "node": "create — create: Update SIS ID If Login Claimed moves a login that an",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: Update SIS ID If Login Claimed moves a login that an": {
+      "main": [
+        [
+          {
+            "node": "get — create: Update SIS ID If Login Claimed moves a login that an",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: Update SIS ID If Login Claimed moves a login that an": {
+      "main": [
+        [
+          {
+            "node": "create — create: Update SIS ID If Login Claimed moves a login that an (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: Update SIS ID If Login Claimed moves a login that an (2)": {
+      "main": [
+        [
+          {
+            "node": "get — create: Update SIS ID If Login Claimed moves a login that an (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: Update SIS ID If Login Claimed moves a login that an (2)": {
+      "main": [
+        [
+          {
+            "node": "create — create: diffing applies only the difference to the previous ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: diffing applies only the difference to the previous ": {
+      "main": [
+        [
+          {
+            "node": "get — create: diffing applies only the difference to the previous ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: diffing applies only the difference to the previous ": {
+      "main": [
+        [
+          {
+            "node": "create — create: diffing applies only the difference to the previous  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: diffing applies only the difference to the previous  (2)": {
+      "main": [
+        [
+          {
+            "node": "get — create: diffing applies only the difference to the previous  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: diffing applies only the difference to the previous  (2)": {
+      "main": [
+        [
+          {
+            "node": "get — create: binary files from a previous node: a CSV, a zip and ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: binary files from a previous node: a CSV, a zip and ": {
+      "main": [
+        [
+          {
+            "node": "get — create: binary files from a previous node: a CSV, a zip and  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: binary files from a previous node: a CSV, a zip and  (2)": {
+      "main": [
+        [
+          {
+            "node": "get — create: binary files from a previous node: a CSV, a zip and  (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: binary files from a previous node: a CSV, a zip and  (3)": {
+      "main": [
+        [
+          {
+            "node": "create — waitForCompletion: several imports are waited for in one run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — waitForCompletion: several imports are waited for in one run": {
+      "main": [
+        [
+          {
+            "node": "create — waitForCompletion: several imports are waited for in one run (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — waitForCompletion: several imports are waited for in one run (2)": {
+      "main": [
+        [
+          {
+            "node": "get — create: a zip file as Base64, from several items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: a zip file as Base64, from several items": {
+      "main": [
+        [
+          {
+            "node": "get — create: a zip file as Base64, from several items (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: a zip file as Base64, from several items (2)": {
+      "main": [
+        [
+          {
+            "node": "get — create: a file Canvas cannot use ends as a failed import; it",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: a file Canvas cannot use ends as a failed import; it": {
+      "main": [
+        [
+          {
+            "node": "create — create: a file Canvas cannot use ends as a failed import; it",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: a file Canvas cannot use ends as a failed import; it": {
+      "main": [
+        [
+          {
+            "node": "get — create: a file Canvas cannot use ends as a failed import; it (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: a file Canvas cannot use ends as a failed import; it (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: one item per import, newest first, across pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: one item per import, newest first, across pages": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: one item per import, newest first, across pages (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: one item per import, newest first, across pages (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: one item per import, newest first, across pages (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: one item per import, newest first, across pages (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: filters by state and by creation time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: filters by state and by creation time": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: filters by state and by creation time (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: filters by state and by creation time (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: filters by state and by creation time (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: filters by state and by creation time (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: filters by state and by creation time (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: filters by state and by creation time (4)": {
+      "main": [
+        [
+          {
+            "node": "create — restoreStates: undoes the deletions of an import",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — restoreStates: undoes the deletions of an import": {
+      "main": [
+        [
+          {
+            "node": "get — restoreStates: undoes the deletions of an import",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — restoreStates: undoes the deletions of an import": {
+      "main": [
+        [
+          {
+            "node": "restoreStates — restoreStates: undoes the deletions of an import",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "restoreStates — restoreStates: undoes the deletions of an import": {
+      "main": [
+        [
+          {
+            "node": "getCurrent — getCurrent, abort and abortAllPending: while one import runs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCurrent — getCurrent, abort and abortAllPending: while one import runs": {
+      "main": [
+        [
+          {
+            "node": "abort — getCurrent, abort and abortAllPending: while one import runs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "abort — getCurrent, abort and abortAllPending: while one import runs": {
+      "main": [
+        [
+          {
+            "node": "abortAllPending — getCurrent, abort and abortAllPending: while one import runs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

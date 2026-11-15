@@ -1,0 +1,280 @@
+{
+  "name": "Canvas battery — conversation",
+  "nodes": [
+    {
+      "id": "fbf7c272-11ab-439f-9b99-99a660113205",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "e28eb31f-4529-4e8f-aca0-918a53044001",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "8cee2105-f566-4ef6-b91e-6acc62b45805",
+      "name": "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "conversation",
+        "operation": "getDeleted",
+        "userId": "634",
+        "options": {
+          "conversation_id": "433"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0eb37102-e0b4-4f58-858f-9ad45b0f80fd",
+      "name": "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "conversation",
+        "operation": "getDeleted",
+        "userId": "={{ $('getDeleted — deleteMessages -> getDeleted -> restore: a student removes m').first().json.user_id }}",
+        "options": {
+          "conversation_id": "433",
+          "deleted_after": "2026-11-15T17:26:44.432Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "41804973-a78e-4bca-b528-3630727555a8",
+      "name": "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "conversation",
+        "operation": "getDeleted",
+        "userId": "={{ $('getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (2)').first().json.user_id }}",
+        "options": {
+          "conversation_id": "433",
+          "deleted_before": "2026-11-15T17:26:44.432Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f4696256-6c64-4e1a-b45a-5022e86933f1",
+      "name": "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "conversation",
+        "operation": "getDeleted",
+        "userId": "={{ $('getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (2)').first().json.user_id }}",
+        "options": {
+          "conversation_id": "433",
+          "deleted_after": "2026-11-15T18:26:51.514Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dff1b769-0a65-4882-971c-8b2dc203ddae",
+      "name": "getDeleted — delete -> getDeleted: more deleted messages than a page are ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "conversation",
+        "operation": "getDeleted",
+        "userId": "635"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f1248db9-b714-4c4c-a312-00760c900701",
+      "name": "deleteForAll — deleteForAll: a site admin removes a conversation from every",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "conversation",
+        "operation": "deleteForAll",
+        "conversationId": "440"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m": {
+      "main": [
+        [
+          {
+            "node": "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (2)": {
+      "main": [
+        [
+          {
+            "node": "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (3)": {
+      "main": [
+        [
+          {
+            "node": "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getDeleted — deleteMessages -> getDeleted -> restore: a student removes m (4)": {
+      "main": [
+        [
+          {
+            "node": "getDeleted — delete -> getDeleted: more deleted messages than a page are ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getDeleted — delete -> getDeleted: more deleted messages than a page are ": {
+      "main": [
+        [
+          {
+            "node": "deleteForAll — deleteForAll: a site admin removes a conversation from every",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

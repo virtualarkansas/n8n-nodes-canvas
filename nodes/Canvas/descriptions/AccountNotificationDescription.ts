@@ -27,13 +27,14 @@ export const accountNotificationOperations: INodeProperties[] = [
 			{
 				name: 'Get',
 				value: 'get',
-				description: 'Get a single notification',
+				description: 'Get a notification that is currently shown to the current user',
 				action: 'Get a notification',
 			},
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many notifications',
+				description:
+					'Get the notifications currently shown to the current user or, as an admin, every notification of the account. Canvas caches the lists of current and past notifications for up to 10 minutes.',
 				action: 'Get many notifications',
 			},
 			{
@@ -105,7 +106,8 @@ export const accountNotificationFields: INodeProperties[] = [
 				name: 'include_all',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to include all global announcements regardless of role or availability (admin only)',
+				description:
+					'Whether to include all global announcements regardless of role or availability, including future ones (admin only). For sub-accounts Canvas caches this list for the rest of the day.',
 			},
 			{
 				displayName: 'Include Past',
@@ -153,10 +155,11 @@ export const accountNotificationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['accountNotification'],
-				operation: ['create'],
+				operation: ['create', 'update'],
 			},
 		},
-		description: 'The message body of the notification',
+		description:
+			'The message body of the notification (HTML is allowed). Canvas also requires it on every update: send the current text again to keep it.',
 	},
 	{
 		displayName: 'Start At',
@@ -218,7 +221,16 @@ export const accountNotificationFields: INodeProperties[] = [
 				name: 'roles',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of roles to target (e.g., "StudentEnrollment,TeacherEnrollment"). Omit to send to all roles.',
+				description:
+					'Comma-separated list of role names or role IDs to show the notification to (e.g. "StudentEnrollment,TeacherEnrollment,AccountAdmin"; "NilEnrollment" targets users without enrollments). Leave empty to show it to everyone.',
+			},
+			{
+				displayName: 'Send Message',
+				name: 'send_message',
+				type: 'boolean',
+				default: true,
+				description:
+					'Whether to also send the notification to users through their notification channels when it starts',
 			},
 		],
 	},
@@ -261,21 +273,20 @@ export const accountNotificationFields: INodeProperties[] = [
 				description: 'The icon to display with the notification',
 			},
 			{
-				displayName: 'Message',
-				name: 'message',
-				type: 'string',
-				typeOptions: {
-					rows: 4,
-				},
-				default: '',
-				description: 'The message body of the notification',
-			},
-			{
 				displayName: 'Roles',
 				name: 'roles',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of roles to target (e.g., "StudentEnrollment,TeacherEnrollment")',
+				description:
+					'Comma-separated list of role names or role IDs to show the notification to (e.g. "StudentEnrollment,TeacherEnrollment"). Canvas replaces the role list on every update: when this is left out, the notification is shown to everyone again.',
+			},
+			{
+				displayName: 'Send Message',
+				name: 'send_message',
+				type: 'boolean',
+				default: true,
+				description:
+					'Whether to (re)send the notification to users through their notification channels',
 			},
 			{
 				displayName: 'Start At',

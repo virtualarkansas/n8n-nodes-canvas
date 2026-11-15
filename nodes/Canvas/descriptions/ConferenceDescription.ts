@@ -13,15 +13,21 @@ export const conferenceOperations: INodeProperties[] = [
 		},
 		options: [
 			{
+				name: 'Create',
+				value: 'create',
+				description: 'Create a web conference in a course or group and invite all its members',
+				action: 'Create a conference',
+			},
+			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many conferences',
+				description: 'Get the conferences of a course or group',
 				action: 'Get many conferences',
 			},
 			{
 				name: 'Get Many for User',
 				value: 'getAllForUser',
-				description: 'Get all conferences for the current user',
+				description: 'Get the conferences the current user is invited to, across courses and groups',
 				action: 'Get all conferences for user',
 			},
 		],
@@ -31,7 +37,7 @@ export const conferenceOperations: INodeProperties[] = [
 
 export const conferenceFields: INodeProperties[] = [
 	// ----------------------------------
-	//         conference: getAll
+	//         conference: getAll, create
 	// ----------------------------------
 	{
 		displayName: 'Context',
@@ -42,7 +48,7 @@ export const conferenceFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['conference'],
-				operation: ['getAll'],
+				operation: ['getAll', 'create'],
 			},
 		},
 		options: [
@@ -55,7 +61,7 @@ export const conferenceFields: INodeProperties[] = [
 				value: 'group',
 			},
 		],
-		description: 'The context to list conferences from',
+		description: 'Whether the conference belongs to a course or to a group',
 	},
 	{
 		displayName: 'Course ID',
@@ -66,7 +72,7 @@ export const conferenceFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['conference'],
-				operation: ['getAll'],
+				operation: ['getAll', 'create'],
 				context: ['course'],
 			},
 		},
@@ -81,11 +87,78 @@ export const conferenceFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['conference'],
-				operation: ['getAll'],
+				operation: ['getAll', 'create'],
 				context: ['group'],
 			},
 		},
 		description: 'The ID of the group',
+	},
+
+	// ----------------------------------
+	//         conference: create
+	// ----------------------------------
+	{
+		displayName: 'Title',
+		name: 'title',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['conference'],
+				operation: ['create'],
+			},
+		},
+		description: 'The title of the conference',
+	},
+	{
+		displayName: 'Conference Type',
+		name: 'conferenceType',
+		type: 'string',
+		required: true,
+		default: 'BigBlueButton',
+		displayOptions: {
+			show: {
+				resource: ['conference'],
+				operation: ['create'],
+			},
+		},
+		description: 'The conferencing tool, as configured on your Canvas instance. Use the "conference_type" value of an existing conference, e.g. "BigBlueButton".',
+	},
+	{
+		displayName: 'Additional Fields',
+		name: 'additionalFields',
+		type: 'collection',
+		placeholder: 'Add Field',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['conference'],
+				operation: ['create'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Description',
+				name: 'description',
+				type: 'string',
+				typeOptions: {
+					rows: 4,
+				},
+				default: '',
+				description: 'A description of the conference',
+			},
+			{
+				displayName: 'Duration',
+				name: 'duration',
+				type: 'number',
+				typeOptions: {
+					minValue: 1,
+				},
+				default: 60,
+				description: 'The planned length of the conference in minutes',
+			},
+		],
 	},
 
 	// ----------------------------------
@@ -112,8 +185,8 @@ export const conferenceFields: INodeProperties[] = [
 					{ name: 'All', value: '' },
 					{ name: 'Live', value: 'live' },
 				],
-				default: '',
-				description: 'Filter conferences by state (live returns only active conferences)',
+				default: 'live',
+				description: 'Whether to return all conferences or only those that have started and not yet ended',
 			},
 		],
 	},

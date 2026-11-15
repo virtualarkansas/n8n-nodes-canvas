@@ -1,0 +1,19 @@
+{
+	"node": "@kyancey-va/n8n-nodes-canvas.canvas",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Productivity", "Miscellaneous"],
+	"alias": ["Canvas", "LMS", "Instructure", "Learning", "Course", "Education", "School", "Gradebook", "SIS"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://github.com/virtualarkansas/n8n-nodes-canvas?tab=readme-ov-file#configuration"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/virtualarkansas/n8n-nodes-canvas?tab=readme-ov-file#canvas-lms"
+			}
+		]
+	}
+}

@@ -1,9 +1,33 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import {
+	downloadIfAsked,
+	isBlank,
+	parseJson,
+	parseJsonObjectOrEmpty,
+	pollUntil,
+	stateIn,
+	toList,
+} from './shared';
+
+/** Where a report keeps its generated file. A report that is not complete has none. */
+const REPORT_FILE = {
+	urlField: 'attachment.url',
+	fileNameField: 'attachment.filename',
+	contentTypeField: 'attachment.content-type',
+	optional: true,
+};
 
 // ============================================
 // Account
 // ============================================
+
+const ACCOUNT_LIST_ENDPOINTS: Record<string, string> = {
+	all: '/api/v1/accounts',
+	courseAdmin: '/api/v1/course_accounts',
+	courseCreation: '/api/v1/course_creation_accounts',
+	manageable: '/api/v1/manageable_accounts',
+};
 
 export function buildAccountRequest(
 	operation: string,
@@ -13,38 +37,195 @@ export function buildAccountRequest(
 	const accountId = getParam('accountId');
 
 	switch (operation) {
-		case 'get':
+		case 'get': {
+			const options = getParamObject('options');
+			const includes = toList(options.includes);
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}`,
+				// Canvas reads `includes[]` here (not `include[]` as on the list endpoints).
+				...(includes.length > 0 ? { qs: { includes } } : {}),
 			};
+		}
 
-		case 'getAll':
+		case 'getAll': {
+			const scope = getParam('accountScope', 'all');
+			const endpoint = ACCOUNT_LIST_ENDPOINTS[scope];
+			if (!endpoint) {
+				throw new ApplicationError(`Unknown value "${scope}" for Accounts to List`);
+			}
+			const include = scope === 'all' ? toList(getParamObject('options').include) : [];
 			return {
 				method: 'GET',
-				endpoint: '/api/v1/accounts',
-				qs: getParamObject('options'),
+				endpoint,
+				...(include.length > 0 ? { qs: { include } } : {}),
 			};
+		}
 
-		case 'update':
+		case 'update': {
+			const updateFields = getParamObject('updateFields');
+			const account: Record<string, unknown> = {};
+			for (const [key, value] of Object.entries(updateFields)) {
+				if (key === 'settings' || key === 'services') {
+					const parsed = parseJsonObjectOrEmpty(
+						value,
+						key === 'settings' ? 'Settings (JSON)' : 'Services (JSON)',
+					);
+					if (Object.keys(parsed).length > 0) {
+						account[key] = parsed;
+					}
+				} else if (key === 'course_template_id' || key === 'sis_account_id') {
+					// An empty value is meaningful: it clears the SIS ID / inherits the template.
+					account[key] = value;
+				} else if (!isBlank(value)) {
+					account[key] = value;
+				}
+			}
 			return {
 				method: 'PUT',
 				endpoint: `/api/v1/accounts/${accountId}`,
-				body: { account: getParamObject('updateFields') },
+				body: { account },
 			};
+		}
 
-		case 'createSubAccount':
+		case 'createSubAccount': {
+			const additionalFields = getParamObject('additionalFields');
+			const account: Record<string, unknown> = { name: getParam('name') };
+			for (const [key, value] of Object.entries(additionalFields)) {
+				if (!isBlank(value)) {
+					account[key] = value;
+				}
+			}
 			return {
 				method: 'POST',
 				endpoint: `/api/v1/accounts/${accountId}/sub_accounts`,
-				body: { account: { name: getParam('name'), ...getParamObject('additionalFields') } },
+				body: { account },
+			};
+		}
+
+		case 'deleteSubAccount':
+			return {
+				method: 'DELETE',
+				endpoint: `/api/v1/accounts/${accountId}/sub_accounts/${getParam('subAccountId')}`,
 			};
 
-		case 'getSubAccounts':
+		case 'getSubAccounts': {
+			const options = getParamObject('options');
+			const qs: Record<string, unknown> = {};
+			const include = toList(options.include);
+			if (include.length > 0) {
+				qs.include = include;
+			}
+			if (!isBlank(options.order)) {
+				qs.order = options.order;
+			}
+			if (options.recursive !== undefined) {
+				qs.recursive = options.recursive;
+			}
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/sub_accounts`,
-				qs: getParamObject('options'),
+				qs,
+			};
+		}
+
+		case 'getCourses': {
+			const filters = getParamObject('filters');
+			const options = getParamObject('options');
+			const qs: Record<string, unknown> = {};
+
+			for (const key of [
+				'blueprint',
+				'blueprint_associated',
+				'completed',
+				'homeroom',
+				'public',
+				'published',
+				'with_enrollments',
+			]) {
+				if (filters[key] !== undefined && filters[key] !== '') {
+					qs[key] = filters[key];
+				}
+			}
+			for (const key of ['ends_after', 'enrollment_term_id', 'search_term', 'starts_before']) {
+				if (!isBlank(filters[key])) {
+					qs[key] = filters[key];
+				}
+			}
+			// The search mode only means something together with a search term.
+			if (!isBlank(filters.search_term) && !isBlank(filters.search_by)) {
+				qs.search_by = filters.search_by;
+			}
+			for (const key of [
+				'by_subaccounts',
+				'by_teachers',
+				'enrollment_type',
+				'enrollment_workflow_state',
+				'state',
+			]) {
+				const list = toList(filters[key]);
+				if (list.length > 0) {
+					qs[key] = list;
+				}
+			}
+
+			const include = toList(options.include);
+			if (include.length > 0) {
+				qs.include = include;
+			}
+			if (!isBlank(options.sort)) {
+				qs.sort = options.sort;
+				// Canvas only applies a direction when both are present.
+				qs.order = isBlank(options.order) ? 'asc' : options.order;
+			}
+
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/accounts/${accountId}/courses`,
+				qs,
+			};
+		}
+
+		case 'getSettings':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/accounts/${accountId}/settings`,
+			};
+
+		case 'getPermissions': {
+			const permissions = toList(getParam('permissions'));
+			if (permissions.length === 0) {
+				throw new ApplicationError('Enter at least one permission name to check');
+			}
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/accounts/${accountId}/permissions`,
+				qs: { permissions },
+			};
+		}
+
+		case 'getHelpLinks':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/accounts/${accountId}/help_links`,
+			};
+
+		case 'getTermsOfService':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/accounts/${accountId}/terms_of_service`,
+			};
+
+		case 'getManuallyCreatedCoursesAccount':
+			return {
+				method: 'GET',
+				endpoint: '/api/v1/manually_created_courses_account',
+			};
+
+		case 'restoreUser':
+			return {
+				method: 'PUT',
+				endpoint: `/api/v1/accounts/${accountId}/users/${getParam('userId')}/restore`,
 			};
 
 		default:
@@ -66,23 +247,40 @@ export function buildAccountReportRequest(
 	const reportId = getParam('reportId');
 
 	switch (operation) {
-		case 'listAvailable':
+		case 'listAvailable': {
+			const include = toList(getParamObject('options').include);
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/reports`,
-				qs: getParamObject('options'),
+				...(include.length > 0 ? { qs: { include } } : {}),
 			};
+		}
 
 		case 'create': {
 			const additionalFields = getParamObject('additionalFields');
-			const body: Record<string, unknown> = {};
-			if (Object.keys(additionalFields).length > 0) {
-				body.parameters = additionalFields;
+			const parameters: Record<string, unknown> = {};
+			for (const [key, value] of Object.entries(additionalFields)) {
+				if (key === 'extra_parameters') {
+					continue;
+				}
+				if (Array.isArray(value)) {
+					if (value.length > 0) {
+						parameters[key] = value;
+					}
+				} else if (!isBlank(value)) {
+					parameters[key] = value;
+				}
 			}
+			// Reports added by plugins take parameters this node cannot know about.
+			Object.assign(
+				parameters,
+				parseJsonObjectOrEmpty(additionalFields.extra_parameters, 'Other Parameters (JSON)'),
+			);
+
 			return {
 				method: 'POST',
 				endpoint: `/api/v1/accounts/${accountId}/reports/${reportType}`,
-				body,
+				...(Object.keys(parameters).length > 0 ? { body: { parameters } } : {}),
 			};
 		}
 
@@ -90,6 +288,15 @@ export function buildAccountReportRequest(
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/reports/${reportType}/${reportId}`,
+				download: downloadIfAsked(getParam, REPORT_FILE),
+			};
+
+		case 'waitForCompletion':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/accounts/${accountId}/reports/${reportType}/${reportId}`,
+				poll: pollUntil(getParam, stateIn('status', ['complete', 'error', 'aborted', 'deleted'])),
+				download: downloadIfAsked(getParam, REPORT_FILE),
 			};
 
 		case 'getAll':
@@ -106,8 +313,8 @@ export function buildAccountReportRequest(
 
 		case 'abort':
 			return {
-				method: 'DELETE',
-				endpoint: `/api/v1/accounts/${accountId}/reports/${reportType}/${reportId}`,
+				method: 'PUT',
+				endpoint: `/api/v1/accounts/${accountId}/reports/${reportType}/${reportId}/abort`,
 			};
 
 		default:
@@ -128,12 +335,20 @@ export function buildAccountNotificationRequest(
 	const notificationId = getParam('notificationId');
 
 	switch (operation) {
-		case 'getAll':
+		case 'getAll': {
+			const options = getParamObject('options');
+			const qs: Record<string, unknown> = {};
+			for (const key of ['include_all', 'include_past', 'show_is_closed']) {
+				if (options[key] !== undefined && options[key] !== '') {
+					qs[key] = options[key];
+				}
+			}
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/account_notifications`,
-				qs: getParamObject('options'),
+				qs,
 			};
+		}
 
 		case 'get':
 			return {
@@ -150,17 +365,20 @@ export function buildAccountNotificationRequest(
 				end_at: getParam('endAt'),
 			};
 
-			if (additionalFields.icon) {
+			if (!isBlank(additionalFields.icon)) {
 				notification.icon = additionalFields.icon;
+			}
+			if (additionalFields.send_message !== undefined && additionalFields.send_message !== '') {
+				notification.send_message = additionalFields.send_message;
 			}
 
 			const body: Record<string, unknown> = {
 				account_notification: notification,
 			};
 
-			if (additionalFields.roles) {
-				const rolesStr = additionalFields.roles as string;
-				body.account_notification_roles = rolesStr.split(',').map((r) => r.trim());
+			const roles = toList(additionalFields.roles);
+			if (roles.length > 0) {
+				body.account_notification_roles = roles;
 			}
 
 			return {
@@ -174,29 +392,33 @@ export function buildAccountNotificationRequest(
 			const updateFields = getParamObject('updateFields');
 			const notification: Record<string, unknown> = {};
 
-			if (updateFields.subject) {
-				notification.subject = updateFields.subject;
+			// Canvas blanks the message when an update does not carry it and then rejects the
+			// update, so the message is a required field here.
+			const message = getParam('message');
+			if (isBlank(message)) {
+				throw new ApplicationError(
+					'Message is required: Canvas rejects an update of a notification that does not include the message text. Send the current text again to keep it.',
+				);
 			}
-			if (updateFields.message) {
-				notification.message = updateFields.message;
+			notification.message = message;
+
+			for (const key of ['subject', 'start_at', 'end_at', 'icon']) {
+				if (!isBlank(updateFields[key])) {
+					notification[key] = updateFields[key];
+				}
 			}
-			if (updateFields.start_at) {
-				notification.start_at = updateFields.start_at;
-			}
-			if (updateFields.end_at) {
-				notification.end_at = updateFields.end_at;
-			}
-			if (updateFields.icon) {
-				notification.icon = updateFields.icon;
+			if (updateFields.send_message !== undefined && updateFields.send_message !== '') {
+				notification.send_message = updateFields.send_message;
 			}
 
 			const body: Record<string, unknown> = {
 				account_notification: notification,
 			};
 
-			if (updateFields.roles) {
-				const rolesStr = updateFields.roles as string;
-				body.account_notification_roles = rolesStr.split(',').map((r) => r.trim());
+			// Canvas replaces the role list on every update: leaving it out removes all roles.
+			const roles = toList(updateFields.roles);
+			if (roles.length > 0) {
+				body.account_notification_roles = roles;
 			}
 
 			return {
@@ -209,7 +431,7 @@ export function buildAccountNotificationRequest(
 		case 'close': {
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
-			if (options.remove !== undefined) {
+			if (options.remove !== undefined && options.remove !== '') {
 				qs.remove = options.remove;
 			}
 			return {
@@ -244,26 +466,47 @@ export function buildAccountCalendarRequest(
 				endpoint: `/api/v1/account_calendars/${accountId}`,
 			};
 
-		case 'getAll':
+		case 'getAll': {
+			const options = getParamObject('options');
 			return {
 				method: 'GET',
 				endpoint: '/api/v1/account_calendars',
-				qs: getParamObject('options'),
+				...(isBlank(options.search_term) ? {} : { qs: { search_term: options.search_term } }),
+				// Canvas answers { account_calendars: [...], total_results: n }.
+				dataKey: 'account_calendars',
 			};
+		}
 
-		case 'getAllForAccount':
+		case 'getAllForAccount': {
+			const options = getParamObject('options');
+			const qs: Record<string, unknown> = {};
+			if (!isBlank(options.filter)) {
+				qs.filter = options.filter;
+			}
+			if (!isBlank(options.search_term)) {
+				qs.search_term = options.search_term;
+			}
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/account_calendars`,
-				qs: getParamObject('options'),
+				qs,
 			};
+		}
 
-		case 'update':
+		case 'update': {
+			const updateFields = getParamObject('updateFields');
+			const body: Record<string, unknown> = {};
+			for (const key of ['auto_subscribe', 'visible']) {
+				if (updateFields[key] !== undefined && updateFields[key] !== '') {
+					body[key] = updateFields[key];
+				}
+			}
 			return {
 				method: 'PUT',
 				endpoint: `/api/v1/account_calendars/${accountId}`,
-				body: getParamObject('updateFields'),
+				body,
 			};
+		}
 
 		case 'countVisible':
 			return {
@@ -273,18 +516,34 @@ export function buildAccountCalendarRequest(
 
 		case 'updateMany': {
 			const calendarsJson = getParam('calendars');
-			let calendars: unknown[];
-			try {
-				calendars = JSON.parse(calendarsJson) as unknown[];
-			} catch {
+			// A list of objects from an expression can reach this point flattened to text.
+			const invalidJson = calendarsJson.includes('[object Object]')
+				? 'Calendars received a list of objects instead of JSON text. Wrap the expression in JSON.stringify(), e.g. {{ JSON.stringify($json.calendars) }}.'
+				: 'Invalid JSON in Calendars. Expected a JSON array of objects like [{"id": 1, "visible": true, "auto_subscribe": false}].';
+			const calendars = parseJson(calendarsJson, invalidJson);
+			if (calendars === undefined) {
+				// Left empty.
+				throw new ApplicationError(invalidJson);
+			}
+			if (!Array.isArray(calendars) || calendars.length === 0) {
 				throw new ApplicationError(
-					'Invalid JSON in calendars field. Expected a JSON array of calendar objects.',
+					'Calendars must be a JSON array with at least one object like {"id": 1, "visible": true}.',
 				);
+			}
+			for (const calendar of calendars) {
+				if (
+					calendar === null ||
+					typeof calendar !== 'object' ||
+					isBlank((calendar as Record<string, unknown>).id)
+				) {
+					throw new ApplicationError('Every entry in Calendars needs an "id" (the account ID).');
+				}
 			}
 			return {
 				method: 'PUT',
 				endpoint: `/api/v1/accounts/${accountId}/account_calendars`,
-				body: calendars as unknown as Record<string, unknown>,
+				// Canvas expects the JSON array itself as the request body.
+				body: calendars,
 			};
 		}
 
@@ -312,10 +571,10 @@ export function buildAdminRequest(
 			const body: Record<string, unknown> = {
 				user_id: getParam('userId'),
 			};
-			if (additionalFields.role_id) {
+			if (!isBlank(additionalFields.role_id)) {
 				body.role_id = additionalFields.role_id;
 			}
-			if (additionalFields.send_confirmation !== undefined) {
+			if (additionalFields.send_confirmation !== undefined && additionalFields.send_confirmation !== '') {
 				body.send_confirmation = additionalFields.send_confirmation;
 			}
 			return {
@@ -331,29 +590,36 @@ export function buildAdminRequest(
 			return {
 				method: 'DELETE',
 				endpoint: `/api/v1/accounts/${accountId}/admins/${userId}`,
-				qs: { role_id: roleId },
+				// Without a role Canvas removes the built-in Account Admin role.
+				...(roleId ? { qs: { role_id: roleId } } : {}),
 			};
 		}
 
 		case 'getAll': {
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
-			if (options.include_deleted !== undefined) {
+			if (options.include_deleted !== undefined && options.include_deleted !== '') {
 				qs.include_deleted = options.include_deleted;
 			}
-			if (options.search_term) {
+			if (!isBlank(options.search_term)) {
 				qs.search_term = options.search_term;
 			}
-			if (options.user_id) {
-				const userIdStr = options.user_id as string;
-				qs['user_id[]'] = userIdStr.split(',').map((id) => id.trim());
+			const userIds = toList(options.user_id);
+			if (userIds.length > 0) {
+				qs.user_id = userIds;
 			}
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/admins`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs,
 			};
 		}
+
+		case 'getSelfRoles':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/accounts/${accountId}/admins/self`,
+			};
 
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for admin`);
@@ -378,21 +644,11 @@ export function buildRoleRequest(
 			const body: Record<string, unknown> = {
 				label: getParam('label'),
 			};
-			if (additionalFields.base_role_type) {
+			if (!isBlank(additionalFields.base_role_type)) {
 				body.base_role_type = additionalFields.base_role_type;
 			}
-			if (additionalFields.permissions) {
-				let permissions: unknown;
-				try {
-					permissions =
-						typeof additionalFields.permissions === 'string'
-							? JSON.parse(additionalFields.permissions as string)
-							: additionalFields.permissions;
-				} catch {
-					throw new ApplicationError(
-						'Invalid JSON in permissions field. Expected a JSON object.',
-					);
-				}
+			const permissions = parseJsonObjectOrEmpty(additionalFields.permissions, 'Permissions');
+			if (Object.keys(permissions).length > 0) {
 				body.permissions = permissions;
 			}
 			return {
@@ -411,37 +667,37 @@ export function buildRoleRequest(
 		case 'getAll': {
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
-			if (options.show_inherited !== undefined) {
+			if (options.show_inherited !== undefined && options.show_inherited !== '') {
 				qs.show_inherited = options.show_inherited;
 			}
-			if (options.state && Array.isArray(options.state) && (options.state as string[]).length > 0) {
-				qs['state[]'] = options.state;
+			const state = toList(options.state);
+			if (state.length > 0) {
+				qs.state = state;
 			}
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/roles`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs,
+			};
+		}
+
+		case 'getPermissions': {
+			const options = getParamObject('options');
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/accounts/${accountId}/roles/permissions`,
+				...(isBlank(options.search_term) ? {} : { qs: { search_term: options.search_term } }),
 			};
 		}
 
 		case 'update': {
 			const updateFields = getParamObject('updateFields');
 			const body: Record<string, unknown> = {};
-			if (updateFields.label) {
+			if (!isBlank(updateFields.label)) {
 				body.label = updateFields.label;
 			}
-			if (updateFields.permissions) {
-				let permissions: unknown;
-				try {
-					permissions =
-						typeof updateFields.permissions === 'string'
-							? JSON.parse(updateFields.permissions as string)
-							: updateFields.permissions;
-				} catch {
-					throw new ApplicationError(
-						'Invalid JSON in permissions field. Expected a JSON object.',
-					);
-				}
+			const permissions = parseJsonObjectOrEmpty(updateFields.permissions, 'Permissions');
+			if (Object.keys(permissions).length > 0) {
 				body.permissions = permissions;
 			}
 			return {

@@ -13,9 +13,15 @@ export const quizExtensionOperations: INodeProperties[] = [
 		},
 		options: [
 			{
+				name: 'Set Course Extensions',
+				value: 'setCourseExtensions',
+				description: 'Set extensions for students on every quiz of a course',
+				action: 'Set extensions for students on every quiz of a course',
+			},
+			{
 				name: 'Set Extensions',
 				value: 'setExtensions',
-				description: 'Set extensions for student quiz submissions',
+				description: 'Set extensions for students on one quiz',
 				action: 'Set extensions for student quiz submissions',
 			},
 		],
@@ -49,6 +55,7 @@ export const quizExtensionFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['quizExtension'],
+				operation: ['setExtensions'],
 			},
 		},
 		description: 'The ID of the quiz',
@@ -69,10 +76,11 @@ export const quizExtensionFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['quizExtension'],
-				operation: ['setExtensions'],
+				operation: ['setExtensions', 'setCourseExtensions'],
 			},
 		},
-		description: 'The extensions to set for students',
+		description:
+			'One entry per student. Extra Attempts, Extra Time and Manually Unlocked are stored exactly as entered, replacing what the student had before.',
 		options: [
 			{
 				name: 'extensionValues',
@@ -83,14 +91,16 @@ export const quizExtensionFields: INodeProperties[] = [
 						name: 'extend_from_end_at',
 						type: 'number',
 						default: 0,
-						description: 'Minutes to extend beyond quiz end time (max 1440). Mutually exclusive with Extend From Now.',
+						description:
+							'Minutes to add to the end time of an attempt the student has in progress (max 1440). Leave at 0 to not extend. Ignored when Extend From Now is set, and when the student has no attempt in progress.',
 					},
 					{
 						displayName: 'Extend From Now',
 						name: 'extend_from_now',
 						type: 'number',
 						default: 0,
-						description: 'Minutes to extend from the current time (max 1440). Mutually exclusive with Extend From End At.',
+						description:
+							'Minutes from now until the attempt the student has in progress ends (max 1440). Leave at 0 to not extend. Ignored when the student has no attempt in progress.',
 					},
 					{
 						displayName: 'Extra Attempts',

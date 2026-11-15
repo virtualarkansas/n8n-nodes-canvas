@@ -1,9 +1,90 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { isBlank, pollUntil, stateIn, toList } from './shared';
+
+/** States in which Canvas is done with a SIS import. */
+const SIS_IMPORT_FINISHED = [
+	'imported',
+	'imported_with_messages',
+	'failed',
+	'failed_with_messages',
+	'aborted',
+	'restored',
+	'partially_restored',
+];
+
+// ============================================
+// Shared helpers
+// ============================================
+
+function isOn(value: unknown): boolean {
+	return value === true || value === 'true';
+}
 
 // ============================================
 // SIS Import
 // ============================================
+
+/** Options Canvas reads with a plain true/false test: sending "false" is harmless. */
+const SIS_IMPORT_BOOLEAN_OPTIONS = [
+	'add_sis_stickiness',
+	'batch_mode',
+	'clear_sis_stickiness',
+	'diffing_remaster_data_set',
+	'override_sis_stickiness',
+	'skip_deletes',
+	'update_sis_id_if_login_claimed',
+];
+
+const SIS_IMPORT_VALUE_OPTIONS = [
+	'batch_mode_enrollment_drop_status',
+	'batch_mode_term_id',
+	'diffing_data_set_identifier',
+	'diffing_drop_status',
+	'diffing_user_remove_status',
+	'import_type',
+];
+
+/**
+ * The import file itself is the request body (Canvas reads everything else
+ * from the query string): CSV/XML text as it is, Base64 text decoded to bytes.
+ */
+function sisImportFile(content: string, source: string): string | Buffer {
+	if (content.trim() === '') {
+		throw new ApplicationError(
+			'File Content is empty. Enter the CSV text to import (with its header row), or the Base64 content of a zip file.',
+		);
+	}
+	if (source === 'base64') {
+		const compact = content.replace(/\s/g, '');
+		if (!/^[A-Za-z0-9+/_-]+={0,2}$/.test(compact)) {
+			throw new ApplicationError(
+				'File Content is not valid Base64. Choose "Text" as the File Source to send CSV text as it is.',
+			);
+		}
+		return Buffer.from(compact, 'base64');
+	}
+	// Canvas reads the files as UTF-8 and tolerates a byte order mark and Windows line ends.
+	return content;
+}
+
+const SIS_CONTENT_TYPES: Record<string, string> = {
+	csv: 'text/csv',
+	xml: 'text/xml',
+	zip: 'application/zip',
+};
+
+/** csv, xml or zip, from the name or type of a binary file. */
+function sisFileExtension(file: { fileName?: string; mimeType?: string; fileExtension?: string }): string {
+	const hint = `${file.fileExtension ?? ''} ${(file.fileName ?? '').split('.').pop() ?? ''} ${file.mimeType ?? ''}`.toLowerCase();
+	if (/zip/.test(hint)) {
+		return 'zip';
+	}
+	if (/xml/.test(hint)) {
+		return 'xml';
+	}
+	return 'csv';
+}
 
 export function buildSisImportRequest(
 	operation: string,
@@ -15,65 +96,56 @@ export function buildSisImportRequest(
 	switch (operation) {
 		case 'create': {
 			const additionalFields = getParamObject('additionalFields');
+			const source = getParam('fileSource', 'binaryData');
+			const chosenExtension = isBlank(additionalFields.extension) ? '' : String(additionalFields.extension);
 			const qs: Record<string, unknown> = {};
 
-			// All create params go as query string for multipart upload
-			if (additionalFields.import_type) {
-				qs.import_type = additionalFields.import_type;
+			for (const key of SIS_IMPORT_BOOLEAN_OPTIONS) {
+				if (additionalFields[key] !== undefined && additionalFields[key] !== '') {
+					qs[key] = additionalFields[key];
+				}
 			}
-			if (additionalFields.extension) {
-				qs.extension = additionalFields.extension;
+			for (const key of SIS_IMPORT_VALUE_OPTIONS) {
+				if (!isBlank(additionalFields[key])) {
+					qs[key] = additionalFields[key];
+				}
 			}
-			if (additionalFields.batch_mode !== undefined) {
-				qs.batch_mode = additionalFields.batch_mode;
+			// Canvas only checks that this parameter is present: "false" would switch batch mode on.
+			if (isOn(additionalFields.multi_term_batch_mode)) {
+				qs.multi_term_batch_mode = true;
 			}
-			if (additionalFields.batch_mode_term_id) {
-				qs.batch_mode_term_id = additionalFields.batch_mode_term_id;
-			}
-			if (additionalFields.batch_mode_enrollment_drop_status) {
-				qs.batch_mode_enrollment_drop_status = additionalFields.batch_mode_enrollment_drop_status;
-			}
-			if (additionalFields.multi_term_batch_mode !== undefined) {
-				qs.multi_term_batch_mode = additionalFields.multi_term_batch_mode;
-			}
-			if (additionalFields.skip_deletes !== undefined) {
-				qs.skip_deletes = additionalFields.skip_deletes;
-			}
-			if (additionalFields.override_sis_stickiness !== undefined) {
-				qs.override_sis_stickiness = additionalFields.override_sis_stickiness;
-			}
-			if (additionalFields.add_sis_stickiness !== undefined) {
-				qs.add_sis_stickiness = additionalFields.add_sis_stickiness;
-			}
-			if (additionalFields.clear_sis_stickiness !== undefined) {
-				qs.clear_sis_stickiness = additionalFields.clear_sis_stickiness;
-			}
-			if (additionalFields.update_sis_id_if_login_claimed !== undefined) {
-				qs.update_sis_id_if_login_claimed = additionalFields.update_sis_id_if_login_claimed;
-			}
-			if (additionalFields.diffing_data_set_identifier) {
-				qs.diffing_data_set_identifier = additionalFields.diffing_data_set_identifier;
-			}
-			if (additionalFields.diffing_remaster_data_set !== undefined) {
-				qs.diffing_remaster_data_set = additionalFields.diffing_remaster_data_set;
-			}
-			if (additionalFields.diffing_drop_status) {
-				qs.diffing_drop_status = additionalFields.diffing_drop_status;
-			}
-			if (additionalFields.diffing_user_remove_status) {
-				qs.diffing_user_remove_status = additionalFields.diffing_user_remove_status;
-			}
-			if (additionalFields.change_threshold) {
-				qs.change_threshold = additionalFields.change_threshold;
-			}
-			if (additionalFields.diff_row_count_threshold) {
-				qs.diff_row_count_threshold = additionalFields.diff_row_count_threshold;
+			// 0 means "no threshold" for both; Canvas would read a 0 as a threshold of zero percent.
+			for (const key of ['change_threshold', 'diff_row_count_threshold']) {
+				if (!isBlank(additionalFields[key]) && Number(additionalFields[key]) > 0) {
+					qs[key] = additionalFields[key];
+				}
 			}
 
+			const endpoint = `/api/v1/accounts/${accountId}/sis_imports`;
+			if (source === 'binaryData') {
+				return {
+					method: 'POST',
+					endpoint,
+					qs,
+					binaryBody: {
+						propertyName: getParam('binaryPropertyName', 'data'),
+						// Without `extension` Canvas guesses from the content type and treats the file as a zip.
+						prepare: (file) => {
+							const extension = chosenExtension || sisFileExtension(file);
+							return { qs: { extension }, contentType: SIS_CONTENT_TYPES[extension] };
+						},
+					},
+				};
+			}
+
+			const extension = chosenExtension || (source === 'base64' ? 'zip' : 'csv');
+			qs.extension = extension;
 			return {
 				method: 'POST',
-				endpoint: `/api/v1/accounts/${accountId}/sis_imports`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				endpoint,
+				qs,
+				body: sisImportFile(getParam('fileContent'), source),
+				contentType: SIS_CONTENT_TYPES[extension] ?? 'application/octet-stream',
 			};
 		}
 
@@ -83,28 +155,34 @@ export function buildSisImportRequest(
 				endpoint: `/api/v1/accounts/${accountId}/sis_imports/${getParam('importId')}`,
 			};
 
+		case 'waitForCompletion':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/accounts/${accountId}/sis_imports/${getParam('importId')}`,
+				poll: pollUntil(getParam, stateIn('workflow_state', SIS_IMPORT_FINISHED)),
+			};
+
 		case 'getAll': {
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
 
-			if (options.created_since) {
+			if (!isBlank(options.created_since)) {
 				qs.created_since = options.created_since;
 			}
-			if (options.created_before) {
+			if (!isBlank(options.created_before)) {
 				qs.created_before = options.created_before;
 			}
-			if (
-				options.workflow_state &&
-				Array.isArray(options.workflow_state) &&
-				(options.workflow_state as string[]).length > 0
-			) {
-				qs['workflow_state[]'] = options.workflow_state;
+			const states = toList(options.workflow_state);
+			if (states.length > 0) {
+				qs.workflow_state = states;
 			}
 
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/sis_imports`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs,
+				// Canvas answers { sis_imports: [...] }.
+				dataKey: 'sis_imports',
 			};
 		}
 
@@ -112,6 +190,7 @@ export function buildSisImportRequest(
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/sis_imports/importing`,
+				dataKey: 'sis_imports',
 			};
 
 		case 'abort':
@@ -130,14 +209,10 @@ export function buildSisImportRequest(
 			const options = getParamObject('options');
 			const body: Record<string, unknown> = {};
 
-			if (options.batch_mode !== undefined) {
-				body.batch_mode = options.batch_mode;
-			}
-			if (options.undelete_only !== undefined) {
-				body.undelete_only = options.undelete_only;
-			}
-			if (options.unconclude_only !== undefined) {
-				body.unconclude_only = options.unconclude_only;
+			for (const key of ['batch_mode', 'undelete_only', 'unconclude_only']) {
+				if (options[key] !== undefined && options[key] !== '') {
+					body[key] = options[key];
+				}
 			}
 
 			return {
@@ -162,38 +237,31 @@ export function buildSisImportErrorRequest(
 	getParamObject: GetParamObject,
 ): IRequestConfig {
 	const accountId = getParam('accountId');
+	const options = getParamObject('options');
+	const qs: Record<string, unknown> = {};
+
+	// Canvas only checks that "failure" is present: "false" would still filter to failures.
+	if (isOn(options.failure)) {
+		qs.failure = true;
+	}
 
 	switch (operation) {
-		case 'getAll': {
-			const importId = getParam('importId');
-			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
-
-			if (options.failure !== undefined) {
-				qs.failure = options.failure;
-			}
-
+		case 'getAll':
 			return {
 				method: 'GET',
-				endpoint: `/api/v1/accounts/${accountId}/sis_imports/${importId}/errors`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				endpoint: `/api/v1/accounts/${accountId}/sis_imports/${getParam('importId')}/errors`,
+				qs,
+				// Canvas answers { sis_import_errors: [...] }.
+				dataKey: 'sis_import_errors',
 			};
-		}
 
-		case 'getAllForAccount': {
-			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
-
-			if (options.failure !== undefined) {
-				qs.failure = options.failure;
-			}
-
+		case 'getAllForAccount':
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/sis_import_errors`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs,
+				dataKey: 'sis_import_errors',
 			};
-		}
 
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for sisImportError`);
@@ -211,53 +279,50 @@ export function buildSisIntegrationRequest(
 ): IRequestConfig {
 	switch (operation) {
 		case 'getAssignments': {
-			const context = getParam('context');
+			const context = getParam('context', 'course');
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
 
-			if (options.starts_before) {
-				qs.starts_before = options.starts_before;
-			}
-			if (options.ends_after) {
-				qs.ends_after = options.ends_after;
-			}
-			if (
-				options.include &&
-				Array.isArray(options.include) &&
-				(options.include as string[]).length > 0
-			) {
-				qs['include[]'] = options.include;
+			const include = toList(options.include);
+			if (include.length > 0) {
+				qs.include = include;
 			}
 
-			let endpoint: string;
+			// These endpoints live under /api/sis, not /api/v1.
 			if (context === 'account') {
-				const accountId = getParam('accountId');
-				endpoint = `/api/v1/accounts/${accountId}/sis/assignments`;
-			} else {
-				const courseId = getParam('courseId');
-				endpoint = `/api/v1/courses/${courseId}/sis/assignments`;
+				// The date filters select courses, so they only apply to an account.
+				if (!isBlank(options.starts_before)) {
+					qs.starts_before = options.starts_before;
+				}
+				if (!isBlank(options.ends_after)) {
+					qs.ends_after = options.ends_after;
+				}
+				return {
+					method: 'GET',
+					endpoint: `/api/sis/accounts/${getParam('accountId')}/assignments`,
+					qs,
+				};
 			}
 
 			return {
 				method: 'GET',
-				endpoint,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				endpoint: `/api/sis/courses/${getParam('courseId')}/assignments`,
+				qs,
 			};
 		}
 
 		case 'disablePostToSis': {
-			const courseId = getParam('courseId');
 			const options = getParamObject('options');
-			const body: Record<string, unknown> = {};
+			const qs: Record<string, unknown> = {};
 
-			if (options.grading_period_id) {
-				body.grading_period_id = options.grading_period_id;
+			if (!isBlank(options.grading_period_id)) {
+				qs.grading_period_id = options.grading_period_id;
 			}
 
 			return {
 				method: 'PUT',
-				endpoint: `/api/v1/courses/${courseId}/sis/assignments`,
-				...(Object.keys(body).length > 0 ? { body } : {}),
+				endpoint: `/api/sis/courses/${getParam('courseId')}/disable_post_to_sis`,
+				qs,
 			};
 		}
 

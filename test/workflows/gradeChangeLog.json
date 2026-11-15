@@ -1,0 +1,631 @@
+{
+  "name": "Canvas battery — gradeChangeLog",
+  "nodes": [
+    {
+      "id": "c42eede7-a83e-4ef3-b19d-02ddde1c1365",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "dcb3a5c9-1f7b-4007-9dca-38ed2e37132f",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "59188642-520b-42b3-912b-ae4424e50c53",
+      "name": "getByCourse — getByCourse: one item per grade change, across pages",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradeChangeLog",
+        "operation": "getByCourse",
+        "courseId": "885",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7b50c623-eb82-4973-b1b4-4564cd6941b8",
+      "name": "getByCourse — getByCourse: one item per grade change, across pages (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradeChangeLog",
+        "operation": "getByCourse",
+        "courseId": "885",
+        "pagination": {
+          "perPage": 5,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a707c912-a3d4-4de3-8a13-b0f71785c384",
+      "name": "getByAssignment — getByAssignment, getByStudent, getByGrader: each narrows to ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradeChangeLog",
+        "operation": "getByAssignment",
+        "assignmentId": "2088",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "773c34bf-9750-4211-b9dd-f59c76c785ea",
+      "name": "getByStudent — getByAssignment, getByStudent, getByGrader: each narrows to ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradeChangeLog",
+        "operation": "getByStudent",
+        "studentId": "2491",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6df83cb7-b8c1-475a-bec9-9e91134d1188",
+      "name": "getByGrader — getByAssignment, getByStudent, getByGrader: each narrows to ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradeChangeLog",
+        "operation": "getByGrader",
+        "graderId": "1",
+        "options": {
+          "start_time": "2026-11-15T00:00:00Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cbc03ffd-e898-41e0-bf6f-313967bc4654",
+      "name": "getByCourse — every change carries the course, assignment, student and gra",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradeChangeLog",
+        "operation": "getByCourse",
+        "courseId": "885",
+        "pagination": {
+          "returnAll": true,
+          "perPage": 4
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "22d93e24-083f-4d24-ac86-cf978037bfce",
+      "name": "query — every change carries the course, assignment, student and gra",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradeChangeLog",
+        "operation": "query",
+        "filters": {
+          "course_id": "885",
+          "student_id": "2493"
+        },
+        "includeLinked": false,
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f22c312c-97e8-4396-bc5b-b935f64adbeb",
+      "name": "getByAssignment — time range: Start Time and End Time narrow every lookup exac",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradeChangeLog",
+        "operation": "getByAssignment",
+        "assignmentId": "2087",
+        "options": {
+          "start_time": "2026-11-15T17:29:13Z",
+          "end_time": "2026-11-15T17:29:24Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "244938d2-fd32-4ed9-a15b-a5abd0277c8d",
+      "name": "getByStudent — time range: Start Time and End Time narrow every lookup exac",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradeChangeLog",
+        "operation": "getByStudent",
+        "studentId": "2491",
+        "options": {
+          "start_time": "2026-11-15T17:29:20Z",
+          "end_time": "2026-11-15T17:29:20Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d0ab5bae-bea1-4f4f-9aae-a5085bcf6567",
+      "name": "getByCourse — time range: Start Time and End Time narrow every lookup exac",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradeChangeLog",
+        "operation": "getByCourse",
+        "courseId": "885",
+        "options": {
+          "start_time": "2026-11-15T17:29:13Z",
+          "end_time": "2026-11-15T17:29:25Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dbe09ab6-56c9-4153-9c97-d1e78998e91c",
+      "name": "getByGrader — time range: Start Time and End Time narrow every lookup exac",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradeChangeLog",
+        "operation": "getByGrader",
+        "graderId": "1",
+        "options": {
+          "start_time": "2026-11-15T00:00:00Z",
+          "end_time": "2026-11-15T17:29:26Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1b16fcf0-50be-477d-a82f-2aa1fd013217",
+      "name": "query — time range: Start Time and End Time narrow every lookup exac",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradeChangeLog",
+        "operation": "query",
+        "filters": {
+          "course_id": "885",
+          "assignment_id": "2087",
+          "start_time": "2026-11-15T17:29:13Z",
+          "end_time": "2026-11-15T17:29:24Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "340c3e1f-34f3-41f3-8ba5-b5ff7d83abf6",
+      "name": "getByCourse — time range: an end time in the past returns nothing",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradeChangeLog",
+        "operation": "getByCourse",
+        "courseId": "885",
+        "options": {
+          "start_time": "2001-01-01T00:00:00Z",
+          "end_time": "2001-12-31T00:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "399d83b1-8572-4a5a-802a-5619937c24ea",
+      "name": "query — query: combines filters",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradeChangeLog",
+        "operation": "query",
+        "filters": {
+          "course_id": "885",
+          "assignment_id": "2087",
+          "student_id": "2492",
+          "grader_id": "1"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getByCourse — getByCourse: one item per grade change, across pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByCourse — getByCourse: one item per grade change, across pages": {
+      "main": [
+        [
+          {
+            "node": "getByCourse — getByCourse: one item per grade change, across pages (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByCourse — getByCourse: one item per grade change, across pages (2)": {
+      "main": [
+        [
+          {
+            "node": "getByAssignment — getByAssignment, getByStudent, getByGrader: each narrows to ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByAssignment — getByAssignment, getByStudent, getByGrader: each narrows to ": {
+      "main": [
+        [
+          {
+            "node": "getByStudent — getByAssignment, getByStudent, getByGrader: each narrows to ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByStudent — getByAssignment, getByStudent, getByGrader: each narrows to ": {
+      "main": [
+        [
+          {
+            "node": "getByGrader — getByAssignment, getByStudent, getByGrader: each narrows to ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByGrader — getByAssignment, getByStudent, getByGrader: each narrows to ": {
+      "main": [
+        [
+          {
+            "node": "getByCourse — every change carries the course, assignment, student and gra",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByCourse — every change carries the course, assignment, student and gra": {
+      "main": [
+        [
+          {
+            "node": "query — every change carries the course, assignment, student and gra",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query — every change carries the course, assignment, student and gra": {
+      "main": [
+        [
+          {
+            "node": "getByAssignment — time range: Start Time and End Time narrow every lookup exac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByAssignment — time range: Start Time and End Time narrow every lookup exac": {
+      "main": [
+        [
+          {
+            "node": "getByStudent — time range: Start Time and End Time narrow every lookup exac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByStudent — time range: Start Time and End Time narrow every lookup exac": {
+      "main": [
+        [
+          {
+            "node": "getByCourse — time range: Start Time and End Time narrow every lookup exac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByCourse — time range: Start Time and End Time narrow every lookup exac": {
+      "main": [
+        [
+          {
+            "node": "getByGrader — time range: Start Time and End Time narrow every lookup exac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByGrader — time range: Start Time and End Time narrow every lookup exac": {
+      "main": [
+        [
+          {
+            "node": "query — time range: Start Time and End Time narrow every lookup exac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query — time range: Start Time and End Time narrow every lookup exac": {
+      "main": [
+        [
+          {
+            "node": "getByCourse — time range: an end time in the past returns nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByCourse — time range: an end time in the past returns nothing": {
+      "main": [
+        [
+          {
+            "node": "query — query: combines filters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

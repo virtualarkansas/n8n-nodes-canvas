@@ -15,7 +15,7 @@ export const submissionCommentOperations: INodeProperties[] = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create a comment on a submission',
+				description: 'Add a comment to a submission. Returns the submission with all its comments (the new one is the last).',
 				action: 'Create a submission comment',
 			},
 			{
@@ -25,10 +25,22 @@ export const submissionCommentOperations: INodeProperties[] = [
 				action: 'Delete a submission comment',
 			},
 			{
+				name: 'Get Many',
+				value: 'getAll',
+				description: 'Get the comments on a submission',
+				action: 'Get many submission comments',
+			},
+			{
 				name: 'Update',
 				value: 'update',
 				description: 'Update a submission comment',
 				action: 'Update a submission comment',
+			},
+			{
+				name: 'Upload File',
+				value: 'uploadFile',
+				description: 'Upload a file to attach to a comment (handles all upload steps). Attach it with Create, using the ID of the uploaded file.',
+				action: 'Upload a file for a submission comment',
 			},
 		],
 		default: 'create',
@@ -76,7 +88,7 @@ export const submissionCommentFields: INodeProperties[] = [
 				resource: ['submissionComment'],
 			},
 		},
-		description: 'The ID of the user whose submission to comment on',
+		description: 'The ID of the student the submission belongs to',
 	},
 
 	// ----------------------------------
@@ -117,14 +129,14 @@ export const submissionCommentFields: INodeProperties[] = [
 				name: 'attempt',
 				type: 'number',
 				default: 0,
-				description: 'The submission attempt to associate the comment with. If not provided, associates with the current submission.',
+				description: 'The submission attempt the comment refers to. Without it the comment belongs to the latest attempt.',
 			},
 			{
 				displayName: 'File IDs',
 				name: 'file_ids',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of file IDs to attach to the comment. Files must be uploaded first using the submission comment files endpoint.',
+				description: 'Comma-separated list of file IDs to attach to the comment. The files must belong to the user of the credential or have been uploaded as comment attachments of this assignment.',
 			},
 			{
 				displayName: 'Group Comment',
@@ -138,7 +150,7 @@ export const submissionCommentFields: INodeProperties[] = [
 				name: 'media_comment_id',
 				type: 'string',
 				default: '',
-				description: 'The ID of a media comment to attach',
+				description: 'The ID of a media recording to attach (a media object ID such as "m-1234")',
 			},
 			{
 				displayName: 'Media Comment Type',
@@ -149,7 +161,7 @@ export const submissionCommentFields: INodeProperties[] = [
 					{ name: 'Video', value: 'video' },
 				],
 				default: 'audio',
-				description: 'The type of media comment',
+				description: 'The type of the media recording (only sent together with a Media Comment ID)',
 			},
 		],
 	},
@@ -191,5 +203,109 @@ export const submissionCommentFields: INodeProperties[] = [
 			},
 		},
 		description: 'The updated text content of the comment',
+	},
+
+	// ----------------------------------
+	//         submissionComment: uploadFile
+	// ----------------------------------
+	{
+		displayName: 'Upload Source',
+		name: 'uploadSource',
+		type: 'options',
+		required: true,
+		default: 'binaryData',
+		displayOptions: {
+			show: {
+				resource: ['submissionComment'],
+				operation: ['uploadFile'],
+			},
+		},
+		options: [
+			{
+				name: 'Binary Data',
+				value: 'binaryData',
+				description: 'Upload from binary data in the workflow',
+			},
+			{
+				name: 'URL',
+				value: 'url',
+				description: 'Provide a public URL for Canvas to fetch',
+			},
+		],
+		description: 'Where the file data comes from',
+	},
+	{
+		displayName: 'Input Data Field Name',
+		name: 'binaryPropertyName',
+		type: 'string',
+		required: true,
+		default: 'data',
+		displayOptions: {
+			show: {
+				resource: ['submissionComment'],
+				operation: ['uploadFile'],
+				uploadSource: ['binaryData'],
+			},
+		},
+		description: 'The name of the incoming field containing the binary file data to upload',
+	},
+	{
+		displayName: 'File URL',
+		name: 'fileUrl',
+		type: 'string',
+		required: true,
+		default: '',
+		placeholder: 'https://example.com/file.pdf',
+		displayOptions: {
+			show: {
+				resource: ['submissionComment'],
+				operation: ['uploadFile'],
+				uploadSource: ['url'],
+			},
+		},
+		description: 'A publicly accessible HTTP or HTTPS URL for Canvas to fetch the file from',
+	},
+	{
+		displayName: 'Wait for Completion',
+		name: 'waitForCompletion',
+		type: 'boolean',
+		default: true,
+		displayOptions: {
+			show: {
+				resource: ['submissionComment'],
+				operation: ['uploadFile'],
+				uploadSource: ['url'],
+			},
+		},
+		description: 'Whether to poll until Canvas finishes fetching the URL. If false, returns the progress object immediately.',
+	},
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['submissionComment'],
+				operation: ['uploadFile'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Content Type',
+				name: 'content_type',
+				type: 'string',
+				default: '',
+				description: 'The content type of the file. Without it the type of the binary data is used, or Canvas goes by the file name.',
+			},
+			{
+				displayName: 'File Name',
+				name: 'name',
+				type: 'string',
+				default: '',
+				description: 'The name of the file in Canvas. Without it the file name of the binary data, or the last part of the URL, is used.',
+			},
+		],
 	},
 ];

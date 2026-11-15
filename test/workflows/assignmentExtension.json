@@ -1,0 +1,196 @@
+{
+  "name": "Canvas battery — assignmentExtension",
+  "nodes": [
+    {
+      "id": "449808b7-1f9c-461c-b53b-962e1f90227e",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "1b775992-b7cf-4268-9f72-98ac176e2132",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "71f5c899-0fff-47e8-9ae7-3b03884a5ddb",
+      "name": "setExtensions — setExtensions: grants extra attempts to several students in ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignmentExtension",
+        "operation": "setExtensions",
+        "courseId": "115",
+        "assignmentId": "2226",
+        "extensions": {
+          "extensionValues": [
+            {
+              "user_id": "5",
+              "extra_attempts": 2
+            },
+            {
+              "user_id": " 6 ",
+              "extra_attempts": 5
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "708e932f-fe81-4073-9fa2-07fc1d0abc97",
+      "name": "setExtensions — setExtensions: replaces an earlier extension; zero removes i",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignmentExtension",
+        "operation": "setExtensions",
+        "courseId": "115",
+        "assignmentId": "2226",
+        "extensions": {
+          "extensionValues": [
+            {
+              "user_id": "5",
+              "extra_attempts": 7
+            },
+            {
+              "user_id": "6",
+              "extra_attempts": 0
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8afadd8c-7670-4cab-a490-8fbad3687047",
+      "name": "setExtensions — setExtensions: users who are not students of the course are ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignmentExtension",
+        "operation": "setExtensions",
+        "courseId": "115",
+        "assignmentId": "2226",
+        "extensions": {
+          "extensionValues": [
+            {
+              "user_id": "898",
+              "extra_attempts": 4
+            },
+            {
+              "user_id": "6",
+              "extra_attempts": 4
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "setExtensions — setExtensions: grants extra attempts to several students in ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setExtensions — setExtensions: grants extra attempts to several students in ": {
+      "main": [
+        [
+          {
+            "node": "setExtensions — setExtensions: replaces an earlier extension; zero removes i",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setExtensions — setExtensions: replaces an earlier extension; zero removes i": {
+      "main": [
+        [
+          {
+            "node": "setExtensions — setExtensions: users who are not students of the course are ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

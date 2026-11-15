@@ -1,0 +1,206 @@
+{
+  "name": "Canvas battery — quizStatistics",
+  "nodes": [
+    {
+      "id": "963b687b-8f95-40e7-8c14-fa5197c84e54",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "ec524184-f24e-4a2f-8a5b-3037190cc758",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "4d3d0423-19b1-4633-85f6-8f62738a36cf",
+      "name": "get — get: returns the statistics record itself, with question and",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizStatistics",
+        "operation": "get",
+        "courseId": "122",
+        "quizId": "90"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "35481877-be3a-4ca4-a6d3-6b7b2d30989a",
+      "name": "get — get: all versions counts every attempt",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizStatistics",
+        "operation": "get",
+        "courseId": "122",
+        "quizId": "90",
+        "options": {
+          "all_versions": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "04dff56a-522b-4864-ac9e-387aedb15093",
+      "name": "get — get: section IDs restrict the statistics to the students of ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizStatistics",
+        "operation": "get",
+        "courseId": "122",
+        "quizId": "90",
+        "options": {
+          "section_ids": " 236 , 369 "
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "450ae89d-e5d5-4e3c-89b5-2d285df12648",
+      "name": "get — get: section IDs restrict the statistics to the students of  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizStatistics",
+        "operation": "get",
+        "courseId": "122",
+        "quizId": "90",
+        "options": {
+          "section_ids": "369"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns the statistics record itself, with question and",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns the statistics record itself, with question and": {
+      "main": [
+        [
+          {
+            "node": "get — get: all versions counts every attempt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: all versions counts every attempt": {
+      "main": [
+        [
+          {
+            "node": "get — get: section IDs restrict the statistics to the students of ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: section IDs restrict the statistics to the students of ": {
+      "main": [
+        [
+          {
+            "node": "get — get: section IDs restrict the statistics to the students of  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

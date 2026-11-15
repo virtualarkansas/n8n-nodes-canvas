@@ -15,13 +15,15 @@ export const ltiRegistrationOperations: INodeProperties[] = [
 			{
 				name: 'Bind',
 				value: 'bind',
-				description: 'Bind an LTI registration to an account',
+				description:
+					'Turn a registration inherited from Site Admin on or off for a root account (Canvas installs a local copy of it). For a registration of the account itself use Update with Workflow State.',
 				action: 'Bind an LTI registration to an account',
 			},
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create an LTI registration',
+				description:
+					'Create an LTI 1.3 registration together with its developer key and tool configuration',
 				action: 'Create an LTI registration',
 			},
 			{
@@ -43,15 +45,34 @@ export const ltiRegistrationOperations: INodeProperties[] = [
 				action: 'Get an LTI registration by client ID',
 			},
 			{
+				name: 'Get by Unified Tool ID',
+				value: 'getByUnifiedToolId',
+				description: 'Get the LTI registration with a given unified tool ID',
+				action: 'Get an LTI registration by unified tool ID',
+			},
+			{
+				name: 'Get History',
+				value: 'getHistory',
+				description: 'Get the change history of an LTI registration (newest first)',
+				action: 'Get the history of an LTI registration',
+			},
+			{
 				name: 'Get Many',
 				value: 'getAll',
 				description: 'Get many LTI registrations',
 				action: 'Get many LTI registrations',
 			},
 			{
+				name: 'Get Overlay History',
+				value: 'getOverlayHistory',
+				description: 'Get the edit history of the configuration overlay of an LTI registration',
+				action: 'Get the overlay history of an LTI registration',
+			},
+			{
 				name: 'Reset',
 				value: 'reset',
-				description: 'Reset an LTI registration to its default configuration',
+				description:
+					'Reset an LTI registration to its defaults by removing every customization of its overlay',
 				action: 'Reset an LTI registration',
 			},
 			{
@@ -78,10 +99,23 @@ export const ltiRegistrationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['ltiRegistration'],
-				operation: ['bind', 'create', 'delete', 'get', 'getAll', 'getByClientId', 'reset', 'update'],
+				operation: [
+					'bind',
+					'create',
+					'delete',
+					'get',
+					'getAll',
+					'getByClientId',
+					'getByUnifiedToolId',
+					'getHistory',
+					'getOverlayHistory',
+					'reset',
+					'update',
+				],
 			},
 		},
-		description: 'The ID of the account',
+		description:
+			'The ID of the account. Registrations live in root accounts; sub-accounts can only read them.',
 	},
 	{
 		displayName: 'Registration ID',
@@ -92,10 +126,11 @@ export const ltiRegistrationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['ltiRegistration'],
-				operation: ['bind', 'delete', 'get', 'reset', 'update'],
+				operation: ['bind', 'delete', 'get', 'getHistory', 'getOverlayHistory', 'reset', 'update'],
 			},
 		},
-		description: 'The ID of the LTI registration',
+		description:
+			'The ID of the LTI registration. For Bind: the ID of the Site Admin registration to turn on or off.',
 	},
 
 	// ----------------------------------
@@ -113,7 +148,56 @@ export const ltiRegistrationFields: INodeProperties[] = [
 				operation: ['getByClientId'],
 			},
 		},
-		description: 'The client ID of the LTI registration',
+		description:
+			'The client ID of the LTI registration (the ID of its developer key, "developer_key_id")',
+	},
+
+	// ----------------------------------
+	//         ltiRegistration: getByUnifiedToolId
+	// ----------------------------------
+	{
+		displayName: 'Unified Tool ID',
+		name: 'unifiedToolId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['ltiRegistration'],
+				operation: ['getByUnifiedToolId'],
+			},
+		},
+		description: 'The unified tool ID (LearnPlatform identifier) of the LTI registration',
+	},
+
+	// ----------------------------------
+	//         ltiRegistration: getOverlayHistory
+	// ----------------------------------
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['ltiRegistration'],
+				operation: ['getOverlayHistory'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Limit',
+				name: 'limit',
+				type: 'number',
+				typeOptions: {
+					minValue: 1,
+					maxValue: 100,
+				},
+				default: 50,
+				description: 'Max number of results to return',
+			},
+		],
 	},
 
 	// ----------------------------------
@@ -126,7 +210,6 @@ export const ltiRegistrationFields: INodeProperties[] = [
 		required: true,
 		default: 'on',
 		options: [
-			{ name: 'Allow', value: 'allow' },
 			{ name: 'Off', value: 'off' },
 			{ name: 'On', value: 'on' },
 		],
@@ -136,7 +219,7 @@ export const ltiRegistrationFields: INodeProperties[] = [
 				operation: ['bind'],
 			},
 		},
-		description: 'The workflow state for the registration binding',
+		description: 'Whether the registration is turned on or off for the account',
 	},
 
 	// ----------------------------------
@@ -154,7 +237,8 @@ export const ltiRegistrationFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'The LTI tool configuration (JSON object following Lti::ToolConfiguration or Lti::LegacyConfiguration format)',
+		description:
+			'The LTI 1.3 tool configuration as a JSON object (Canvas\' Lti::ToolConfiguration format: title, target_link_uri, oidc_initiation_url, redirect_uris, scopes, placements, public_jwk or public_jwk_url, ...)',
 	},
 	{
 		displayName: 'Additional Fields',
@@ -191,14 +275,15 @@ export const ltiRegistrationFields: INodeProperties[] = [
 				name: 'name',
 				type: 'string',
 				default: '',
-				description: 'The name of the tool',
+				description: 'The name of the tool. Defaults to the title of the configuration.',
 			},
 			{
 				displayName: 'Overlay',
 				name: 'overlay',
 				type: 'json',
 				default: '{}',
-				description: 'Configuration overlay (JSON object following Lti::Overlay format)',
+				description:
+					'Configuration overlay as a JSON object (Canvas\' Lti::Overlay format), e.g. {"title": "Custom title", "disabled_placements": ["course_navigation"], "disabled_scopes": []}. Its values override the base configuration.',
 			},
 			{
 				displayName: 'Unified Tool ID',
@@ -224,7 +309,8 @@ export const ltiRegistrationFields: INodeProperties[] = [
 					{ name: 'On', value: 'on' },
 				],
 				default: 'off',
-				description: 'The workflow state for the registration',
+				description:
+					'Whether the registration is turned on for the account. "Allow" is only valid for Site Admin registrations.',
 			},
 		],
 	},
@@ -267,7 +353,8 @@ export const ltiRegistrationFields: INodeProperties[] = [
 				name: 'configuration',
 				type: 'json',
 				default: '{}',
-				description: 'The LTI tool configuration (not allowed for Dynamic Registration)',
+				description:
+					'The complete LTI 1.3 tool configuration as a JSON object; it replaces the stored one. Not allowed for registrations created by Dynamic Registration.',
 			},
 			{
 				displayName: 'Description',
@@ -278,6 +365,13 @@ export const ltiRegistrationFields: INodeProperties[] = [
 				},
 				default: '',
 				description: 'A description of the tool (max 2048 bytes)',
+			},
+			{
+				displayName: 'Lock Deploying',
+				name: 'lock_deploying',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to prevent new deployments of this registration from being created',
 			},
 			{
 				displayName: 'Name',
@@ -291,7 +385,15 @@ export const ltiRegistrationFields: INodeProperties[] = [
 				name: 'overlay',
 				type: 'json',
 				default: '{}',
-				description: 'Configuration overlay (JSON object following Lti::Overlay format)',
+				description:
+					'Configuration overlay as a JSON object (Canvas\' Lti::Overlay format), e.g. {"title": "Custom title", "disabled_placements": ["course_navigation"]}. To remove every customization use the Reset operation.',
+			},
+			{
+				displayName: 'Vendor',
+				name: 'vendor',
+				type: 'string',
+				default: '',
+				description: 'The tool vendor',
 			},
 			{
 				displayName: 'Workflow State',
@@ -303,7 +405,8 @@ export const ltiRegistrationFields: INodeProperties[] = [
 					{ name: 'On', value: 'on' },
 				],
 				default: 'off',
-				description: 'The workflow state for the registration',
+				description:
+					'Whether the registration is turned on for the account. "Allow" is only valid for Site Admin registrations.',
 			},
 		],
 	},
@@ -311,36 +414,6 @@ export const ltiRegistrationFields: INodeProperties[] = [
 	// ----------------------------------
 	//         ltiRegistration: getAll
 	// ----------------------------------
-	{
-		displayName: 'Return All',
-		name: 'returnAll',
-		type: 'boolean',
-		default: false,
-		displayOptions: {
-			show: {
-				resource: ['ltiRegistration'],
-				operation: ['getAll'],
-			},
-		},
-		description: 'Whether to return all results or only up to a given limit',
-	},
-	{
-		displayName: 'Limit',
-		name: 'limit',
-		type: 'number',
-		default: 50,
-		typeOptions: {
-			minValue: 1,
-		},
-		displayOptions: {
-			show: {
-				resource: ['ltiRegistration'],
-				operation: ['getAll'],
-				returnAll: [false],
-			},
-		},
-		description: 'Max number of results to return',
-	},
 	{
 		displayName: 'Options',
 		name: 'options',
@@ -372,11 +445,20 @@ export const ltiRegistrationFields: INodeProperties[] = [
 				options: [
 					{ name: 'Account Binding', value: 'account_binding' },
 					{ name: 'Configuration', value: 'configuration' },
-					{ name: 'Overlay', value: 'overlay' },
 					{ name: 'Overlaid Configuration', value: 'overlaid_configuration' },
+					{ name: 'Overlay', value: 'overlay' },
 				],
 				default: [],
-				description: 'Additional data to include with each registration',
+				description:
+					'Additional data to include with each registration (the account binding is always included)',
+			},
+			{
+				displayName: 'Search Query',
+				name: 'query',
+				type: 'string',
+				default: '',
+				description:
+					'Return only registrations that match every word of the query (name, nickname, vendor, and the people who installed or updated them)',
 			},
 			{
 				displayName: 'Sort',
@@ -392,8 +474,8 @@ export const ltiRegistrationFields: INodeProperties[] = [
 					{ name: 'Updated', value: 'updated' },
 					{ name: 'Updated By', value: 'updated_by' },
 				],
-				default: 'name',
-				description: 'The field to sort by',
+				default: 'installed',
+				description: 'The field to sort by (Canvas sorts by installation date unless told otherwise)',
 			},
 		],
 	},
@@ -427,7 +509,8 @@ export const ltiRegistrationFields: INodeProperties[] = [
 					{ name: 'Overlay Versions', value: 'overlay_versions' },
 				],
 				default: [],
-				description: 'Additional data to include with the registration',
+				description:
+					'Additional data to include with the registration (account binding and configuration are always included)',
 			},
 		],
 	},

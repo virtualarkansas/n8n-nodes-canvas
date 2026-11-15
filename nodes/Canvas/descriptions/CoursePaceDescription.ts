@@ -15,7 +15,7 @@ export const coursePaceOperations: INodeProperties[] = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create a new course pace',
+				description: 'Create a pace for a course, a section or a single student',
 				action: 'Create a course pace',
 			},
 			{
@@ -27,8 +27,28 @@ export const coursePaceOperations: INodeProperties[] = [
 			{
 				name: 'Get',
 				value: 'get',
-				description: 'Get a course pace',
+				description: 'Get a course pace by its ID',
 				action: 'Get a course pace',
+			},
+			{
+				name: 'Get by Context',
+				value: 'getByContext',
+				description:
+					'Get the pace of the course, a section or a student enrollment. Returns an unsaved draft (ID null) when none exists yet.',
+				action: 'Get a course pace by context',
+			},
+			{
+				name: 'List Pace Contexts',
+				value: 'listContexts',
+				description:
+					'List what can be paced in a course (the course, its sections or its students), each with the pace that applies to it',
+				action: 'List pace contexts of a course',
+			},
+			{
+				name: 'Publish',
+				value: 'publish',
+				description: 'Publish a course pace, which recalculates the due dates of the affected students',
+				action: 'Publish a course pace',
 			},
 			{
 				name: 'Update',
@@ -40,6 +60,29 @@ export const coursePaceOperations: INodeProperties[] = [
 		default: 'get',
 	},
 ];
+
+const daysToSkip: INodeProperties = {
+	displayName: 'Selected Days to Skip',
+	name: 'selected_days_to_skip',
+	type: 'string',
+	default: '',
+	placeholder: 'sat,sun',
+	description:
+		'Comma-separated list of week days without course work, as three-letter names (mon, tue, wed, thu, fri, sat, sun)',
+};
+
+const paceWorkflowState: INodeProperties = {
+	displayName: 'Workflow State',
+	name: 'workflow_state',
+	type: 'options',
+	options: [
+		{ name: 'Active', value: 'active' },
+		{ name: 'Unpublished', value: 'unpublished' },
+	],
+	default: 'unpublished',
+	description:
+		'The state of the pace. Setting it to "Active" also publishes the pace when Canvas keeps new paces as drafts.',
+};
 
 export const coursePaceFields: INodeProperties[] = [
 	// ----------------------------------
@@ -56,7 +99,8 @@ export const coursePaceFields: INodeProperties[] = [
 				resource: ['coursePace'],
 			},
 		},
-		description: 'The ID of the course',
+		description:
+			'The ID of the course. Course Pacing must be enabled in the course settings, otherwise Canvas answers "not found".',
 	},
 	{
 		displayName: 'Course Pace ID',
@@ -67,10 +111,146 @@ export const coursePaceFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['coursePace'],
-				operation: ['get', 'update', 'delete'],
+				operation: ['get', 'update', 'delete', 'publish'],
 			},
 		},
-		description: 'The ID of the course pace',
+		description: 'The ID of the course pace. Use "Get by Context" to look it up.',
+	},
+
+	// ----------------------------------
+	//         coursePace: listContexts
+	// ----------------------------------
+	{
+		displayName: 'Type',
+		name: 'contextType',
+		type: 'options',
+		required: true,
+		default: 'section',
+		options: [
+			{ name: 'Course', value: 'course', description: 'The course itself (one entry)' },
+			{ name: 'Section', value: 'section', description: 'The active sections of the course' },
+			{
+				name: 'Student Enrollment',
+				value: 'student_enrollment',
+				description: 'The students of the course, one entry per student',
+			},
+		],
+		displayOptions: {
+			show: {
+				resource: ['coursePace'],
+				operation: ['listContexts'],
+			},
+		},
+		description:
+			'The kind of pace context to list. Each entry has the name, the ID of the section or enrollment ("item_id") and the pace that applies to it ("applied_pace").',
+	},
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['coursePace'],
+				operation: ['listContexts'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Context IDs',
+				name: 'context_ids',
+				type: 'string',
+				default: '',
+				placeholder: '12,15',
+				description:
+					'Comma-separated list of section IDs (type Section) or enrollment IDs (type Student Enrollment): only return these',
+			},
+			{
+				displayName: 'Order',
+				name: 'order',
+				type: 'options',
+				options: [
+					{ name: 'Ascending', value: 'asc' },
+					{ name: 'Descending', value: 'desc' },
+				],
+				default: 'asc',
+				description: 'The direction to sort in',
+			},
+			{
+				displayName: 'Search Term',
+				name: 'search_term',
+				type: 'string',
+				default: '',
+				description: 'Only return sections or students whose name contains this text',
+			},
+			{
+				displayName: 'Sort',
+				name: 'sort',
+				type: 'options',
+				options: [{ name: 'Name', value: 'name' }],
+				default: 'name',
+				description:
+					'Sort sections by their name. Canvas returns students in the order of their user IDs whether or not this is set.',
+			},
+		],
+	},
+
+	// ----------------------------------
+	//         coursePace: getByContext
+	// ----------------------------------
+	{
+		displayName: 'Pace For',
+		name: 'paceContext',
+		type: 'options',
+		required: true,
+		default: 'course',
+		options: [
+			{ name: 'Course', value: 'course', description: 'The default pace of the course' },
+			{ name: 'Section', value: 'section', description: 'The pace of a course section' },
+			{
+				name: 'Student Enrollment',
+				value: 'enrollment',
+				description: 'The pace of a single student',
+			},
+		],
+		displayOptions: {
+			show: {
+				resource: ['coursePace'],
+				operation: ['getByContext'],
+			},
+		},
+		description: 'Whose pace to return',
+	},
+	{
+		displayName: 'Section ID',
+		name: 'sectionId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['coursePace'],
+				operation: ['getByContext'],
+				paceContext: ['section'],
+			},
+		},
+		description: 'The ID of the course section',
+	},
+	{
+		displayName: 'Enrollment ID',
+		name: 'enrollmentId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['coursePace'],
+				operation: ['getByContext'],
+				paceContext: ['enrollment'],
+			},
+		},
+		description: 'The ID of the student enrollment (not the user ID)',
 	},
 
 	// ----------------------------------
@@ -94,7 +274,8 @@ export const coursePaceFields: INodeProperties[] = [
 				name: 'context_id',
 				type: 'string',
 				default: '',
-				description: 'The ID of the pace context (course, section, or user)',
+				description:
+					'The ID of the section (context type "Section") or the user ID of the student (context type "Student"). Leave empty for the default pace of the course.',
 			},
 			{
 				displayName: 'Context Type',
@@ -103,57 +284,76 @@ export const coursePaceFields: INodeProperties[] = [
 				options: [
 					{ name: 'Course', value: 'Course' },
 					{ name: 'Section', value: 'Section' },
-					{ name: 'User', value: 'User' },
+					{ name: 'Student', value: 'Enrollment' },
 				],
 				default: 'Course',
-				description: 'The type of context for the pace',
+				description: 'Whether the pace applies to the whole course, one section or one student',
 			},
 			{
 				displayName: 'End Date',
 				name: 'end_date',
 				type: 'dateTime',
 				default: '',
-				description: 'The completion date for the pace',
+				description: 'The date by which the pace must be completed (used with "Hard End Dates")',
 			},
 			{
 				displayName: 'Exclude Weekends',
 				name: 'exclude_weekends',
 				type: 'boolean',
 				default: true,
-				description: 'Whether to skip weekend days in pacing calculations',
+				description:
+					'Whether to skip Saturday and Sunday. Canvas only uses this where the "skip selected days" course pacing feature is off; with it on (the default) it skips the Selected Days to Skip instead and reports this as whether those include Saturday and Sunday.',
 			},
 			{
 				displayName: 'Hard End Dates',
 				name: 'hard_end_dates',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to enforce fixed end dates for assignments',
+				description: 'Whether the pace has to end on the end date',
 			},
-			{
-				displayName: 'Selected Days to Skip',
-				name: 'selected_days_to_skip',
-				type: 'string',
-				default: '',
-				description: 'Comma-separated list of specific days to exclude (e.g., "monday,friday")',
+			daysToSkip,
+			paceWorkflowState,
+		],
+	},
+	{
+		displayName: 'Module Item Durations',
+		name: 'moduleItems',
+		type: 'fixedCollection',
+		placeholder: 'Add Module Item',
+		default: {},
+		typeOptions: {
+			multipleValues: true,
+		},
+		displayOptions: {
+			show: {
+				resource: ['coursePace'],
+				operation: ['create'],
 			},
+		},
+		description: 'How many days students get for each module item',
+		options: [
 			{
-				displayName: 'Start Date',
-				name: 'start_date',
-				type: 'dateTime',
-				default: '',
-				description: 'The beginning date for the pace',
-			},
-			{
-				displayName: 'Workflow State',
-				name: 'workflow_state',
-				type: 'options',
-				options: [
-					{ name: 'Active', value: 'active' },
-					{ name: 'Deleted', value: 'deleted' },
-					{ name: 'Unpublished', value: 'unpublished' },
+				displayName: 'Module Item',
+				name: 'item',
+				values: [
+					{
+						displayName: 'Module Item ID',
+						name: 'module_item_id',
+						type: 'string',
+						default: '',
+						description: 'The ID of the module item (it must be linked to an assignment, quiz or graded discussion)',
+					},
+					{
+						displayName: 'Duration (Days)',
+						name: 'duration',
+						type: 'number',
+						default: 1,
+						typeOptions: {
+							minValue: 0,
+						},
+						description: 'The number of days planned for this module item',
+					},
 				],
-				default: 'unpublished',
-				description: 'The current state of the pace',
 			},
 		],
 	},
@@ -179,40 +379,74 @@ export const coursePaceFields: INodeProperties[] = [
 				name: 'end_date',
 				type: 'dateTime',
 				default: '',
-				description: 'The completion date for the pace',
+				description: 'The date by which the pace must be completed (used with "Hard End Dates")',
 			},
 			{
 				displayName: 'Exclude Weekends',
 				name: 'exclude_weekends',
 				type: 'boolean',
 				default: true,
-				description: 'Whether to skip weekend days in pacing calculations',
+				description:
+					'Whether to skip Saturday and Sunday. Canvas only uses this where the "skip selected days" course pacing feature is off; with it on (the default) it skips the Selected Days to Skip instead and reports this as whether those include Saturday and Sunday.',
 			},
 			{
 				displayName: 'Hard End Dates',
 				name: 'hard_end_dates',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to enforce fixed end dates for assignments',
+				description: 'Whether the pace has to end on the end date',
 			},
-			{
-				displayName: 'Selected Days to Skip',
-				name: 'selected_days_to_skip',
-				type: 'string',
-				default: '',
-				description: 'Comma-separated list of specific days to exclude (e.g., "monday,friday")',
+			daysToSkip,
+			paceWorkflowState,
+		],
+	},
+	{
+		displayName: 'Module Item Durations',
+		name: 'moduleItems',
+		type: 'fixedCollection',
+		placeholder: 'Add Module Item',
+		default: {},
+		typeOptions: {
+			multipleValues: true,
+		},
+		displayOptions: {
+			show: {
+				resource: ['coursePace'],
+				operation: ['update'],
 			},
+		},
+		description: 'How many days students get for each module item',
+		options: [
 			{
-				displayName: 'Workflow State',
-				name: 'workflow_state',
-				type: 'options',
-				options: [
-					{ name: 'Active', value: 'active' },
-					{ name: 'Deleted', value: 'deleted' },
-					{ name: 'Unpublished', value: 'unpublished' },
+				displayName: 'Module Item',
+				name: 'item',
+				values: [
+					{
+						displayName: 'Pace Item ID',
+						name: 'id',
+						type: 'string',
+						default: '',
+						description:
+							'The ID of the existing entry of the pace (the "ID" in the pace\'s module "items" list). Required to change an entry; leave empty to add a module item to the pace.',
+					},
+					{
+						displayName: 'Module Item ID',
+						name: 'module_item_id',
+						type: 'string',
+						default: '',
+						description: 'The ID of the module item',
+					},
+					{
+						displayName: 'Duration (Days)',
+						name: 'duration',
+						type: 'number',
+						default: 1,
+						typeOptions: {
+							minValue: 0,
+						},
+						description: 'The number of days planned for this module item',
+					},
 				],
-				default: 'unpublished',
-				description: 'The current state of the pace',
 			},
 		],
 	},

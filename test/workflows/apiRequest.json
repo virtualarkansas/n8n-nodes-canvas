@@ -1,0 +1,446 @@
+{
+  "name": "Canvas battery — apiRequest",
+  "nodes": [
+    {
+      "id": "69dca026-0bae-4247-8c49-2c729cea12a8",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "e9520a00-2a95-42df-a569-c26731134ec3",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "13bec442-f762-411e-b45a-dca9afb62fe3",
+      "name": "request — GET: a documented list is paginated like any other operation",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiRequest",
+        "operation": "request",
+        "method": "GET",
+        "path": "/api/v1/courses/93/users",
+        "query": "{\"enrollment_type\": [\"student\"]}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "86ad447f-04c7-4282-be15-95e264454a94",
+      "name": "request — GET: a documented list is paginated like any other operation (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiRequest",
+        "operation": "request",
+        "method": "GET",
+        "path": "/api/v1/courses/93/users",
+        "query": {
+          "enrollment_type": [
+            "student"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a997514b-286f-489c-9d68-6718c4145c9d",
+      "name": "request — GET: a single record comes back as one item",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiRequest",
+        "operation": "request",
+        "method": "GET",
+        "path": "/api/v1/courses/1",
+        "query": "{\"include\": [\"term\", \"total_students\"]}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "39399251-0fda-4678-b632-73bd14131d3e",
+      "name": "request — GET: an endpoint Instructure does not document works too",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiRequest",
+        "operation": "request",
+        "method": "GET",
+        "path": "/api/v1/courses/1/gradebook_filters"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "50520b16-e2b3-4ed9-be6e-8fa07900bd8f",
+      "name": "request — GET: a wrapped list is unwrapped with Unwrap Key",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiRequest",
+        "operation": "request",
+        "method": "GET",
+        "path": "/api/v1/audit/course/accounts/1",
+        "options": {
+          "dataKey": "events"
+        },
+        "pagination": {
+          "perPage": 5,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "09435182-6ee6-471e-8fba-dab5838f73ff",
+      "name": "request — GET: a wrapped list is unwrapped with Unwrap Key (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiRequest",
+        "operation": "request",
+        "method": "GET",
+        "path": "/api/v1/audit/course/accounts/1",
+        "pagination": {
+          "perPage": 5
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e57d1bcc-087b-403a-96b7-a7592463b26f",
+      "name": "request — POST, PUT, DELETE: create, change and remove a record throug",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiRequest",
+        "operation": "request",
+        "method": "POST",
+        "path": "/api/v1/accounts/1/courses",
+        "body": "={\"course\":{\"name\":\"Raw request course ✔ {{ $execution.id }}-1\",\"course_code\":\"RAW-1\"}}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8e5ca862-da53-4cea-92e4-71b78cd4f975",
+      "name": "request — POST, PUT, DELETE: create, change and remove a record throug (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiRequest",
+        "operation": "request",
+        "method": "PUT",
+        "path": "/api/v1/courses/991",
+        "body": {
+          "course": {
+            "course_code": "RAW-2"
+          }
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "575a7fff-cc21-477b-854a-2faabdca677b",
+      "name": "request — POST, PUT, DELETE: create, change and remove a record throug (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiRequest",
+        "operation": "request",
+        "method": "DELETE",
+        "path": "/api/v1/courses/991",
+        "query": "{\"event\": \"delete\"}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d56f2bfe-184e-4996-8d70-1cfcefdf76c6",
+      "name": "request — a full URL is reduced to its path, so the token only ever go",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiRequest",
+        "operation": "request",
+        "method": "GET",
+        "path": "https://evil.example.com/api/v1/courses/1"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "request — GET: a documented list is paginated like any other operation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "request — GET: a documented list is paginated like any other operation": {
+      "main": [
+        [
+          {
+            "node": "request — GET: a documented list is paginated like any other operation (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "request — GET: a documented list is paginated like any other operation (2)": {
+      "main": [
+        [
+          {
+            "node": "request — GET: a single record comes back as one item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "request — GET: a single record comes back as one item": {
+      "main": [
+        [
+          {
+            "node": "request — GET: an endpoint Instructure does not document works too",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "request — GET: an endpoint Instructure does not document works too": {
+      "main": [
+        [
+          {
+            "node": "request — GET: a wrapped list is unwrapped with Unwrap Key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "request — GET: a wrapped list is unwrapped with Unwrap Key": {
+      "main": [
+        [
+          {
+            "node": "request — GET: a wrapped list is unwrapped with Unwrap Key (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "request — GET: a wrapped list is unwrapped with Unwrap Key (2)": {
+      "main": [
+        [
+          {
+            "node": "request — POST, PUT, DELETE: create, change and remove a record throug",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "request — POST, PUT, DELETE: create, change and remove a record throug": {
+      "main": [
+        [
+          {
+            "node": "request — POST, PUT, DELETE: create, change and remove a record throug (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "request — POST, PUT, DELETE: create, change and remove a record throug (2)": {
+      "main": [
+        [
+          {
+            "node": "request — POST, PUT, DELETE: create, change and remove a record throug (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "request — POST, PUT, DELETE: create, change and remove a record throug (3)": {
+      "main": [
+        [
+          {
+            "node": "request — a full URL is reduced to its path, so the token only ever go",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

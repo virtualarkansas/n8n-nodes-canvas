@@ -1,5 +1,17 @@
 import { ApplicationError } from 'n8n-workflow';
+import type { IDataObject } from 'n8n-workflow';
+import { buildMultipartBody } from '../GenericFunctions';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { collectionRows, isBlank, pickFilled, toList } from './shared';
+
+/** Canvas reads Ruby hashes keyed by position for rubric criteria and ratings, not arrays. */
+function byIndex(rows: Array<Record<string, unknown>>): Record<string, Record<string, unknown>> {
+	const out: Record<string, Record<string, unknown>> = {};
+	rows.forEach((row, index) => {
+		out[String(index)] = row;
+	});
+	return out;
+}
 
 // ============================================
 // Helper: resolve context base path for rubric (account/course)
@@ -13,6 +25,132 @@ function getRubricBasePath(getParam: GetParam): string {
 	return `/api/v1/courses/${getParam('courseId')}`;
 }
 
+/**
+ * `rubric[criteria]` from the Criteria collection.
+ *
+ * Canvas takes the points of a criterion from its ratings (the highest one), so a
+ * criterion without ratings would be worth 0 points. When no ratings are given the
+ * two ratings the Canvas rubric editor starts with are sent instead.
+ */
+function rubricCriteria(collection: Record<string, unknown>): Record<string, Record<string, unknown>> {
+	const criteria = collectionRows(collection, 'criterion', 'Criteria').map((item) => {
+		const criterion: Record<string, unknown> = {
+			description: item.description,
+			...pickFilled(item, ['id', 'long_description', 'learning_outcome_id', 'mastery_points']),
+		};
+		if (item.criterion_use_range === true) {
+			criterion.criterion_use_range = true;
+		}
+		if (item.ignore_for_scoring === true) {
+			criterion.ignore_for_scoring = true;
+		}
+
+		const ratings = collectionRows(item.ratings, 'rating', 'Ratings').map((rating) => ({
+			description: rating.description,
+			points: rating.points ?? 0,
+			...pickFilled(rating, ['id', 'long_description']),
+		}));
+		if (ratings.length === 0) {
+			const points = Number(item.points ?? 0);
+			ratings.push({ description: 'Full Marks', points }, { description: 'No Marks', points: 0 });
+		}
+		criterion.ratings = byIndex(ratings);
+		return criterion;
+	});
+	return byIndex(criteria);
+}
+
+/**
+ * `rubric_association` from the association fields of Create / Update.
+ * Without an association a rubric exists but is listed nowhere in Canvas and cannot be
+ * read or deleted through the API, so Create bookmarks it in its course by default.
+ */
+function rubricAssociation(
+	fields: Record<string, unknown>,
+	courseId: string,
+	defaultToCourse: boolean,
+): Record<string, unknown> | undefined {
+	const association: Record<string, unknown> = {};
+	let type = fields.rubric_association_association_type as string | undefined;
+	let id = fields.rubric_association_association_id as string | number | undefined;
+
+	if (isBlank(id) && (type === 'Course' || (isBlank(type) && defaultToCourse))) {
+		if (!/^\d+$/.test(courseId)) {
+			throw new ApplicationError(
+				'The rubric is added to the rubric list of its course, which needs the numeric course ID. ' +
+					'Use the numeric Course ID, or set Association ID and Association Type yourself.',
+			);
+		}
+		type = 'Course';
+		id = courseId;
+	}
+	if (isBlank(id) && !isBlank(type)) {
+		throw new ApplicationError(`An Association ID is required to associate the rubric with an ${String(type)}`);
+	}
+	if (!isBlank(id)) {
+		association.association_id = typeof id === 'string' ? id.trim() : id;
+		association.association_type = isBlank(type) ? 'Assignment' : type;
+		association.purpose = isBlank(fields.rubric_association_purpose)
+			? association.association_type === 'Assignment'
+				? 'grading'
+				: 'bookmark'
+			: fields.rubric_association_purpose;
+	} else if (!isBlank(fields.rubric_association_purpose)) {
+		association.purpose = fields.rubric_association_purpose;
+	}
+	if (fields.rubric_association_use_for_grading !== undefined) {
+		association.use_for_grading = fields.rubric_association_use_for_grading;
+	}
+	if (fields.rubric_association_hide_score_total !== undefined) {
+		association.hide_score_total = fields.rubric_association_hide_score_total;
+	}
+	return Object.keys(association).length > 0 ? association : undefined;
+}
+
+/** `rubric[...]` for Create and Update, which Canvas handles with the same code. */
+function rubricBody(
+	getParam: GetParam,
+	getParamObject: GetParamObject,
+	fields: Record<string, unknown>,
+	defaultToCourse: boolean,
+): Record<string, unknown> {
+	const rubric: Record<string, unknown> = {
+		title: getParam('title'),
+		criteria: rubricCriteria(getParamObject('criteria')),
+	};
+	// Canvas only understands "1" as true here.
+	if (fields.free_form_criterion_comments !== undefined) {
+		rubric.free_form_criterion_comments = fields.free_form_criterion_comments === true ? '1' : '0';
+	}
+
+	const body: Record<string, unknown> = { rubric };
+	const association = rubricAssociation(fields, getParam('courseId'), defaultToCourse);
+	if (association) {
+		body.rubric_association = association;
+	}
+	return body;
+}
+
+/** `rubric_assessment` for Create / Update Assessment: one `criterion_<id>` entry per assessed criterion. */
+function rubricAssessment(getParam: GetParam, getParamObject: GetParamObject): Record<string, unknown> {
+	const assessment: Record<string, unknown> = {
+		user_id: getParam('userId'),
+		assessment_type: getParam('assessmentType', 'grading'),
+	};
+	for (const row of collectionRows(getParamObject('criterionAssessments'), 'criterion', 'Criteria')) {
+		const criterionId = String(row.criterion_id ?? '').trim();
+		if (criterionId === '') {
+			continue;
+		}
+		const entry: Record<string, unknown> = pickFilled(row, ['points', 'rating_id', 'comments']);
+		if (row.save_comment === true) {
+			entry.save_comment = '1';
+		}
+		assessment[`criterion_${criterionId}`] = entry;
+	}
+	return assessment;
+}
+
 // ============================================
 // RUBRIC
 // ============================================
@@ -22,64 +160,36 @@ export function handleRubricResource(
 	getParam: GetParam,
 	getParamObject: GetParamObject,
 ): IRequestConfig {
-	const basePath = getRubricBasePath(getParam);
 	const rubricId = getParam('rubricId');
+	// Canvas only has routes for writing rubrics, associations and assessments in a course.
+	const coursePath = `/api/v1/courses/${getParam('courseId')}`;
 
 	switch (operation) {
-		case 'create': {
-			const additionalFields = getParamObject('additionalFields');
-			const criteriaData = getParamObject('criteria');
-			const criteriaItems = (criteriaData.criterion as Array<{
-				description: string;
-				points: number;
-				long_description?: string;
-			}>) || [];
-
-			// Build rubric criteria object keyed by index
-			const criteria: Record<string, Record<string, unknown>> = {};
-			criteriaItems.forEach((item, index) => {
-				criteria[index.toString()] = {
-					description: item.description,
-					points: item.points,
-					...(item.long_description ? { long_description: item.long_description } : {}),
-				};
-			});
-
-			// Build body with rubric and optional rubric_association
-			const body: Record<string, unknown> = {
-				rubric: {
-					title: getParam('title'),
-					criteria,
-					...(additionalFields.free_form_criterion_comments !== undefined
-						? { free_form_criterion_comments: additionalFields.free_form_criterion_comments }
-						: {}),
-				},
-			};
-
-			// Build rubric_association if any association fields are present
-			const associationFields: Record<string, unknown> = {};
-			if (additionalFields.rubric_association_association_id) {
-				associationFields.association_id = additionalFields.rubric_association_association_id;
-			}
-			if (additionalFields.rubric_association_association_type) {
-				associationFields.association_type = additionalFields.rubric_association_association_type;
-			}
-			if (additionalFields.rubric_association_use_for_grading !== undefined) {
-				associationFields.use_for_grading = additionalFields.rubric_association_use_for_grading;
-			}
-			if (additionalFields.rubric_association_hide_score_total !== undefined) {
-				associationFields.hide_score_total = additionalFields.rubric_association_hide_score_total;
-			}
-			if (additionalFields.rubric_association_purpose) {
-				associationFields.purpose = additionalFields.rubric_association_purpose;
-			}
-			if (Object.keys(associationFields).length > 0) {
-				body.rubric_association = associationFields;
-			}
-
+		case 'create':
 			return {
 				method: 'POST',
-				endpoint: `${basePath}/rubrics`,
+				endpoint: `${coursePath}/rubrics`,
+				body: rubricBody(getParam, getParamObject, getParamObject('additionalFields'), true),
+			};
+
+		case 'update': {
+			const options = getParamObject('options');
+			if (collectionRows(getParamObject('criteria'), 'criterion', 'Criteria').length === 0) {
+				throw new ApplicationError(
+					'At least one criterion is required for rubric update: Canvas replaces the whole rubric, so an update without criteria would empty it',
+				);
+			}
+			const body = rubricBody(getParam, getParamObject, options, false);
+			if (!isBlank(options.rubric_association_id)) {
+				body.rubric_association_id = options.rubric_association_id;
+			}
+			// A request argument of its own (not part of `rubric`), read as text by Canvas.
+			if (options.skip_updating_points_possible !== undefined) {
+				body.skip_updating_points_possible = options.skip_updating_points_possible === true ? 'true' : 'false';
+			}
+			return {
+				method: 'PUT',
+				endpoint: `${coursePath}/rubrics/${rubricId}`,
 				body,
 			};
 		}
@@ -87,15 +197,19 @@ export function handleRubricResource(
 		case 'delete':
 			return {
 				method: 'DELETE',
-				endpoint: `${basePath}/rubrics/${rubricId}`,
+				endpoint: `${coursePath}/rubrics/${rubricId}`,
+				dataKey: 'rubric',
 			};
 
 		case 'get': {
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
-
-			if (options.include && Array.isArray(options.include) && (options.include as string[]).length > 0) {
-				qs['include[]'] = options.include;
+			// Canvas accepts at most one assessment scope and one association scope.
+			const include = [options.include_assessments, options.include_associations].filter(
+				(value) => !isBlank(value) && value !== 'none',
+			);
+			if (include.length > 0) {
+				qs.include = include;
 			}
 			if (options.style) {
 				qs.style = options.style;
@@ -103,7 +217,7 @@ export function handleRubricResource(
 
 			return {
 				method: 'GET',
-				endpoint: `${basePath}/rubrics/${rubricId}`,
+				endpoint: `${getRubricBasePath(getParam)}/rubrics/${rubricId}`,
 				...(Object.keys(qs).length > 0 ? { qs } : {}),
 			};
 		}
@@ -111,42 +225,137 @@ export function handleRubricResource(
 		case 'getAll':
 			return {
 				method: 'GET',
-				endpoint: `${basePath}/rubrics`,
+				endpoint: `${getRubricBasePath(getParam)}/rubrics`,
 			};
 
 		case 'getUsedLocations':
 			return {
 				method: 'GET',
-				endpoint: `${basePath}/rubrics/${rubricId}/used_locations`,
+				endpoint: `${getRubricBasePath(getParam)}/rubrics/${rubricId}/used_locations`,
 			};
 
-		case 'update': {
-			const updateFields = getParamObject('updateFields');
-			const body: Record<string, unknown> = {
-				rubric: {},
+		case 'createAssociation':
+			return {
+				method: 'POST',
+				endpoint: `${coursePath}/rubric_associations`,
+				body: {
+					rubric_association: {
+						rubric_id: rubricId,
+						association_type: getParam('associationType', 'Assignment'),
+						association_id: getParam('associationId'),
+						...getParamObject('additionalFields'),
+					},
+				},
 			};
 
-			const rubricBody = body.rubric as Record<string, unknown>;
-			if (updateFields.title) {
-				rubricBody.title = updateFields.title;
-			}
-			if (updateFields.free_form_criterion_comments !== undefined) {
-				rubricBody.free_form_criterion_comments = updateFields.free_form_criterion_comments;
-			}
-			if (updateFields.skip_updating_points_possible !== undefined) {
-				rubricBody.skip_updating_points_possible = updateFields.skip_updating_points_possible;
-			}
-
+		case 'updateAssociation':
 			return {
 				method: 'PUT',
-				endpoint: `${basePath}/rubrics/${rubricId}`,
-				body,
+				endpoint: `${coursePath}/rubric_associations/${getParam('rubricAssociationId')}`,
+				body: { rubric_association: getParamObject('updateFields') },
+			};
+
+		case 'deleteAssociation':
+			return {
+				method: 'DELETE',
+				endpoint: `${coursePath}/rubric_associations/${getParam('rubricAssociationId')}`,
+				dataKey: 'rubric_association',
+			};
+
+		case 'createAssessment':
+		case 'updateAssessment': {
+			const options = getParamObject('options');
+			const assessmentsPath = `${coursePath}/rubric_associations/${getParam('rubricAssociationId')}/rubric_assessments`;
+			return {
+				method: operation === 'createAssessment' ? 'POST' : 'PUT',
+				endpoint:
+					operation === 'createAssessment'
+						? assessmentsPath
+						: `${assessmentsPath}/${getParam('rubricAssessmentId')}`,
+				body: {
+					rubric_assessment: rubricAssessment(getParam, getParamObject),
+					...pickFilled(options, ['provisional', 'final', 'graded_anonymously']),
+				},
 			};
 		}
+
+		case 'deleteAssessment':
+			return {
+				method: 'DELETE',
+				endpoint: `${coursePath}/rubric_associations/${getParam('rubricAssociationId')}/rubric_assessments/${getParam('rubricAssessmentId')}`,
+				dataKey: 'rubric_assessment',
+			};
+
+		case 'import': {
+			const csv = getParam('csvData');
+			if (csv.trim() === '') {
+				throw new ApplicationError(
+					'CSV Data is empty. Enter the rubrics to import as CSV text, including the header row (see Get Import Template).',
+				);
+			}
+			// Canvas only reads the file from a multipart form field called "attachment" (not from
+			// the request body, unlike the other CSV imports). Built as text so that debug mode
+			// shows exactly what is sent.
+			const form = buildMultipartBody(
+				{},
+				{ fieldName: 'attachment', fileName: 'rubrics.csv', contentType: 'text/csv', data: Buffer.from(csv, 'utf8') },
+			);
+			return {
+				method: 'POST',
+				endpoint: `${getRubricBasePath(getParam)}/rubrics/upload`,
+				body: form.body.toString('utf8'),
+				contentType: form.contentType,
+			};
+		}
+
+		case 'getImportStatus':
+			return {
+				method: 'GET',
+				endpoint: `${getRubricBasePath(getParam)}/rubrics/upload/${getParam('importId', 'latest')}`,
+			};
+
+		// Imported rubrics are drafts, which the rubric list leaves out: this is where their IDs come from.
+		case 'listImportedRubrics':
+			return {
+				method: 'GET',
+				endpoint: `${getRubricBasePath(getParam)}/rubrics/upload/${getParam('importId')}/rubrics`,
+			};
+
+		// Canvas answers with CSV text, not JSON.
+		case 'getImportTemplate':
+			return {
+				method: 'GET',
+				endpoint: '/api/v1/rubrics/upload_template',
+				singlePage: true,
+				responseFile: { fileName: 'import_rubric_template.csv', mimeType: 'text/csv' },
+			};
 
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for rubric`);
 	}
+}
+
+// ============================================
+// Helper: resolve context base path for outcome group (account/course/global)
+// ============================================
+
+function getOutcomeGroupBasePath(getParam: GetParam): string {
+	const context = getParam('context');
+	if (context === 'account') {
+		return `/api/v1/accounts/${getParam('accountId')}`;
+	}
+	if (context === 'global') {
+		return '/api/v1/global';
+	}
+	return `/api/v1/courses/${getParam('courseId')}`;
+}
+
+/** `ratings[]` of an outcome from the Ratings collection. */
+function outcomeRatings(collection: Record<string, unknown>): IDataObject[] {
+	return collectionRows(collection, 'rating', 'Ratings').map((rating) => ({
+		description: rating.description,
+		points: rating.points ?? 0,
+	}));
 }
 
 // ============================================
@@ -159,6 +368,23 @@ export function handleOutcomeResource(
 	getParamObject: GetParamObject,
 ): IRequestConfig {
 	switch (operation) {
+		// Canvas creates an outcome by linking a new one into an outcome group.
+		case 'create': {
+			const body: Record<string, unknown> = {
+				title: getParam('title'),
+				...getParamObject('additionalFields'),
+			};
+			const ratings = outcomeRatings(getParamObject('ratings'));
+			if (ratings.length > 0) {
+				body.ratings = ratings;
+			}
+			return {
+				method: 'POST',
+				endpoint: `${getOutcomeGroupBasePath(getParam)}/outcome_groups/${getParam('outcomeGroupId')}/outcomes`,
+				body,
+			};
+		}
+
 		case 'get': {
 			const outcomeId = getParam('outcomeId');
 			const options = getParamObject('options');
@@ -181,11 +407,15 @@ export function handleOutcomeResource(
 
 		case 'update': {
 			const outcomeId = getParam('outcomeId');
-			const updateFields = getParamObject('updateFields');
+			const body: Record<string, unknown> = { ...getParamObject('updateFields') };
+			const ratings = outcomeRatings(getParamObject('ratings'));
+			if (ratings.length > 0) {
+				body.ratings = ratings;
+			}
 			return {
 				method: 'PUT',
 				endpoint: `/api/v1/outcomes/${outcomeId}`,
-				body: updateFields,
+				body,
 			};
 		}
 
@@ -195,23 +425,23 @@ export function handleOutcomeResource(
 }
 
 // ============================================
-// Helper: resolve context base path for outcome group (account/course/global)
-// ============================================
-
-function getOutcomeGroupBasePath(getParam: GetParam): string {
-	const context = getParam('context');
-	if (context === 'account') {
-		return `/api/v1/accounts/${getParam('accountId')}`;
-	}
-	if (context === 'global') {
-		return '/api/v1/global';
-	}
-	return `/api/v1/courses/${getParam('courseId')}`;
-}
-
-// ============================================
 // OUTCOME GROUP
 // ============================================
+
+/**
+ * Canvas abbreviates outcomes and groups unless told otherwise, and treats any
+ * style it is sent (even "abbrev") as a request for the full form. So the
+ * style arguments are only sent for "full".
+ */
+function fullStyles(options: Record<string, unknown>, keys: string[]): Record<string, unknown> {
+	const qs: Record<string, unknown> = {};
+	for (const key of keys) {
+		if (options[key] === 'full') {
+			qs[key] = 'full';
+		}
+	}
+	return qs;
+}
 
 export function handleOutcomeGroupResource(
 	operation: string,
@@ -241,11 +471,21 @@ export function handleOutcomeGroupResource(
 				endpoint: `${basePath}/outcome_groups/${groupId}`,
 			};
 
+		// Not offered for the global context: Canvas has no route to list all global groups.
 		case 'getAll':
 			return {
 				method: 'GET',
 				endpoint: `${basePath}/outcome_groups`,
 			};
+
+		case 'getAllLinks': {
+			const qs = fullStyles(getParamObject('options'), ['outcome_style', 'outcome_group_style']);
+			return {
+				method: 'GET',
+				endpoint: `${basePath}/outcome_group_links`,
+				...(Object.keys(qs).length > 0 ? { qs } : {}),
+			};
+		}
 
 		case 'getRoot':
 			return {
@@ -266,12 +506,34 @@ export function handleOutcomeGroupResource(
 			};
 		}
 
-		case 'listOutcomes': {
+		case 'linkOutcome': {
 			const options = getParamObject('options');
+			return {
+				method: 'PUT',
+				endpoint: `${basePath}/outcome_groups/${groupId}/outcomes/${getParam('outcomeId')}`,
+				...(isBlank(options.move_from) ? {} : { body: { move_from: options.move_from } }),
+			};
+		}
+
+		case 'unlinkOutcome':
+			// Canvas removes the link of a global group, then fails to render it (500): global
+			// links name the group as their context and its API helpers have no route for that.
+			if (getParam('context') === 'global') {
+				throw new ApplicationError(
+					'Unlink Outcome is not available for global outcome groups: Canvas removes the link but answers with an error 500',
+				);
+			}
+			return {
+				method: 'DELETE',
+				endpoint: `${basePath}/outcome_groups/${groupId}/outcomes/${getParam('outcomeId')}`,
+			};
+
+		case 'listOutcomes': {
+			const qs = fullStyles(getParamObject('options'), ['outcome_style']);
 			return {
 				method: 'GET',
 				endpoint: `${basePath}/outcome_groups/${groupId}/outcomes`,
-				...(Object.keys(options).length > 0 ? { qs: options } : {}),
+				...(Object.keys(qs).length > 0 ? { qs } : {}),
 			};
 		}
 
@@ -318,16 +580,16 @@ export function handleOutcomeImportResource(
 
 	switch (operation) {
 		case 'create': {
-			const csvData = getParam('csvData');
-			const additionalFields = getParamObject('additionalFields');
-			const body: Record<string, unknown> = {
-				attachment: csvData,
-				...additionalFields,
-			};
+			const groupId = getParamObject('additionalFields').learning_outcome_group_id;
+			// Canvas reads the CSV from the request body itself (or from a multipart upload), never
+			// from a JSON field, so the text is handed to the request layer as the body: a string
+			// is sent as it is. No `extension` argument: with it Canvas loses the uploaded body.
 			return {
 				method: 'POST',
-				endpoint: `${basePath}/outcome_imports`,
-				body,
+				endpoint: `${basePath}/outcome_imports${isBlank(groupId) ? '' : `/group/${String(groupId).trim()}`}`,
+				qs: { import_type: 'instructure_csv' },
+				body: getParam('csvData'),
+				contentType: 'text/csv',
 			};
 		}
 
@@ -356,6 +618,34 @@ export function handleOutcomeImportResource(
 // OUTCOME RESULT
 // ============================================
 
+/** Filters shared by the outcome result endpoints. */
+function outcomeResultFilters(options: Record<string, unknown>): Record<string, unknown> {
+	const qs: Record<string, unknown> = {};
+	const userIds = toList(options.user_ids);
+	if (userIds.length > 0) {
+		qs.user_ids = userIds;
+	}
+	const outcomeIds = toList(options.outcome_ids);
+	if (outcomeIds.length > 0) {
+		qs.outcome_ids = outcomeIds;
+	}
+	for (const key of ['outcome_group_id', 'section_id']) {
+		if (!isBlank(options[key])) {
+			qs[key] = options[key];
+		}
+	}
+	return qs;
+}
+
+/** Without the Learning Mastery Gradebook feature Canvas answers 204: nothing is read or stored. */
+function requireGradebookSettings(data: unknown): void {
+	if (data === undefined || data === null || typeof data !== 'object') {
+		throw new ApplicationError(
+			'Canvas has no Learning Mastery Gradebook settings for this course: the feature is not enabled',
+		);
+	}
+}
+
 export function handleOutcomeResultResource(
 	operation: string,
 	getParam: GetParam,
@@ -364,19 +654,10 @@ export function handleOutcomeResultResource(
 	const courseId = getParam('courseId');
 
 	switch (operation) {
+		// { outcome_results: [...] }: one item per result, all pages.
 		case 'getAll': {
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
-
-			if (options.user_ids) {
-				qs['user_ids[]'] = (options.user_ids as string).split(',').map((id) => id.trim());
-			}
-			if (options.outcome_ids) {
-				qs['outcome_ids[]'] = (options.outcome_ids as string).split(',').map((id) => id.trim());
-			}
-			if (options.include && Array.isArray(options.include) && (options.include as string[]).length > 0) {
-				qs['include[]'] = options.include;
-			}
+			const qs = outcomeResultFilters(options);
 			if (options.include_hidden !== undefined) {
 				qs.include_hidden = options.include_hidden;
 			}
@@ -385,48 +666,37 @@ export function handleOutcomeResultResource(
 				method: 'GET',
 				endpoint: `/api/v1/courses/${courseId}/outcome_results`,
 				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				dataKey: 'outcome_results',
 			};
 		}
 
+		// { rollups: [...] }: one item per student (or one for the course), all pages.
 		case 'getRollups': {
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
+			const qs = outcomeResultFilters(options);
 
-			if (options.user_ids) {
-				qs['user_ids[]'] = (options.user_ids as string).split(',').map((id) => id.trim());
+			if (Array.isArray(options.exclude) && options.exclude.length > 0) {
+				qs.exclude = options.exclude;
 			}
-			if (options.outcome_ids) {
-				qs['outcome_ids[]'] = (options.outcome_ids as string).split(',').map((id) => id.trim());
-			}
-			if (options.include && Array.isArray(options.include) && (options.include as string[]).length > 0) {
-				qs['include[]'] = options.include;
-			}
-			if (options.exclude && Array.isArray(options.exclude) && (options.exclude as string[]).length > 0) {
-				qs['exclude[]'] = options.exclude;
-			}
-			if (options.aggregate) {
-				qs.aggregate = options.aggregate;
-			}
-			if (options.aggregate_stat) {
-				qs.aggregate_stat = options.aggregate_stat;
-			}
-			if (options.sort_by) {
-				qs.sort_by = options.sort_by;
-			}
-			if (options.sort_order) {
-				qs.sort_order = options.sort_order;
-			}
-			if (options.sort_outcome_id) {
-				qs.sort_outcome_id = options.sort_outcome_id;
+			for (const key of ['aggregate', 'aggregate_stat', 'sort_by', 'sort_order', 'sort_outcome_id']) {
+				if (!isBlank(options[key])) {
+					qs[key] = options[key];
+				}
 			}
 			if (options.add_defaults !== undefined) {
 				qs.add_defaults = options.add_defaults;
+			}
+			// Canvas only cuts the student rollups into pages when they are sorted by student or by
+			// an outcome score. Unsorted, every page repeats all rollups (while announcing a next page).
+			if (isBlank(qs.aggregate) && isBlank(qs.sort_by)) {
+				qs.sort_by = 'student';
 			}
 
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/courses/${courseId}/outcome_rollups`,
 				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				dataKey: 'rollups',
 			};
 		}
 
@@ -435,8 +705,9 @@ export function handleOutcomeResultResource(
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
 
-			if (options.user_ids) {
-				qs['user_ids[]'] = (options.user_ids as string).split(',').map((id) => id.trim());
+			const userIds = toList(options.user_ids);
+			if (userIds.length > 0) {
+				qs.user_ids = userIds;
 			}
 			if (options.only_assignment_alignments !== undefined) {
 				qs.only_assignment_alignments = options.only_assignment_alignments;
@@ -447,10 +718,97 @@ export function handleOutcomeResultResource(
 
 			return {
 				method: 'GET',
-				endpoint: `/api/v1/courses/${courseId}/outcome_rollups/${outcomeId}/contributing_scores`,
+				endpoint: `/api/v1/courses/${courseId}/outcomes/${outcomeId}/contributing_scores`,
 				...(Object.keys(qs).length > 0 ? { qs } : {}),
 			};
 		}
+
+		// One record: { outcome_distributions: { "<outcome ID>": {...} }, students: [...] }.
+		case 'getMasteryDistribution': {
+			const options = getParamObject('options');
+			const qs: Record<string, unknown> = {};
+
+			const outcomeIds = toList(options.outcome_ids);
+			if (outcomeIds.length > 0) {
+				qs.outcome_ids = outcomeIds;
+			}
+			const studentIds = toList(options.student_ids);
+			if (studentIds.length > 0) {
+				qs.student_ids = studentIds;
+			}
+			// Canvas also documents "missing_user_rollups" here, but it changes nothing in this answer:
+			// students without a score are never counted, and the student list always has everybody.
+			if (options.exclude_missing_outcome_results === true) {
+				qs.exclude = ['missing_outcome_results'];
+			}
+			if (options.include_alignment_distributions === true) {
+				qs.include = ['alignment_distributions'];
+				// These two only concern the alignment distributions.
+				for (const key of ['only_assignment_alignments', 'show_unpublished_assignments']) {
+					if (options[key] !== undefined) {
+						qs[key] = options[key];
+					}
+				}
+			}
+			if (options.add_defaults !== undefined) {
+				qs.add_defaults = options.add_defaults;
+			}
+
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/outcome_mastery_distribution`,
+				...(Object.keys(qs).length > 0 ? { qs } : {}),
+			};
+		}
+
+		case 'assignOutcomeOrder': {
+			const outcomeIds = toList(getParam('outcomeIds'));
+			if (outcomeIds.length === 0) {
+				throw new ApplicationError('Enter at least one outcome ID, in the order the outcomes should appear');
+			}
+			// The request body is the list itself. Canvas compares the IDs as numbers: an ID sent
+			// as text is rejected as "Outcomes do not belong to Course".
+			const order = outcomeIds.map((id, position) => {
+				if (!/^\d+$/.test(id)) {
+					throw new ApplicationError(`"${id}" is not an outcome ID: this operation only accepts numeric IDs`);
+				}
+				return { outcome_id: Number(id), position };
+			});
+			return {
+				method: 'POST',
+				endpoint: `/api/v1/courses/${courseId}/assign_outcome_order`,
+				body: order,
+			};
+		}
+
+		// The display settings of the Learning Mastery Gradebook, stored per user and course.
+		case 'getGradebookSettings':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/learning_mastery_gradebook_settings`,
+				dataKey: 'learning_mastery_gradebook_settings',
+				checkResponse: requireGradebookSettings,
+			};
+
+		case 'updateGradebookSettings': {
+			const settings = getParamObject('settings');
+			if (Object.keys(settings).length === 0) {
+				throw new ApplicationError('Select at least one setting for outcomeResult updateGradebookSettings');
+			}
+			return {
+				method: 'PUT',
+				endpoint: `/api/v1/courses/${courseId}/learning_mastery_gradebook_settings`,
+				body: { learning_mastery_gradebook_settings: settings },
+				dataKey: 'learning_mastery_gradebook_settings',
+				checkResponse: requireGradebookSettings,
+			};
+		}
+
+		case 'getUserDetails':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/users/${getParam('userId')}/lmgb_user_details`,
+			};
 
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for outcomeResult`);
@@ -488,13 +846,7 @@ export function handleProficiencyRatingResource(
 			};
 
 		case 'set': {
-			const ratingsData = getParamObject('ratings');
-			const ratingItems = (ratingsData.rating as Array<{
-				description: string;
-				points: number;
-				mastery: boolean;
-				color: string;
-			}>) || [];
+			const ratingItems = collectionRows(getParamObject('ratings'), 'rating', 'Ratings');
 
 			if (ratingItems.length === 0) {
 				throw new ApplicationError(
@@ -503,14 +855,15 @@ export function handleProficiencyRatingResource(
 			}
 
 			return {
-				method: 'PUT',
+				method: 'POST',
 				endpoint: `${basePath}/outcome_proficiency`,
 				body: {
 					ratings: ratingItems.map((r) => ({
 						description: r.description,
 						points: r.points,
-						mastery: r.mastery,
-						color: r.color,
+						mastery: r.mastery === true,
+						// Canvas stores six hex digits without the "#" of the color picker.
+						color: String(r.color ?? '').trim().replace(/^#/, ''),
 					})),
 				},
 			};

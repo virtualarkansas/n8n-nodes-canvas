@@ -1,0 +1,783 @@
+{
+  "name": "Canvas battery — mediaObject",
+  "nodes": [
+    {
+      "id": "688cb6c3-18a5-4521-9bd8-4dd1f7c115e2",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "a2a075ee-57f0-4eec-87d1-da8300437414",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "194c95a0-2ff0-4eed-92ff-653533619b06",
+      "name": "getAll — getAll: media objects of a course, sorted and ordered",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "116",
+        "options": {
+          "exclude": [
+            "sources",
+            "tracks"
+          ],
+          "sort": "title",
+          "order": "asc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3c91af7e-bb14-41d2-a2a1-289ee239c95a",
+      "name": "getAll — getAll: media objects of a course, sorted and ordered (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "116",
+        "options": {
+          "exclude": [
+            "sources",
+            "tracks"
+          ],
+          "sort": "title",
+          "order": "desc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ad2ecb78-8b98-4613-adcb-767437f84e84",
+      "name": "getAll — getAll: media objects of a course, sorted and ordered (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "116",
+        "options": {
+          "exclude": [
+            "sources",
+            "tracks"
+          ],
+          "sort": "created_at",
+          "order": "desc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "db5709e7-b5df-4aaa-8279-3cabf69f7bd2",
+      "name": "getAll — getAll: media objects of a course, sorted and ordered (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "116",
+        "options": {
+          "exclude": [
+            "sources",
+            "tracks"
+          ],
+          "sort": "created_at",
+          "order": "desc"
+        },
+        "pagination": {
+          "perPage": 1,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ac8c6a6d-75d4-42d9-a60b-537e4fcc9440",
+      "name": "getAll — getAll: exclude decides whether tracks and sources are loo",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "116",
+        "options": {
+          "exclude": [
+            "sources"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7c721b76-c2e8-4809-8b4d-f18538646b8b",
+      "name": "getAll — getAll: group and user contexts",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "getAll",
+        "contextType": "group",
+        "groupId": "57",
+        "options": {
+          "exclude": [
+            "sources",
+            "tracks"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7e9be91d-0679-403f-9f9a-9883a5552cac",
+      "name": "getAll — getAll: group and user contexts (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "getAll",
+        "contextType": "user",
+        "options": {
+          "exclude": [
+            "sources",
+            "tracks"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8a50c43a-2f84-402f-94e9-8e8e22358b31",
+      "name": "update — update: changes the title shown for the media object",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "update",
+        "mediaObjectId": "={{ $('getAll — getAll: media objects of a course, sorted and ordered (2)').first().json.media_id }}",
+        "title": "Umbenannt ünï 媒体 \"quoted\" & more mmwi4ffvfb01"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8c537f02-97fc-4bbb-977d-4013f1d48173",
+      "name": "updateTracks — updateTracks / listTracks: replace the caption tracks and re",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "updateTracks",
+        "mediaObjectId": "={{ $('getAll — getAll: media objects of a course, sorted and ordered (4)').first().json.media_id }}",
+        "tracks": {
+          "trackValues": [
+            {
+              "locale": "en",
+              "content": "1\n00:00:00,000 --> 00:00:02,500\nHello \"world\" & more\n",
+              "kind": "captions"
+            },
+            {
+              "locale": "es",
+              "content": "1\n00:00:00,000 --> 00:00:02,500\nHola ünï\n",
+              "kind": "subtitles"
+            },
+            {
+              "locale": "zh",
+              "content": "1\n00:00:00,000 --> 00:00:02,500\n你好\n",
+              "kind": "subtitles"
+            }
+          ]
+        },
+        "options": {
+          "include": [
+            "content",
+            "created_at",
+            "updated_at",
+            "webvtt_content"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a0960faf-8531-4709-bf8e-3b8d43614f5e",
+      "name": "listTracks — updateTracks / listTracks: replace the caption tracks and re",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "listTracks",
+        "mediaObjectId": "={{ $('getAll — getAll: media objects of a course, sorted and ordered (4)').first().json.media_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fc76c549-82a9-4e0c-8f79-bbcb1ea3d461",
+      "name": "listTracks — updateTracks / listTracks: replace the caption tracks and re (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "listTracks",
+        "mediaObjectId": "={{ $('getAll — getAll: media objects of a course, sorted and ordered (4)').first().json.media_id }}",
+        "options": {
+          "include": [
+            "content",
+            "created_at",
+            "updated_at",
+            "webvtt_content"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "979303ea-4527-4c98-abea-f1b43f8cc8a5",
+      "name": "updateTracks — updateTracks / listTracks: replace the caption tracks and re (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "updateTracks",
+        "mediaObjectId": "={{ $('getAll — getAll: media objects of a course, sorted and ordered (4)').first().json.media_id }}",
+        "tracks": {
+          "trackValues": [
+            {
+              "locale": "en"
+            },
+            {
+              "locale": "fr",
+              "content": "1\n00:00:00,000 --> 00:00:02,500\nBonjour\n"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "65d970db-ad2c-41ae-a311-d326e3daca2e",
+      "name": "listTracks — updateTracks / listTracks: replace the caption tracks and re (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "listTracks",
+        "mediaObjectId": "={{ $('getAll — getAll: exclude decides whether tracks and sources are loo').first().json.media_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b036d831-23d4-4402-b2b2-bf450535668f",
+      "name": "updateTracks — updateTracks: at least one track is required; without the ri",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "updateTracks",
+        "mediaObjectId": "={{ $('getAll — getAll: media objects of a course, sorted and ordered (4)').first().json.media_id }}",
+        "removeAllTracks": true,
+        "tracks": {
+          "trackValues": [
+            {
+              "locale": "de",
+              "content": "1\n00:00:00,000 --> 00:00:02,500\nHallo\n"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e71b368f-4c1d-4fbb-a48f-c44138c414c9",
+      "name": "updateTracks — updateTracks / listTracks by attachment ID: the captions of ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "updateTracks",
+        "mediaBy": "attachmentId",
+        "attachmentId": "3757",
+        "tracks": {
+          "trackValues": [
+            {
+              "locale": "en",
+              "content": "1\n00:00:00,000 --> 00:00:02,500\nBy attachment\n",
+              "kind": "captions"
+            },
+            {
+              "locale": "de",
+              "content": "1\n00:00:00,000 --> 00:00:02,500\nÜber die Datei\n",
+              "kind": "subtitles"
+            }
+          ]
+        },
+        "options": {
+          "include": [
+            "content",
+            "created_at",
+            "updated_at",
+            "webvtt_content"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fbe15ead-0170-4751-b7f3-49b763a84baf",
+      "name": "updateTracks — updateTracks / listTracks by attachment ID: the captions of  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "mediaObject",
+        "operation": "updateTracks",
+        "mediaBy": "attachmentId",
+        "attachmentId": "3757",
+        "removeAllTracks": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: media objects of a course, sorted and ordered",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: media objects of a course, sorted and ordered": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: media objects of a course, sorted and ordered (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: media objects of a course, sorted and ordered (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: media objects of a course, sorted and ordered (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: media objects of a course, sorted and ordered (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: media objects of a course, sorted and ordered (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: media objects of a course, sorted and ordered (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: exclude decides whether tracks and sources are loo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: exclude decides whether tracks and sources are loo": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: group and user contexts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: group and user contexts": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: group and user contexts (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: group and user contexts (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: changes the title shown for the media object",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: changes the title shown for the media object": {
+      "main": [
+        [
+          {
+            "node": "updateTracks — updateTracks / listTracks: replace the caption tracks and re",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateTracks — updateTracks / listTracks: replace the caption tracks and re": {
+      "main": [
+        [
+          {
+            "node": "listTracks — updateTracks / listTracks: replace the caption tracks and re",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listTracks — updateTracks / listTracks: replace the caption tracks and re": {
+      "main": [
+        [
+          {
+            "node": "listTracks — updateTracks / listTracks: replace the caption tracks and re (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listTracks — updateTracks / listTracks: replace the caption tracks and re (2)": {
+      "main": [
+        [
+          {
+            "node": "updateTracks — updateTracks / listTracks: replace the caption tracks and re (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateTracks — updateTracks / listTracks: replace the caption tracks and re (2)": {
+      "main": [
+        [
+          {
+            "node": "listTracks — updateTracks / listTracks: replace the caption tracks and re (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listTracks — updateTracks / listTracks: replace the caption tracks and re (3)": {
+      "main": [
+        [
+          {
+            "node": "updateTracks — updateTracks: at least one track is required; without the ri",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateTracks — updateTracks: at least one track is required; without the ri": {
+      "main": [
+        [
+          {
+            "node": "updateTracks — updateTracks / listTracks by attachment ID: the captions of ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateTracks — updateTracks / listTracks by attachment ID: the captions of ": {
+      "main": [
+        [
+          {
+            "node": "updateTracks — updateTracks / listTracks by attachment ID: the captions of  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

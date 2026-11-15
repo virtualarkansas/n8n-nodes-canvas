@@ -57,7 +57,8 @@ export const newQuizAccommodationsFields: INodeProperties[] = [
 				resource: ['newQuizAccommodations'],
 			},
 		},
-		description: 'The Canvas user ID receiving the accommodations',
+		description:
+			'The Canvas user ID of the student receiving the accommodations. To accommodate several students, send one input item per student.',
 	},
 
 	// ----------------------------------
@@ -99,7 +100,7 @@ export const newQuizAccommodationsFields: INodeProperties[] = [
 				name: 'extra_attempts',
 				type: 'number',
 				default: 0,
-				description: 'Additional quiz retake attempts allowed',
+				description: 'Number of times the student may retake the quiz beyond its attempt limit',
 			},
 			{
 				displayName: 'Extra Time (Minutes)',

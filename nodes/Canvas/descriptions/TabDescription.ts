@@ -15,13 +15,13 @@ export const tabOperations: INodeProperties[] = [
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many tabs',
+				description: 'Get the navigation tabs of a course, account, group or user',
 				action: 'Get many tabs',
 			},
 			{
 				name: 'Update',
 				value: 'update',
-				description: 'Update a tab',
+				description: 'Hide, show or move a navigation tab of a course',
 				action: 'Update a tab',
 			},
 		],
@@ -31,7 +31,7 @@ export const tabOperations: INodeProperties[] = [
 
 export const tabFields: INodeProperties[] = [
 	// ----------------------------------
-	//         tab: shared
+	//         tab: getAll
 	// ----------------------------------
 	{
 		displayName: 'Context Type',
@@ -48,6 +48,7 @@ export const tabFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['tab'],
+				operation: ['getAll'],
 			},
 		},
 		description: 'The type of context to get tabs for',
@@ -61,6 +62,7 @@ export const tabFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['tab'],
+				operation: ['getAll'],
 			},
 		},
 		description: 'The ID of the context (account, course, group, or user)',
@@ -70,8 +72,8 @@ export const tabFields: INodeProperties[] = [
 	//         tab: update
 	// ----------------------------------
 	{
-		displayName: 'Tab ID',
-		name: 'tabId',
+		displayName: 'Course ID',
+		name: 'contextId',
 		type: 'string',
 		required: true,
 		default: '',
@@ -81,7 +83,23 @@ export const tabFields: INodeProperties[] = [
 				operation: ['update'],
 			},
 		},
-		description: 'The ID of the tab to update',
+		description: 'The ID of the course. Canvas only allows changing the navigation of courses.',
+	},
+	{
+		displayName: 'Tab ID',
+		name: 'tabId',
+		type: 'string',
+		required: true,
+		default: '',
+		placeholder: 'assignments',
+		displayOptions: {
+			show: {
+				resource: ['tab'],
+				operation: ['update'],
+			},
+		},
+		description:
+			'The ID of the tab as returned by "Get Many", e.g. "assignments" or "context_external_tool_4". The Home and Settings tabs cannot be changed.',
 	},
 	{
 		displayName: 'Update Fields',
@@ -107,8 +125,12 @@ export const tabFields: INodeProperties[] = [
 				displayName: 'Position',
 				name: 'position',
 				type: 'number',
-				default: 1,
-				description: 'The new position of the tab (1-based)',
+				default: 2,
+				typeOptions: {
+					minValue: 2,
+				},
+				description:
+					'The new position of the tab (1-based). Position 1 belongs to Home, so the lowest valid position is 2 and the highest is the number of tabs (Settings always stays last).',
 			},
 		],
 	},
@@ -133,11 +155,10 @@ export const tabFields: INodeProperties[] = [
 				displayName: 'Include',
 				name: 'include',
 				type: 'multiOptions',
-				options: [
-					{ name: 'Course Subject Tabs', value: 'course_subject_tabs' },
-				],
+				options: [{ name: 'Course Subject Tabs', value: 'course_subject_tabs' }],
 				default: [],
-				description: 'Additional information to include. Use "Course Subject Tabs" for Canvas for Elementary subject course home pages.',
+				description:
+					'Additional information to include. "Course Subject Tabs" returns the home page tabs of a Canvas for Elementary subject course instead of the sidebar navigation.',
 			},
 		],
 	},

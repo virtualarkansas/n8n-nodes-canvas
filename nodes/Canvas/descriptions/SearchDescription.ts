@@ -15,13 +15,15 @@ export const searchOperations: INodeProperties[] = [
 			{
 				name: 'Find Recipients',
 				value: 'findRecipients',
-				description: 'Find valid message recipients (users, courses, groups)',
+				description:
+					'Find the users, courses, sections and groups the token\'s user can send messages to. Returns nothing unless a Search term, a Context or a User ID is given.',
 				action: 'Find recipients',
 			},
 			{
 				name: 'List All Courses',
 				value: 'listAllCourses',
-				description: 'Get a paginated list of all courses visible in the public index',
+				description:
+					'Get the published courses listed in the public course index. Answers 403 unless the course catalog is turned on in the root account settings. Each item holds the course under the key "course".',
 				action: 'List all courses',
 			},
 		],
@@ -52,7 +54,7 @@ export const searchFields: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				description:
-					'Limit the search to a specific course or group (e.g., "course_3" or "group_5")',
+					'Limit the search to a course, section or group, e.g. "course_3", "section_7" or "group_5". A suffix narrows it to one role: "course_3_teachers", "course_3_students", "course_3_tas", "course_3_observers".',
 			},
 			{
 				displayName: 'Exclude',
@@ -60,14 +62,15 @@ export const searchFields: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				description:
-					'Comma-separated list of identifiers to exclude from results (e.g., "user_1,course_2")',
+					'Comma-separated IDs to leave out of the results: user IDs as plain numbers, courses and groups with their prefix, e.g. "12,34,course_2,group_5"',
 			},
 			{
 				displayName: 'From Conversation ID',
 				name: 'from_conversation_id',
 				type: 'string',
 				default: '',
-				description: 'Reference an existing conversation for shared context lookup',
+				description:
+					'With User ID: also find the user if both of you take part in this conversation, even without a shared course or group',
 			},
 			{
 				displayName: 'Permissions',
@@ -84,7 +87,8 @@ export const searchFields: INodeProperties[] = [
 						value: 'send_messages_all',
 					},
 				],
-				description: 'Check context permissions',
+				description:
+					'Permissions to report for each course, section or group found (in its "permissions" field). Does not filter the results.',
 			},
 			{
 				displayName: 'Search',
@@ -113,14 +117,15 @@ export const searchFields: INodeProperties[] = [
 						value: 'user',
 					},
 				],
-				description: 'Filter results to only users or only contexts',
+				description: 'Return only users or only contexts (courses, sections and groups)',
 			},
 			{
 				displayName: 'User ID',
 				name: 'user_id',
 				type: 'string',
 				default: '',
-				description: 'Search for a specific user ID (returns at most one result)',
+				description:
+					'Look up one user by ID. Every other option except From Conversation ID is ignored, and nothing is returned if you cannot message that user.',
 			},
 		],
 	},
@@ -146,7 +151,7 @@ export const searchFields: INodeProperties[] = [
 				name: 'open_enrollment_only',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to return only courses with self-enrollment enabled',
+				description: 'Whether to return only courses that allow self enrollment',
 			},
 			{
 				displayName: 'Public Only',

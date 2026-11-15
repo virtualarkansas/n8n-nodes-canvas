@@ -9,13 +9,19 @@ import {
 	buildCourseReportRequest,
 } from './courses.handler';
 
+import { buildCourseNicknameRequest } from './courseNickname.handler';
+import { buildGradebookRequest } from './gradebook.handler';
+import { buildWebZipExportRequest } from './webZipExport.handler';
+
 // Users group
 import {
 	buildUserRequest,
 	buildLoginRequest,
 	buildCommunicationChannelRequest,
 	buildUserObserveeRequest,
+	buildUserCustomDataRequest,
 } from './users.handler';
+import { buildErrorReportRequest } from './errorReports.handler';
 
 // Enrollments group
 import {
@@ -180,6 +186,49 @@ import {
 	buildPollRequest,
 } from './misc.handler';
 
+// Audit logs group
+import {
+	buildGradebookHistoryRequest,
+	buildGradeChangeLogRequest,
+	buildCourseAuditLogRequest,
+} from './audit.handler';
+
+// Polling group
+import {
+	buildPollChoiceRequest,
+	buildPollSessionRequest,
+	buildPollSubmissionRequest,
+} from './polls.handler';
+
+// Account security group
+import {
+	buildCspSettingRequest,
+	buildDeveloperKeyAccountBindingRequest,
+} from './accountSecurity.handler';
+
+// Dates and assessment extras group
+import {
+	buildLearningObjectDateRequest,
+	buildLiveAssessmentRequest,
+	buildWhatIfGradeRequest,
+} from './learning.handler';
+
+// Quiz extras group
+import {
+	buildQuizAssignmentOverrideRequest,
+	buildQuizIpFilterRequest,
+	buildQuizSubmissionEventRequest,
+	buildQuizSubmissionQuestionRequest,
+} from './quizExtras.handler';
+import { buildQuestionBankRequest } from './questionBanks.handler';
+import { buildBrandConfigRequest } from './brandConfigs.handler';
+
+// Generic requests group
+import {
+	buildApiRequestRequest,
+	buildGraphqlRequest,
+} from './generic.handler';
+
 /**
  * Maps every Canvas resource name to its handler function.
  * Each handler takes (operation, getParam, getParamObject) and returns IRequestConfig.
@@ -191,12 +240,17 @@ export const resourceHandlers: Record<string, ResourceHandler> = {
 	tab: buildTabRequest,
 	coursePace: buildCoursePaceRequest,
 	courseReport: buildCourseReportRequest,
+	courseNickname: buildCourseNicknameRequest,
+	gradebook: buildGradebookRequest,
+	webZipExport: buildWebZipExportRequest,
 
 	// Users group
 	user: buildUserRequest,
 	login: buildLoginRequest,
 	communicationChannel: buildCommunicationChannelRequest,
 	userObservee: buildUserObserveeRequest,
+	userCustomData: buildUserCustomDataRequest,
+	errorReport: buildErrorReportRequest,
 
 	// Enrollments group
 	enrollment: buildEnrollmentRequest,
@@ -320,4 +374,35 @@ export const resourceHandlers: Record<string, ResourceHandler> = {
 	featureFlag: buildFeatureFlagRequest,
 	planner: buildPlannerRequest,
 	poll: buildPollRequest,
+
+	// Audit logs group
+	gradebookHistory: buildGradebookHistoryRequest,
+	gradeChangeLog: buildGradeChangeLogRequest,
+	courseAuditLog: buildCourseAuditLogRequest,
+
+	// Polling group
+	pollChoice: buildPollChoiceRequest,
+	pollSession: buildPollSessionRequest,
+	pollSubmission: buildPollSubmissionRequest,
+
+	// Account security group
+	cspSetting: buildCspSettingRequest,
+	developerKeyAccountBinding: buildDeveloperKeyAccountBindingRequest,
+
+	// Dates and assessment extras group
+	learningObjectDate: buildLearningObjectDateRequest,
+	liveAssessment: buildLiveAssessmentRequest,
+	whatIfGrade: buildWhatIfGradeRequest,
+
+	// Quiz extras group
+	quizAssignmentOverride: buildQuizAssignmentOverrideRequest,
+	quizIpFilter: buildQuizIpFilterRequest,
+	quizSubmissionEvent: buildQuizSubmissionEventRequest,
+	quizSubmissionQuestion: buildQuizSubmissionQuestionRequest,
+	questionBank: buildQuestionBankRequest,
+	brandConfig: buildBrandConfigRequest,
+
+	// Generic requests group
+	apiRequest: buildApiRequestRequest,
+	graphql: buildGraphqlRequest,
 };

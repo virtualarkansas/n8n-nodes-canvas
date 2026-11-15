@@ -1,0 +1,476 @@
+{
+  "name": "Canvas battery — questionBank",
+  "nodes": [
+    {
+      "id": "dd9bf7fb-1708-4e33-aeea-b47c089f6ae8",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "14014ffd-09ff-453d-8490-7a27581a83ce",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "b28b20f0-c3f6-4b81-b70f-920dd839c9e2",
+      "name": "getAll — getAll (course): every bank of the course that is not delete",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "questionBank",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "979",
+        "pagination": {
+          "perPage": 1,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9b14ae54-6158-4439-9523-495b2a4b426f",
+      "name": "getAll — getAll: Include Question Count on and off; the ID as a num",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "questionBank",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "979",
+        "options": {
+          "include_question_count": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "83fca58d-521e-4a73-a543-4b595a2f11f8",
+      "name": "getAll — getAll (account): the banks of an account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "questionBank",
+        "operation": "getAll",
+        "context": "account",
+        "accountId": "284",
+        "options": {
+          "include_question_count": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "89052057-5183-43ce-b4b4-8c45a252bbb1",
+      "name": "get — get: one bank, with and without the number of its questions",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "questionBank",
+        "operation": "get",
+        "questionBankId": "42"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d3403100-0a7c-4fdf-b822-45c02c41d142",
+      "name": "listQuestions — listQuestions: a bank with more questions than two pages",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "questionBank",
+        "operation": "listQuestions",
+        "questionBankId": "={{ $('getAll — getAll: Include Question Count on and off; the ID as a num').first().json.id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "42000874-c51b-4555-8ab1-4444864fc44f",
+      "name": "listQuestions — listQuestions: a bank with more questions than two pages (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "questionBank",
+        "operation": "listQuestions",
+        "questionBankId": "={{ $('getAll — getAll: Include Question Count on and off; the ID as a num').first().json.id }}",
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5af904a8-1c3b-4682-9e32-635c021b44b4",
+      "name": "listQuestions — listQuestions: a bank with more questions than two pages (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "questionBank",
+        "operation": "listQuestions",
+        "questionBankId": "={{ $('getAll — getAll: Include Question Count on and off; the ID as a num').first().json.id }}",
+        "pagination": {
+          "perPage": 7,
+          "maxPages": 0
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f5d42076-3d03-423e-b0e4-e2a488dd0fda",
+      "name": "listQuestions — listQuestions: the questions with their text and answers; an",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "questionBank",
+        "operation": "listQuestions",
+        "questionBankId": "40"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "14b46d1f-19bb-4bbf-bc57-1f2fdc6f1bba",
+      "name": "listQuestions — listQuestions: the questions with their text and answers; an (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "questionBank",
+        "operation": "listQuestions",
+        "questionBankId": "={{ $('getAll — getAll: Include Question Count on and off; the ID as a num').first().json.id }}",
+        "pagination": {
+          "perPage": 1,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "53347d4c-7c70-4505-a844-4c731a392aa8",
+      "name": "listQuestions — listQuestions: the questions with their text and answers; an (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "questionBank",
+        "operation": "listQuestions",
+        "questionBankId": "41",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "acc27994-ce8f-45a7-8843-9c2e0a7f86a4",
+      "name": "listQuestions — listQuestions: the questions with their text and answers; an (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "questionBank",
+        "operation": "listQuestions",
+        "questionBankId": "={{ $('getAll — getAll (account): the banks of an account').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (course): every bank of the course that is not delete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (course): every bank of the course that is not delete": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Include Question Count on and off; the ID as a num",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Include Question Count on and off; the ID as a num": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (account): the banks of an account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (account): the banks of an account": {
+      "main": [
+        [
+          {
+            "node": "get — get: one bank, with and without the number of its questions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: one bank, with and without the number of its questions": {
+      "main": [
+        [
+          {
+            "node": "listQuestions — listQuestions: a bank with more questions than two pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listQuestions — listQuestions: a bank with more questions than two pages": {
+      "main": [
+        [
+          {
+            "node": "listQuestions — listQuestions: a bank with more questions than two pages (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listQuestions — listQuestions: a bank with more questions than two pages (2)": {
+      "main": [
+        [
+          {
+            "node": "listQuestions — listQuestions: a bank with more questions than two pages (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listQuestions — listQuestions: a bank with more questions than two pages (3)": {
+      "main": [
+        [
+          {
+            "node": "listQuestions — listQuestions: the questions with their text and answers; an",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listQuestions — listQuestions: the questions with their text and answers; an": {
+      "main": [
+        [
+          {
+            "node": "listQuestions — listQuestions: the questions with their text and answers; an (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listQuestions — listQuestions: the questions with their text and answers; an (2)": {
+      "main": [
+        [
+          {
+            "node": "listQuestions — listQuestions: the questions with their text and answers; an (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listQuestions — listQuestions: the questions with their text and answers; an (3)": {
+      "main": [
+        [
+          {
+            "node": "listQuestions — listQuestions: the questions with their text and answers; an (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

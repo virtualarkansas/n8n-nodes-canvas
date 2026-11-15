@@ -1,0 +1,2927 @@
+{
+  "name": "Canvas battery — submission",
+  "nodes": [
+    {
+      "id": "e2f571f7-7f1b-4ad1-aaa0-3499e847fbe0",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "d7132711-db8b-4cf1-b69d-02f0e5ac1551",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1efe0f2b-e708-4647-a0db-e501ada39194",
+              "name": "student2UserId",
+              "value": "6",
+              "type": "string"
+            },
+            {
+              "id": "b66b7e19-20f2-4813-b4b2-a9a7662fc35f",
+              "name": "studentUserId",
+              "value": "5",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "dd6f9f74-cab3-499c-b3d7-a7f1c57d9e43",
+      "name": "getAll — getAll: pages through every submission of an assignment with",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAll",
+        "courseId": "111",
+        "assignmentId": "698"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ded8c6c1-5501-401a-9ef7-fe4a79d91df1",
+      "name": "getAll — getAll: pages through every submission of an assignment with (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAll",
+        "courseId": "111",
+        "assignmentId": "={{ $('getAll — getAll: pages through every submission of an assignment with').first().json.assignment_id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "90350091-1bb5-43b8-b1f3-3c7a474216d0",
+      "name": "getAll — getAll: pages through every submission of an assignment with (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAll",
+        "courseId": "111",
+        "assignmentId": "={{ $('getAll — getAll: pages through every submission of an assignment with (2)').first().json.assignment_id }}",
+        "pagination": {
+          "perPage": 10,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e2cf3be6-f157-4e7a-8302-29fa43338b0a",
+      "name": "getAll — getAll: every include adds its data",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAll",
+        "courseId": "111",
+        "assignmentId": "={{ $('getAll — getAll: pages through every submission of an assignment with (3)').first().json.assignment_id }}",
+        "options": {
+          "grouped": false,
+          "include": [
+            "assignment",
+            "course",
+            "group",
+            "read_state",
+            "rubric_assessment",
+            "student_entered_score",
+            "submission_comments",
+            "submission_history",
+            "submission_html_comments",
+            "user",
+            "visibility"
+          ]
+        },
+        "pagination": {
+          "perPage": 3,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3c5fcf77-1936-4cdc-abeb-bdd9ee6d8067",
+      "name": "getAll — getAll: every include adds its data (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAll",
+        "courseId": "111",
+        "assignmentId": "={{ $('getAll — getAll: every include adds its data').first().json.assignment_id }}",
+        "pagination": {
+          "perPage": 1,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e9fc376d-0b82-45a8-84cb-63412718a356",
+      "name": "getAll — getAll: grouped returns one submission per group for a gro",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAll",
+        "courseId": "111",
+        "assignmentId": "703",
+        "options": {
+          "grouped": true,
+          "include": [
+            "group"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "58d98d51-e251-4eee-823f-70e0ef8e2ed5",
+      "name": "getAll — getAll: grouped returns one submission per group for a gro (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAll",
+        "courseId": "111",
+        "assignmentId": "={{ $('getAll — getAll: grouped returns one submission per group for a gro').first().json.assignment_id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c3e56799-d1b1-4ec9-9f45-15f7fec3417c",
+      "name": "getAll — getAll: the section context only returns the students of tha",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAll",
+        "contextType": "section",
+        "sectionId": "221",
+        "assignmentId": "={{ $('getAll — getAll: every include adds its data (2)').first().json.assignment_id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3de532e5-08bf-4c34-817c-36bff9e1d18c",
+      "name": "get — get: returns one submission, with every include",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "get",
+        "courseId": "111",
+        "assignmentId": "={{ $('getAll — getAll: the section context only returns the students of tha').first().json.assignment_id }}",
+        "userId": "720",
+        "options": {
+          "include": [
+            "course",
+            "full_rubric_assessment",
+            "read_state",
+            "rubric_assessment",
+            "student_entered_score",
+            "submission_comments",
+            "submission_history",
+            "submission_html_comments",
+            "user",
+            "visibility"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bbaf1111-78ca-4aa0-b8f2-fc63be3da8e8",
+      "name": "get — get: IDs from expressions, the section context, and SIS user",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "get",
+        "courseId": "111",
+        "assignmentId": "={{ $('get — get: returns one submission, with every include').first().json.assignment_id }}",
+        "userId": "sis_user_id:W5682-S-001"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "448abee3-29dc-4168-bb9a-3793c5549cc1",
+      "name": "getAllForStudents — getAllForStudents: all students and all assignments, paginat",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dee6b4bf-ecd8-49cd-91de-d8e2aab6c598",
+      "name": "getAllForStudents — getAllForStudents: all students and all assignments, paginat (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "60baf690-c6e4-454d-95c0-d28fd9a90b1f",
+      "name": "getAllForStudents — getAllForStudents: student IDs and assignment IDs narrow the",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": " 720, 721, 722 ",
+        "options": {
+          "assignment_ids": "698,699"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a5a82aa7-8c19-4fa9-bdac-9923ac9b6eaa",
+      "name": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698",
+          "workflow_state": "graded"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b6878761-d9b9-4ac8-9ccb-3f19fca66500",
+      "name": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698",
+          "workflow_state": "submitted"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6b576e17-daa8-49e1-b3d2-f75e6fe913dc",
+      "name": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698",
+          "workflow_state": "unsubmitted"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "79f37de0-e3d3-43e0-9076-fa5b0133ae4a",
+      "name": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698",
+          "workflow_state": "pending_review"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "490a8d9f-ae72-425a-a07c-8b8f343302eb",
+      "name": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698",
+          "submitted_since": "2020-01-01T00:00:00Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6f1863f5-472a-4ecf-9ee2-c4aaf852adaa",
+      "name": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698",
+          "submitted_since": "2090-01-01T00:00:00Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d48ac390-1aa4-4aea-84f6-3886f6282d55",
+      "name": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (7)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698",
+          "graded_since": "2020-01-01T00:00:00Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "18abfd5b-f9b9-40e6-9cd3-74c09969c40d",
+      "name": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (8)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698",
+          "graded_since": "2090-01-01T00:00:00Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7cc2d70a-d700-42c4-910f-af2092e27882",
+      "name": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (9)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698",
+          "workflow_state": "graded",
+          "order": "graded_at",
+          "order_direction": "descending"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "78f5e453-afb7-450b-a07d-a2735bdbcbf5",
+      "name": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (10)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698",
+          "order": "id",
+          "order_direction": "descending"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1eb3d716-22d0-410c-ac8d-83bbf6c31e15",
+      "name": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (11)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698",
+          "enrollment_state": "active",
+          "state_based_on_date": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "107b37d7-bbb0-409e-900d-14235197c476",
+      "name": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (12)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698",
+          "enrollment_state": "concluded",
+          "state_based_on_date": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b5213056-3ec1-45a2-8141-f58e9591df59",
+      "name": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (13)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698",
+          "post_to_sis": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1f09204f-ba3e-4d49-b3c1-95189289b1e8",
+      "name": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (14)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698",
+          "post_to_sis": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9b2e8608-8ae9-48fa-9014-bc54b2d05467",
+      "name": "getAllForStudents — getAllForStudents: grouped by student, with total scores and",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "720,721",
+        "options": {
+          "grouped": true,
+          "include": [
+            "assignment",
+            "course",
+            "submission_comments",
+            "submission_history",
+            "total_scores",
+            "user",
+            "visibility"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b4b13d2a-5bde-478e-a79d-d0797d0e2231",
+      "name": "getAllForStudents — getAllForStudents: grouped by student, with total scores and (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "111",
+        "studentIds": "720,721",
+        "options": {
+          "grouped": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "eadbdd5c-21ec-458d-bd42-f54644f581ae",
+      "name": "getAllForStudents — getAllForStudents: grading period, section context and a stu",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "courseId": "117",
+        "studentIds": "all",
+        "options": {
+          "grading_period_id": "2"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f6db5033-fbc7-4ea1-87bc-6688a85a5cfa",
+      "name": "getAllForStudents — getAllForStudents: grading period, section context and a stu (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getAllForStudents",
+        "contextType": "section",
+        "sectionId": "221",
+        "studentIds": "all",
+        "options": {
+          "assignment_ids": "698"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4941df43-3ee6-4580-841a-1fee7a2964af",
+      "name": "getSummary — getSummary: counts graded, ungraded and missing submissions",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getSummary",
+        "courseId": "111",
+        "assignmentId": "={{ $('getAllForStudents — getAllForStudents: grading period, section context and a stu (2)').first().json.assignment_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e731425f-80f0-471e-b617-1db3d081739a",
+      "name": "getSummary — getSummary: counts graded, ungraded and missing submissions (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getSummary",
+        "courseId": "111",
+        "assignmentId": "={{ $('getAll — getAll: grouped returns one submission per group for a gro (2)').first().json.assignment_id }}",
+        "options": {
+          "grouped": true,
+          "include_deactivated": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fa4bfe96-d076-4099-9e82-ad8d68e58a90",
+      "name": "getSummary — getSummary: counts graded, ungraded and missing submissions (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getSummary",
+        "courseId": "111",
+        "assignmentId": "={{ $('getAll — getAll: grouped returns one submission per group for a gro (2)').first().json.assignment_id }}",
+        "options": {
+          "grouped": false,
+          "include_deactivated": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8c038c7a-49fd-402e-bf96-e8c37d1836d0",
+      "name": "listGradeableStudents — listGradeableStudents: lists every student once, sorted on r",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "listGradeableStudents",
+        "courseId": "111",
+        "assignmentId": "={{ $('getAllForStudents — getAllForStudents: grading period, section context and a stu (2)').first().json.assignment_id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fb76250e-ebd3-460d-a778-eaa398faf802",
+      "name": "listGradeableStudents — listGradeableStudents: lists every student once, sorted on r (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "listGradeableStudents",
+        "courseId": "111",
+        "assignmentId": "={{ $('getAllForStudents — getAllForStudents: grading period, section context and a stu (2)').first().json.assignment_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7980851a-acfc-4117-8eb6-eb723e3a0023",
+      "name": "listGradeableStudents — listGradeableStudents: lists every student once, sorted on r (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "listGradeableStudents",
+        "courseId": "111",
+        "assignmentId": "={{ $('getAllForStudents — getAllForStudents: grading period, section context and a stu (2)').first().json.assignment_id }}",
+        "options": {
+          "sort": "name",
+          "order": "desc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "69b305ae-e05c-4c32-9f7a-4cd31c08ba92",
+      "name": "listGradeableStudents — listGradeableStudents: lists every student once, sorted on r (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "listGradeableStudents",
+        "courseId": "111",
+        "assignmentId": "={{ $('getAllForStudents — getAllForStudents: grading period, section context and a stu (2)').first().json.assignment_id }}",
+        "options": {
+          "sort": "name",
+          "order": "asc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a812c801-8194-404f-a825-30182d105f31",
+      "name": "grade — grade: points, percentage and a comment",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "courseId": "111",
+        "assignmentId": "699",
+        "userId": "760",
+        "gradeFields": {
+          "posted_grade": "13.5",
+          "comment": "=<b>Kommentar ünï \"quoted\" & more 💬 {{ $execution.id }}-1</b>"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e95e1402-4f36-4401-b223-91c83406aef2",
+      "name": "grade — grade: points, percentage and a comment (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "courseId": "111",
+        "assignmentId": "={{ $('grade — grade: points, percentage and a comment').first().json.assignment_id }}",
+        "userId": "={{ $('grade — grade: points, percentage and a comment').first().json.user_id }}",
+        "gradeFields": {
+          "posted_grade": "50%"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2ca4a5b0-6770-4f5b-8a08-9b6402dbc47e",
+      "name": "grade — grade: excuse, and an empty grade removes the grade again",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "courseId": "111",
+        "assignmentId": "={{ $('grade — grade: points, percentage and a comment (2)').first().json.assignment_id }}",
+        "userId": "764",
+        "gradeFields": {
+          "excuse": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4e25ba09-3479-4ebc-b346-720398eaa258",
+      "name": "grade — grade: excuse, and an empty grade removes the grade again (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "courseId": "111",
+        "assignmentId": "={{ $('grade — grade: excuse, and an empty grade removes the grade again').first().json.assignment_id }}",
+        "userId": "={{ $('grade — grade: excuse, and an empty grade removes the grade again').first().json.user_id }}",
+        "gradeFields": {
+          "posted_grade": "7"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "83e02109-be7f-4ac3-9183-b820d663e52e",
+      "name": "grade — grade: excuse, and an empty grade removes the grade again (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "courseId": "111",
+        "assignmentId": "={{ $('grade — grade: excuse, and an empty grade removes the grade again (2)').first().json.assignment_id }}",
+        "userId": "={{ $('grade — grade: excuse, and an empty grade removes the grade again (2)').first().json.user_id }}",
+        "gradeFields": {
+          "posted_grade": ""
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7ff8623f-7691-4a6c-93d3-20cac67eca02",
+      "name": "grade — grade: late policy status and seconds late",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "courseId": "111",
+        "assignmentId": "={{ $('grade — grade: excuse, and an empty grade removes the grade again (3)').first().json.assignment_id }}",
+        "userId": "759",
+        "gradeFields": {
+          "late_policy_status": "late",
+          "seconds_late_override": 7200
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "693528e7-bbae-4ff0-994f-17df7ad3e96f",
+      "name": "grade — grade: late policy status and seconds late (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "courseId": "111",
+        "assignmentId": "={{ $('grade — grade: late policy status and seconds late').first().json.assignment_id }}",
+        "userId": "={{ $('grade — grade: late policy status and seconds late').first().json.user_id }}",
+        "gradeFields": {
+          "late_policy_status": "missing"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "705c12a7-d550-4a57-8097-aa6c42126077",
+      "name": "grade — grade: late policy status and seconds late (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "courseId": "111",
+        "assignmentId": "={{ $('grade — grade: late policy status and seconds late (2)').first().json.assignment_id }}",
+        "userId": "={{ $('grade — grade: late policy status and seconds late (2)').first().json.user_id }}",
+        "gradeFields": {
+          "late_policy_status": "extended"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f33147ec-d2a1-4e64-b740-a446a35f5d84",
+      "name": "grade — grade: late policy status and seconds late (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "courseId": "111",
+        "assignmentId": "={{ $('grade — grade: late policy status and seconds late (3)').first().json.assignment_id }}",
+        "userId": "={{ $('grade — grade: late policy status and seconds late (3)').first().json.user_id }}",
+        "gradeFields": {
+          "late_policy_status": "none"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5881bf79-2aa7-44d2-a978-45dd701a263d",
+      "name": "grade — grade: a rubric assessment sets the criteria and, through th",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "courseId": "111",
+        "assignmentId": "704",
+        "userId": "761",
+        "gradeFields": {
+          "prefer_points_over_scheme": true,
+          "rubric_assessment": "{\"_7152\":{\"points\":5,\"comments\":\"Almost complete\"},\"_4298\":{\"points\":2}}"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7a0054e6-1805-4e4d-8bd5-f53e1f0dad0f",
+      "name": "grade — grade: a group assignment grades and comments the whole grou",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "courseId": "111",
+        "assignmentId": "={{ $('getAll — getAll: grouped returns one submission per group for a gro (2)').first().json.assignment_id }}",
+        "userId": "749",
+        "gradeFields": {
+          "posted_grade": "8",
+          "comment": "=Group feedback {{ $execution.id }}-2",
+          "group_comment": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a0652720-1dbe-43c5-9759-92fea88d1146",
+      "name": "grade — grade: a group assignment grades and comments the whole grou (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "courseId": "111",
+        "assignmentId": "={{ $('grade — grade: a group assignment grades and comments the whole grou').first().json.assignment_id }}",
+        "userId": "={{ $('grade — grade: a group assignment grades and comments the whole grou').first().json.user_id }}",
+        "gradeFields": {
+          "comment": "=Private feedback {{ $execution.id }}-3",
+          "group_comment": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "966c89a3-fcb7-4307-9a74-b24b05d159ee",
+      "name": "grade — grade: a grade Canvas cannot parse removes the existing grad",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "courseId": "111",
+        "assignmentId": "={{ $('grade — grade: late policy status and seconds late (4)').first().json.assignment_id }}",
+        "userId": "={{ $('getAll — getAll: the section context only returns the students of tha').first().json.user_id }}",
+        "gradeFields": {
+          "posted_grade": "9"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "27cf5d5e-6ad4-4a9b-8ff2-54588cb683e5",
+      "name": "grade — grade: a grade Canvas cannot parse removes the existing grad (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "courseId": "111",
+        "assignmentId": "={{ $('grade — grade: a grade Canvas cannot parse removes the existing grad').first().json.assignment_id }}",
+        "userId": "={{ $('grade — grade: a grade Canvas cannot parse removes the existing grad').first().json.user_id }}",
+        "gradeFields": {
+          "posted_grade": "banana"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "91bc7e2c-5aae-429d-95f0-0e80111b2610",
+      "name": "bulkGrade — bulkGrade: grades, excuses and comments several students in ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "bulkGrade",
+        "courseId": "111",
+        "assignmentId": "={{ $('grade — grade: a grade Canvas cannot parse removes the existing grad (2)').first().json.assignment_id }}",
+        "grades": {
+          "gradeValues": [
+            {
+              "student_id": "761",
+              "posted_grade": "11"
+            },
+            {
+              "student_id": " 765 ",
+              "posted_grade": "",
+              "excuse": true
+            },
+            {
+              "student_id": "762",
+              "posted_grade": "75%",
+              "text_comment": "=Bulk comment {{ $execution.id }}-4",
+              "group_comment": false
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d7c27adc-0855-4925-af5a-9a3458971f37",
+      "name": "submit — submit: on behalf of students, with a submission time, for s",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "submit",
+        "contextType": "section",
+        "sectionId": "221",
+        "assignmentId": "={{ $('grade — grade: a grade Canvas cannot parse removes the existing grad (2)').first().json.assignment_id }}",
+        "submissionType": "online_url",
+        "url": "https://example.org/section-work",
+        "additionalFields": {
+          "user_id": "772"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "58589abf-607a-4a15-ad24-b9a50dfe33c4",
+      "name": "submit — submit: a group submission with a group comment reaches ever",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "submit",
+        "courseId": "111",
+        "assignmentId": "={{ $('grade — grade: a group assignment grades and comments the whole grou (2)').first().json.assignment_id }}",
+        "submissionType": "online_text_entry",
+        "body": "=<p>group work {{ $execution.id }}-11</p>",
+        "additionalFields": {
+          "user_id": "754",
+          "comment": "=Group hand-in {{ $execution.id }}-10",
+          "group_comment": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e0fe7437-ad1e-48d4-8c35-d7338828b540",
+      "name": "submit — uploadFile + submit: a grader uploads files for a student, w",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "submit",
+        "courseId": "111",
+        "assignmentId": "={{ $('submit — submit: on behalf of students, with a submission time, for s').first().json.assignment_id }}",
+        "submissionType": "online_upload",
+        "fileIds": "3509,3508",
+        "additionalFields": {
+          "user_id": "741"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e6af8b55-1a84-48e8-9fe1-a597955bf18d",
+      "name": "submit — uploadFile from URL: without waiting the progress is returne",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "submit",
+        "courseId": "111",
+        "assignmentId": "={{ $('submit — uploadFile + submit: a grader uploads files for a student, w').first().json.assignment_id }}",
+        "submissionType": "online_upload",
+        "fileIds": "3516",
+        "additionalFields": {
+          "user_id": "745"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b5ceddf2-e1e4-424a-bcdf-6944caa45245",
+      "name": "clearUnread — clearUnread: a site administrator marks everything of one st",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "clearUnread",
+        "contextType": "section",
+        "sectionId": "222",
+        "userId": "={{ $('Config').first().json.student2UserId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c6e249bb-6ffe-463b-8067-dc28290aab8f",
+      "name": "getReadState — getReadState / markRead: document annotations and rubric ass",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getReadState",
+        "courseId": "112",
+        "assignmentId": "708",
+        "userId": "={{ $('Config').first().json.studentUserId }}",
+        "readStateItem": "document_annotations"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f7e7d598-fb8c-455f-8cf9-ef1e4626bc23",
+      "name": "getReadState — getReadState / markRead: document annotations and rubric ass (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "getReadState",
+        "courseId": "112",
+        "assignmentId": "708",
+        "userId": "={{ $('Config').first().json.studentUserId }}",
+        "readStateItem": "rubric_assessments"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "798e65e9-5a70-4548-9b30-40feba989f02",
+      "name": "listGradeableStudentsMultiple — listGradeableStudentsMultiple: every gradeable student once,",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        2200
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "listGradeableStudentsMultiple",
+        "courseId": "111",
+        "assignmentIds": " 698 , 699 "
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f7bd8b68-b05b-41f3-af26-61120f193544",
+      "name": "listGradeableStudentsMultiple — listGradeableStudentsMultiple: every gradeable student once, (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        2200
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "listGradeableStudentsMultiple",
+        "courseId": "111",
+        "assignmentIds": " 698 , 699 ",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "92bb3e17-3b48-40cb-a323-02b7682e3635",
+      "name": "listGradeableStudentsMultiple — listGradeableStudentsMultiple: every gradeable student once, (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        2200
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "listGradeableStudentsMultiple",
+        "courseId": "111",
+        "assignmentIds": " 698 , 699 ",
+        "pagination": {
+          "perPage": 10,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "702cb8ef-b9e6-4475-8a07-0e60aa0bd573",
+      "name": "get — get / grade by anonymous ID: an anonymously graded submissio",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        2200
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "get",
+        "contextType": "section",
+        "sectionId": "222",
+        "assignmentId": "705",
+        "submissionBy": "anonymousId",
+        "anonymousId": "QQHk1"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a05d787e-6149-4e2c-9445-2d426b37e8a0",
+      "name": "grade — get / grade by anonymous ID: an anonymously graded submissio",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        2200
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "contextType": "section",
+        "sectionId": "222",
+        "assignmentId": "={{ $('get — get / grade by anonymous ID: an anonymously graded submissio').first().json.assignment_id }}",
+        "submissionBy": "anonymousId",
+        "anonymousId": "={{ $('get — get / grade by anonymous ID: an anonymously graded submissio').first().json.anonymous_id }}",
+        "gradeFields": {
+          "posted_grade": "4",
+          "late_policy_status": "late",
+          "seconds_late_override": 3600
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "592ae62a-1d90-472b-845c-bc7f40fce94e",
+      "name": "grade — get / grade by anonymous ID: an anonymously graded submissio (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        2200
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "grade",
+        "contextType": "section",
+        "sectionId": "222",
+        "assignmentId": "={{ $('grade — get / grade by anonymous ID: an anonymously graded submissio').first().json.assignment_id }}",
+        "submissionBy": "anonymousId",
+        "anonymousId": "={{ $('grade — get / grade by anonymous ID: an anonymously graded submissio').first().json.anonymous_id }}",
+        "gradeFields": {
+          "excuse": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e249fffe-4f2d-4007-ba37-cb7c132215fa",
+      "name": "bulkGradeMultiple — bulkGradeMultiple: through a section the job only finds the ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        2420
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submission",
+        "operation": "bulkGradeMultiple",
+        "contextType": "section",
+        "sectionId": "221",
+        "grades": {
+          "gradeValues": [
+            {
+              "assignment_id": "699",
+              "student_id": "771",
+              "posted_grade": "2"
+            },
+            {
+              "assignment_id": "704",
+              "student_id": "771",
+              "text_comment": "=Section job {{ $execution.id }}-30"
+            },
+            {
+              "assignment_id": "704",
+              "student_id": "743",
+              "posted_grade": "1"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through every submission of an assignment with",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through every submission of an assignment with": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through every submission of an assignment with (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through every submission of an assignment with (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through every submission of an assignment with (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through every submission of an assignment with (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every include adds its data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every include adds its data": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every include adds its data (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every include adds its data (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: grouped returns one submission per group for a gro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: grouped returns one submission per group for a gro": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: grouped returns one submission per group for a gro (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: grouped returns one submission per group for a gro (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: the section context only returns the students of tha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: the section context only returns the students of tha": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns one submission, with every include",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns one submission, with every include": {
+      "main": [
+        [
+          {
+            "node": "get — get: IDs from expressions, the section context, and SIS user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: IDs from expressions, the section context, and SIS user": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: all students and all assignments, paginat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: all students and all assignments, paginat": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: all students and all assignments, paginat (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: all students and all assignments, paginat (2)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: student IDs and assignment IDs narrow the",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: student IDs and assignment IDs narrow the": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (2)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (3)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (4)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (5)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (6)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (7)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (7)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (8)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (8)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (9)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (9)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (10)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (10)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (11)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (11)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (12)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (12)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (13)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (13)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (14)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: workflow state, dates, order and enrollme (14)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: grouped by student, with total scores and",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: grouped by student, with total scores and": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: grouped by student, with total scores and (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: grouped by student, with total scores and (2)": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: grading period, section context and a stu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: grading period, section context and a stu": {
+      "main": [
+        [
+          {
+            "node": "getAllForStudents — getAllForStudents: grading period, section context and a stu (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForStudents — getAllForStudents: grading period, section context and a stu (2)": {
+      "main": [
+        [
+          {
+            "node": "getSummary — getSummary: counts graded, ungraded and missing submissions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSummary — getSummary: counts graded, ungraded and missing submissions": {
+      "main": [
+        [
+          {
+            "node": "getSummary — getSummary: counts graded, ungraded and missing submissions (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSummary — getSummary: counts graded, ungraded and missing submissions (2)": {
+      "main": [
+        [
+          {
+            "node": "getSummary — getSummary: counts graded, ungraded and missing submissions (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSummary — getSummary: counts graded, ungraded and missing submissions (3)": {
+      "main": [
+        [
+          {
+            "node": "listGradeableStudents — listGradeableStudents: lists every student once, sorted on r",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listGradeableStudents — listGradeableStudents: lists every student once, sorted on r": {
+      "main": [
+        [
+          {
+            "node": "listGradeableStudents — listGradeableStudents: lists every student once, sorted on r (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listGradeableStudents — listGradeableStudents: lists every student once, sorted on r (2)": {
+      "main": [
+        [
+          {
+            "node": "listGradeableStudents — listGradeableStudents: lists every student once, sorted on r (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listGradeableStudents — listGradeableStudents: lists every student once, sorted on r (3)": {
+      "main": [
+        [
+          {
+            "node": "listGradeableStudents — listGradeableStudents: lists every student once, sorted on r (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listGradeableStudents — listGradeableStudents: lists every student once, sorted on r (4)": {
+      "main": [
+        [
+          {
+            "node": "grade — grade: points, percentage and a comment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — grade: points, percentage and a comment": {
+      "main": [
+        [
+          {
+            "node": "grade — grade: points, percentage and a comment (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — grade: points, percentage and a comment (2)": {
+      "main": [
+        [
+          {
+            "node": "grade — grade: excuse, and an empty grade removes the grade again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — grade: excuse, and an empty grade removes the grade again": {
+      "main": [
+        [
+          {
+            "node": "grade — grade: excuse, and an empty grade removes the grade again (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — grade: excuse, and an empty grade removes the grade again (2)": {
+      "main": [
+        [
+          {
+            "node": "grade — grade: excuse, and an empty grade removes the grade again (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — grade: excuse, and an empty grade removes the grade again (3)": {
+      "main": [
+        [
+          {
+            "node": "grade — grade: late policy status and seconds late",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — grade: late policy status and seconds late": {
+      "main": [
+        [
+          {
+            "node": "grade — grade: late policy status and seconds late (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — grade: late policy status and seconds late (2)": {
+      "main": [
+        [
+          {
+            "node": "grade — grade: late policy status and seconds late (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — grade: late policy status and seconds late (3)": {
+      "main": [
+        [
+          {
+            "node": "grade — grade: late policy status and seconds late (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — grade: late policy status and seconds late (4)": {
+      "main": [
+        [
+          {
+            "node": "grade — grade: a rubric assessment sets the criteria and, through th",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — grade: a rubric assessment sets the criteria and, through th": {
+      "main": [
+        [
+          {
+            "node": "grade — grade: a group assignment grades and comments the whole grou",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — grade: a group assignment grades and comments the whole grou": {
+      "main": [
+        [
+          {
+            "node": "grade — grade: a group assignment grades and comments the whole grou (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — grade: a group assignment grades and comments the whole grou (2)": {
+      "main": [
+        [
+          {
+            "node": "grade — grade: a grade Canvas cannot parse removes the existing grad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — grade: a grade Canvas cannot parse removes the existing grad": {
+      "main": [
+        [
+          {
+            "node": "grade — grade: a grade Canvas cannot parse removes the existing grad (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — grade: a grade Canvas cannot parse removes the existing grad (2)": {
+      "main": [
+        [
+          {
+            "node": "bulkGrade — bulkGrade: grades, excuses and comments several students in ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "bulkGrade — bulkGrade: grades, excuses and comments several students in ": {
+      "main": [
+        [
+          {
+            "node": "submit — submit: on behalf of students, with a submission time, for s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "submit — submit: on behalf of students, with a submission time, for s": {
+      "main": [
+        [
+          {
+            "node": "submit — submit: a group submission with a group comment reaches ever",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "submit — submit: a group submission with a group comment reaches ever": {
+      "main": [
+        [
+          {
+            "node": "submit — uploadFile + submit: a grader uploads files for a student, w",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "submit — uploadFile + submit: a grader uploads files for a student, w": {
+      "main": [
+        [
+          {
+            "node": "submit — uploadFile from URL: without waiting the progress is returne",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "submit — uploadFile from URL: without waiting the progress is returne": {
+      "main": [
+        [
+          {
+            "node": "clearUnread — clearUnread: a site administrator marks everything of one st",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clearUnread — clearUnread: a site administrator marks everything of one st": {
+      "main": [
+        [
+          {
+            "node": "getReadState — getReadState / markRead: document annotations and rubric ass",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getReadState — getReadState / markRead: document annotations and rubric ass": {
+      "main": [
+        [
+          {
+            "node": "getReadState — getReadState / markRead: document annotations and rubric ass (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getReadState — getReadState / markRead: document annotations and rubric ass (2)": {
+      "main": [
+        [
+          {
+            "node": "listGradeableStudentsMultiple — listGradeableStudentsMultiple: every gradeable student once,",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listGradeableStudentsMultiple — listGradeableStudentsMultiple: every gradeable student once,": {
+      "main": [
+        [
+          {
+            "node": "listGradeableStudentsMultiple — listGradeableStudentsMultiple: every gradeable student once, (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listGradeableStudentsMultiple — listGradeableStudentsMultiple: every gradeable student once, (2)": {
+      "main": [
+        [
+          {
+            "node": "listGradeableStudentsMultiple — listGradeableStudentsMultiple: every gradeable student once, (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listGradeableStudentsMultiple — listGradeableStudentsMultiple: every gradeable student once, (3)": {
+      "main": [
+        [
+          {
+            "node": "get — get / grade by anonymous ID: an anonymously graded submissio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get / grade by anonymous ID: an anonymously graded submissio": {
+      "main": [
+        [
+          {
+            "node": "grade — get / grade by anonymous ID: an anonymously graded submissio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — get / grade by anonymous ID: an anonymously graded submissio": {
+      "main": [
+        [
+          {
+            "node": "grade — get / grade by anonymous ID: an anonymously graded submissio (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade — get / grade by anonymous ID: an anonymously graded submissio (2)": {
+      "main": [
+        [
+          {
+            "node": "bulkGradeMultiple — bulkGradeMultiple: through a section the job only finds the ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -1,0 +1,1569 @@
+{
+  "name": "Canvas battery — discussionTopic",
+  "nodes": [
+    {
+      "id": "1a43da98-193d-49e3-a1c7-8a2ede8d4571",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "c3e4e6aa-7367-4848-b3fb-2557b457a022",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "dff2a795-9988-4133-99a1-0db21738af1a",
+      "name": "create — create: every optional field of an ungraded course topic rea",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "113",
+        "title": "=Battery topic Ünïcødé 讨论 \"quoted\" & <b>tags</b> 💬 {{ $execution.id }}-1",
+        "additionalFields": {
+          "allow_rating": true,
+          "delayed_post_at": "2031-01-01T00:00:00Z",
+          "discussion_type": "threaded",
+          "expanded": true,
+          "expanded_locked": true,
+          "lock_at": "2031-02-01T00:00:00Z",
+          "message": "<p>Discuss <strong>chapter 3</strong> — ¿qué opinas? 日本語 🙂</p>",
+          "only_graders_can_rate": true,
+          "pinned": true,
+          "podcast_enabled": true,
+          "podcast_has_student_posts": true,
+          "published": true,
+          "require_initial_post": true,
+          "sort_by_rating": true,
+          "sort_order": "asc",
+          "sort_order_locked": true,
+          "specific_sections": "226, 227",
+          "todo_date": "2031-01-15T00:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5cc6bef5-c11d-422d-9c24-8c16227905bc",
+      "name": "create — create: a graded discussion gets an assignment",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "113",
+        "title": "=Graded discussion {{ $execution.id }}-3",
+        "additionalFields": {
+          "assignment": "{\"points_possible\":15,\"due_at\":\"2031-03-01T00:00:00Z\",\"grading_type\":\"points\"}",
+          "discussion_type": "not_threaded",
+          "published": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "747a6174-cccd-436b-8576-7579f7e58bfd",
+      "name": "create — create: a group discussion gets a child topic per group of t",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "113",
+        "title": "=Per-group discussion {{ $execution.id }}-4",
+        "additionalFields": {
+          "group_category_id": "14",
+          "message": "Talk within your group."
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f1085639-327b-4a5d-92f2-6bd94c570da1",
+      "name": "create — create: an announcement with comments disabled; a discussion",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "113",
+        "title": "=Announcement through the topic resource {{ $execution.id }}-5",
+        "additionalFields": {
+          "is_announcement": true,
+          "lock_comment": true,
+          "message": "No comments please."
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "adc3314e-44d5-45b7-8251-f4e25a4ae4e0",
+      "name": "create — create: an announcement with comments disabled; a discussion (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "113",
+        "title": "=Closed and pinned second {{ $execution.id }}-6",
+        "additionalFields": {
+          "locked": true,
+          "pinned": true,
+          "position_after": "697",
+          "published": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f9eaa567-d0b8-44d6-aa8f-20520b96fbe1",
+      "name": "get — get: returns the topic; includes add sections and dates; num",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": " 697 "
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3b46dfc0-f0af-47d5-9301-4c6b87fa1b56",
+      "name": "update — update: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "={{ $('get — get: returns the topic; includes add sections and dates; num').first().json.id }}",
+        "updateFields": {
+          "allow_rating": false,
+          "delayed_post_at": "",
+          "discussion_type": "side_comment",
+          "expanded": false,
+          "expanded_locked": false,
+          "lock_at": "2032-02-01T00:00:00Z",
+          "message": "<p>Second version</p>",
+          "only_graders_can_rate": false,
+          "pinned": false,
+          "podcast_enabled": false,
+          "podcast_has_student_posts": false,
+          "published": true,
+          "require_initial_post": false,
+          "sort_by_rating": false,
+          "sort_order": "desc",
+          "sort_order_locked": false,
+          "specific_sections": "all",
+          "title": "=Battery topic Ünïcødé 讨论 \"quoted\" & <b>tags</b> 💬 {{ $execution.id }}-1 (renamed)",
+          "todo_date": "2032-01-15T00:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "83573f76-5f04-4b4a-bfe7-f4ad9a474baf",
+      "name": "update — update: closing and reopening for comments; turning into a g",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "={{ $('update — update: every optional field reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "locked": true,
+          "group_category_id": "14",
+          "published": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5f6183ec-306b-4c53-bc62-c47bd8262d77",
+      "name": "update — update: closing and reopening for comments; turning into a g (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "={{ $('update — update: closing and reopening for comments; turning into a g').first().json.id }}",
+        "updateFields": {
+          "lock_at": "",
+          "locked": true,
+          "group_category_id": ""
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e90a1d36-358b-48dc-b9f0-457b0779048b",
+      "name": "update — update: closing and reopening for comments; turning into a g (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "={{ $('update — update: closing and reopening for comments; turning into a g (2)').first().json.id }}",
+        "updateFields": {
+          "locked": false,
+          "published": true,
+          "pinned": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c997e36b-cda3-450a-9797-4940b1ce4c5c",
+      "name": "update — update: Lock Comment of an announcement, Position After ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "706",
+        "updateFields": {
+          "lock_comment": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "71701706-09ca-4900-be1f-2d19b30bfe6d",
+      "name": "update — update: Lock Comment of an announcement, Position After  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "={{ $('update — update: Lock Comment of an announcement, Position After ').first().json.id }}",
+        "updateFields": {
+          "lock_comment": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d5f85f2b-33c1-4316-b35e-3ca9cd7de35e",
+      "name": "update — update: Lock Comment of an announcement, Position After  (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "709",
+        "updateFields": {
+          "position_after": "707"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0e399318-49f7-446e-be7c-cfb9d7bc6522",
+      "name": "duplicate — duplicate: copies the topic as an unpublished draft",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "duplicate",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "={{ $('update — update: closing and reopening for comments; turning into a g (3)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c21555ee-daca-4db9-a817-88d77b21273b",
+      "name": "reorderPinned — reorderPinned: pinned topics take the given order",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "reorderPinned",
+        "contextType": "course",
+        "courseId": "113",
+        "order": "712 , 711 , 697 , 684 , 438"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "504b3030-8311-4672-9c14-9d5625783bfc",
+      "name": "getAll — getAll: pages through a course with more topics than one pag",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "114"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dce35632-047a-4fb8-8db3-ae9cc1dad5d0",
+      "name": "getAll — getAll: pages through a course with more topics than one pag (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "114",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7316744a-f16f-4785-861e-2307b07dfe31",
+      "name": "getAll — getAll: pages through a course with more topics than one pag (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "114",
+        "pagination": {
+          "perPage": 6,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f4509d3a-cf6a-427c-8f47-b43596d705ba",
+      "name": "getAll — getAll: search, order, state filters, includes and announcem",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "114",
+        "pagination": {
+          "returnAll": true
+        },
+        "options": {
+          "search_term": "Zellatmung",
+          "order_by": "title"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "907f1a71-b3da-4845-bce4-0402a618ab8e",
+      "name": "getAll — getAll: search, order, state filters, includes and announcem (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "114",
+        "pagination": {
+          "returnAll": true
+        },
+        "options": {
+          "scope": [
+            "pinned"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2ec8e640-4a41-4c35-b950-ad578526ccc1",
+      "name": "getAll — getAll: search, order, state filters, includes and announcem (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "114",
+        "pagination": {
+          "returnAll": true
+        },
+        "options": {
+          "scope": [
+            "locked",
+            "unpinned"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5a900f08-72f2-4424-b8cd-c26bd900c35f",
+      "name": "getAll — getAll: search, order, state filters, includes and announcem (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "114",
+        "pagination": {
+          "returnAll": true
+        },
+        "options": {
+          "only_announcements": true,
+          "include": [
+            "sections_user_count"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1146b23f-4f49-4357-9cb1-dcee0566530e",
+      "name": "getAll — getAll: search, order, state filters, includes and announcem (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "114",
+        "pagination": {
+          "returnAll": true
+        },
+        "options": {
+          "order_by": "recent_activity",
+          "exclude_context_module_locked_topics": true,
+          "filter_by": "all"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a3aab5fa-22b5-4dfb-9605-968755f1c8cc",
+      "name": "getAll — getAll: students do not get drafts; unread depends on the ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "114",
+        "pagination": {
+          "returnAll": true
+        },
+        "options": {
+          "search_term": "no topic has this title zzzz"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "986a6dfb-d0bd-4b63-bc18-44c92f1cd515",
+      "name": "getAllReplies — getAllEntries / getAllReplies: top-level entries with their ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAllReplies",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "714",
+        "entryId": "1471"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "37e86908-4733-4be6-8097-bdbf952ddba5",
+      "name": "getEntriesById — getEntriesById: returns the listed entries and replies in ID",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getEntriesById",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "714",
+        "entryIds": " 1472, 1471 "
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e84b8a1b-614b-4288-b082-899f19227012",
+      "name": "getFullTopic — getFullTopic: the whole thread in one item",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getFullTopic",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "714"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1f66feab-825b-429e-a142-2bd755bb1596",
+      "name": "getAllEntries — getAllEntries / getAllReplies: page through more entries and",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAllEntries",
+        "contextType": "course",
+        "courseId": "114",
+        "topicId": "={{ $('getAll — getAll: pages through a course with more topics than one pag (3)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "03b75c10-2dbc-4832-8653-0d82000e70ba",
+      "name": "getAllEntries — getAllEntries / getAllReplies: page through more entries and (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAllEntries",
+        "contextType": "course",
+        "courseId": "114",
+        "topicId": "={{ $('getAll — getAll: pages through a course with more topics than one pag (3)').first().json.id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "31461b83-a0dc-490b-a054-8a298cd6c88a",
+      "name": "getAllEntries — getAllEntries / getAllReplies: page through more entries and (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAllEntries",
+        "contextType": "course",
+        "courseId": "114",
+        "topicId": "={{ $('getAll — getAll: pages through a course with more topics than one pag (3)').first().json.id }}",
+        "pagination": {
+          "perPage": 5,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "84f09951-d0d7-462b-8384-072409628d49",
+      "name": "getAllReplies — getAllEntries / getAllReplies: page through more entries and",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAllReplies",
+        "contextType": "course",
+        "courseId": "114",
+        "topicId": "={{ $('getAll — getAll: pages through a course with more topics than one pag (3)').first().json.id }}",
+        "entryId": "1343",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6962f2a8-c29c-4999-943e-a1abb54b30b0",
+      "name": "getAllReplies — getAllEntries / getAllReplies: page through more entries and (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getAllReplies",
+        "contextType": "course",
+        "courseId": "114",
+        "topicId": "={{ $('getAll — getAll: pages through a course with more topics than one pag (3)').first().json.id }}",
+        "entryId": "1343",
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e84e4c58-58fe-4e85-b7c8-f8d8671595f5",
+      "name": "getEntriesById — getAllEntries / getAllReplies: page through more entries and",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "getEntriesById",
+        "contextType": "course",
+        "courseId": "114",
+        "topicId": "={{ $('getAll — getAll: pages through a course with more topics than one pag (3)').first().json.id }}",
+        "entryIds": "1399,1398,1397,1396,1395,1394,1393,1392,1391,1390,1389,1388,1387,1386,1385,1384,1383,1382,1381,1380,1379,1378,1377,1376,1375,1374,1373,1372,1371,1370",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f99a4594-8c6f-4269-99b7-5af792646bbd",
+      "name": "duplicate — get, getAll, update, duplicate, reorderPinned work on the gr",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "duplicate",
+        "contextType": "group",
+        "groupId": "55",
+        "topicId": "719"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9ce090e6-1491-4895-bd38-ae325777f5bf",
+      "name": "reorderPinned — get, getAll, update, duplicate, reorderPinned work on the gr",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "reorderPinned",
+        "contextType": "group",
+        "groupId": "55",
+        "order": "721,720,719"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5c0d719f-c57e-43f2-881d-2f13c3e795e8",
+      "name": "delete — delete: students may not delete a teachers topic; the owner",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "delete",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "={{ $('update — update: closing and reopening for comments; turning into a g (3)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field of an ungraded course topic rea",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field of an ungraded course topic rea": {
+      "main": [
+        [
+          {
+            "node": "create — create: a graded discussion gets an assignment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: a graded discussion gets an assignment": {
+      "main": [
+        [
+          {
+            "node": "create — create: a group discussion gets a child topic per group of t",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: a group discussion gets a child topic per group of t": {
+      "main": [
+        [
+          {
+            "node": "create — create: an announcement with comments disabled; a discussion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: an announcement with comments disabled; a discussion": {
+      "main": [
+        [
+          {
+            "node": "create — create: an announcement with comments disabled; a discussion (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: an announcement with comments disabled; a discussion (2)": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns the topic; includes add sections and dates; num",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns the topic; includes add sections and dates; num": {
+      "main": [
+        [
+          {
+            "node": "update — update: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: closing and reopening for comments; turning into a g",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: closing and reopening for comments; turning into a g": {
+      "main": [
+        [
+          {
+            "node": "update — update: closing and reopening for comments; turning into a g (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: closing and reopening for comments; turning into a g (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: closing and reopening for comments; turning into a g (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: closing and reopening for comments; turning into a g (3)": {
+      "main": [
+        [
+          {
+            "node": "update — update: Lock Comment of an announcement, Position After ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Lock Comment of an announcement, Position After ": {
+      "main": [
+        [
+          {
+            "node": "update — update: Lock Comment of an announcement, Position After  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Lock Comment of an announcement, Position After  (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: Lock Comment of an announcement, Position After  (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Lock Comment of an announcement, Position After  (3)": {
+      "main": [
+        [
+          {
+            "node": "duplicate — duplicate: copies the topic as an unpublished draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "duplicate — duplicate: copies the topic as an unpublished draft": {
+      "main": [
+        [
+          {
+            "node": "reorderPinned — reorderPinned: pinned topics take the given order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "reorderPinned — reorderPinned: pinned topics take the given order": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through a course with more topics than one pag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through a course with more topics than one pag": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through a course with more topics than one pag (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through a course with more topics than one pag (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through a course with more topics than one pag (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through a course with more topics than one pag (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search, order, state filters, includes and announcem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search, order, state filters, includes and announcem": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search, order, state filters, includes and announcem (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search, order, state filters, includes and announcem (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search, order, state filters, includes and announcem (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search, order, state filters, includes and announcem (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search, order, state filters, includes and announcem (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search, order, state filters, includes and announcem (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search, order, state filters, includes and announcem (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search, order, state filters, includes and announcem (5)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: students do not get drafts; unread depends on the ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: students do not get drafts; unread depends on the ": {
+      "main": [
+        [
+          {
+            "node": "getAllReplies — getAllEntries / getAllReplies: top-level entries with their ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllReplies — getAllEntries / getAllReplies: top-level entries with their ": {
+      "main": [
+        [
+          {
+            "node": "getEntriesById — getEntriesById: returns the listed entries and replies in ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getEntriesById — getEntriesById: returns the listed entries and replies in ID": {
+      "main": [
+        [
+          {
+            "node": "getFullTopic — getFullTopic: the whole thread in one item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getFullTopic — getFullTopic: the whole thread in one item": {
+      "main": [
+        [
+          {
+            "node": "getAllEntries — getAllEntries / getAllReplies: page through more entries and",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllEntries — getAllEntries / getAllReplies: page through more entries and": {
+      "main": [
+        [
+          {
+            "node": "getAllEntries — getAllEntries / getAllReplies: page through more entries and (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllEntries — getAllEntries / getAllReplies: page through more entries and (2)": {
+      "main": [
+        [
+          {
+            "node": "getAllEntries — getAllEntries / getAllReplies: page through more entries and (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllEntries — getAllEntries / getAllReplies: page through more entries and (3)": {
+      "main": [
+        [
+          {
+            "node": "getAllReplies — getAllEntries / getAllReplies: page through more entries and",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllReplies — getAllEntries / getAllReplies: page through more entries and": {
+      "main": [
+        [
+          {
+            "node": "getAllReplies — getAllEntries / getAllReplies: page through more entries and (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllReplies — getAllEntries / getAllReplies: page through more entries and (2)": {
+      "main": [
+        [
+          {
+            "node": "getEntriesById — getAllEntries / getAllReplies: page through more entries and",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getEntriesById — getAllEntries / getAllReplies: page through more entries and": {
+      "main": [
+        [
+          {
+            "node": "duplicate — get, getAll, update, duplicate, reorderPinned work on the gr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "duplicate — get, getAll, update, duplicate, reorderPinned work on the gr": {
+      "main": [
+        [
+          {
+            "node": "reorderPinned — get, getAll, update, duplicate, reorderPinned work on the gr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "reorderPinned — get, getAll, update, duplicate, reorderPinned work on the gr": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: students may not delete a teachers topic; the owner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -1,0 +1,763 @@
+{
+  "name": "Canvas battery — announcement",
+  "nodes": [
+    {
+      "id": "cb319d49-a9e6-473b-971a-fc6f188637a5",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "3f956a8c-14bf-434f-9a54-cc45bc3fc1cc",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f1e67ffe-d08a-4861-90d2-29ebf4e04346",
+      "name": "create — create: every optional field of a course announcement reache",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "113",
+        "title": "=Battery announcement Ünïcødé 公告 \"quoted\" & <b>tags</b> 📣 {{ $execution.id }}-1",
+        "message": "<p>The lab moves to <strong>room 12</strong> — ¡no lo olvides! 日本語 🧪</p>",
+        "additionalFields": {
+          "allow_rating": true,
+          "delayed_post_at": "2031-01-01T00:00:00Z",
+          "lock_at": "2031-02-01T00:00:00Z",
+          "lock_comment": false,
+          "only_graders_can_rate": true,
+          "podcast_enabled": true,
+          "podcast_has_student_posts": true,
+          "published": true,
+          "require_initial_post": true,
+          "sort_by_rating": true,
+          "specific_sections": " 226 , 227 "
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "afe0accc-2ed3-485e-b4b1-a4c494742f91",
+      "name": "create — create: title and message only; comments can be disabled fro",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "113",
+        "title": "=No comments {{ $execution.id }}-4",
+        "message": "Read only.",
+        "additionalFields": {
+          "lock_comment": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5305b639-89c1-42e1-b5f2-f48686725d3f",
+      "name": "get — get: returns the announcement; includes add the sections",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "113",
+        "announcementId": " 752 "
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "881c9a3b-8cf3-479f-b145-74f12ce3fd46",
+      "name": "update — update: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "announcementId": "={{ $('get — get: returns the announcement; includes add the sections').first().json.id }}",
+        "updateFields": {
+          "allow_rating": false,
+          "delayed_post_at": "2032-01-01T00:00:00Z",
+          "lock_at": "2032-02-01T00:00:00Z",
+          "lock_comment": false,
+          "message": "<p>Second version</p>",
+          "only_graders_can_rate": false,
+          "podcast_enabled": false,
+          "podcast_has_student_posts": false,
+          "published": true,
+          "require_initial_post": false,
+          "sort_by_rating": false,
+          "specific_sections": "all",
+          "title": "=Battery announcement Ünïcødé 公告 \"quoted\" & <b>tags</b> 📣 {{ $execution.id }}-1 (renamed)"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e2804a4d-2f65-4479-9b03-dde1d5926dda",
+      "name": "update — update: every optional field reaches Canvas (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "announcementId": "={{ $('update — update: every optional field reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "delayed_post_at": "",
+          "lock_at": ""
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a73796a2-a8fd-485e-bc59-9b0831e563f6",
+      "name": "update — update: Canvas reopens comments on every update that does no",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "announcementId": "={{ $('update — update: every optional field reaches Canvas (2)').first().json.id }}",
+        "updateFields": {
+          "lock_comment": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "15b09659-da30-4150-a47f-c872dbde6a1c",
+      "name": "update — update: Canvas reopens comments on every update that does no (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "announcementId": "={{ $('update — update: Canvas reopens comments on every update that does no').first().json.id }}",
+        "updateFields": {
+          "title": "=Battery announcement Ünïcødé 公告 \"quoted\" & <b>tags</b> 📣 {{ $execution.id }}-1 (again)"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4c12e42d-2816-4e53-9037-235877f34647",
+      "name": "update — update: Canvas reopens comments on every update that does no (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "announcementId": "={{ $('update — update: Canvas reopens comments on every update that does no (2)').first().json.id }}",
+        "updateFields": {
+          "title": "=Battery announcement Ünïcødé 公告 \"quoted\" & <b>tags</b> 📣 {{ $execution.id }}-1 (final)",
+          "lock_comment": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6c0e3621-9b43-423d-94a9-33f5a5fdf15f",
+      "name": "getAll — getAll: pages through more announcements than one page holds",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "getAll",
+        "contextCodes": "114",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8af97207-d53e-4483-8224-d7d51fe82bdd",
+      "name": "getAll — getAll: pages through more announcements than one page holds (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "getAll",
+        "contextCodes": "course_114"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "adb6cc62-60cd-489c-9606-e2f95694840a",
+      "name": "getAll — getAll: pages through more announcements than one page holds (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "getAll",
+        "contextCodes": " course_114 ",
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c18429a2-4fae-4604-b3a9-68a9d3dd9520",
+      "name": "getAll — getAll: several courses, date window, latest only, active on",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "getAll",
+        "contextCodes": "course_114, 113",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bbab1804-e098-4c2e-8d60-f7576701c903",
+      "name": "getAll — getAll: several courses, date window, latest only, active on (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "getAll",
+        "contextCodes": "course_114, 113",
+        "options": {
+          "latest_only": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "19dc0d55-6fbf-47f0-813a-e8b57a164b26",
+      "name": "getAll — getAll: several courses, date window, latest only, active on (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "getAll",
+        "contextCodes": "course_114, 113",
+        "options": {
+          "start_date": "2001-01-01",
+          "end_date": "2001-12-31"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6a8a24ba-7ec6-4852-a2c9-0f37d7cecd93",
+      "name": "getAll — getAll: several courses, date window, latest only, active on (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "getAll",
+        "contextCodes": "113",
+        "options": {
+          "start_date": "2020-01-01T00:00:00Z",
+          "end_date": "2040-01-01T00:00:00Z",
+          "include": [
+            "sections",
+            "sections_user_count"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bed7d2b9-445a-4cdc-9e98-7a55697cb8a9",
+      "name": "getAll — getAll: several courses, date window, latest only, active on (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "getAll",
+        "contextCodes": "113",
+        "options": {
+          "start_date": "2020-01-01T00:00:00Z",
+          "end_date": "2040-01-01T00:00:00Z",
+          "active_only": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c1fc6aab-3cc7-498f-b55a-7d4937bddf6c",
+      "name": "getAll — getAll: a course that does not exist, a group code, a course",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcement",
+        "operation": "getAll",
+        "contextCodes": "course_99999999",
+        "errorHandling": {
+          "onError": "continueWithError"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field of a course announcement reache",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field of a course announcement reache": {
+      "main": [
+        [
+          {
+            "node": "create — create: title and message only; comments can be disabled fro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: title and message only; comments can be disabled fro": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns the announcement; includes add the sections",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns the announcement; includes add the sections": {
+      "main": [
+        [
+          {
+            "node": "update — update: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: every optional field reaches Canvas (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every optional field reaches Canvas (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: Canvas reopens comments on every update that does no",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Canvas reopens comments on every update that does no": {
+      "main": [
+        [
+          {
+            "node": "update — update: Canvas reopens comments on every update that does no (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Canvas reopens comments on every update that does no (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: Canvas reopens comments on every update that does no (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Canvas reopens comments on every update that does no (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more announcements than one page holds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more announcements than one page holds": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more announcements than one page holds (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more announcements than one page holds (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more announcements than one page holds (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more announcements than one page holds (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: several courses, date window, latest only, active on",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: several courses, date window, latest only, active on": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: several courses, date window, latest only, active on (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: several courses, date window, latest only, active on (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: several courses, date window, latest only, active on (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: several courses, date window, latest only, active on (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: several courses, date window, latest only, active on (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: several courses, date window, latest only, active on (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: several courses, date window, latest only, active on (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: several courses, date window, latest only, active on (5)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: a course that does not exist, a group code, a course",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

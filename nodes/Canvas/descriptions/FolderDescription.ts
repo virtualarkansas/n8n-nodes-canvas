@@ -49,6 +49,12 @@ export const folderOperations: INodeProperties[] = [
 				action: 'Get many folders',
 			},
 			{
+				name: 'Get Media Folder',
+				value: 'getMediaFolder',
+				description: 'Get the folder for uploaded media ("Uploaded Media") that the user of the credential may upload to; Canvas creates it when it does not exist yet. It is the folder of the course or group for users who manage its files, and the one in their own personal files for everybody else.',
+				action: 'Get the media folder of a course or group',
+			},
+			{
 				name: 'List Files',
 				value: 'listFiles',
 				description: 'List files in a folder',
@@ -78,37 +84,161 @@ export const folderFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['folder'],
-				operation: ['getAll', 'create', 'getByPath'],
+				operation: ['create'],
 			},
 		},
 		options: [
 			{
 				name: 'Account',
 				value: 'account',
-				description: 'Folders in an account',
+				description: 'A folder in the files of an account',
 			},
 			{
 				name: 'Course',
 				value: 'course',
-				description: 'Folders in a course',
+				description: 'A folder in the files of a course',
 			},
 			{
 				name: 'Folder',
 				value: 'folder',
-				description: 'Subfolders in a folder',
+				description: 'A sub-folder of a specific folder',
 			},
 			{
 				name: 'Group',
 				value: 'group',
-				description: 'Folders in a group',
+				description: 'A folder in the files of a group',
 			},
 			{
 				name: 'User',
 				value: 'user',
-				description: 'Folders for a user',
+				description: 'A folder in the personal files of a user',
 			},
 		],
-		description: 'The context to list folders from',
+		description: 'Where to create the folder. Without a parent folder (see Additional Fields) Canvas puts it into the "unfiled" folder of the course, group, user or account.',
+	},
+	{
+		displayName: 'Context Type',
+		name: 'contextType',
+		type: 'options',
+		required: true,
+		default: 'course',
+		displayOptions: {
+			show: {
+				resource: ['folder'],
+				operation: ['getAll'],
+			},
+		},
+		options: [
+			{
+				name: 'Course',
+				value: 'course',
+				description: 'Every folder of a course, at any depth',
+			},
+			{
+				name: 'Folder',
+				value: 'folder',
+				description: 'The direct sub-folders of a folder',
+			},
+			{
+				name: 'Group',
+				value: 'group',
+				description: 'Every folder of a group, at any depth',
+			},
+			{
+				name: 'User',
+				value: 'user',
+				description: 'Every folder of the personal files of a user, at any depth',
+			},
+		],
+		description: 'Which folders to list',
+	},
+	{
+		displayName: 'Context Type',
+		name: 'contextType',
+		type: 'options',
+		required: true,
+		default: 'course',
+		displayOptions: {
+			show: {
+				resource: ['folder'],
+				operation: ['getByPath'],
+			},
+		},
+		options: [
+			{
+				name: 'Course',
+				value: 'course',
+			},
+			{
+				name: 'Group',
+				value: 'group',
+			},
+			{
+				name: 'User',
+				value: 'user',
+			},
+		],
+		description: 'Whose files the path refers to',
+	},
+	{
+		displayName: 'Context Type',
+		name: 'contextType',
+		type: 'options',
+		required: true,
+		default: 'none',
+		displayOptions: {
+			show: {
+				resource: ['folder'],
+				operation: ['get'],
+			},
+		},
+		options: [
+			{
+				name: 'Any (Folder ID Only)',
+				value: 'none',
+				description: 'Find the folder wherever it is',
+			},
+			{
+				name: 'Course',
+				value: 'course',
+				description: 'A folder of this course; the folder ID "root" stands for its top folder',
+			},
+			{
+				name: 'Group',
+				value: 'group',
+				description: 'A folder of this group; the folder ID "root" stands for its top folder',
+			},
+			{
+				name: 'User',
+				value: 'user',
+				description: 'A folder of the personal files of this user; the folder ID "root" stands for its top folder',
+			},
+		],
+		description: 'Whether to look for the folder by its ID alone or within one course, group or user, where a folder from elsewhere is reported as not found',
+	},
+	{
+		displayName: 'Context Type',
+		name: 'contextType',
+		type: 'options',
+		required: true,
+		default: 'course',
+		displayOptions: {
+			show: {
+				resource: ['folder'],
+				operation: ['getMediaFolder'],
+			},
+		},
+		options: [
+			{
+				name: 'Course',
+				value: 'course',
+			},
+			{
+				name: 'Group',
+				value: 'group',
+			},
+		],
+		description: 'Whether the media folder belongs to a course or a group',
 	},
 	{
 		displayName: 'Account ID',
@@ -134,7 +264,7 @@ export const folderFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['folder'],
-				operation: ['getAll', 'create', 'getByPath'],
+				operation: ['get', 'getAll', 'create', 'getByPath', 'getMediaFolder'],
 				contextType: ['course'],
 			},
 		},
@@ -149,11 +279,11 @@ export const folderFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['folder'],
-				operation: ['getAll', 'create', 'getByPath'],
+				operation: ['get', 'getAll', 'create', 'getByPath'],
 				contextType: ['user'],
 			},
 		},
-		description: 'The ID of the user (use "self" for current user)',
+		description: 'The ID of the user (use "self" for the user of the credential)',
 	},
 	{
 		displayName: 'Group ID',
@@ -164,7 +294,7 @@ export const folderFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['folder'],
-				operation: ['getAll', 'create', 'getByPath'],
+				operation: ['get', 'getAll', 'create', 'getByPath', 'getMediaFolder'],
 				contextType: ['group'],
 			},
 		},
@@ -193,7 +323,6 @@ export const folderFields: INodeProperties[] = [
 		displayName: 'Folder Path',
 		name: 'folderPath',
 		type: 'string',
-		required: true,
 		default: '',
 		displayOptions: {
 			show: {
@@ -201,7 +330,7 @@ export const folderFields: INodeProperties[] = [
 				operation: ['getByPath'],
 			},
 		},
-		description: 'The full path of the folder (e.g., "course files/assignments/homework")',
+		description: 'The path of the folder below the root folder, e.g. "assignments/homework" (the root folder itself, "course files", is not part of the path). Leave empty for the root folder. Returns every folder along the path, root first.',
 	},
 
 	// ----------------------------------
@@ -216,10 +345,24 @@ export const folderFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['folder'],
-				operation: ['get', 'update', 'delete', 'listFiles'],
+				operation: ['update', 'delete', 'listFiles'],
 			},
 		},
 		description: 'The ID of the folder',
+	},
+	{
+		displayName: 'Folder ID',
+		name: 'folderId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['folder'],
+				operation: ['get'],
+			},
+		},
+		description: 'The ID of the folder. Within a course, group or user (see Context Type), "root" stands for its top folder.',
 	},
 
 	// ----------------------------------
@@ -237,7 +380,7 @@ export const folderFields: INodeProperties[] = [
 				operation: ['copy'],
 			},
 		},
-		description: 'The ID of the destination folder',
+		description: 'The ID of the folder that receives the copy (in the same or another course, group or user)',
 	},
 	{
 		displayName: 'Source Folder ID',
@@ -251,7 +394,7 @@ export const folderFields: INodeProperties[] = [
 				operation: ['copy'],
 			},
 		},
-		description: 'The ID of the source folder to copy',
+		description: 'The ID of the folder to copy, with everything in it',
 	},
 
 	// ----------------------------------
@@ -310,14 +453,14 @@ export const folderFields: INodeProperties[] = [
 				name: 'parent_folder_id',
 				type: 'string',
 				default: '',
-				description: 'The ID of the parent folder (overrides context)',
+				description: 'The ID of the parent folder within the chosen course, group, user or account. Cannot be combined with Parent Folder Path or with the Folder context.',
 			},
 			{
 				displayName: 'Parent Folder Path',
 				name: 'parent_folder_path',
 				type: 'string',
 				default: '',
-				description: 'The path of the parent folder (e.g., "course files/assignments")',
+				description: 'The path of the parent folder below the root folder (e.g. "assignments/week 1"). Missing folders are created. Cannot be combined with Parent Folder ID or with the Folder context.',
 			},
 			{
 				displayName: 'Position',
@@ -385,7 +528,7 @@ export const folderFields: INodeProperties[] = [
 				name: 'parent_folder_id',
 				type: 'string',
 				default: '',
-				description: 'The ID of the parent folder to move this folder to',
+				description: 'The ID of the folder to move this folder into (within the same course, group or user)',
 			},
 			{
 				displayName: 'Position',
@@ -425,7 +568,7 @@ export const folderFields: INodeProperties[] = [
 				name: 'force',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to delete the folder even if it is not empty',
+				description: 'Whether to delete the folder even if it is not empty (its files and sub-folders are deleted too)',
 			},
 		],
 	},
@@ -451,14 +594,14 @@ export const folderFields: INodeProperties[] = [
 				name: 'content_types',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of content types to include (e.g., "image/png,application/pdf")',
+				description: 'Comma-separated list of content types to include. Full types ("application/pdf") or just the first part ("image") are accepted.',
 			},
 			{
 				displayName: 'Exclude Content Types',
 				name: 'exclude_content_types',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of content types to exclude',
+				description: 'Comma-separated list of content types to leave out. Full types ("application/pdf") or just the first part ("image") are accepted.',
 			},
 			{
 				displayName: 'Include',

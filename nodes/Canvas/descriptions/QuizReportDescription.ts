@@ -133,52 +133,12 @@ export const quizReportFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				displayName: 'Include',
-				name: 'include',
-				type: 'multiOptions',
-				options: [
-					{ name: 'File', value: 'file' },
-					{ name: 'Progress', value: 'progress' },
-				],
-				default: [],
-				description: 'Additional objects to include in the response (JSON-API only)',
-			},
-			{
 				displayName: 'Includes All Versions',
 				name: 'includes_all_versions',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to include all submission attempts or only the most recent',
-			},
-		],
-	},
-
-	// ----------------------------------
-	//         quizReport: get - options
-	// ----------------------------------
-	{
-		displayName: 'Options',
-		name: 'options',
-		type: 'collection',
-		placeholder: 'Add Option',
-		default: {},
-		displayOptions: {
-			show: {
-				resource: ['quizReport'],
-				operation: ['get'],
-			},
-		},
-		options: [
-			{
-				displayName: 'Include',
-				name: 'include',
-				type: 'multiOptions',
-				options: [
-					{ name: 'File', value: 'file' },
-					{ name: 'Progress', value: 'progress' },
-				],
-				default: [],
-				description: 'Additional objects to include in the response (JSON-API only)',
+				description:
+					'Whether the report considers all submission attempts or only the most recent (ignored for item analysis)',
 			},
 		],
 	},
@@ -204,7 +164,8 @@ export const quizReportFields: INodeProperties[] = [
 				name: 'includes_all_versions',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to retrieve reports that include all submission attempts',
+				description:
+					'Whether to retrieve the reports that consider all submission attempts instead of only the most recent',
 			},
 		],
 	},

@@ -1,0 +1,1705 @@
+{
+  "name": "Canvas battery — folder",
+  "nodes": [
+    {
+      "id": "ef22317d-303f-445e-874b-71481aa7b26a",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "edf121fe-b308-4ca6-a3b7-e318d891da08",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "16c34854-fa5a-4808-8db1-5f969deff433",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            },
+            {
+              "id": "cc073b5c-5a8a-487e-8b4a-397b6764cd1f",
+              "name": "student2UserId",
+              "value": "6",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "4d8c6877-9163-4ad7-8306-5a60290300fb",
+      "name": "create — create: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "116",
+        "name": "Ordner ünï 文件夹 \"quoted\" & more",
+        "additionalFields": {
+          "hidden": true,
+          "lock_at": "2032-03-01T12:00:00Z",
+          "locked": false,
+          "parent_folder_id": "1555",
+          "position": 3,
+          "unlock_at": "2032-01-15T12:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4f0e0e0c-59c4-48a2-b03e-bb3e3d6864b7",
+      "name": "create — create: parent folder path creates the missing folders on ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "116",
+        "name": "leaf",
+        "additionalFields": {
+          "parent_folder_path": "=folders-{{ $execution.id }}-1/made by path/level 2",
+          "locked": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "29914ca1-3b4f-401e-9025-fdb26b7872ad",
+      "name": "create — create: without a parent Canvas files the folder under unfi",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "116",
+        "name": "=no parent {{ $execution.id }}-2"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "06831021-2b42-4cf1-ab8a-fd6baa2ac34f",
+      "name": "create — create: folder, group, user and account contexts",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "create",
+        "contextType": "group",
+        "groupId": "57",
+        "name": "=group folder {{ $execution.id }}-3"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ebced62a-4b5b-4287-87bc-3b122378a423",
+      "name": "create — create: folder, group, user and account contexts (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "create",
+        "contextType": "account",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "name": "=account folder {{ $execution.id }}-5"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "59f50492-5b81-4924-b4d5-1b8f380b4a9f",
+      "name": "get — get: returns the folder; a missing folder is not found",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "get",
+        "folderId": "={{ $('create — create: every optional field reaches Canvas').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "792910fc-7252-4085-b0f8-eebf534401a3",
+      "name": "get — get: within a course, a group or a user; root is the top f",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "116",
+        "folderId": "root",
+        "errorHandling": {
+          "onError": "continueWithError"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "891521cc-ff2f-4ecc-93ce-2860614c4618",
+      "name": "get — get: within a course, a group or a user; root is the top f (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "sis_course_id:W5682-D",
+        "folderId": "605",
+        "errorHandling": {
+          "onError": "continueWithError"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c03dd72a-ee46-4a34-a714-ee54a719a745",
+      "name": "get — get: within a course, a group or a user; root is the top f (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "get",
+        "contextType": "group",
+        "groupId": "57",
+        "folderId": "root",
+        "errorHandling": {
+          "onError": "continueWithError"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b0d94501-a639-4ef6-9557-a5ca95feb762",
+      "name": "get — get: within a course, a group or a user; root is the top f (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "get",
+        "contextType": "group",
+        "groupId": "57",
+        "folderId": "={{ $('get — get: within a course, a group or a user; root is the top f (3)').first().json.id }}",
+        "errorHandling": {
+          "onError": "continueWithError"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "641af8ef-7e87-4d3e-8478-a375cad5fe68",
+      "name": "get — get: within a course, a group or a user; root is the top f (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "get",
+        "contextType": "user",
+        "userId": "={{ $('Config').first().json.student2UserId }}",
+        "folderId": "6",
+        "errorHandling": {
+          "onError": "continueWithError"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a57b6731-5310-4c79-8e3c-9e4a0ac9482e",
+      "name": "getMediaFolder — getMediaFolder: the folder for uploaded media of a course or",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "getMediaFolder",
+        "contextType": "course",
+        "courseId": "116"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b4b65dc2-f4b2-46f6-b553-d46e285acb96",
+      "name": "getMediaFolder — getMediaFolder: the folder for uploaded media of a course or (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "getMediaFolder",
+        "contextType": "group",
+        "groupId": "57"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e637e599-2c92-4926-ab37-c4399b495a30",
+      "name": "getAll — getAll: the direct sub-folders of a folder, paginated",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "getAll",
+        "contextType": "folder",
+        "parentFolderId": "={{ $('get — get: within a course, a group or a user; root is the top f (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ea4743c2-dc05-43bd-ad90-5eff1f5c521e",
+      "name": "getAll — getAll: the direct sub-folders of a folder, paginated (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "getAll",
+        "contextType": "folder",
+        "parentFolderId": "={{ $('get — get: within a course, a group or a user; root is the top f (2)').first().json.id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f37ca218-409a-44b8-991e-7cd4268d38bf",
+      "name": "getAll — getAll: the direct sub-folders of a folder, paginated (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "getAll",
+        "contextType": "folder",
+        "parentFolderId": "={{ $('get — get: within a course, a group or a user; root is the top f (2)').first().json.id }}",
+        "pagination": {
+          "perPage": 20,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "33900e79-a5e1-4365-9ea6-b0bb833133c1",
+      "name": "getAll — getAll: the direct sub-folders of a folder, paginated (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "getAll",
+        "contextType": "folder",
+        "parentFolderId": "606"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "108a455e-28f8-495f-9685-b9da3052dfea",
+      "name": "getAll — getAll: every folder of a course, a group and a user",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "116",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c79ad089-681e-4ba6-93ed-cab0df50e492",
+      "name": "getAll — getAll: every folder of a course, a group and a user (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "getAll",
+        "contextType": "group",
+        "groupId": "57",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7e85bf99-59aa-41a0-b307-22d618377fcf",
+      "name": "getByPath — getByPath: resolves a path to the folders along it",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "getByPath",
+        "contextType": "course",
+        "courseId": "116",
+        "folderPath": "bulk-folders/folder-042"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "14e216cd-4c64-45dc-a746-3160092f2d77",
+      "name": "getByPath — getByPath: resolves a path to the folders along it (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "getByPath",
+        "contextType": "course",
+        "courseId": "116",
+        "folderPath": "=/folders-{{ $execution.id }}-1/Ordner ünï 文件夹 \"quoted\" & more/"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3ec37830-1a8d-49dd-8701-d2565d6b6755",
+      "name": "getByPath — getByPath: resolves a path to the folders along it (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "getByPath",
+        "contextType": "course",
+        "courseId": "116",
+        "folderPath": "=folders-{{ $execution.id }}-1/made by path/level 2/leaf"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e5b894a2-5418-48fa-9b34-33ffc6559398",
+      "name": "getByPath — getByPath: an empty path is the root folder; group and user ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "getByPath",
+        "contextType": "course",
+        "courseId": "116",
+        "folderPath": ""
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ccf0eac6-b63f-4407-9f84-f0ee0b95b24f",
+      "name": "getByPath — getByPath: an empty path is the root folder; group and user  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "getByPath",
+        "contextType": "group",
+        "groupId": "57"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "90528c1a-fc54-4a73-b9ca-9b419cc524a9",
+      "name": "listFiles — listFiles: pages through the files of a folder and honours t",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "listFiles",
+        "folderId": "={{ $('getAll — getAll: every folder of a course, a group and a user').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "87cfae8f-4de8-48cb-ad90-7c5b8e94e197",
+      "name": "listFiles — listFiles: pages through the files of a folder and honours t (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "listFiles",
+        "folderId": "={{ $('getAll — getAll: every folder of a course, a group and a user').first().json.id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3d83872e-2436-43f4-8e72-7a383d62d89f",
+      "name": "listFiles — listFiles: pages through the files of a folder and honours t (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "listFiles",
+        "folderId": "={{ $('getAll — getAll: every folder of a course, a group and a user').first().json.id }}",
+        "options": {
+          "content_types": "image/png"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "88644886-edb4-4cef-a96a-e9121a4e5bc8",
+      "name": "listFiles — listFiles: pages through the files of a folder and honours t (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "listFiles",
+        "folderId": "={{ $('getAll — getAll: every folder of a course, a group and a user').first().json.id }}",
+        "options": {
+          "content_types": "text/csv,image"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "69ee2380-6c64-42d6-b344-4b11fbeed20e",
+      "name": "listFiles — listFiles: pages through the files of a folder and honours t (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "listFiles",
+        "folderId": "={{ $('getAll — getAll: every folder of a course, a group and a user').first().json.id }}",
+        "options": {
+          "exclude_content_types": "image, text/csv"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "19100dba-677a-43f5-a6aa-8971cb1e2d19",
+      "name": "listFiles — listFiles: pages through the files of a folder and honours t (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "listFiles",
+        "folderId": "={{ $('getAll — getAll: every folder of a course, a group and a user').first().json.id }}",
+        "options": {
+          "search_term": "bulk-09",
+          "sort": "name",
+          "order": "desc",
+          "include": [
+            "usage_rights",
+            "user"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bc6338f2-1b47-44cf-8064-f9a555ff3ef4",
+      "name": "listFiles — listFiles: pages through the files of a folder and honours t (7)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "listFiles",
+        "folderId": "={{ $('getAll — getAll: every folder of a course, a group and a user').first().json.id }}",
+        "options": {
+          "sort": "size",
+          "order": "asc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3b224007-3acc-4eda-bc16-27ac73c04957",
+      "name": "listFiles — listFiles: pages through the files of a folder and honours t (8)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "listFiles",
+        "folderId": "={{ $('getAll — getAll: every folder of a course, a group and a user').first().json.id }}",
+        "options": {
+          "sort": "content_type"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9fc80979-ce19-428a-b178-e9b27e606409",
+      "name": "listFiles — listFiles: pages through the files of a folder and honours t (9)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "listFiles",
+        "folderId": "={{ $('getAll — getAll: every folder of a course, a group and a user').first().json.id }}",
+        "options": {
+          "sort": "created_at"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ad98d3b3-9cc0-4130-b3fb-8cc38ba0a5a3",
+      "name": "listFiles — listFiles: pages through the files of a folder and honours t (10)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "listFiles",
+        "folderId": "={{ $('getAll — getAll: every folder of a course, a group and a user').first().json.id }}",
+        "options": {
+          "sort": "updated_at"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "648d65e3-6b82-4de7-ac26-2212abd04f52",
+      "name": "listFiles — listFiles: pages through the files of a folder and honours t (11)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "listFiles",
+        "folderId": "={{ $('getAll — getAll: every folder of a course, a group and a user').first().json.id }}",
+        "options": {
+          "sort": "user"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "08559939-edb1-4de4-add6-fe914d8e40a2",
+      "name": "listFiles — listFiles: pages through the files of a folder and honours t (12)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "listFiles",
+        "folderId": "={{ $('getAll — getAll: every folder of a course, a group and a user').first().json.id }}",
+        "options": {
+          "only_names": true,
+          "search_term": "bulk-001"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f0a5200b-ea93-444d-8d75-9bdc5f67da5d",
+      "name": "listFiles — listFiles: pages through the files of a folder and honours t (13)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "listFiles",
+        "folderId": "={{ $('get — get: returns the folder; a missing folder is not found').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "94ef0a3c-d3b4-406c-9c2a-b0d6de1aca14",
+      "name": "update — update: every field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "update",
+        "folderId": "={{ $('get — get: returns the folder; a missing folder is not found').first().json.id }}",
+        "updateFields": {
+          "hidden": false,
+          "lock_at": "2033-03-01T12:00:00Z",
+          "locked": true,
+          "name": "Umbenannt ünï",
+          "parent_folder_id": "1568",
+          "position": 7,
+          "unlock_at": "2033-01-15T12:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "add50e90-2052-4583-8040-dd9b2656839b",
+      "name": "update — update: every field reaches Canvas (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "update",
+        "folderId": "={{ $('update — update: every field reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "hidden": true,
+          "lock_at": "",
+          "locked": false,
+          "unlock_at": ""
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3e2db795-c749-4631-a24d-5ea9ee32fc09",
+      "name": "copy — copy: copies a folder with its files and sub-folders",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "copy",
+        "sourceFolderId": "={{ $('update — update: every field reaches Canvas (2)').first().json.id }}",
+        "destinationFolderId": "1569"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3ff7c71e-432c-4c24-ab49-833ee0b6448d",
+      "name": "delete — delete: a folder with content needs force; the root folder",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "folder",
+        "operation": "delete",
+        "folderId": "={{ $('update — update: every field reaches Canvas (2)').first().json.id }}",
+        "options": {
+          "force": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create: parent folder path creates the missing folders on ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: parent folder path creates the missing folders on ": {
+      "main": [
+        [
+          {
+            "node": "create — create: without a parent Canvas files the folder under unfi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: without a parent Canvas files the folder under unfi": {
+      "main": [
+        [
+          {
+            "node": "create — create: folder, group, user and account contexts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: folder, group, user and account contexts": {
+      "main": [
+        [
+          {
+            "node": "create — create: folder, group, user and account contexts (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: folder, group, user and account contexts (2)": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns the folder; a missing folder is not found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns the folder; a missing folder is not found": {
+      "main": [
+        [
+          {
+            "node": "get — get: within a course, a group or a user; root is the top f",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: within a course, a group or a user; root is the top f": {
+      "main": [
+        [
+          {
+            "node": "get — get: within a course, a group or a user; root is the top f (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: within a course, a group or a user; root is the top f (2)": {
+      "main": [
+        [
+          {
+            "node": "get — get: within a course, a group or a user; root is the top f (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: within a course, a group or a user; root is the top f (3)": {
+      "main": [
+        [
+          {
+            "node": "get — get: within a course, a group or a user; root is the top f (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: within a course, a group or a user; root is the top f (4)": {
+      "main": [
+        [
+          {
+            "node": "get — get: within a course, a group or a user; root is the top f (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: within a course, a group or a user; root is the top f (5)": {
+      "main": [
+        [
+          {
+            "node": "getMediaFolder — getMediaFolder: the folder for uploaded media of a course or",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getMediaFolder — getMediaFolder: the folder for uploaded media of a course or": {
+      "main": [
+        [
+          {
+            "node": "getMediaFolder — getMediaFolder: the folder for uploaded media of a course or (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getMediaFolder — getMediaFolder: the folder for uploaded media of a course or (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: the direct sub-folders of a folder, paginated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: the direct sub-folders of a folder, paginated": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: the direct sub-folders of a folder, paginated (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: the direct sub-folders of a folder, paginated (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: the direct sub-folders of a folder, paginated (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: the direct sub-folders of a folder, paginated (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: the direct sub-folders of a folder, paginated (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: the direct sub-folders of a folder, paginated (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every folder of a course, a group and a user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every folder of a course, a group and a user": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every folder of a course, a group and a user (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every folder of a course, a group and a user (2)": {
+      "main": [
+        [
+          {
+            "node": "getByPath — getByPath: resolves a path to the folders along it",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByPath — getByPath: resolves a path to the folders along it": {
+      "main": [
+        [
+          {
+            "node": "getByPath — getByPath: resolves a path to the folders along it (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByPath — getByPath: resolves a path to the folders along it (2)": {
+      "main": [
+        [
+          {
+            "node": "getByPath — getByPath: resolves a path to the folders along it (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByPath — getByPath: resolves a path to the folders along it (3)": {
+      "main": [
+        [
+          {
+            "node": "getByPath — getByPath: an empty path is the root folder; group and user ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByPath — getByPath: an empty path is the root folder; group and user ": {
+      "main": [
+        [
+          {
+            "node": "getByPath — getByPath: an empty path is the root folder; group and user  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByPath — getByPath: an empty path is the root folder; group and user  (2)": {
+      "main": [
+        [
+          {
+            "node": "listFiles — listFiles: pages through the files of a folder and honours t",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listFiles — listFiles: pages through the files of a folder and honours t": {
+      "main": [
+        [
+          {
+            "node": "listFiles — listFiles: pages through the files of a folder and honours t (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listFiles — listFiles: pages through the files of a folder and honours t (2)": {
+      "main": [
+        [
+          {
+            "node": "listFiles — listFiles: pages through the files of a folder and honours t (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listFiles — listFiles: pages through the files of a folder and honours t (3)": {
+      "main": [
+        [
+          {
+            "node": "listFiles — listFiles: pages through the files of a folder and honours t (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listFiles — listFiles: pages through the files of a folder and honours t (4)": {
+      "main": [
+        [
+          {
+            "node": "listFiles — listFiles: pages through the files of a folder and honours t (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listFiles — listFiles: pages through the files of a folder and honours t (5)": {
+      "main": [
+        [
+          {
+            "node": "listFiles — listFiles: pages through the files of a folder and honours t (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listFiles — listFiles: pages through the files of a folder and honours t (6)": {
+      "main": [
+        [
+          {
+            "node": "listFiles — listFiles: pages through the files of a folder and honours t (7)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listFiles — listFiles: pages through the files of a folder and honours t (7)": {
+      "main": [
+        [
+          {
+            "node": "listFiles — listFiles: pages through the files of a folder and honours t (8)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listFiles — listFiles: pages through the files of a folder and honours t (8)": {
+      "main": [
+        [
+          {
+            "node": "listFiles — listFiles: pages through the files of a folder and honours t (9)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listFiles — listFiles: pages through the files of a folder and honours t (9)": {
+      "main": [
+        [
+          {
+            "node": "listFiles — listFiles: pages through the files of a folder and honours t (10)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listFiles — listFiles: pages through the files of a folder and honours t (10)": {
+      "main": [
+        [
+          {
+            "node": "listFiles — listFiles: pages through the files of a folder and honours t (11)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listFiles — listFiles: pages through the files of a folder and honours t (11)": {
+      "main": [
+        [
+          {
+            "node": "listFiles — listFiles: pages through the files of a folder and honours t (12)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listFiles — listFiles: pages through the files of a folder and honours t (12)": {
+      "main": [
+        [
+          {
+            "node": "listFiles — listFiles: pages through the files of a folder and honours t (13)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listFiles — listFiles: pages through the files of a folder and honours t (13)": {
+      "main": [
+        [
+          {
+            "node": "update — update: every field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: every field reaches Canvas (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every field reaches Canvas (2)": {
+      "main": [
+        [
+          {
+            "node": "copy — copy: copies a folder with its files and sub-folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "copy — copy: copies a folder with its files and sub-folders": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: a folder with content needs force; the root folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

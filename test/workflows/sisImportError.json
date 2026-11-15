@@ -1,0 +1,413 @@
+{
+  "name": "Canvas battery — sisImportError",
+  "nodes": [
+    {
+      "id": "c81e588d-c1cc-4905-bd2e-78844569d256",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "9297e152-4499-40a2-bca3-7413bff1a591",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9e766a2e-3c3c-44bc-8153-8d77b431733d",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f89432bc-51eb-4ac8-924a-951e283107f0",
+      "name": "getAll — getAll: one item per error of the import, across pages",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImportError",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "importId": "187",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "609161b5-2822-434e-8228-ecd1c1b23e9b",
+      "name": "getAll — getAll: one item per error of the import, across pages (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImportError",
+        "operation": "getAll",
+        "accountId": "self",
+        "importId": "={{ $('getAll — getAll: one item per error of the import, across pages').first().json.sis_import_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4202d617-a83f-4b47-9481-180d5ebef99d",
+      "name": "getAll — getAll: Failure Only keeps the errors that made an import ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImportError",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "importId": "={{ $('getAll — getAll: one item per error of the import, across pages (2)').first().json.sis_import_id }}",
+        "options": {
+          "failure": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a075782d-8e71-4478-846e-f955c16d1880",
+      "name": "getAll — getAll: Failure Only keeps the errors that made an import  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImportError",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "importId": "188",
+        "options": {
+          "failure": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "03e9b948-19a4-4f21-99b0-841a44800004",
+      "name": "getAll — getAll: Failure Only keeps the errors that made an import  (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImportError",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "importId": "={{ $('getAll — getAll: one item per error of the import, across pages (2)').first().json.sis_import_id }}",
+        "options": {
+          "failure": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "384bb748-523e-4148-9bd1-55b38ad2c4af",
+      "name": "getAllForAccount — getAllForAccount: the errors of every import of the account,",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImportError",
+        "operation": "getAllForAccount",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9d5ade79-ca73-42d7-b3ba-85cc97e80bf0",
+      "name": "getAllForAccount — getAllForAccount: the errors of every import of the account, (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImportError",
+        "operation": "getAllForAccount",
+        "accountId": "={{ $('Config').first().json.accountId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1ecab081-4ff2-435d-a2fc-84cdfbad4314",
+      "name": "getAllForAccount — getAllForAccount: the errors of every import of the account, (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImportError",
+        "operation": "getAllForAccount",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "pagination": {
+          "perPage": 5,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d60a7c5a-df53-42ef-9175-f6d3fddf94d7",
+      "name": "getAllForAccount — getAllForAccount: Failure Only filters across imports",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "sisImportError",
+        "operation": "getAllForAccount",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "options": {
+          "failure": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: one item per error of the import, across pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: one item per error of the import, across pages": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: one item per error of the import, across pages (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: one item per error of the import, across pages (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Failure Only keeps the errors that made an import ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Failure Only keeps the errors that made an import ": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Failure Only keeps the errors that made an import  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Failure Only keeps the errors that made an import  (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Failure Only keeps the errors that made an import  (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Failure Only keeps the errors that made an import  (3)": {
+      "main": [
+        [
+          {
+            "node": "getAllForAccount — getAllForAccount: the errors of every import of the account,",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForAccount — getAllForAccount: the errors of every import of the account,": {
+      "main": [
+        [
+          {
+            "node": "getAllForAccount — getAllForAccount: the errors of every import of the account, (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForAccount — getAllForAccount: the errors of every import of the account, (2)": {
+      "main": [
+        [
+          {
+            "node": "getAllForAccount — getAllForAccount: the errors of every import of the account, (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForAccount — getAllForAccount: the errors of every import of the account, (3)": {
+      "main": [
+        [
+          {
+            "node": "getAllForAccount — getAllForAccount: Failure Only filters across imports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

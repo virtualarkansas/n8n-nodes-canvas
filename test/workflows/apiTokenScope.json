@@ -1,0 +1,167 @@
+{
+  "name": "Canvas battery — apiTokenScope",
+  "nodes": [
+    {
+      "id": "2e3ef53c-7cea-46f6-ac3d-cdf2bf30626d",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "7bf9772d-6204-4e3d-9cd3-1d64950db211",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6e2e9042-0070-472f-8d4e-2eb77329dd4e",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "4834a767-c495-4c90-987e-661a5ea7040e",
+      "name": "getAll — getAll: Return All lists every scope Canvas knows, one item ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiTokenScope",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9f1067af-01a1-470c-9f52-3e23b38b7342",
+      "name": "getAll — getAll: Limit is honoured (default 50), also with the accoun",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiTokenScope",
+        "operation": "getAll",
+        "accountId": "self"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3e304484-c153-4953-a77c-78b311ff8e0a",
+      "name": "getAll — getAll: grouped by resource the result is one item with a li",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiTokenScope",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "options": {
+          "group_by": "resource_name"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Return All lists every scope Canvas knows, one item ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Return All lists every scope Canvas knows, one item ": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Limit is honoured (default 50), also with the accoun",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Limit is honoured (default 50), also with the accoun": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: grouped by resource the result is one item with a li",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

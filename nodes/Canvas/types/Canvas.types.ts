@@ -8,8 +8,113 @@ import type { IDataObject, IHttpRequestMethods } from 'n8n-workflow';
 export interface IRequestConfig {
 	endpoint: string;
 	method: IHttpRequestMethods;
-	body?: Record<string, unknown>;
+	/** A JSON body (object or array), or raw text (e.g. CSV) sent as it is with `contentType`. */
+	body?: Record<string, unknown> | unknown[] | string | Buffer;
+	/** Content type of a raw text body. Defaults to text/plain. */
+	contentType?: string;
 	qs?: Record<string, unknown>;
+	/**
+	 * For endpoints that wrap their result in an object, the key holding it:
+	 * `{ "quiz_submissions": [...] }` becomes one item per record, and
+	 * `{ "late_policy": {...} }` becomes that record. Applies to reads and writes.
+	 */
+	dataKey?: string;
+	/**
+	 * For lists whose records are each wrapped again (`[{ "course": {...} }, ...]`):
+	 * the key inside every record that holds the real record.
+	 */
+	itemKey?: string;
+	/**
+	 * Always read every page (100 records at a time), whatever the node's Pagination
+	 * options say. For endpoints whose pages are not meaningful on their own, such as
+	 * summaries that Canvas computes from a paginated list of underlying records.
+	 */
+	/**
+	 * Send the content of this binary property of the input item as the request body
+	 * (import files). `prepare` can derive query parameters and the content type from the file.
+	 */
+	binaryBody?: {
+		propertyName: string;
+		prepare?: (file: { fileName?: string; mimeType?: string; fileExtension?: string }) => {
+			qs?: Record<string, unknown>;
+			contentType?: string;
+		};
+	};
+	/**
+	 * The request starts Canvas' three-step file upload. `body` holds the upload arguments
+	 * (name, parent_folder_path, on_duplicate ...); the file itself comes from a binary
+	 * property of the input item or from a URL Canvas fetches. The node runs all steps and
+	 * outputs the finished file (or, for a URL upload that is not waited for, its progress).
+	 */
+	upload?:
+		| { source: 'binaryData'; binaryPropertyName: string }
+		| { source: 'url'; url: string; waitForCompletion: boolean };
+	/**
+	 * After the GET, download the file the record points to and attach it to the output
+	 * item as binary data. `urlField` names the record's field that holds the download URL
+	 * (`url` of a file, `attachment.url` of a report); the file name and type come from the
+	 * record when the fields are given. With `optional`, a record without a URL (a report
+	 * that failed) is output without a file instead of failing the item.
+	 */
+	download?: {
+		urlField: string;
+		binaryPropertyName: string;
+		fileNameField?: string;
+		contentTypeField?: string;
+		optional?: boolean;
+	};
+	/**
+	 * Names of parameters whose value the handler has percent-encoded in the path itself
+	 * (a folder path with several segments). Everything else is encoded by the node.
+	 */
+	encodedParams?: string[];
+	/**
+	 * The answer is a file as text (a CSV export): besides `{ value: text }`, attach it to
+	 * the output item as binary data under this name and type, ready for n8n's file nodes.
+	 */
+	responseFile?: { fileName: string; mimeType: string; binaryPropertyName?: string };
+	/**
+	 * Repeat the GET until the record says the background job is over (or the time is up):
+	 * "Wait for Completion" operations for progress objects, SIS imports, reports ...
+	 */
+	poll?: {
+		intervalSeconds: number;
+		timeoutSeconds: number;
+		isFinished: (record: IDataObject) => boolean;
+	};
+	fetchAllPages?: boolean;
+	/**
+	 * The endpoint answers with its complete list whatever page is asked for, while
+	 * still announcing further pages: read it once and do not follow them.
+	 */
+	singlePage?: boolean;
+	/**
+	 * Reshape the complete list before it becomes items, e.g. to merge entries
+	 * that Canvas split across pages.
+	 */
+	transform?: (records: IDataObject[]) => IDataObject[];
+	/**
+	 * For a list wrapped under `dataKey` whose pages carry more than the list
+	 * (`{ events: [...], linked: {...} }`): reshape the records of each page with that
+	 * page's whole answer at hand, before pages are joined and the item limit is applied.
+	 */
+	pageTransform?: (records: IDataObject[], page: IDataObject) => IDataObject[];
+	/**
+	 * For a GET that returns one record containing a paginated array (the Link header
+	 * pages through that array): the key of the array. All pages are read and the
+	 * array is completed, so the record is output once and whole.
+	 */
+	mergePagedArray?: string;
+	/**
+	 * Inspect a successful response and throw if it actually reports a failure
+	 * (GraphQL answers 200 with an `errors` array).
+	 */
+	checkResponse?: (data: IDataObject) => void;
+	/**
+	 * After a successful write, read this endpoint and output its response instead.
+	 * For the few calls whose own response does not reflect the change they made.
+	 */
+	thenGet?: string;
 }
 
 /**
@@ -45,6 +150,12 @@ export interface IRateLimitOptions {
 	baseDelayMs: number;
 	/** Maximum delay cap in ms (default: 60000) */
 	maxDelayMs: number;
+	/**
+	 * Canvas user to act as (`as_user_id`, masquerading). It lives here because these
+	 * options travel with every request made for an item: follow-up pages, the GET after
+	 * a write, the steps of an upload.
+	 */
+	asUserId?: string;
 }
 
 /**
@@ -57,6 +168,8 @@ export interface IPaginationOptions {
 	perPage: number;
 	/** Maximum pages to fetch (default: 5, 0 = unlimited) */
 	maxPages: number;
+	/** Maximum number of items to return (undefined = no item limit) */
+	limit?: number;
 }
 
 /**
@@ -94,12 +207,16 @@ export interface IBatchOptions {
  * Canvas API error categories
  */
 export type CanvasErrorType =
+	| 'VALIDATION_ERROR' // 400, 422
 	| 'UNAUTHORIZED' // 401
 	| 'FORBIDDEN' // 403
 	| 'NOT_FOUND' // 404
-	| 'VALIDATION_ERROR' // 422
-	| 'RATE_LIMITED' // 429
+	| 'CONFLICT' // 409
+	| 'RATE_LIMITED' // 429, or 403 "Rate Limit Exceeded" (Canvas' default throttle response)
 	| 'SERVER_ERROR' // 500+
+	| 'INVALID_PARAMETERS' // rejected by the node before any request was sent
+	| 'NETWORK_ERROR' // no HTTP response (DNS, connection refused, timeout)
+	| 'TIMEOUT' // a "Wait for Completion" operation gave up waiting
 	| 'UNKNOWN'; // Other
 
 /**
@@ -107,10 +224,17 @@ export type CanvasErrorType =
  */
 export interface ICanvasErrorOutput {
 	error: true;
+	/** HTTP status code, or 0 when no HTTP response was received */
 	errorCode: number;
 	errorType: CanvasErrorType;
+	/** Human readable message; Canvas' own message(s) when it sent any */
 	errorMessage: string;
+	/** Canvas `error_code` / validation `type` of the first reported error, when present */
 	canvasErrorCode?: string;
+	/** The `errors` payload exactly as Canvas returned it */
+	canvasErrors?: unknown;
+	/** Canvas' response body when it is a record rather than an error list. */
+	responseBody?: unknown;
 	originalItem: IDataObject;
 	resource: string;
 	operation: string;
@@ -138,18 +262,6 @@ export interface IParsedLinkHeader {
 }
 
 /**
- * Canvas API request options
- */
-export interface ICanvasRequestOptions {
-	method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-	endpoint: string;
-	body?: IDataObject;
-	query?: IDataObject;
-	/** Additional include[] parameters */
-	include?: string[];
-}
-
-/**
  * Canvas API response with headers
  */
 export interface ICanvasResponse<T = IDataObject | IDataObject[]> {
@@ -165,133 +277,6 @@ export interface IPaginatedResult<T = IDataObject> {
 	items: T[];
 	totalPages: number;
 	rateLimitStatus: IRateLimitStatus;
+	/** The list goes on in Canvas: reading stopped at the limit or the page budget. */
+	more?: boolean;
 }
-
-/**
- * Canvas resource categories for mega-node
- */
-export type CanvasResource =
-	// Account & Admin
-	| 'accessToken'
-	| 'account'
-	| 'accountCalendar'
-	| 'accountDomainLookup'
-	| 'accountNotification'
-	| 'accountReport'
-	| 'admin'
-	| 'apiTokenScope'
-	| 'brandConfig'
-	| 'role'
-	| 'sandbox'
-	| 'service'
-	// Users & Identity
-	| 'user'
-	| 'login'
-	| 'authenticationProvider'
-	| 'authenticationsLog'
-	| 'communicationChannel'
-	| 'userObservee'
-	| 'temporaryEnrollmentPairing'
-	// Courses & Structure
-	| 'course'
-	| 'section'
-	| 'coursePace'
-	| 'courseAuditLog'
-	| 'courseReport'
-	| 'tab'
-	| 'module'
-	| 'moduleItem'
-	| 'page'
-	| 'favorite'
-	| 'blueprintCourse'
-	| 'contentExport'
-	| 'contentMigration'
-	// Enrollments & Groups
-	| 'enrollment'
-	| 'enrollmentTerm'
-	| 'group'
-	| 'groupCategory'
-	| 'contentShare'
-	// Assignments & Grading
-	| 'assignment'
-	| 'assignmentExtension'
-	| 'assignmentGroup'
-	| 'submission'
-	| 'submissionComment'
-	| 'customGradebookColumn'
-	| 'gradeChangeLog'
-	| 'gradebookHistory'
-	| 'gradingPeriod'
-	| 'gradingPeriodSet'
-	| 'gradingStandard'
-	| 'latePolicy'
-	| 'moderatedGrading'
-	| 'peerReview'
-	// Quizzes
-	| 'quiz'
-	| 'quizQuestion'
-	| 'quizQuestionGroup'
-	| 'quizSubmission'
-	| 'quizReport'
-	| 'quizStatistics'
-	| 'quizExtension'
-	| 'newQuiz'
-	| 'newQuizItem'
-	// Rubrics & Outcomes
-	| 'rubric'
-	| 'outcome'
-	| 'outcomeGroup'
-	| 'outcomeImport'
-	| 'outcomeResult'
-	| 'proficiencyRating'
-	| 'originalityReport'
-	// Calendar
-	| 'calendarEvent'
-	| 'appointmentGroup'
-	| 'blackoutDate'
-	// Communication
-	| 'announcement'
-	| 'announcementExternalFeed'
-	| 'conversation'
-	| 'notificationPreference'
-	// Discussions & Collaboration
-	| 'discussionTopic'
-	| 'conference'
-	| 'collaboration'
-	// Files & Media
-	| 'file'
-	| 'folder'
-	| 'mediaObject'
-	| 'ePortfolio'
-	// LTI & External Tools
-	| 'externalTool'
-	| 'developerKey'
-	| 'ltiRegistration'
-	// Analytics & Reporting
-	| 'analytics'
-	| 'progress'
-	| 'search'
-	// SIS
-	| 'sisImport'
-	// Other
-	| 'featureFlag'
-	| 'planner'
-	| 'bookmark';
-
-/**
- * Common Canvas API operations
- */
-export type CanvasOperation =
-	| 'create'
-	| 'get'
-	| 'getAll'
-	| 'update'
-	| 'delete'
-	| 'list'
-	// Specialized operations
-	| 'enroll'
-	| 'conclude'
-	| 'copy'
-	| 'grade'
-	| 'submit'
-	| 'upload';

@@ -1,0 +1,6 @@
+# No mail server in the test environment: write mail to the log instead of sending.
+development:
+  delivery_method: test
+  domain: localhost
+  outgoing_address: canvas@localhost
+  default_name: Canvas Battery

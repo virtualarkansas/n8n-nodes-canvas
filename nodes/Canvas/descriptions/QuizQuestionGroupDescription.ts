@@ -137,7 +137,8 @@ export const quizQuestionGroupFields: INodeProperties[] = [
 				name: 'assessment_question_bank_id',
 				type: 'string',
 				default: '',
-				description: 'The ID of a question bank to link to this group',
+				description:
+					'The ID of a question bank of the course to pull the questions from. Can only be set when the group is created.',
 			},
 			{
 				displayName: 'Pick Count',
@@ -172,13 +173,6 @@ export const quizQuestionGroupFields: INodeProperties[] = [
 			},
 		},
 		options: [
-			{
-				displayName: 'Assessment Question Bank ID',
-				name: 'assessment_question_bank_id',
-				type: 'string',
-				default: '',
-				description: 'The ID of a question bank to link to this group',
-			},
 			{
 				displayName: 'Name',
 				name: 'name',
@@ -221,7 +215,8 @@ export const quizQuestionGroupFields: INodeProperties[] = [
 				operation: ['reorder'],
 			},
 		},
-		description: 'The questions to reorder within the group',
+		description:
+			'The questions of the group in the order they should appear. Questions of the same quiz that are listed here are moved into this group.',
 		options: [
 			{
 				name: 'questions',

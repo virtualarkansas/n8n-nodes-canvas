@@ -1,0 +1,170 @@
+{
+  "name": "Canvas battery — developerKeyAccountBinding",
+  "nodes": [
+    {
+      "id": "fff92939-f423-47f5-b8e9-afbf5dcbfed1",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "994750a8-553e-4db5-b4a0-730d05ee2c21",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5ff0716d-8a61-4a88-9cb7-b3d928652f01",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "e657c0ab-9858-499d-bfb8-f2dfa711794e",
+      "name": "set — set: switches the key on, off and back to allow for an acc",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKeyAccountBinding",
+        "operation": "set",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "developerKeyId": "10000000000190",
+        "workflowState": "on"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e3a50b6c-573f-4d4b-a659-8c67fc27bb61",
+      "name": "set — set: switches the key on, off and back to allow for an acc (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKeyAccountBinding",
+        "operation": "set",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "developerKeyId": "={{ $('set — set: switches the key on, off and back to allow for an acc').first().json.developer_key_id }}",
+        "workflowState": "off"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9694b914-f978-4af5-b9a1-4baaa89de4d5",
+      "name": "set — set: switches the key on, off and back to allow for an acc (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "developerKeyAccountBinding",
+        "operation": "set",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "developerKeyId": "={{ $('set — set: switches the key on, off and back to allow for an acc (2)').first().json.developer_key_id }}",
+        "workflowState": "allow"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "set — set: switches the key on, off and back to allow for an acc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set — set: switches the key on, off and back to allow for an acc": {
+      "main": [
+        [
+          {
+            "node": "set — set: switches the key on, off and back to allow for an acc (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set — set: switches the key on, off and back to allow for an acc (2)": {
+      "main": [
+        [
+          {
+            "node": "set — set: switches the key on, off and back to allow for an acc (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

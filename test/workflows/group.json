@@ -1,0 +1,1883 @@
+{
+  "name": "Canvas battery — group",
+  "nodes": [
+    {
+      "id": "12faf96c-adcb-403f-a7c7-e41591581104",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "85e7b11d-b981-4c93-b470-02ca7a0321b2",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f7cd350a-b126-48f1-b9a5-14ed36812f96",
+      "name": "create — create: a course group with every optional field",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "create",
+        "name": "=Lab team \"A\" & <b>co</b> ünï 班 {{ $execution.id }}-3",
+        "groupCategoryId": " 243 ",
+        "additionalFields": {
+          "description": "Meets on Wednesdays — \"bring goggles\" 🥽",
+          "is_public": true,
+          "join_level": "parent_context_auto_join",
+          "max_membership": 7,
+          "sis_group_id": "=SBX-GROUP-{{ $execution.id }}-4",
+          "storage_quota_mb": 77
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bdaf436d-6ffc-414f-bd13-fdc9f7c8d097",
+      "name": "create — create: without a category Canvas makes a community group, w",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "create",
+        "name": "=Battery community {{ $execution.id }}-8",
+        "additionalFields": {
+          "is_public": true,
+          "join_level": "parent_context_request",
+          "description": "Open to all"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c50e6d0b-e038-420c-9fb9-c181c31999cd",
+      "name": "get — get: by ID, by SIS ID, with includes",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "get",
+        "groupId": "=sis_group_id:SBX-GROUP-{{ $execution.id }}-4"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "08239fad-4e1e-46e4-924f-09d2b8e21078",
+      "name": "get — get: by ID, by SIS ID, with includes (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "get",
+        "groupId": "={{ $('get — get: by ID, by SIS ID, with includes').first().json.id }}",
+        "options": {
+          "include": [
+            "permissions",
+            "tabs"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "be2f5728-bd4a-43db-a4b1-09c8f5719c81",
+      "name": "addMember — addMember: adds users one input item each; adding twice retu",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "addMember",
+        "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
+        "userId": "634"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c78fa095-640d-46e7-8f17-30ac485a0f35",
+      "name": "addMember — addMember: within one category a user is moved, not added a ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "addMember",
+        "groupId": "863",
+        "userId": "664"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ccb3d769-af6d-4f4f-8f42-c0cc5e07b195",
+      "name": "addMember — addMember: within one category a user is moved, not added a  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "addMember",
+        "groupId": "862",
+        "userId": "={{ $('addMember — addMember: within one category a user is moved, not added a ').first().json.user_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5e6e1ba2-1a7e-41f1-b831-3bf89073f8d0",
+      "name": "getMembership — getMembership: by user ID and by membership ID",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "getMembership",
+        "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
+        "membershipBy": "user",
+        "userId": "635"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b0116ada-7b22-434f-92ea-0ae6b3c4f8e0",
+      "name": "getMembership — getMembership: by user ID and by membership ID (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "getMembership",
+        "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
+        "membershipBy": "membership",
+        "membershipId": "1574"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "69daffec-14b5-4fa7-9738-2393b8a3522e",
+      "name": "updateMembership — updateMembership: moderator rights on and off, by user and b",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "updateMembership",
+        "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
+        "userId": "={{ $('getMembership — getMembership: by user ID and by membership ID (2)').first().json.user_id }}",
+        "updateFields": {
+          "moderator": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a77ca068-8e15-4abf-b6d8-4b1e510bbd93",
+      "name": "updateMembership — updateMembership: moderator rights on and off, by user and b (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "updateMembership",
+        "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
+        "membershipBy": "membership",
+        "membershipId": "1574",
+        "updateFields": {
+          "moderator": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b5cce30d-05f1-443c-bd69-f7d67d40e983",
+      "name": "listMemberships — listMemberships: all memberships, and the state filter",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "listMemberships",
+        "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e850e5ee-a1f2-4a2e-8295-5ff9bda7dd98",
+      "name": "listMemberships — listMemberships: all memberships, and the state filter (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "listMemberships",
+        "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
+        "options": {
+          "filter_states": [
+            "accepted"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7e531ae6-cf8e-474b-8a1f-f41906f79ae7",
+      "name": "listMemberships — listMemberships: all memberships, and the state filter (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "listMemberships",
+        "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
+        "options": {
+          "filter_states": [
+            "invited",
+            "requested"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d140a907-27bd-4b65-be38-337bfb7c85dd",
+      "name": "listMemberships — updateMembership Accept + listMemberships states: a join r",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "listMemberships",
+        "groupId": "864",
+        "options": {
+          "filter_states": [
+            "requested"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ebf3d155-3102-45c0-8959-3b94271ab3d4",
+      "name": "listMemberships — updateMembership Accept + listMemberships states: a join r (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "listMemberships",
+        "groupId": "={{ $('listMemberships — updateMembership Accept + listMemberships states: a join r').first().json.group_id }}",
+        "options": {
+          "filter_states": [
+            "accepted"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c3ec983f-e0ab-4779-9ee1-e0c09146b9db",
+      "name": "updateMembership — updateMembership Accept + listMemberships states: a join r",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "updateMembership",
+        "groupId": "={{ $('listMemberships — updateMembership Accept + listMemberships states: a join r (2)').first().json.group_id }}",
+        "userId": "={{ $('listMemberships — updateMembership Accept + listMemberships states: a join r').first().json.user_id }}",
+        "updateFields": {
+          "accept": false,
+          "moderator": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "421e9e20-4801-490f-870e-97922f6a524c",
+      "name": "updateMembership — updateMembership Accept + listMemberships states: a join r (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "updateMembership",
+        "groupId": "={{ $('updateMembership — updateMembership Accept + listMemberships states: a join r').first().json.group_id }}",
+        "userId": "={{ $('updateMembership — updateMembership Accept + listMemberships states: a join r').first().json.user_id }}",
+        "updateFields": {
+          "accept": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b3dc1015-95fe-406b-b167-4e4fd1a20220",
+      "name": "removeMember — removeMember: by user ID and by membership ID",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "removeMember",
+        "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
+        "userId": "637"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7e20cd67-a5b4-4f81-a50a-de0f6d5ca8b0",
+      "name": "removeMember — removeMember: by user ID and by membership ID (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "removeMember",
+        "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
+        "membershipBy": "membership",
+        "membershipId": "1575"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bc08cf95-084d-4fe0-9f8d-f613e25c3b96",
+      "name": "removeMembers — removeMembers: several users in one request; unknown IDs are",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "removeMembers",
+        "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
+        "userIds": " 636, 637 ,99999999,"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7de3be40-f380-49e3-8a6e-785751f70c25",
+      "name": "update — update: every optional field",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "update",
+        "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
+        "updateFields": {
+          "avatar_id": "3695",
+          "description": "Now meets on Fridays",
+          "is_public": true,
+          "join_level": "invitation_only",
+          "max_membership": 9,
+          "name": "=Lab team A (renamed) 🧪 {{ $execution.id }}-12",
+          "override_sis_stickiness": true,
+          "sis_group_id": "=SBX-GROUP-{{ $execution.id }}-4-B",
+          "storage_quota_mb": 123
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "53e640f0-e451-4a7a-8963-15efe9443242",
+      "name": "update — update: with Override SIS Stickiness off, a name that was ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "update",
+        "groupId": "865",
+        "updateFields": {
+          "name": "Must not be applied",
+          "description": "After",
+          "override_sis_stickiness": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b039daeb-f405-40f5-8d61-267cf6cc9343",
+      "name": "update — update: with Override SIS Stickiness off, a name that was  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "update",
+        "groupId": "={{ $('update — update: with Override SIS Stickiness off, a name that was ').first().json.id }}",
+        "updateFields": {
+          "name": "Applied with the override",
+          "override_sis_stickiness": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b932f773-f203-43c4-a83c-89233069a8e6",
+      "name": "update — update: with Override SIS Stickiness off, a name that was  (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "update",
+        "groupId": "={{ $('update — update: with Override SIS Stickiness off, a name that was  (2)').first().json.id }}",
+        "updateFields": {
+          "name": "Applied by default"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8445264a-1bae-4488-8352-d47f301d5139",
+      "name": "update — update: Members replaces the membership of the group",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "update",
+        "groupId": "={{ $('update — update: every optional field').first().json.id }}",
+        "updateFields": {
+          "members": " 636 , 639 , 640 ,"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6f56a7e0-c114-4ff8-b53c-85958ac5df87",
+      "name": "update — update: Members replaces the membership of the group (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "update",
+        "groupId": "={{ $('update — update: Members replaces the membership of the group').first().json.id }}",
+        "updateFields": {
+          "members": " ",
+          "description": "Unchanged members"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "41df1d15-8386-42f1-9d27-f3c19204ad82",
+      "name": "listUsers — listUsers: a group with more members than a page",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "listUsers",
+        "groupId": "866",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b348df09-a6ad-41ca-b0bc-6ae570562b10",
+      "name": "listUsers — listUsers: a group with more members than a page (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "listUsers",
+        "groupId": "866"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "521bc1a4-4333-4085-b8a3-8c930e5e200a",
+      "name": "listUsers — listUsers: a group with more members than a page (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "listUsers",
+        "groupId": "866",
+        "pagination": {
+          "perPage": 7,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "60e2cb6d-702f-44c4-b2b0-668fa91b951f",
+      "name": "listUsers — listUsers: a group with more members than a page (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "listUsers",
+        "groupId": "866",
+        "options": {
+          "search_term": "O'Brien",
+          "include": [
+            "avatar_url"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3bd0ca93-de4c-4882-82c3-d51c624d5e01",
+      "name": "listUsers — listUsers: a group with more members than a page (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "listUsers",
+        "groupId": "866",
+        "options": {
+          "search_term": "zzzznobody"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5e01ae16-2636-4bfd-8db8-0b41c36cc77c",
+      "name": "listUsers — listUsers: Exclude Inactive leaves out members whose enrol",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "listUsers",
+        "groupId": "867",
+        "options": {
+          "exclude_inactive": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "483bb88c-eccf-43dc-a97b-53b3016bab94",
+      "name": "listUsers — listUsers: Exclude Inactive leaves out members whose enrol (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "listUsers",
+        "groupId": "867",
+        "options": {
+          "exclude_inactive": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cd61a68a-0bfa-4cfe-afd9-75157ea30ec3",
+      "name": "getAll — getAll (course): more groups than a page",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "898",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "768e0b32-b182-4258-adae-46c04e96bf91",
+      "name": "getAll — getAll (course): more groups than a page (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "={{ $('getAll — getAll (course): more groups than a page').first().json.course_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6261bd02-fff2-4ea6-8d0a-b05d85a9ed9f",
+      "name": "getAll — getAll (course): more groups than a page (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "={{ $('getAll — getAll (course): more groups than a page (2)').first().json.course_id }}",
+        "pagination": {
+          "perPage": 6,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "61113492-6144-4ec1-8dfe-ba30d1183920",
+      "name": "getAll — getAll (course): Include and Collaboration State",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "={{ $('getAll — getAll (course): more groups than a page (3)').first().json.course_id }}",
+        "options": {
+          "include": [
+            "tabs"
+          ]
+        },
+        "pagination": {
+          "perPage": 1,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "238dee7d-90f2-409d-a7f6-69fb22c60ace",
+      "name": "getAll — getAll (course): Include and Collaboration State (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "={{ $('getAll — getAll (course): Include and Collaboration State').first().json.course_id }}",
+        "pagination": {
+          "perPage": 1,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "60c6a8f0-c90e-455f-a722-5b3c261cc25a",
+      "name": "getAll — getAll (course): Include and Collaboration State (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "={{ $('getAll — getAll (course): Include and Collaboration State (2)').first().json.course_id }}",
+        "options": {
+          "collaboration_state": "collaborative"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cccf0c18-ebd6-4f84-99c9-1b4cbba680f0",
+      "name": "getAll — getAll (course): Include and Collaboration State (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "={{ $('getAll — getAll (course): Include and Collaboration State (3)').first().json.course_id }}",
+        "options": {
+          "collaboration_state": "all"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "59341cb8-7b1c-4202-93f6-0c8b2a43600b",
+      "name": "getAll — getAll (course): Include and Collaboration State (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "={{ $('getAll — getAll (course): Include and Collaboration State (4)').first().json.course_id }}",
+        "options": {
+          "collaboration_state": "non_collaborative"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "69c1fdb5-30a7-4fad-b56c-19d2ba5b0db7",
+      "name": "getAll — getAll (account): the groups of an account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "getAll",
+        "context": "account",
+        "accountId": "25",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "49ff3376-660a-4bde-acf1-de5443bf524c",
+      "name": "delete — delete: removes the group and its memberships",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "delete",
+        "groupId": "={{ $('update — update: Members replaces the membership of the group (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8ed5b15d-d69c-4181-984e-d9def50cd21b",
+      "name": "getActivityStream — getActivityStream: the stream belongs to the caller, so an a",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "getActivityStream",
+        "groupId": "884",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3f9c32fc-3f1b-4af2-a527-568454653a51",
+      "name": "getActivityStreamSummary — getActivityStreamSummary: one item per kind of activity, wit",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "group",
+        "operation": "getActivityStreamSummary",
+        "groupId": "884"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: a course group with every optional field",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: a course group with every optional field": {
+      "main": [
+        [
+          {
+            "node": "create — create: without a category Canvas makes a community group, w",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: without a category Canvas makes a community group, w": {
+      "main": [
+        [
+          {
+            "node": "get — get: by ID, by SIS ID, with includes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: by ID, by SIS ID, with includes": {
+      "main": [
+        [
+          {
+            "node": "get — get: by ID, by SIS ID, with includes (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: by ID, by SIS ID, with includes (2)": {
+      "main": [
+        [
+          {
+            "node": "addMember — addMember: adds users one input item each; adding twice retu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "addMember — addMember: adds users one input item each; adding twice retu": {
+      "main": [
+        [
+          {
+            "node": "addMember — addMember: within one category a user is moved, not added a ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "addMember — addMember: within one category a user is moved, not added a ": {
+      "main": [
+        [
+          {
+            "node": "addMember — addMember: within one category a user is moved, not added a  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "addMember — addMember: within one category a user is moved, not added a  (2)": {
+      "main": [
+        [
+          {
+            "node": "getMembership — getMembership: by user ID and by membership ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getMembership — getMembership: by user ID and by membership ID": {
+      "main": [
+        [
+          {
+            "node": "getMembership — getMembership: by user ID and by membership ID (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getMembership — getMembership: by user ID and by membership ID (2)": {
+      "main": [
+        [
+          {
+            "node": "updateMembership — updateMembership: moderator rights on and off, by user and b",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateMembership — updateMembership: moderator rights on and off, by user and b": {
+      "main": [
+        [
+          {
+            "node": "updateMembership — updateMembership: moderator rights on and off, by user and b (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateMembership — updateMembership: moderator rights on and off, by user and b (2)": {
+      "main": [
+        [
+          {
+            "node": "listMemberships — listMemberships: all memberships, and the state filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listMemberships — listMemberships: all memberships, and the state filter": {
+      "main": [
+        [
+          {
+            "node": "listMemberships — listMemberships: all memberships, and the state filter (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listMemberships — listMemberships: all memberships, and the state filter (2)": {
+      "main": [
+        [
+          {
+            "node": "listMemberships — listMemberships: all memberships, and the state filter (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listMemberships — listMemberships: all memberships, and the state filter (3)": {
+      "main": [
+        [
+          {
+            "node": "listMemberships — updateMembership Accept + listMemberships states: a join r",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listMemberships — updateMembership Accept + listMemberships states: a join r": {
+      "main": [
+        [
+          {
+            "node": "listMemberships — updateMembership Accept + listMemberships states: a join r (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listMemberships — updateMembership Accept + listMemberships states: a join r (2)": {
+      "main": [
+        [
+          {
+            "node": "updateMembership — updateMembership Accept + listMemberships states: a join r",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateMembership — updateMembership Accept + listMemberships states: a join r": {
+      "main": [
+        [
+          {
+            "node": "updateMembership — updateMembership Accept + listMemberships states: a join r (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateMembership — updateMembership Accept + listMemberships states: a join r (2)": {
+      "main": [
+        [
+          {
+            "node": "removeMember — removeMember: by user ID and by membership ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "removeMember — removeMember: by user ID and by membership ID": {
+      "main": [
+        [
+          {
+            "node": "removeMember — removeMember: by user ID and by membership ID (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "removeMember — removeMember: by user ID and by membership ID (2)": {
+      "main": [
+        [
+          {
+            "node": "removeMembers — removeMembers: several users in one request; unknown IDs are",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "removeMembers — removeMembers: several users in one request; unknown IDs are": {
+      "main": [
+        [
+          {
+            "node": "update — update: every optional field",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every optional field": {
+      "main": [
+        [
+          {
+            "node": "update — update: with Override SIS Stickiness off, a name that was ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: with Override SIS Stickiness off, a name that was ": {
+      "main": [
+        [
+          {
+            "node": "update — update: with Override SIS Stickiness off, a name that was  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: with Override SIS Stickiness off, a name that was  (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: with Override SIS Stickiness off, a name that was  (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: with Override SIS Stickiness off, a name that was  (3)": {
+      "main": [
+        [
+          {
+            "node": "update — update: Members replaces the membership of the group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Members replaces the membership of the group": {
+      "main": [
+        [
+          {
+            "node": "update — update: Members replaces the membership of the group (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Members replaces the membership of the group (2)": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers: a group with more members than a page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers: a group with more members than a page": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers: a group with more members than a page (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers: a group with more members than a page (2)": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers: a group with more members than a page (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers: a group with more members than a page (3)": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers: a group with more members than a page (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers: a group with more members than a page (4)": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers: a group with more members than a page (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers: a group with more members than a page (5)": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers: Exclude Inactive leaves out members whose enrol",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers: Exclude Inactive leaves out members whose enrol": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers: Exclude Inactive leaves out members whose enrol (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers: Exclude Inactive leaves out members whose enrol (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (course): more groups than a page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (course): more groups than a page": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (course): more groups than a page (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (course): more groups than a page (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (course): more groups than a page (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (course): more groups than a page (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (course): Include and Collaboration State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (course): Include and Collaboration State": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (course): Include and Collaboration State (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (course): Include and Collaboration State (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (course): Include and Collaboration State (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (course): Include and Collaboration State (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (course): Include and Collaboration State (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (course): Include and Collaboration State (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (course): Include and Collaboration State (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (course): Include and Collaboration State (5)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (account): the groups of an account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (account): the groups of an account": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes the group and its memberships",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — delete: removes the group and its memberships": {
+      "main": [
+        [
+          {
+            "node": "getActivityStream — getActivityStream: the stream belongs to the caller, so an a",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getActivityStream — getActivityStream: the stream belongs to the caller, so an a": {
+      "main": [
+        [
+          {
+            "node": "getActivityStreamSummary — getActivityStreamSummary: one item per kind of activity, wit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

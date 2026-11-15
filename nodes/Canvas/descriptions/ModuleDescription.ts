@@ -43,10 +43,22 @@ export const moduleOperations: INodeProperties[] = [
 				action: 'List items in a module',
 			},
 			{
+				name: 'List Overrides',
+				value: 'listOverrides',
+				description: 'List the sections and students a module is assigned to (none means everyone)',
+				action: 'List the overrides of a module',
+			},
+			{
 				name: 'Relock',
 				value: 'relock',
 				description: 'Reset module progressions to their default locked state',
 				action: 'Relock a module',
+			},
+			{
+				name: 'Set Overrides',
+				value: 'setOverrides',
+				description: 'Assign a module to certain sections and/or students only, or to everyone again',
+				action: 'Set the overrides of a module',
 			},
 			{
 				name: 'Update',
@@ -89,10 +101,67 @@ export const moduleFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['module'],
-				operation: ['get', 'update', 'delete', 'relock', 'listItems'],
+				operation: ['get', 'update', 'delete', 'relock', 'listItems', 'listOverrides', 'setOverrides'],
 			},
 		},
 		description: 'The ID of the module',
+	},
+
+	// ----------------------------------
+	//         module: setOverrides
+	// ----------------------------------
+	{
+		displayName: 'Overrides',
+		name: 'overrides',
+		type: 'fixedCollection',
+		typeOptions: {
+			multipleValues: true,
+		},
+		placeholder: 'Add Override',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['module'],
+				operation: ['setOverrides'],
+			},
+		},
+		description: 'The complete list of who the module is assigned to. Existing overrides that are not listed (by their override ID) are deleted; without any entry the module is assigned to everyone again.',
+		options: [
+			{
+				name: 'overrideValues',
+				displayName: 'Override',
+				values: [
+					{
+						displayName: 'Override ID',
+						name: 'id',
+						type: 'string',
+						default: '',
+						description: 'ID of an existing override to keep or change. Leave empty to create a new override.',
+					},
+					{
+						displayName: 'Section ID',
+						name: 'course_section_id',
+						type: 'string',
+						default: '',
+						description: 'Assign the module to this course section (not together with Student IDs)',
+					},
+					{
+						displayName: 'Student IDs',
+						name: 'student_ids',
+						type: 'string',
+						default: '',
+						description: 'Comma-separated list of user IDs of the students the module is assigned to (not together with Section ID)',
+					},
+					{
+						displayName: 'Title',
+						name: 'title',
+						type: 'string',
+						default: '',
+						description: 'Title of an override for individual students. Section overrides are named after their section.',
+					},
+				],
+			},
+		],
 	},
 
 	// ----------------------------------
@@ -137,7 +206,7 @@ export const moduleFields: INodeProperties[] = [
 				name: 'prerequisite_module_ids',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of module IDs that must be completed before this module is unlocked',
+				description: 'Comma-separated list of module IDs that must be completed before this module is unlocked. Prerequisites must come before this module in the course.',
 			},
 			{
 				displayName: 'Publish Final Grade',
@@ -198,7 +267,7 @@ export const moduleFields: INodeProperties[] = [
 				name: 'prerequisite_module_ids',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of module IDs that must be completed before this module is unlocked',
+				description: 'Comma-separated list of module IDs that must be completed before this module is unlocked. Replaces the current list; leave empty to remove all prerequisites. Prerequisites must come before this module in the course.',
 			},
 			{
 				displayName: 'Publish Final Grade',
@@ -212,7 +281,7 @@ export const moduleFields: INodeProperties[] = [
 				name: 'published',
 				type: 'boolean',
 				default: false,
-				description: 'Whether the module is published and visible to students',
+				description: 'Whether the module is published and visible to students. Publishing or unpublishing a module also publishes or unpublishes its items.',
 			},
 			{
 				displayName: 'Require Sequential Progress',
@@ -270,7 +339,7 @@ export const moduleFields: INodeProperties[] = [
 				name: 'student_id',
 				type: 'string',
 				default: '',
-				description: 'Returns module completion information for the specified student',
+				description: 'Returns module completion information (state, completed_at, item completion) for the specified student',
 			},
 		],
 	},
@@ -307,7 +376,7 @@ export const moduleFields: INodeProperties[] = [
 				name: 'student_id',
 				type: 'string',
 				default: '',
-				description: 'Returns module completion information for the specified student',
+				description: 'Returns module completion information (state, completed_at, item completion) for the specified student',
 			},
 		],
 	},

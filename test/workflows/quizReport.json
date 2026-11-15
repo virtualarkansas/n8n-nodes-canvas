@@ -1,0 +1,287 @@
+{
+  "name": "Canvas battery — quizReport",
+  "nodes": [
+    {
+      "id": "b2b5781d-88fb-4a77-8501-f722a4d6801b",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "39e8514e-10fc-4d9c-a67b-fcecb6114e04",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "7ef63fbb-575e-4612-8058-69cebb727990",
+      "name": "getAll — getAll: before anything was generated Canvas lists both repo",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizReport",
+        "operation": "getAll",
+        "courseId": "119",
+        "quizId": "304"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "003b4a69-c34a-4cfb-ab2b-38df7914e52c",
+      "name": "create — create: an item analysis; all versions does not apply to i",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizReport",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "={{ $('getAll — getAll: before anything was generated Canvas lists both repo').first().json.quiz_id }}",
+        "reportType": "item_analysis"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "93b8af59-f1b7-4c4a-a6ae-3e705818b4e7",
+      "name": "create — create: asking again for a report that is up to date returns",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizReport",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: an item analysis; all versions does not apply to i').first().json.quiz_id }}",
+        "reportType": "student_analysis",
+        "options": {
+          "includes_all_versions": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "82f7dbef-6639-4664-854d-7f29c267325d",
+      "name": "create — create: only the latest attempt of each student when all ve",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizReport",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: asking again for a report that is up to date returns').first().json.quiz_id }}",
+        "reportType": "student_analysis",
+        "options": {
+          "includes_all_versions": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b63d8af5-6df7-42ff-8270-b8b0b2e48ef1",
+      "name": "getAll — getAll: the all versions option selects which reports are ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizReport",
+        "operation": "getAll",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: only the latest attempt of each student when all ve').first().json.quiz_id }}",
+        "options": {
+          "includes_all_versions": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "34b37cb7-8f07-4cef-b04f-d7865a3d268d",
+      "name": "create — create: a quiz nobody has taken still gets a report",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizReport",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "305",
+        "reportType": "student_analysis"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: before anything was generated Canvas lists both repo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: before anything was generated Canvas lists both repo": {
+      "main": [
+        [
+          {
+            "node": "create — create: an item analysis; all versions does not apply to i",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: an item analysis; all versions does not apply to i": {
+      "main": [
+        [
+          {
+            "node": "create — create: asking again for a report that is up to date returns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: asking again for a report that is up to date returns": {
+      "main": [
+        [
+          {
+            "node": "create — create: only the latest attempt of each student when all ve",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: only the latest attempt of each student when all ve": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: the all versions option selects which reports are ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: the all versions option selects which reports are ": {
+      "main": [
+        [
+          {
+            "node": "create — create: a quiz nobody has taken still gets a report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

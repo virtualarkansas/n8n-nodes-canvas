@@ -1,16 +1,26 @@
 # n8n-nodes-canvas
 
-Custom n8n community nodes for **Canvas LMS** by Instructure. Provides comprehensive coverage of the Canvas REST API with 92 resources and 466+ actions.
+Custom n8n community nodes for **Canvas LMS** by Instructure: one node for the Canvas REST API
+(116 resources, more than 700 operations) and a trigger for Canvas Live Events. Every operation
+that open-source Canvas offers is tested against a real Canvas through a real n8n; the few that
+need Instructure-hosted services are checked against Instructure's documentation. See
+[`test/COVERAGE.md`](test/COVERAGE.md).
 
 ## Features
 
-- **Comprehensive API Coverage**: Access 92 Canvas API resources with 466+ actions
-- **Dual Authentication**: API Access Token and OAuth2 support
-- **Smart Rate Limiting**: Automatic quota checking with configurable thresholds
-- **Pagination Handling**: Automatic pagination with configurable limits
-- **Error Handling**: Multiple error modes with dedicated error output branch
-- **Batch Processing**: Process multiple items efficiently
-- **Webhook Trigger**: Listen for 22 Canvas Live Events
+- **The Canvas API as resources and operations**: teaching, communication and administration, plus
+  a Custom API Request and a GraphQL resource for everything else
+- **Authentication**: API access token, OAuth2, and LTI Advantage for the LTI services
+- **Rate limiting**: watches Canvas' quota, waits before it runs out and retries throttled requests
+- **Pagination**: follows Canvas' pagination for every list; limits and Return All
+- **Error handling**: four error modes and a dedicated Error output with Canvas' own message
+- **Batch processing**: items in parallel groups or one after the other
+- **Files and background jobs**: uploads, downloads, SIS import files, Wait for Completion
+- **Act as User**: carry out any operation as another user (masquerading)
+- **Debug mode**: see the exact request without sending it
+- **Trigger**: start workflows from 84 Canvas Live Events, with optional signature verification
+
+Upgrading from 0.1.0? Read the [changelog](CHANGELOG.md) first: several outputs and parameters changed.
 
 ## Installation
 
@@ -28,36 +38,52 @@ Choose the installation method that matches your n8n setup:
 > There is an unrelated package named `n8n-nodes-canvas` on npm — installing that name gives you
 > a different, smaller node without the Conversations API.
 
-### Option 2: npm Install
+### Option 2: Manual Install with npm
 
-For self-hosted n8n installed via npm:
+For self-hosted n8n where the Community Nodes screen cannot be used (queue mode, for example).
+n8n looks for community packages in the `nodes` folder of its user folder:
 
 ```bash
-# In your n8n installation directory
+mkdir -p ~/.n8n/nodes
+cd ~/.n8n/nodes
 npm install @kyancey-va/n8n-nodes-canvas
 ```
 
-Then restart n8n.
+Then restart n8n. With Docker, run the same commands inside the container
+(`docker exec -it <n8n-container> sh`); the folder is `/home/node/.n8n/nodes` there and has to be
+on a volume, or the package disappears with the container. In queue mode, install it on the
+workers as well.
 
-### Option 3: Docker with Volume Mount
+### Option 3: Mounted Folder (Docker)
 
-For Docker-based n8n installations where you want to install the package manually.
+n8n also loads the nodes it finds in the folders named by `N8N_CUSTOM_EXTENSIONS`. Use this when
+the server cannot reach npm, or to run a build of your own.
 
-#### Step 1: Download and Extract
+> Nodes loaded this way are registered as `CUSTOM.canvas` and `CUSTOM.canvasTrigger`, not as
+> `@kyancey-va/n8n-nodes-canvas.canvas`. A workflow built under one kind of installation shows the
+> node as not installed under the other, so pick one method per n8n instance and stay with it.
+
+#### Step 1: Put the Package in a Folder
+
+Either a release (the `.tgz` attached to each
+[GitHub release](https://github.com/virtualarkansas/n8n-nodes-canvas/releases)):
 
 ```bash
-# On your server, create the custom nodes directory
+VERSION=0.2.0
 mkdir -p /path/to/n8n/custom-nodes/n8n-nodes-canvas
 cd /path/to/n8n/custom-nodes/n8n-nodes-canvas
+wget "https://github.com/virtualarkansas/n8n-nodes-canvas/releases/download/v$VERSION/kyancey-va-n8n-nodes-canvas-$VERSION.tgz"
+tar -xzf "kyancey-va-n8n-nodes-canvas-$VERSION.tgz" --strip-components=1
+```
 
-# Option A: Clone from GitHub and build
-git clone https://github.com/virtualarkansas/n8n-nodes-canvas.git .
+or a clone that you build yourself and update with `git pull`:
+
+```bash
+cd /path/to/n8n
+git clone https://github.com/virtualarkansas/n8n-nodes-canvas.git custom-nodes/n8n-nodes-canvas
+cd custom-nodes/n8n-nodes-canvas
 npm install
 npm run build
-
-# Option B: Download a release (when available)
-# wget https://github.com/virtualarkansas/n8n-nodes-canvas/releases/download/v0.1.0/n8n-nodes-canvas.tar.gz
-# tar -xzvf n8n-nodes-canvas.tar.gz
 ```
 
 #### Step 2: Update Docker Compose
@@ -94,81 +120,18 @@ If you're using n8n workers, add the same to your worker service:
 docker compose down && docker compose up -d
 ```
 
-### Option 4: Docker with npm Install
-
-For Docker setups, you can also install via npm inside the container:
-
-```bash
-# Enable community packages in your docker-compose.yml
-environment:
-  - N8N_COMMUNITY_PACKAGES_ENABLED=true
-
-# Then restart and install via n8n UI, or:
-docker exec -it <n8n-container> npm install @kyancey-va/n8n-nodes-canvas
-docker compose restart
-```
-
-### Option 5: Building from Source
-
-For development or customization:
-
-```bash
-git clone https://github.com/virtualarkansas/n8n-nodes-canvas.git
-cd n8n-nodes-canvas
-npm install
-npm run build
-
-# For development with hot-reload
-npm run dev
-
-# To create a distributable package
-npm pack
-```
-
-### Option 6: Git Clone (Updatable)
-
-For Docker setups where you want easy updates via `git pull`:
-
-#### Step 1: Clone and Build
-
-```bash
-# On your server
-cd /path/to/n8n
-git clone https://github.com/virtualarkansas/n8n-nodes-canvas.git custom-nodes/n8n-nodes-canvas
-cd custom-nodes/n8n-nodes-canvas
-npm install
-npm run build
-```
-
-#### Step 2: Volume Mount
-
-Add to your `docker-compose.yml`:
-
-```yaml
-services:
-  n8n:
-    image: docker.n8n.io/n8nio/n8n
-    environment:
-      - N8N_CUSTOM_EXTENSIONS=/custom-nodes
-    volumes:
-      - ./custom-nodes:/custom-nodes
-```
-
-#### Step 3: Restart
-
-```bash
-docker compose down && docker compose up -d
-```
-
 #### Updating
+
+Replace the folder's contents with the new release, or in a clone:
 
 ```bash
 cd /path/to/n8n/custom-nodes/n8n-nodes-canvas
 git pull
 npm install
 npm run build
-docker compose down && docker compose up -d
 ```
+
+Then restart n8n as in step 3.
 
 ### Verifying Installation
 
@@ -180,44 +143,104 @@ After installation, verify the nodes are loaded:
 4. Search for "**Canvas**"
 
 You should see:
-- **Canvas LMS** - Main node with 92 resources
-- **Canvas Trigger** - Webhook trigger for live events
+- **Canvas LMS** - the action node with its resources and operations
+- **Canvas Trigger** - webhook trigger for Canvas Live Events
 
 ## Nodes
 
 ### Canvas LMS
 
-The main node for interacting with the Canvas API. Supports operations across 92 resources including:
+The main node for the Canvas REST API: pick a **Resource** and an **Operation**. The full list of
+resources and operations, and how each one was tested, is in [`test/COVERAGE.md`](test/COVERAGE.md).
 
-**Core Resources:**
-- Courses, Sections, Enrollments, Users
-- Assignments, Submissions, Grades
-- Modules, Pages, Files, Folders
-- Quizzes (Classic and New Quizzes)
-- Discussions, Announcements, Conversations
+**Teaching and learning:** courses, sections, enrollments, users, assignments and assignment groups,
+submissions and comments, modules, pages, files and folders, classic quizzes (questions, groups,
+submissions, reports, extensions, overrides), discussions, announcements, rubrics, outcomes,
+grading periods and standards, late policies, gradebook history, learning object dates.
 
-**Administrative Resources:**
-- Accounts, Roles, Admins
-- SIS Imports, Authentication Providers
-- Developer Keys, Access Tokens
+**Communication and planning:** conversations, calendar events, appointment groups, groups and
+group categories, planner, polls, notification preferences.
 
-**And many more...**
+**Administration:** accounts, account reports and notifications, roles, admins, terms, SIS imports,
+authentication providers, developer keys, access tokens, external tools and LTI registrations,
+content migrations and exports, blueprint courses, feature flags, CSP settings, audit logs
+(grade change log, course audit log).
+
+**Anything else.** Two generic resources cover what has no operation of its own, including
+endpoints Instructure does not document and data only the Canvas web interface shows:
+
+- **Custom API Request** sends any method and path to your Canvas instance with the node's rate
+  limiting, pagination and error handling. Undocumented endpoints can change without notice.
+- **GraphQL** runs a query or mutation against Canvas' GraphQL API (explore the schema at
+  `/graphiql` on your instance). Canvas runs one operation per request and reports errors in a
+  successful response; the node turns those into failed items unless you ask for partial data.
+
+Some resources call services that only exist on hosted Canvas (New Quizzes, the Analytics plugin).
+They are checked against Instructure's documentation rather than against a running instance;
+`test/COVERAGE.md` marks them.
+
+**Outputs.** The node has a **Success** and an **Error** output (plus **Debug** when Debug Mode is on):
+
+- A list operation returns one item per record. An operation that returns nothing (for example a
+  delete that answers "204 No Content") returns `{ "success": true }`, so no input item is lost.
+- Every output item is linked to the input item it came from.
+- Lists that Canvas wraps in an object (`{ "quiz_submissions": [...] }`, `{ "events": [...] }`)
+  are unwrapped into items.
+
+**As an AI agent tool.** The node can be attached to an AI Agent as **Canvas LMS Tool**; use
+`$fromAI(...)` in a parameter to let the model supply its value. A tool has a single output, so the
+agent receives failed items (in the "Continue" error modes) and Debug Mode's request together with
+the successful items. In the default **Stop** mode a failure reaches the agent as an error with
+Canvas' message.
+
+**IDs.** Wherever an ID is asked for, Canvas also accepts SIS IDs in the form `sis_course_id:ABC123`,
+`sis_user_id:...`, `sis_section_id:...` and so on.
+
+**Background jobs.** Canvas runs imports, reports, exports and bulk changes in the background and
+answers at once with a job record. **Wait for Completion** (on Progress, SIS Import, Account Report
+and Content Export) checks the job until it is over and outputs its final state; if it takes longer
+than the timeout you set, the item fails with the error type `TIMEOUT` while the job keeps running.
+A job that ends in failure is a result, not an error: check `workflow_state` (or `status`).
+
+**Files.** File → Upload takes a binary file from a previous node or a URL Canvas fetches itself.
+SIS Import → Create takes its CSV or zip file as binary data, text or Base64 text. Account Report and
+Content Export can attach their finished file to the output item (**Download File**), ready for
+Extract From File or any other node that reads binary data.
 
 ### Canvas Trigger
 
-Webhook trigger for Canvas Live Events. Configure the webhook URL in Canvas Admin → Data Services.
+Starts a workflow when Canvas sends a [Live Event](https://developerdocs.instructure.com/services/canvas/data-services/live-events/overview/file.data_service_introduction).
+Canvas does not let the node register itself, so a Canvas admin adds the subscription:
 
-**Supported events:**
-- Course: created, updated, concluded
-- Enrollment: created, updated, concluded
-- Assignment: created, updated
-- Submission: created, updated, graded
-- Discussion: topic created, entry created
-- User: created, updated, login
-- Quiz: submitted
-- Module: created, updated
-- Wiki Page: created, updated
-- Attachment: created
+1. Activate the workflow and copy the trigger's **Production URL**.
+2. In Canvas, open **Admin → Data Services → Add**.
+3. Choose **HTTPS** delivery, the **Canvas** message format, paste the URL and select the events.
+
+In the node, select the events that should start the workflow (or **All Events**). Events that are
+not selected are acknowledged and ignored, because Canvas retries anything that is not answered
+with a 2xx. **Filter by Course ID** and **Filter by Account ID** accept the IDs you see in Canvas
+URLs; the global IDs that Canvas puts in events are matched automatically.
+
+The Production URL is public, so restrict who can use it (under **Options**):
+
+| Option | What it does |
+|---|---|
+| **Secret Token** | Requests must carry `?token=<value>`. Add it to the URL you enter in Data Services. |
+| **Require Signed Payload** | Only accepts events delivered with Data Services' **Sign Payload** option; the signature is then always checked. |
+| **Root Account UUID** | Only events that carry this UUID start the workflow (the `uuid` of your root account); others are acknowledged and ignored. Check a few real deliveries first: events from background jobs (a SIS import) may carry a different UUID. |
+| **Verify Signed Payloads** (on by default) | Checks the signature of signed events against the keys Instructure publishes. |
+| **JWKS URL** | Where the signing keys are fetched from; the default is Instructure's key set. |
+
+A valid signature proves that Instructure's Data Services sent the event, not that it came from
+your Canvas: Instructure signs for all its customers with the same keys. Combine it with a
+**Secret Token** or the **Root Account UUID**.
+
+Data Services exists on Instructure-hosted Canvas only (open-source Canvas publishes Live Events to
+a message queue instead). The trigger is therefore tested with events built from Canvas'
+documentation and source, not with deliveries from a hosted Canvas.
+
+Each event becomes one item: the event's `body` fields, plus `eventType`, `timestamp` and (unless
+switched off) `metadata` with who, where and when.
 
 ## Configuration
 
@@ -229,6 +252,14 @@ Webhook trigger for Canvas Live Events. Configure the webhook URL in Canvas Admi
 4. Enter a purpose and expiration (optional)
 5. Copy the generated token immediately (it won't be shown again)
 
+The node can do whatever the token's user can do in Canvas, and nothing more; for account-wide
+automation use a token of an account admin. Operations beyond a teacher's reach need the matching
+Canvas permission on that admin's role, for example "SIS Data - import" and "SIS Data - manage"
+for SIS imports, "Reports - manage" for account reports, "Statistics - view" or "Users - manage
+login details" for the authentication log, "Grades - view change logs" and "Courses - view change
+logs" for the other audit logs, "Users - act as" for Act as User ID. A request Canvas refuses for lack of a permission comes back as `FORBIDDEN` (or as
+`NOT_FOUND` where Canvas hides the record).
+
 ### OAuth2
 
 1. In Canvas Admin, go to **Developer Keys**
@@ -236,45 +267,158 @@ Webhook trigger for Canvas Live Events. Configure the webhook URL in Canvas Admi
 3. Configure:
    - **Key Name**: Your app name
    - **Redirect URIs**: `https://your-n8n-instance.com/rest/oauth2-credential/callback`
-   - **Scopes**: Select required scopes or leave blank for full access
-4. Save and copy the **Client ID** (shown as ID number)
+   - **Enforce Scopes**: leave off for full access, or switch on and select the scopes you need
+4. Save, switch the key **On**, and copy the **Client ID** (shown as ID number)
 5. Click **Show Key** to get the **Client Secret**
 6. In n8n credentials, enter:
    - **Canvas URL**: Your Canvas instance URL
    - **Client ID**: The ID number from Developer Keys
    - **Client Secret**: The key you revealed
+   - **Scopes**: only if the key enforces scopes — the scopes you need, exactly as Canvas lists
+     them on the key (`url:GET|/api/v1/courses`), separated by spaces or new lines
+
+Canvas access tokens obtained this way expire after an hour; n8n refreshes them automatically.
+The credential acts as the Canvas user who clicked **Authorize** when it was connected.
+
+### LTI Advantage
+
+Canvas opens its LTI Advantage services (`/api/lti/...`: line items, scores, results, names and
+roles) only to an LTI 1.3 tool, never to a user's token. To use the **Line Item** resource,
+**Progress → Get LTI**, or `/api/lti` paths in **Custom API Request**:
+
+1. In Canvas, create an LTI developer key (Admin → Developer Keys → + LTI Key) with a public JWK of
+   a key pair you generate, enable the scopes you need, switch the key on and install the tool in the
+   course or account (by client ID).
+2. In n8n, create a **Canvas LTI Advantage API** credential with the Canvas URL, the key's client ID,
+   the private key (PEM or JWK) and the scopes.
+3. In the node, set **Authentication** to **LTI Advantage**.
+
+The node obtains the access token itself (it is valid for one hour) and fetches a new one when
+Canvas no longer accepts it.
 
 ## Options
 
 ### Rate Limiting
 
-Canvas uses a quota-based rate limiting system. The node automatically checks remaining quota before each request.
+Canvas gives every token a quota that drains with the cost of each request and refills over time
+(`X-Rate-Limit-Remaining`). When it is used up, Canvas answers `403 Forbidden (Rate Limit Exceeded)`.
 
-- **Enable Rate Limit Check**: Pre-flight check before requests (default: enabled)
-- **Threshold**: Minimum remaining quota before proceeding (default: 300)
-- **Max Retries**: Retry attempts when rate limited (default: 5)
+- The node reads the remaining quota from every response. When it falls below the **Threshold**
+  (default 300) it waits, checking with a lightweight request, until the quota has recovered.
+- A throttled request is retried with exponential backoff (2 s, 4 s, 8 s, ... up to 60 s),
+  **Max Retries** times (default 5).
+- **Enable Rate Limit Check** (default on) switches the waiting on or off; throttled requests are
+  retried either way.
 
-### Pagination
+### Lists: Return All, Limit and Pagination
 
-- **Items Per Page**: Results per page, 1-100 (default: 10)
-- **Max Pages**: Maximum pages to fetch (default: 5, set to 0 for unlimited)
-- **Return All**: Fetch all available pages regardless of max pages setting
+Every operation that returns a list Canvas hands out page by page has n8n's usual two fields:
+
+- **Return All**: read the whole list
+- **Limit** (default 50): otherwise, the first so many records
+
+When a list is cut short at the default Limit, the node says so: the output panel shows a warning
+that Canvas has more records than were read, and n8n's log gets the same line for runs nobody
+watches. Nothing in the items marks it, so for a sync or an export that needs every record turn
+**Return All** on. A Limit you set yourself is not warned about.
+
+The **Pagination** collection further down applies to the whole node:
+
+- **Return All**: read whole lists whatever the operation's own fields say
+- **Items Per Page** (1-100): the page size. With a Limit you have changed, it only decides how
+  many requests the node needs.
+- **Items Per Page** and **Max Pages** (0 = no limit) with the operation's Limit left at 50: when
+  either is set, the node reads up to Max Pages pages of that size (10 per page and 5 pages unless
+  set). This is how workflows saved with 0.1.0 keep returning what they returned.
+
+Operations without Return All / Limit fields (and the Custom API Request for anything but GET)
+follow the Pagination collection alone: 5 pages of 10 unless set otherwise.
 
 ### Error Handling
 
-The node has two outputs: **Success** and **Error**.
+- **Stop Workflow** (default): the node fails with Canvas' message
+- **Continue & Output Error**: failed items go to the Error output, the rest continue
+- **Ignore & Continue**: failed items are dropped
+- **Retry Then Error**: throttling, server errors (5xx) and network errors are retried with
+  backoff, then the item goes to the Error output; other errors go there immediately. A write
+  (create, update, delete) is only repeated when Canvas cannot have carried it out (it was throttled,
+  the connection was never established, or Canvas answered 503); after any other failure it may
+  have been applied, and repeating it could create a second record
 
-- **Stop Workflow**: Halt on first error (default)
-- **Continue & Output Error**: Route errors to Error output, continue processing remaining items
-- **Ignore & Continue**: Skip failed items silently
-- **Retry Then Error**: Retry with exponential backoff, then route to Error output
+**Max Retries** (default 3) is how often Retry Then Error tries an item again.
+
+In **Stop Workflow** mode the node ends at the first item that fails. With Batch Mode the other
+items of that batch were sent at the same time, so their writes have been carried out although the
+node outputs nothing; for writes prefer Continue & Output Error (or Individual Mode), which reports
+every item.
+
+n8n's own node settings work too: **On Error → Continue** sends failures to the node's Error
+output, and **On Error → Continue (using error output)** sends them to the error output n8n adds
+for that setting (the node's own Error output then stays empty). There the item is the input item
+plus `message` and `error`, which holds the record shown below.
+
+An item on the Error output looks like this:
+
+```json
+{
+  "error": true,
+  "errorCode": 404,
+  "errorType": "NOT_FOUND",
+  "errorMessage": "The specified resource does not exist.",
+  "canvasErrors": [{ "message": "The specified resource does not exist." }],
+  "originalItem": { "courseId": 123 },
+  "resource": "course",
+  "operation": "get",
+  "endpoint": "/api/v1/courses/123",
+  "timestamp": "2026-01-15T12:00:00.000Z"
+}
+```
+
+`errorType` is one of `VALIDATION_ERROR` (400, 422), `UNAUTHORIZED` (401), `FORBIDDEN` (403),
+`NOT_FOUND` (404), `CONFLICT` (409), `RATE_LIMITED`, `SERVER_ERROR` (5xx), `INVALID_PARAMETERS`
+(the node rejected the input before sending anything; `errorCode` is 0), `NETWORK_ERROR` (no
+response; `errorCode` is 0), `TIMEOUT` (a Wait for Completion operation gave up waiting) or `UNKNOWN`.
+`canvasErrors` holds Canvas' own error list; when Canvas answers a refusal with a record instead
+(for example the report that is already running, with a 409), that record is in `responseBody`.
+Canvas writes its messages in the language of the credential's user, so branch on `errorCode` and
+`errorType` rather than on the text.
+
+Requests that get no answer are given up after five minutes (n8n's request timeout).
 
 ### Batch Processing
 
-- **Batch Mode** (default): Group API calls for efficiency
-- **Individual Mode**: One API call per item
-- **Batch Size**: Items per batch (default: 10)
-- **Batch Delay**: Pause between batches in milliseconds (default: 1000)
+- **Batch Mode** (default): items are sent in parallel groups of **Batch Size** (default 10) with
+  **Batch Delay** (default 1000 ms) between groups
+- **Individual Mode**: one item after the other
+
+Items of a batch are sent at the same time. When several items change the same Canvas record
+(several colors or settings of one user, the same course, the same page), use Individual Mode:
+Canvas may otherwise overwrite one change with another.
+
+### Request Options
+
+- **Act as User ID**: carry out the request as another user (Canvas calls this masquerading; the
+  `as_user_id` parameter). Works with every resource and operation, accepts SIS IDs
+  (`sis_user_id:jdoe`) and expressions, so each input item can act as a different user. The user of
+  the credential needs the "Become other users" permission, and Canvas records both users in its logs.
+  Only this option decides who is acted as: an `as_user_id` that arrives in another parameter is
+  replaced by it.
+
+### Values From Other Nodes
+
+IDs often come from a webhook, a form, a sheet or an AI agent. Whatever such a value contains, the
+node sends it as one path segment: it cannot add a segment, a query parameter or change who the
+request is made as. A value like `..` or `%2e%2e/users/3`, which would point the request somewhere
+else, is refused before anything is sent (`INVALID_PARAMETERS`). SIS IDs with special characters
+work as they are (`sis_user_id:A/B`) or encoded by hand (`sis_user_id:A%2FB`). The **Custom API
+Request** is the exception by design: its path is yours to write, so do not build it from text you
+do not control.
+
+### Debug Mode
+
+With **Debug Mode** on, nothing is sent to Canvas. The request the node would send (method, URL,
+body and an equivalent `curl` command, with a placeholder instead of the token) appears on the
+**Debug** output.
 
 ## Troubleshooting
 
@@ -289,19 +433,41 @@ The node has two outputs: **Success** and **Error**.
 
 ### Authentication errors
 
-1. Verify your Canvas URL doesn't have a trailing slash
-2. Ensure your access token hasn't expired
-3. Check that the token has appropriate permissions
+1. Check the Canvas URL: the address of your instance, e.g. `https://school.instructure.com`
+2. Ensure your access token hasn't expired or been deleted
+3. A 401 that mentions scopes means the developer key enforces scopes: list them in the
+   credential's **Scopes** field
+4. A 403 or 404 on a record you know exists usually means the token's user may not see it
 
 ### Rate limit errors
 
-1. Increase the **Threshold** setting (default 300 may be too low for large requests)
-2. Reduce **Batch Size** to spread out requests
-3. Increase **Batch Delay** between batches
+1. Reduce **Batch Size**: parallel requests are charged up front by Canvas
+2. Increase **Batch Delay** between batches
+3. Lower the **Threshold** if the node waits too eagerly, or raise it if you share the token with
+   other integrations
 
-### "Resource not implemented" errors
+### A list returns fewer items than expected
 
-Some resources have UI definitions but may not have full endpoint implementations yet. Please [open an issue](https://github.com/virtualarkansas/n8n-nodes-canvas/issues) for specific resources you need.
+A list operation returns the first 50 records unless you ask for more: turn on **Return All** (or
+raise **Limit**) on the operation. The output panel shows a hint whenever a list was cut short.
+
+## Development and testing
+
+```bash
+git clone https://github.com/virtualarkansas/n8n-nodes-canvas.git
+cd n8n-nodes-canvas
+npm install
+npm run dev        # n8n with the nodes loaded and hot reload
+npm run build      # compile
+npm run lint       # n8n community node lint rules
+npm run typecheck  # node, credentials and tests
+npm test           # unit tests, including the audit of every operation against Canvas' route table
+```
+
+The integration battery runs every operation on a real n8n instance against a real Canvas loaded
+with a large, deliberately messy data set. [`test/README.md`](test/README.md) explains how to start
+that environment and how to add tests; `test/workflows/` holds importable example workflows
+generated from what the battery executed.
 
 ## Resources
 
@@ -311,7 +477,9 @@ Some resources have UI definitions but may not have full endpoint implementation
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit issues and pull requests.
+Contributions are welcome! Please feel free to submit issues and pull requests. A change to a
+resource should come with a test in `test/integration/` (see `test/README.md`); `npm test` and
+`npm run lint` run on every pull request.
 
 ## License
 

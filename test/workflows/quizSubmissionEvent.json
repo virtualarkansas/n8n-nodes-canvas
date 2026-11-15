@@ -1,0 +1,93 @@
+{
+  "name": "Canvas battery — quizSubmissionEvent",
+  "nodes": [
+    {
+      "id": "1375e955-4be1-47ef-b001-a300e97195aa",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "cc0ce331-c269-4ed0-80a4-e2e29d5e2298",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "1a13b5d4-c358-4c29-a38d-d3e5c2411f15",
+      "name": "getAll — quizSubmissionEvent.getAll: the teacher reads what was captu",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizSubmissionEvent",
+        "operation": "getAll",
+        "courseId": "947",
+        "quizId": "296",
+        "quizSubmissionId": "549",
+        "options": {
+          "attempt": 1
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — quizSubmissionEvent.getAll: the teacher reads what was captu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

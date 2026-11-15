@@ -1,0 +1,440 @@
+{
+  "name": "Canvas battery — userCustomData",
+  "nodes": [
+    {
+      "id": "71fbd2de-cf79-4f32-8d75-e775aaee31ab",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "12cbcf8d-ad6a-49a9-ba0d-1da827e77cad",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "ba9062e3-269d-4894-95a8-034ec205d954",
+      "name": "set — set: stores any JSON at the root of a namespace, and reports",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userCustomData",
+        "operation": "set",
+        "userId": "2617",
+        "namespace": "=n8n.battery.ns-{{ $execution.id }}-1",
+        "data": "{\"text\":\"Ünïcødé 测试 \\\"quoted\\\" & <b>tags</b> 🎓\",\"number\":6.02e+23,\"integer\":-42,\"yes\":true,\"no\":false,\"nothing\":null,\"list\":[1,\"two\",false,{\"deep\":[\"x\",\"y\"]}],\"key with spaces\":{\"ключ\":\"значение\",\"empty\":\"\"},\"favorites\":{\"dessert\":\"pistachio ice cream\",\"meat\":\"pork belly\"}}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "970ee0cd-ed3b-4c7e-b299-874aadac06d8",
+      "name": "set — set: with a scope only that part changes; nested objects bec",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userCustomData",
+        "operation": "set",
+        "userId": 2617,
+        "namespace": "=n8n.battery.ns-{{ $execution.id }}-1",
+        "data": "{ \"waist\": \"32in\", \"inseam\": { \"left\": 34, \"right\": 34.5 } }",
+        "options": {
+          "scope": "body/measurements"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "56151dfe-692e-46cc-85d0-6f289ae6dd49",
+      "name": "set — set: with a scope only that part changes; nested objects bec (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userCustomData",
+        "operation": "set",
+        "userId": "2617",
+        "namespace": "=n8n.battery.ns-{{ $execution.id }}-1",
+        "data": "\"cherry pie\"",
+        "options": {
+          "scope": "/favorites//dessert/"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "09b3ceeb-ea5a-4192-889b-0dd648cf757f",
+      "name": "set — set: scope parts with spaces, percent signs, umlauts and res",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userCustomData",
+        "operation": "set",
+        "userId": "2617",
+        "namespace": "=n8n.battery.ns-{{ $execution.id }}-1",
+        "data": "{\"ok\": true}",
+        "options": {
+          "scope": "key with spaces/100% äöü & more?/x#y"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "31d28c27-4b6e-4948-9a90-6fc8a7a51477",
+      "name": "get — set: scope parts with spaces, percent signs, umlauts and res",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userCustomData",
+        "operation": "get",
+        "userId": "2617",
+        "namespace": "=n8n.battery.ns-{{ $execution.id }}-1",
+        "options": {
+          "scope": "key with spaces/100% äöü & more?/x#y"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c8bff4f7-d0dd-4172-b892-0e8008ecf407",
+      "name": "get — get: the whole namespace, objects, lists, texts, numbers and",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userCustomData",
+        "operation": "get",
+        "userId": "2617",
+        "namespace": "=n8n.battery.ns-{{ $execution.id }}-1"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "924251b3-c866-4f2a-8a65-2b2bf8356a22",
+      "name": "set — set: Canvas drops null entries from lists (and keeps null va",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userCustomData",
+        "operation": "set",
+        "userId": "2618",
+        "namespace": "=n8n.battery.ns-{{ $execution.id }}-1",
+        "data": "{\"list\": [1, null, \"two\", null], \"gap\": null}",
+        "options": {
+          "scope": "nulls"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "929a34e1-a030-423a-9cc6-4d8857b0f93b",
+      "name": "set — namespaces keep data apart",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userCustomData",
+        "operation": "set",
+        "userId": "2618",
+        "namespace": "=n8n.battery.ns-{{ $execution.id }}-1.other",
+        "data": "{\"score\": \"from another app\"}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3fdca994-3429-400e-b211-73bb9b17bd86",
+      "name": "delete — namespaces keep data apart",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userCustomData",
+        "operation": "delete",
+        "userId": "2618",
+        "namespace": "=n8n.battery.ns-{{ $execution.id }}-1.other"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "516205d9-f03b-4667-9a94-f00d6e943101",
+      "name": "delete — delete: without a scope everything in the namespace goes; de",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "userCustomData",
+        "operation": "delete",
+        "userId": "2617",
+        "namespace": "=n8n.battery.ns-{{ $execution.id }}-1"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "set — set: stores any JSON at the root of a namespace, and reports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set — set: stores any JSON at the root of a namespace, and reports": {
+      "main": [
+        [
+          {
+            "node": "set — set: with a scope only that part changes; nested objects bec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set — set: with a scope only that part changes; nested objects bec": {
+      "main": [
+        [
+          {
+            "node": "set — set: with a scope only that part changes; nested objects bec (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set — set: with a scope only that part changes; nested objects bec (2)": {
+      "main": [
+        [
+          {
+            "node": "set — set: scope parts with spaces, percent signs, umlauts and res",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set — set: scope parts with spaces, percent signs, umlauts and res": {
+      "main": [
+        [
+          {
+            "node": "get — set: scope parts with spaces, percent signs, umlauts and res",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — set: scope parts with spaces, percent signs, umlauts and res": {
+      "main": [
+        [
+          {
+            "node": "get — get: the whole namespace, objects, lists, texts, numbers and",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: the whole namespace, objects, lists, texts, numbers and": {
+      "main": [
+        [
+          {
+            "node": "set — set: Canvas drops null entries from lists (and keeps null va",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set — set: Canvas drops null entries from lists (and keeps null va": {
+      "main": [
+        [
+          {
+            "node": "set — namespaces keep data apart",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set — namespaces keep data apart": {
+      "main": [
+        [
+          {
+            "node": "delete — namespaces keep data apart",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — namespaces keep data apart": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: without a scope everything in the namespace goes; de",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

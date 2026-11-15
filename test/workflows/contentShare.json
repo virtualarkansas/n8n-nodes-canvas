@@ -1,0 +1,122 @@
+{
+  "name": "Canvas battery — contentShare",
+  "nodes": [
+    {
+      "id": "215782c6-6a03-4f74-a02f-ab9c531d936e",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "68048e4b-6702-4930-9d98-8d55b46b6a83",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "597087ab-a376-4589-a45a-0d504a0e36d3",
+      "name": "get — get, getAll, getUnreadCount: an admin reads the shares of an",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentShare",
+        "operation": "get",
+        "userId": "2600",
+        "contentShareId": "103"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e64cf636-f0f4-44c4-906b-283e4f02a9ee",
+      "name": "getUnreadCount — get, getAll, getUnreadCount: an admin reads the shares of an",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentShare",
+        "operation": "getUnreadCount",
+        "userId": "2599"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "get — get, getAll, getUnreadCount: an admin reads the shares of an",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get, getAll, getUnreadCount: an admin reads the shares of an": {
+      "main": [
+        [
+          {
+            "node": "getUnreadCount — get, getAll, getUnreadCount: an admin reads the shares of an",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

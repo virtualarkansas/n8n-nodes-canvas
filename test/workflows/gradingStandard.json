@@ -1,0 +1,675 @@
+{
+  "name": "Canvas battery — gradingStandard",
+  "nodes": [
+    {
+      "id": "53688546-e534-4247-8539-11e56ce4fa7f",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "96129459-0f10-4508-acdf-574896884416",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a896e221-4c89-4741-953c-25626179eb7d",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f4cdf277-cf62-45f0-b134-3e7ea055404d",
+      "name": "create — create: course context, points based with every optional fie",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingStandard",
+        "operation": "create",
+        "context": "course",
+        "courseId": "980",
+        "title": "=Schéma \"quoted\" & <b>tags</b> 成绩 🎓 {{ $execution.id }}-1",
+        "gradingScheme": {
+          "gradeEntry": [
+            {
+              "name": "Exceeds ✨",
+              "value": 3.5
+            },
+            {
+              "name": "Meets",
+              "value": 2.5
+            },
+            {
+              "name": "Approaching \"almost\"",
+              "value": 1
+            },
+            {
+              "name": "Not yet",
+              "value": 0
+            }
+          ]
+        },
+        "additionalFields": {
+          "points_based": true,
+          "scaling_factor": 4
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "051fa7ea-4553-4244-baa0-04be3b97b903",
+      "name": "create — create: account context, percentages; entries are stored sor",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingStandard",
+        "operation": "create",
+        "context": "account",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "title": "=Battery account scheme {{ $execution.id }}-4",
+        "gradingScheme": {
+          "gradeEntry": [
+            {
+              "name": "F",
+              "value": 0
+            },
+            {
+              "name": "Très bien",
+              "value": 93.5
+            },
+            {
+              "name": "Passable",
+              "value": 60
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "12bea454-b469-40f6-b52b-29425ffec20f",
+      "name": "get — get: course and account context",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingStandard",
+        "operation": "get",
+        "context": "course",
+        "courseId": "=sis_course_id:GRD-standards-{{ $execution.id }}-2",
+        "gradingStandardId": "={{ $('create — create: course context, points based with every optional fie').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "053215e9-c9dd-4dc5-bd64-a1278c632c26",
+      "name": "get — get: course and account context (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingStandard",
+        "operation": "get",
+        "context": "account",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "gradingStandardId": "={{ $('create — create: account context, percentages; entries are stored sor').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "65d78352-8f95-419d-ae28-0301400108ac",
+      "name": "getAll — getAll: course context returns every scheme of the course (C",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingStandard",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "980"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e8094727-a57b-47f7-b691-07cd42dc0dd2",
+      "name": "getAll — getAll: course context returns every scheme of the course (C (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingStandard",
+        "operation": "getAll",
+        "courseId": "980",
+        "pagination": {
+          "perPage": 3,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c726381f-bc02-4543-a9ff-0b1c3a28e912",
+      "name": "getAll — getAll: account context lists the accounts own schemes; a c",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingStandard",
+        "operation": "getAll",
+        "context": "account",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d5ec9d2a-a2c6-4fa4-bc72-e5e837d89ea3",
+      "name": "getAll — getAll: a course without schemes yields no items",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingStandard",
+        "operation": "getAll",
+        "courseId": "984"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ab65284c-7648-406c-95ba-2d59dcd527f9",
+      "name": "update — update: the title alone leaves the scheme untouched",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingStandard",
+        "operation": "update",
+        "context": "course",
+        "courseId": "980",
+        "gradingStandardId": "={{ $('getAll — getAll: course context returns every scheme of the course (C (2)').first().json.id }}",
+        "updateFields": {
+          "title": "=Schéma \"quoted\" & <b>tags</b> 成绩 🎓 {{ $execution.id }}-1 (renamed)"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "867a995d-f12a-4804-8516-f85f14f27fb4",
+      "name": "update — update: every field, replacing the grades of the scheme",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingStandard",
+        "operation": "update",
+        "context": "course",
+        "courseId": "980",
+        "gradingStandardId": "={{ $('update — update: the title alone leaves the scheme untouched').first().json.id }}",
+        "updateFields": {
+          "title": "=Schéma \"quoted\" & <b>tags</b> 成绩 🎓 {{ $execution.id }}-1 (v3)",
+          "points_based": true,
+          "scaling_factor": 10
+        },
+        "gradingScheme": {
+          "gradeEntry": [
+            {
+              "name": "Pass",
+              "value": 6
+            },
+            {
+              "name": "Fail",
+              "value": 0
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0ada2767-d831-4823-a345-9a56cb91edc1",
+      "name": "update — update: account context, back to percentages",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingStandard",
+        "operation": "update",
+        "context": "account",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "gradingStandardId": "={{ $('get — get: course and account context (2)').first().json.id }}",
+        "updateFields": {
+          "points_based": false,
+          "scaling_factor": 1
+        },
+        "gradingScheme": {
+          "gradeEntry": [
+            {
+              "name": "A",
+              "value": 90
+            },
+            {
+              "name": "B",
+              "value": 80
+            },
+            {
+              "name": "C",
+              "value": 70
+            },
+            {
+              "name": "F",
+              "value": 0
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "221305df-9930-4e4c-b875-a0070b363907",
+      "name": "update — update: once a scheme has been used for grading only its tit",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingStandard",
+        "operation": "update",
+        "courseId": "980",
+        "gradingStandardId": "80",
+        "updateFields": {
+          "title": "Used scheme (renamed)"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "479fc525-704a-49d0-bbe2-07fd3b80b42e",
+      "name": "delete — delete: course and account context",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingStandard",
+        "operation": "delete",
+        "context": "course",
+        "courseId": "980",
+        "gradingStandardId": "={{ $('update — update: every field, replacing the grades of the scheme').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "82541b1f-f179-478b-b019-a7cb85309788",
+      "name": "delete — delete: course and account context (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingStandard",
+        "operation": "delete",
+        "context": "account",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "gradingStandardId": "={{ $('update — update: account context, back to percentages').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: course context, points based with every optional fie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: course context, points based with every optional fie": {
+      "main": [
+        [
+          {
+            "node": "create — create: account context, percentages; entries are stored sor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: account context, percentages; entries are stored sor": {
+      "main": [
+        [
+          {
+            "node": "get — get: course and account context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: course and account context": {
+      "main": [
+        [
+          {
+            "node": "get — get: course and account context (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: course and account context (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: course context returns every scheme of the course (C",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: course context returns every scheme of the course (C": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: course context returns every scheme of the course (C (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: course context returns every scheme of the course (C (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: account context lists the accounts own schemes; a c",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: account context lists the accounts own schemes; a c": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: a course without schemes yields no items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: a course without schemes yields no items": {
+      "main": [
+        [
+          {
+            "node": "update — update: the title alone leaves the scheme untouched",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: the title alone leaves the scheme untouched": {
+      "main": [
+        [
+          {
+            "node": "update — update: every field, replacing the grades of the scheme",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every field, replacing the grades of the scheme": {
+      "main": [
+        [
+          {
+            "node": "update — update: account context, back to percentages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: account context, back to percentages": {
+      "main": [
+        [
+          {
+            "node": "update — update: once a scheme has been used for grading only its tit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: once a scheme has been used for grading only its tit": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: course and account context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — delete: course and account context": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: course and account context (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

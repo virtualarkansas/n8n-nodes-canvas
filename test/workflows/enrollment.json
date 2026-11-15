@@ -1,0 +1,1464 @@
+{
+  "name": "Canvas battery — enrollment",
+  "nodes": [
+    {
+      "id": "6a2a1e55-3541-450a-8e2a-423d9559bcae",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "792a3f55-aad3-4652-935d-3a59b1ffaca3",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "38ed5682-2117-4e94-b682-b6bd0f9fbe46",
+              "name": "largeCourseId",
+              "value": "93",
+              "type": "string"
+            },
+            {
+              "id": "011bb3b3-155d-4dc5-9566-13a78315e594",
+              "name": "courseId",
+              "value": "1",
+              "type": "string"
+            },
+            {
+              "id": "7200d22f-95d5-4d88-a09a-6572d5e2ca04",
+              "name": "studentUserId",
+              "value": "5",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "fd2b7f14-5669-4e72-bbf9-bf212c802ccd",
+      "name": "create — create: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "create",
+        "courseId": "906",
+        "userId": "2533",
+        "enrollmentType": "StudentEnrollment",
+        "additionalFields": {
+          "courseSectionId": "900",
+          "endAt": "2030-06-30T23:59:00Z",
+          "enrollmentState": "active",
+          "limitPrivilegesToCourseSection": true,
+          "notify": false,
+          "roleId": "18",
+          "selfEnrolled": true,
+          "startAt": "2026-01-10T08:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2268b47d-c57f-477a-b812-a9ac8bb4a195",
+      "name": "create — create: an observer linked to a student, and an inactive enr",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "create",
+        "courseId": "={{ $('create — create: every optional field reaches Canvas').first().json.course_id }}",
+        "userId": "2540",
+        "enrollmentType": "ObserverEnrollment",
+        "additionalFields": {
+          "associatedUserId": "2533",
+          "enrollmentState": "active"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "73a026bb-3a46-45c5-a47c-dec13995ba9f",
+      "name": "create — create: an observer linked to a student, and an inactive enr (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "create",
+        "courseId": "={{ $('create — create: an observer linked to a student, and an inactive enr').first().json.course_id }}",
+        "userId": "2541",
+        "enrollmentType": "StudentEnrollment",
+        "additionalFields": {
+          "enrollmentState": "inactive"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2be1ec81-3cd1-4fae-8b42-ea4d17a38d50",
+      "name": "get — get: by ID through the root account, also for IDs from expre",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "get",
+        "accountId": "self",
+        "enrollmentId": "={{ $('create — create: every optional field reaches Canvas').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b99e2658-1eb6-4df5-b7a9-df2dc6f58cb1",
+      "name": "getAll — getAll: by course, with state, type, role, role ID and user ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('get — get: by ID through the root account, also for IDs from expre').first().json.course_id }}",
+        "filters": {},
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "27c3f30e-4589-457d-98f6-0ed9e33d9e36",
+      "name": "getAll — getAll: by course, with state, type, role, role ID and user  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('getAll — getAll: by course, with state, type, role, role ID and user ').first().json.course_id }}",
+        "filters": {
+          "state": [
+            "inactive"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1a5b496e-07a5-4af1-b2b7-e1caa8ebb8ae",
+      "name": "getAll — getAll: by course, with state, type, role, role ID and user  (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('getAll — getAll: by course, with state, type, role, role ID and user  (2)').first().json.course_id }}",
+        "filters": {
+          "type": [
+            "TeacherEnrollment",
+            "TaEnrollment"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "aed36025-6c30-44f3-941e-ce1063bb8ed5",
+      "name": "getAll — getAll: by course, with state, type, role, role ID and user  (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('getAll — getAll: by course, with state, type, role, role ID and user  (3)').first().json.course_id }}",
+        "filters": {
+          "role": [
+            "DesignerEnrollment"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "51ee6a29-ea26-42ab-96b6-0840e9fc009e",
+      "name": "getAll — getAll: by course, with state, type, role, role ID and user  (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('getAll — getAll: by course, with state, type, role, role ID and user  (4)').first().json.course_id }}",
+        "filters": {
+          "roleIds": " 18 , 5 "
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8dd7ab28-3f94-4063-a5a4-be16428fcc4a",
+      "name": "getAll — getAll: by course, with state, type, role, role ID and user  (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('getAll — getAll: by course, with state, type, role, role ID and user  (5)').first().json.course_id }}",
+        "filters": {
+          "userId": "2540",
+          "include": [
+            "observed_users",
+            "can_be_removed",
+            "avatar_url",
+            "uuid"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "56f9d694-8c43-4678-a2b4-1b0c14ea02c8",
+      "name": "getAll — getAll: by course, with state, type, role, role ID and user  (7)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('getAll — getAll: by course, with state, type, role, role ID and user  (6)').first().json.course_id }}",
+        "filters": {
+          "userId": "",
+          "state": [],
+          "sisUserIds": "",
+          "roleIds": ""
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "605de58d-3440-4c88-bb3e-338f975ce967",
+      "name": "getAll — getAll: by section and by user",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "section",
+        "sectionId": "={{ $('getAll — getAll: by course, with state, type, role, role ID and user  (5)').first().json.course_section_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3f647d10-0a61-48de-a242-dff97dec6baa",
+      "name": "getAll — getAll: by section and by user (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "user",
+        "userId": "={{ $('getAll — getAll: by section and by user').first().json.user_id }}",
+        "filters": {
+          "enrollmentTermId": "1"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3a818d4f-84f1-4db3-99bf-9f7ff53ed0b7",
+      "name": "getAll — getAll: by section and by user (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "user",
+        "userId": "={{ $('getAll — getAll: by section and by user (2)').first().json.user_id }}",
+        "filters": {
+          "enrollmentTermId": "4"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6cc27862-1cb3-44cd-b24b-85ee14149e98",
+      "name": "getAll — getAll: pages through the enrollments of the large seeded co",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('Config').first().json.largeCourseId }}",
+        "filters": {
+          "type": [
+            "StudentEnrollment"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f4a9d7a5-fa8d-4176-8dcc-7fa48c8855fa",
+      "name": "getAll — getAll: pages through the enrollments of the large seeded co (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('Config').first().json.largeCourseId }}",
+        "filters": {
+          "type": [
+            "StudentEnrollment"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "eaa0eded-e736-4aaa-963f-0c5fa13c1038",
+      "name": "getAll — getAll: pages through the enrollments of the large seeded co (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('Config').first().json.largeCourseId }}",
+        "filters": {
+          "type": [
+            "StudentEnrollment"
+          ]
+        },
+        "pagination": {
+          "perPage": 7,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3e51aee6-d46e-4e6b-af6f-0ffe2e2b97c7",
+      "name": "getAll — getAll: SIS ID filters and states of the seeded main course ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('Config').first().json.courseId }}",
+        "filters": {
+          "sisUserIds": "P-STUDENT-01"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b1138783-5d36-4f49-afcb-dba7c35adc20",
+      "name": "getAll — getAll: SIS ID filters and states of the seeded main course  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('Config').first().json.courseId }}",
+        "filters": {
+          "sisSectionIds": "BIO101-P1"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "00de7b27-7ad8-4d33-a86c-af1d78112b67",
+      "name": "getAll — getAll: SIS ID filters and states of the seeded main course  (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "user",
+        "userId": "={{ $('Config').first().json.studentUserId }}",
+        "filters": {
+          "sisCourseIds": "BIO101-MAIN, NO-SUCH-COURSE"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4ec72a89-32e1-44bd-860b-4e0648afef48",
+      "name": "getAll — getAll: SIS ID filters and states of the seeded main course  (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "user",
+        "userId": "={{ $('Config').first().json.studentUserId }}",
+        "filters": {
+          "sisAccountIds": "SCH-RHS"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3ea8c55e-2fb5-4e7f-8fa6-439d4837a6ad",
+      "name": "getAll — getAll: SIS ID filters and states of the seeded main course  (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('Config').first().json.courseId }}",
+        "filters": {
+          "state": [
+            "invited"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7c33b55e-53e8-47f7-b2b0-3a60fc450647",
+      "name": "getAll — getAll: SIS ID filters and states of the seeded main course  (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('Config').first().json.courseId }}",
+        "filters": {
+          "state": [
+            "inactive"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5d742845-78a6-4cd0-bed3-a3f205e66f90",
+      "name": "getAll — getAll: SIS ID filters and states of the seeded main course  (7)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('Config').first().json.courseId }}",
+        "filters": {
+          "state": [
+            "completed"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "69ad5582-1c45-4337-b026-6fac08f883fc",
+      "name": "getAll — getAll: SIS ID filters and states of the seeded main course  (8)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "getAll",
+        "listBy": "course",
+        "courseId": "={{ $('Config').first().json.courseId }}",
+        "filters": {
+          "state": [
+            "deleted"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c0b5e8b2-a605-422e-a998-4495eedb79ee",
+      "name": "deactivate — deactivate, reactivate, conclude: change the state of an enr",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "deactivate",
+        "courseId": "={{ $('getAll — getAll: by section and by user (2)').first().json.course_id }}",
+        "enrollmentId": "={{ $('getAll — getAll: by section and by user (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "acca7ab0-0972-4d4d-be42-764be009da2b",
+      "name": "reactivate — deactivate, reactivate, conclude: change the state of an enr",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "reactivate",
+        "courseId": "={{ $('deactivate — deactivate, reactivate, conclude: change the state of an enr').first().json.course_id }}",
+        "enrollmentId": "={{ $('deactivate — deactivate, reactivate, conclude: change the state of an enr').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d3ad8b30-f8fb-425a-aa02-11f3b0467afb",
+      "name": "conclude — deactivate, reactivate, conclude: change the state of an enr",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "conclude",
+        "courseId": "={{ $('reactivate — deactivate, reactivate, conclude: change the state of an enr').first().json.course_id }}",
+        "enrollmentId": "={{ $('reactivate — deactivate, reactivate, conclude: change the state of an enr').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8eb4cc12-82ca-489a-a663-8b765016fd3d",
+      "name": "setLastAttended — setLastAttended: stores the date on the students enrollment",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "setLastAttended",
+        "courseId": "={{ $('conclude — deactivate, reactivate, conclude: change the state of an enr').first().json.course_id }}",
+        "userId": "={{ $('conclude — deactivate, reactivate, conclude: change the state of an enr').first().json.user_id }}",
+        "date": "2026-03-04T10:00:00Z"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e486171d-0361-4b77-8e11-a3518a3a093b",
+      "name": "bulkEnroll — bulkEnroll: enrolls every user in every course as a student ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "bulkEnroll",
+        "accountId": "260",
+        "userIds": "2552,2553,2554,2555",
+        "courseIds": " 922 , 923 , 924 "
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2d6ea4e5-d777-490c-ac12-7e267c233aff",
+      "name": "bulkEnroll — bulkEnroll: enrollment type and custom role; SIS IDs (root a",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "bulkEnroll",
+        "accountId": "260",
+        "userIds": "=sis_user_id:SIS-BULK_{{ $execution.id }}-1",
+        "courseIds": "=sis_course_id:SIS-INV-C_{{ $execution.id }}-3",
+        "additionalFields": {
+          "enrollmentType": "TeacherEnrollment",
+          "roleId": "19"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7b8a7fc3-07f1-4426-9885-d4dda025a5c8",
+      "name": "bulkEnroll — bulkEnroll: enrollment type and custom role; SIS IDs (root a (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "bulkEnroll",
+        "accountId": "260",
+        "userIds": "2557",
+        "courseIds": "925",
+        "additionalFields": {
+          "roleId": "20"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2760c292-255b-48ce-b344-16e7af64973b",
+      "name": "bulkEnroll — bulkEnroll: invitations created in bulk are answered by the ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollment",
+        "operation": "bulkEnroll",
+        "accountId": "260",
+        "userIds": "2551,99999999",
+        "courseIds": "922,926",
+        "additionalFields": {
+          "enrollmentType": "DesignerEnrollment"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create: an observer linked to a student, and an inactive enr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: an observer linked to a student, and an inactive enr": {
+      "main": [
+        [
+          {
+            "node": "create — create: an observer linked to a student, and an inactive enr (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: an observer linked to a student, and an inactive enr (2)": {
+      "main": [
+        [
+          {
+            "node": "get — get: by ID through the root account, also for IDs from expre",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: by ID through the root account, also for IDs from expre": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: by course, with state, type, role, role ID and user ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: by course, with state, type, role, role ID and user ": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: by course, with state, type, role, role ID and user  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: by course, with state, type, role, role ID and user  (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: by course, with state, type, role, role ID and user  (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: by course, with state, type, role, role ID and user  (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: by course, with state, type, role, role ID and user  (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: by course, with state, type, role, role ID and user  (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: by course, with state, type, role, role ID and user  (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: by course, with state, type, role, role ID and user  (5)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: by course, with state, type, role, role ID and user  (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: by course, with state, type, role, role ID and user  (6)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: by course, with state, type, role, role ID and user  (7)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: by course, with state, type, role, role ID and user  (7)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: by section and by user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: by section and by user": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: by section and by user (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: by section and by user (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: by section and by user (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: by section and by user (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through the enrollments of the large seeded co",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through the enrollments of the large seeded co": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through the enrollments of the large seeded co (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through the enrollments of the large seeded co (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through the enrollments of the large seeded co (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through the enrollments of the large seeded co (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: SIS ID filters and states of the seeded main course ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: SIS ID filters and states of the seeded main course ": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: SIS ID filters and states of the seeded main course  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: SIS ID filters and states of the seeded main course  (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: SIS ID filters and states of the seeded main course  (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: SIS ID filters and states of the seeded main course  (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: SIS ID filters and states of the seeded main course  (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: SIS ID filters and states of the seeded main course  (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: SIS ID filters and states of the seeded main course  (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: SIS ID filters and states of the seeded main course  (5)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: SIS ID filters and states of the seeded main course  (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: SIS ID filters and states of the seeded main course  (6)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: SIS ID filters and states of the seeded main course  (7)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: SIS ID filters and states of the seeded main course  (7)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: SIS ID filters and states of the seeded main course  (8)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: SIS ID filters and states of the seeded main course  (8)": {
+      "main": [
+        [
+          {
+            "node": "deactivate — deactivate, reactivate, conclude: change the state of an enr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deactivate — deactivate, reactivate, conclude: change the state of an enr": {
+      "main": [
+        [
+          {
+            "node": "reactivate — deactivate, reactivate, conclude: change the state of an enr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "reactivate — deactivate, reactivate, conclude: change the state of an enr": {
+      "main": [
+        [
+          {
+            "node": "conclude — deactivate, reactivate, conclude: change the state of an enr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conclude — deactivate, reactivate, conclude: change the state of an enr": {
+      "main": [
+        [
+          {
+            "node": "setLastAttended — setLastAttended: stores the date on the students enrollment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setLastAttended — setLastAttended: stores the date on the students enrollment": {
+      "main": [
+        [
+          {
+            "node": "bulkEnroll — bulkEnroll: enrolls every user in every course as a student ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "bulkEnroll — bulkEnroll: enrolls every user in every course as a student ": {
+      "main": [
+        [
+          {
+            "node": "bulkEnroll — bulkEnroll: enrollment type and custom role; SIS IDs (root a",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "bulkEnroll — bulkEnroll: enrollment type and custom role; SIS IDs (root a": {
+      "main": [
+        [
+          {
+            "node": "bulkEnroll — bulkEnroll: enrollment type and custom role; SIS IDs (root a (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "bulkEnroll — bulkEnroll: enrollment type and custom role; SIS IDs (root a (2)": {
+      "main": [
+        [
+          {
+            "node": "bulkEnroll — bulkEnroll: invitations created in bulk are answered by the ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

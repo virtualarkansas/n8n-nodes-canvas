@@ -161,6 +161,29 @@ export const moderatedGradingFields: INodeProperties[] = [
 		},
 		description: 'The anonymous ID of the student submission',
 	},
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['moderatedGrading'],
+				operation: ['getProvisionalGradeStatus'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Last Updated At',
+				name: 'last_updated_at',
+				type: 'dateTime',
+				default: '',
+				description:
+					'The time the caller last saw the submission change. Canvas only adds the provisional grades (with their IDs, scores and which one is selected) to the result when this is set and differs from the submission\'s current update time, so any older date returns them. Requires the final grader or an admin who may select final grades.',
+			},
+		],
+	},
 
 	// ----------------------------------
 	//         moderatedGrading: selectProvisionalGrade
@@ -184,45 +207,19 @@ export const moderatedGradingFields: INodeProperties[] = [
 	//         moderatedGrading: bulkSelectProvisionalGrades
 	// ----------------------------------
 	{
-		displayName: 'Provisional Grade Selections',
-		name: 'provisionalGradeSelections',
-		type: 'fixedCollection',
-		placeholder: 'Add Selection',
+		displayName: 'Provisional Grade IDs',
+		name: 'provisionalGradeIds',
+		type: 'string',
 		required: true,
-		default: {},
+		default: '',
+		placeholder: '101,102,107',
 		displayOptions: {
 			show: {
 				resource: ['moderatedGrading'],
 				operation: ['bulkSelectProvisionalGrades'],
 			},
 		},
-		typeOptions: {
-			multipleValues: true,
-		},
-		options: [
-			{
-				displayName: 'Selection',
-				name: 'selection',
-				values: [
-					{
-						displayName: 'Student ID',
-						name: 'student_id',
-						type: 'string',
-						required: true,
-						default: '',
-						description: 'The ID of the student',
-					},
-					{
-						displayName: 'Provisional Grade ID',
-						name: 'provisional_grade_id',
-						type: 'string',
-						required: true,
-						default: '',
-						description: 'The ID of the provisional grade to select for this student',
-					},
-				],
-			},
-		],
-		description: 'The provisional grade selections for each student',
+		description:
+			'Comma-separated IDs of the provisional grades to select, one per student. Canvas finds the student of each grade itself and returns only the selections that changed; IDs that do not belong to the assignment are ignored.',
 	},
 ];

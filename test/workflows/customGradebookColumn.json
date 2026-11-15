@@ -1,0 +1,860 @@
+{
+  "name": "Canvas battery — customGradebookColumn",
+  "nodes": [
+    {
+      "id": "dde9320f-7fa1-4835-aaad-6bec8b7ae165",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "337c76ee-8c21-4c6f-bbac-1c8b47696e01",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "b49ed184-575b-476d-a699-b30c218c1503",
+      "name": "create — create: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "create",
+        "courseId": "948",
+        "title": "=Nøtes \"quoted\" & <b>tags</b> 备注 🗒️ {{ $execution.id }}-1",
+        "additionalFields": {
+          "hidden": true,
+          "position": 3,
+          "read_only": true,
+          "teacher_notes": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cdcd8fdd-8ecc-40e8-8383-79f80f163ddc",
+      "name": "update — update: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "update",
+        "courseId": "948",
+        "columnId": "={{ $('create — create: every optional field reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "title": "=Nøtes \"quoted\" & <b>tags</b> 备注 🗒️ {{ $execution.id }}-1 (renamed)",
+          "hidden": false,
+          "position": 1,
+          "read_only": false,
+          "teacher_notes": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "02635475-131a-46ca-83e1-bc9357e00234",
+      "name": "getAll — getAll: pages through all columns, hidden ones only on reque",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "getAll",
+        "courseId": "948"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6feabb0c-f10b-4857-b71c-84f535aadc7d",
+      "name": "getAll — getAll: pages through all columns, hidden ones only on reque (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "getAll",
+        "courseId": "948",
+        "options": {
+          "include_hidden": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bbc0f16c-77f9-4e9c-afea-35fd62cad651",
+      "name": "getAll — getAll: pages through all columns, hidden ones only on reque (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "getAll",
+        "courseId": "948",
+        "pagination": {
+          "perPage": 3,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f6bfaa96-3170-4d91-9f0b-437ef627f02a",
+      "name": "getAll — getAll: accepts a SIS course ID",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "getAll",
+        "courseId": "=sis_course_id:GRD-columns-{{ $execution.id }}-2",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a08ea392-68e0-4413-87f2-63aa65a26649",
+      "name": "reorder — reorder: puts the columns in the given order",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "reorder",
+        "courseId": "948",
+        "order": "83, 82, 81, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a1ef3a03-cac4-4de4-9a22-9784e9dfed63",
+      "name": "updateColumnData — updateColumnData: sets, overwrites and (with empty content) ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "updateColumnData",
+        "courseId": "948",
+        "columnId": "={{ $('getAll — getAll: accepts a SIS course ID').first().json.id }}",
+        "userId": "949",
+        "content": "Nut allergy — \"EpiPen\" in bag & <office>; عربى 🥜"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1c7abcf1-fb43-4a50-a122-fca5c7302ea5",
+      "name": "updateColumnData — updateColumnData: sets, overwrites and (with empty content)  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "updateColumnData",
+        "courseId": "948",
+        "columnId": "={{ $('getAll — getAll: accepts a SIS course ID').first().json.id }}",
+        "userId": "948",
+        "content": ""
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "44969103-9fa6-4e0d-8325-8463a6e24b18",
+      "name": "updateColumnData — updateColumnData: content longer than Canvas stores is rejec",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "updateColumnData",
+        "courseId": "948",
+        "columnId": "={{ $('getAll — getAll: accepts a SIS course ID').first().json.id }}",
+        "userId": "987",
+        "content": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "errorHandling": {
+          "onError": "continueWithError"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a3596c80-7412-4a78-9dab-d89e636aa666",
+      "name": "bulkUpdateData — bulkUpdateData: writes entries for many students and columns",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "bulkUpdateData",
+        "courseId": "948",
+        "columnData": {
+          "dataEntry": [
+            {
+              "column_id": "71",
+              "user_id": "949",
+              "content": "Seat 1 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "948",
+              "content": "Seat 2 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "987",
+              "content": "Seat 3 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "988",
+              "content": "Seat 4 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "989",
+              "content": "Seat 5 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "991",
+              "content": "Seat 6 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "992",
+              "content": "Seat 7 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "993",
+              "content": "Seat 8 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "990",
+              "content": "Seat 9 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "994",
+              "content": "Seat 10 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "995",
+              "content": "Seat 11 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "997",
+              "content": "Seat 12 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "996",
+              "content": "Seat 13 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "1031",
+              "content": "Seat 14 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "1032",
+              "content": "Seat 15 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "1033",
+              "content": "Seat 16 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "1035",
+              "content": "Seat 17 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "1034",
+              "content": "Seat 18 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "1036",
+              "content": "Seat 19 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "1037",
+              "content": "Seat 20 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "1039",
+              "content": "Seat 21 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "1040",
+              "content": "Seat 22 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "1038",
+              "content": "Seat 23 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "1041",
+              "content": "Seat 24 — row \"A\" & more"
+            },
+            {
+              "column_id": "71",
+              "user_id": "1042",
+              "content": "Seat 25 — row \"A\" & more"
+            },
+            {
+              "column_id": 85,
+              "user_id": 949,
+              "content": "Other column"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5e42a32d-801c-4643-8660-716813fb9896",
+      "name": "bulkUpdateData — bulkUpdateData: an empty content deletes the entry",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "bulkUpdateData",
+        "courseId": "948",
+        "columnData": {
+          "dataEntry": [
+            {
+              "column_id": "71",
+              "user_id": "1042",
+              "content": ""
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "aa1ca38e-6a90-4bf9-b324-1ddc6f08e1dd",
+      "name": "getColumnData — getColumnData: returns every entry exactly once, across page",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "getColumnData",
+        "courseId": "948",
+        "columnId": "={{ $('getAll — getAll: accepts a SIS course ID').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c0126840-d1fd-459a-bd0d-eb3af70e1712",
+      "name": "getColumnData — getColumnData: returns every entry exactly once, across page (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "getColumnData",
+        "courseId": "948",
+        "columnId": "={{ $('getAll — getAll: accepts a SIS course ID').first().json.id }}",
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c211bc81-c260-4995-a014-3530b14ed274",
+      "name": "getColumnData — getColumnData: returns every entry exactly once, across page (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "getColumnData",
+        "courseId": "948",
+        "columnId": "={{ $('getAll — getAll: accepts a SIS course ID').first().json.id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "912eedac-9594-434d-bb0d-8bc5421c2d24",
+      "name": "getColumnData — getColumnData: a column without entries yields no items; a h",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "getColumnData",
+        "courseId": "948",
+        "columnId": "86",
+        "options": {
+          "include_hidden": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "29cb2696-843a-4d93-a796-0cf85ed4a4c1",
+      "name": "delete — delete: removes the column and its data",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "customGradebookColumn",
+        "operation": "delete",
+        "courseId": "948",
+        "columnId": "={{ $('getAll — getAll: accepts a SIS course ID').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through all columns, hidden ones only on reque",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through all columns, hidden ones only on reque": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through all columns, hidden ones only on reque (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through all columns, hidden ones only on reque (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through all columns, hidden ones only on reque (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through all columns, hidden ones only on reque (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: accepts a SIS course ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: accepts a SIS course ID": {
+      "main": [
+        [
+          {
+            "node": "reorder — reorder: puts the columns in the given order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "reorder — reorder: puts the columns in the given order": {
+      "main": [
+        [
+          {
+            "node": "updateColumnData — updateColumnData: sets, overwrites and (with empty content) ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateColumnData — updateColumnData: sets, overwrites and (with empty content) ": {
+      "main": [
+        [
+          {
+            "node": "updateColumnData — updateColumnData: sets, overwrites and (with empty content)  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateColumnData — updateColumnData: sets, overwrites and (with empty content)  (2)": {
+      "main": [
+        [
+          {
+            "node": "updateColumnData — updateColumnData: content longer than Canvas stores is rejec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateColumnData — updateColumnData: content longer than Canvas stores is rejec": {
+      "main": [
+        [
+          {
+            "node": "bulkUpdateData — bulkUpdateData: writes entries for many students and columns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "bulkUpdateData — bulkUpdateData: writes entries for many students and columns": {
+      "main": [
+        [
+          {
+            "node": "bulkUpdateData — bulkUpdateData: an empty content deletes the entry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "bulkUpdateData — bulkUpdateData: an empty content deletes the entry": {
+      "main": [
+        [
+          {
+            "node": "getColumnData — getColumnData: returns every entry exactly once, across page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getColumnData — getColumnData: returns every entry exactly once, across page": {
+      "main": [
+        [
+          {
+            "node": "getColumnData — getColumnData: returns every entry exactly once, across page (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getColumnData — getColumnData: returns every entry exactly once, across page (2)": {
+      "main": [
+        [
+          {
+            "node": "getColumnData — getColumnData: returns every entry exactly once, across page (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getColumnData — getColumnData: returns every entry exactly once, across page (3)": {
+      "main": [
+        [
+          {
+            "node": "getColumnData — getColumnData: a column without entries yields no items; a h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getColumnData — getColumnData: a column without entries yields no items; a h": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes the column and its data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

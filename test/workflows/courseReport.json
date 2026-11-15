@@ -1,0 +1,164 @@
+{
+  "name": "Canvas battery — courseReport",
+  "nodes": [
+    {
+      "id": "c2d7fbaf-b304-45e8-8707-64aedbb88266",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "9f1cc7f8-58e2-4ddc-b120-6b7d9aa74ad2",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "3df55beb-1cde-455b-a9bf-dd3dc492dc05",
+      "name": "getLastStatus — getLastStatus: a course without any report yields an empty r",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "courseReport",
+        "operation": "getLastStatus",
+        "courseId": "998",
+        "reportType": "course_pace_docx"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fc19fd54-351e-4527-8ec5-4c27e4a6ad98",
+      "name": "create — create: section and enrollment IDs reach Canvas and the repo",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "courseReport",
+        "operation": "create",
+        "courseId": "998",
+        "reportType": "course_pace_docx",
+        "options": {
+          "section_ids": " 1017 ",
+          "enrollment_ids": "5273"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3da10260-7a98-4f9d-83d6-16b10ae48a96",
+      "name": "create — create: without any option the request is still accepted (Ca",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "courseReport",
+        "operation": "create",
+        "courseId": "={{ $('create — create: section and enrollment IDs reach Canvas and the repo').first().json.course_id }}",
+        "reportType": "course_pace_docx"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getLastStatus — getLastStatus: a course without any report yields an empty r",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getLastStatus — getLastStatus: a course without any report yields an empty r": {
+      "main": [
+        [
+          {
+            "node": "create — create: section and enrollment IDs reach Canvas and the repo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: section and enrollment IDs reach Canvas and the repo": {
+      "main": [
+        [
+          {
+            "node": "create — create: without any option the request is still accepted (Ca",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

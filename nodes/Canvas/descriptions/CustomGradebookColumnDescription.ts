@@ -31,21 +31,15 @@ export const customGradebookColumnOperations: INodeProperties[] = [
 				action: 'Delete a custom gradebook column',
 			},
 			{
-				name: 'Get',
-				value: 'get',
-				description: 'Get a single custom gradebook column',
-				action: 'Get a custom gradebook column',
-			},
-			{
 				name: 'Get Column Data',
 				value: 'getColumnData',
-				description: 'Get data entries for a custom gradebook column',
+				description: 'Get the entries of a custom gradebook column (students without an entry are not listed)',
 				action: 'Get custom gradebook column data',
 			},
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many custom gradebook columns',
+				description: 'Get the custom gradebook columns of a course',
 				action: 'Get many custom gradebook columns',
 			},
 			{
@@ -90,7 +84,7 @@ export const customGradebookColumnFields: INodeProperties[] = [
 	},
 
 	// ----------------------------------
-	//         customGradebookColumn: get, update, delete, getColumnData, updateColumnData
+	//         customGradebookColumn: update, delete, getColumnData, updateColumnData
 	// ----------------------------------
 	{
 		displayName: 'Column ID',
@@ -101,7 +95,7 @@ export const customGradebookColumnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['customGradebookColumn'],
-				operation: ['get', 'update', 'delete', 'getColumnData', 'updateColumnData'],
+				operation: ['update', 'delete', 'getColumnData', 'updateColumnData'],
 			},
 		},
 		description: 'The ID of the custom gradebook column',
@@ -122,13 +116,12 @@ export const customGradebookColumnFields: INodeProperties[] = [
 				operation: ['updateColumnData'],
 			},
 		},
-		description: 'The ID of the user whose data to update',
+		description: 'The ID of the student whose entry to set',
 	},
 	{
 		displayName: 'Content',
 		name: 'content',
 		type: 'string',
-		required: true,
 		default: '',
 		displayOptions: {
 			show: {
@@ -136,7 +129,7 @@ export const customGradebookColumnFields: INodeProperties[] = [
 				operation: ['updateColumnData'],
 			},
 		},
-		description: 'The content to set for the column data',
+		description: 'The text to store for the student. Leave empty to delete the entry.',
 	},
 
 	// ----------------------------------
@@ -174,7 +167,7 @@ export const customGradebookColumnFields: INodeProperties[] = [
 				name: 'hidden',
 				type: 'boolean',
 				default: false,
-				description: 'Whether the column is hidden from students',
+				description: 'Whether the column is hidden in the gradebook (custom columns are never shown to students)',
 			},
 			{
 				displayName: 'Position',
@@ -195,7 +188,7 @@ export const customGradebookColumnFields: INodeProperties[] = [
 				name: 'teacher_notes',
 				type: 'boolean',
 				default: false,
-				description: 'Whether this is the teacher notes column',
+				description: 'Whether this is the "Notes" column the gradebook shows and hides with its notes toggle. A course can have only one.',
 			},
 		],
 	},
@@ -221,7 +214,7 @@ export const customGradebookColumnFields: INodeProperties[] = [
 				name: 'hidden',
 				type: 'boolean',
 				default: false,
-				description: 'Whether the column is hidden from students',
+				description: 'Whether the column is hidden in the gradebook (custom columns are never shown to students)',
 			},
 			{
 				displayName: 'Position',
@@ -242,7 +235,7 @@ export const customGradebookColumnFields: INodeProperties[] = [
 				name: 'teacher_notes',
 				type: 'boolean',
 				default: false,
-				description: 'Whether this is the teacher notes column',
+				description: 'Whether this is the "Notes" column the gradebook shows and hides with its notes toggle. A course can have only one.',
 			},
 			{
 				displayName: 'Title',
@@ -301,7 +294,7 @@ export const customGradebookColumnFields: INodeProperties[] = [
 				name: 'include_hidden',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to include hidden column data in the results',
+				description: 'Whether to return the entries of a hidden column (Canvas answers 404 for a hidden column otherwise)',
 			},
 		],
 	},
@@ -368,13 +361,13 @@ export const customGradebookColumnFields: INodeProperties[] = [
 						displayName: 'Content',
 						name: 'content',
 						type: 'string',
-						required: true,
 						default: '',
-						description: 'The content to set for this column/user combination',
+						description: 'The text to store for this column and student. Leave empty to delete the entry.',
 					},
 				],
 			},
 		],
-		description: 'The column data entries to update',
+		description:
+			'The entries to set. Canvas applies them in a background job and returns a Progress object.',
 	},
 ];

@@ -15,19 +15,21 @@ export const contentShareOperations: INodeProperties[] = [
 			{
 				name: 'Add Users',
 				value: 'addUsers',
-				description: 'Add users to an existing content share',
+				description: 'Send one of your sent content shares to additional users',
 				action: 'Add users to a content share',
 			},
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create a content share',
+				description:
+					'Share an assignment, discussion, page, quiz, module, module item or file directly with other users, who can then import it into their courses',
 				action: 'Create a content share',
 			},
 			{
 				name: 'Delete',
 				value: 'delete',
-				description: 'Delete a content share',
+				description:
+					'Remove a content share from your own list (the copies of other users are not deleted)',
 				action: 'Delete a content share',
 			},
 			{
@@ -39,19 +41,19 @@ export const contentShareOperations: INodeProperties[] = [
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many content shares',
+				description: 'Get the content shares a user has sent or received, newest first',
 				action: 'Get many content shares',
 			},
 			{
 				name: 'Get Unread Count',
 				value: 'getUnreadCount',
-				description: 'Get unread content share count',
+				description: 'Get the number of received content shares a user has not read yet',
 				action: 'Get unread content share count',
 			},
 			{
 				name: 'Update',
 				value: 'update',
-				description: 'Update a content share',
+				description: 'Mark one of your content shares as read or unread',
 				action: 'Update a content share',
 			},
 		],
@@ -72,10 +74,11 @@ export const contentShareFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['contentShare'],
-				operation: ['addUsers', 'create', 'delete', 'get', 'getAll', 'getUnreadCount', 'update'],
+				operation: ['get', 'getAll', 'getUnreadCount'],
 			},
 		},
-		description: 'The ID of the user (use "self" for the current user)',
+		description:
+			'The ID of the user whose content shares to read, or "self" for the token\'s user. Only administrators and linked observers may read the shares of other users.',
 	},
 
 	// ----------------------------------
@@ -93,7 +96,8 @@ export const contentShareFields: INodeProperties[] = [
 				operation: ['addUsers', 'delete', 'get', 'update'],
 			},
 		},
-		description: 'The ID of the content share',
+		description:
+			'The ID of the content share. Add Users, Update and Delete only work on the shares of the token\'s user.',
 	},
 
 	// ----------------------------------
@@ -149,6 +153,10 @@ export const contentShareFields: INodeProperties[] = [
 				value: 'discussion_topic',
 			},
 			{
+				name: 'File',
+				value: 'attachment',
+			},
+			{
 				name: 'Module',
 				value: 'module',
 			},
@@ -179,7 +187,8 @@ export const contentShareFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'The ID of the content to share',
+		description:
+			'The numeric ID of the content to share (for a page its page ID, not its URL). The token\'s user must be allowed to export it from its course.',
 	},
 	{
 		displayName: 'Receiver IDs',
@@ -193,7 +202,7 @@ export const contentShareFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'Comma-separated list of user IDs to share with',
+		description: 'Comma-separated IDs of the users to share the content with',
 	},
 
 	// ----------------------------------
@@ -211,7 +220,8 @@ export const contentShareFields: INodeProperties[] = [
 				operation: ['addUsers'],
 			},
 		},
-		description: 'Comma-separated list of user IDs to add to the share',
+		description:
+			'Comma-separated IDs of the additional users to send the share to. Users who already have it are skipped.',
 	},
 
 	// ----------------------------------

@@ -1,7 +1,7 @@
 {
 	"name": "@kyancey-va/n8n-nodes-canvas",
-	"version": "0.1.0",
-	"description": "n8n community nodes for Canvas LMS - full API coverage with 92 resources",
+	"version": "0.2.0-beta.1",
+	"description": "n8n community nodes for Canvas LMS: the REST API as resources and operations, tested against a real Canvas, and a trigger for Live Events",
 	"license": "MIT",
 	"homepage": "https://github.com/virtualarkansas/n8n-nodes-canvas",
 	"keywords": [
@@ -25,9 +25,13 @@
 		"build:watch": "tsc --watch",
 		"dev": "n8n-node dev",
 		"lint": "n8n-node lint",
+		"typecheck": "tsc --noEmit -p tsconfig.json && tsc -p tsconfig.test.json",
 		"lint:fix": "n8n-node lint --fix",
 		"release": "n8n-node release",
-		"prepublishOnly": "npm run build"
+		"prepublishOnly": "npm run build",
+		"test": "vitest run",
+		"test:unit": "vitest run",
+		"test:integration": "vitest run --config vitest.integration.config.ts"
 	},
 	"files": [
 		"dist"
@@ -41,6 +45,7 @@
 		"strict": false,
 		"credentials": [
 			"dist/credentials/CanvasApi.credentials.js",
+			"dist/credentials/CanvasLtiAdvantageApi.credentials.js",
 			"dist/credentials/CanvasOAuth2Api.credentials.js"
 		],
 		"nodes": [
@@ -54,7 +59,9 @@
 		"eslint": "9.32.0",
 		"prettier": "3.6.2",
 		"release-it": "^19.0.4",
-		"typescript": "5.9.2"
+		"tsx": "^4.23.15",
+		"typescript": "5.9.2",
+		"vitest": "^3.2.7"
 	},
 	"peerDependencies": {
 		"n8n-workflow": "*"

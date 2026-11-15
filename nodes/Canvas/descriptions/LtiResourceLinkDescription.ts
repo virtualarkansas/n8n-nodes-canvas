@@ -101,7 +101,8 @@ export const ltiResourceLinkFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'The launch URL for the resource link',
+		description:
+			'The launch URL for the resource link. An LTI 1.3 tool matching this URL must be installed in the course (or an account above it), otherwise Canvas refuses the link.',
 	},
 	{
 		displayName: 'Additional Fields',
@@ -121,7 +122,8 @@ export const ltiResourceLinkFields: INodeProperties[] = [
 				name: 'custom',
 				type: 'json',
 				default: '{}',
-				description: 'Custom parameters to send to the tool on launch (JSON object)',
+				description:
+					'Custom parameters to send to the tool on launch, as a JSON object of names and string values, e.g. {"chapter": "12"}',
 			},
 			{
 				displayName: 'Title',
@@ -148,7 +150,10 @@ export const ltiResourceLinkFields: INodeProperties[] = [
 				operation: ['bulkCreate'],
 			},
 		},
-		description: 'JSON array of resource links to create (max 100). Each object should have URL (required), title (optional), and custom (optional).',
+		// The JSON key really is lower-case "url".
+		// eslint-disable-next-line n8n-nodes-base/node-param-description-miscased-url
+		description:
+			'JSON array of the resource links to create (max 100), e.g. [{"url": "https://tool.example.com/launch/1", "title": "Chapter 1", "custom": {"chapter": "1"}}]. Each needs a URL matching an LTI 1.3 tool of the course; title and custom are optional. If one entry is invalid, none is created.',
 	},
 
 	// ----------------------------------
@@ -172,28 +177,31 @@ export const ltiResourceLinkFields: INodeProperties[] = [
 				name: 'context_external_tool_id',
 				type: 'string',
 				default: '',
-				description: 'The ID of the associated external tool',
+				description:
+					'The ID of the LTI 1.3 external tool the link belongs to. The URL of the link must match the URL or domain of that tool.',
 			},
 			{
 				displayName: 'Custom Parameters',
 				name: 'custom',
 				type: 'json',
 				default: '{}',
-				description: 'Custom parameters to send to the tool on launch (JSON object)',
+				description:
+					'Custom parameters to send to the tool on launch, as a JSON object of names and string values, e.g. {"chapter": "12"}',
 			},
 			{
 				displayName: 'Include Deleted',
 				name: 'include_deleted',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to allow updating deleted resource links',
+				description: 'Whether to find and update the link even if it is deleted',
 			},
 			{
 				displayName: 'URL',
 				name: 'url',
 				type: 'string',
 				default: '',
-				description: 'The new launch URL for the resource link',
+				description:
+					'The new launch URL for the resource link. Must match the URL or domain of the tool of the link.',
 			},
 		],
 	},
@@ -201,36 +209,6 @@ export const ltiResourceLinkFields: INodeProperties[] = [
 	// ----------------------------------
 	//         ltiResourceLink: getAll
 	// ----------------------------------
-	{
-		displayName: 'Return All',
-		name: 'returnAll',
-		type: 'boolean',
-		default: false,
-		displayOptions: {
-			show: {
-				resource: ['ltiResourceLink'],
-				operation: ['getAll'],
-			},
-		},
-		description: 'Whether to return all results or only up to a given limit',
-	},
-	{
-		displayName: 'Limit',
-		name: 'limit',
-		type: 'number',
-		default: 50,
-		typeOptions: {
-			minValue: 1,
-		},
-		displayOptions: {
-			show: {
-				resource: ['ltiResourceLink'],
-				operation: ['getAll'],
-				returnAll: [false],
-			},
-		},
-		description: 'Max number of results to return',
-	},
 	{
 		displayName: 'Options',
 		name: 'options',
@@ -249,14 +227,8 @@ export const ltiResourceLinkFields: INodeProperties[] = [
 				name: 'include_deleted',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to include deleted resource links',
-			},
-			{
-				displayName: 'Per Page',
-				name: 'per_page',
-				type: 'number',
-				default: 50,
-				description: 'Number of results per page',
+				description:
+					'Whether to include deleted resource links and links associated with deleted content',
 			},
 		],
 	},
@@ -282,7 +254,7 @@ export const ltiResourceLinkFields: INodeProperties[] = [
 				name: 'include_deleted',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to include deleted resource links',
+				description: 'Whether to find the link even if it is deleted',
 			},
 		],
 	},
