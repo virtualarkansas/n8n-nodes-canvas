@@ -281,8 +281,10 @@ export class CanvasTrigger implements INodeType {
 				],
 			},
 		],
-		// Required by the n8n community-node lint rules for every node class.
-		usableAsTool: true,
+		// The community-node lint rules want the property stated on every node class. A webhook
+		// trigger cannot be called by an AI agent, so it is stated as "no" (n8n would otherwise
+		// offer a "Canvas Trigger Tool" that does nothing).
+		usableAsTool: undefined,
 	};
 
 	webhookMethods = {

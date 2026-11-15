@@ -36,36 +36,52 @@ Choose the installation method that matches your n8n setup:
 > There is an unrelated package named `n8n-nodes-canvas` on npm — installing that name gives you
 > a different, smaller node without the Conversations API.
 
-### Option 2: npm Install
+### Option 2: Manual Install with npm
 
-For self-hosted n8n installed via npm:
+For self-hosted n8n where the Community Nodes screen cannot be used (queue mode, for example).
+n8n looks for community packages in the `nodes` folder of its user folder:
 
 ```bash
-# In your n8n installation directory
+mkdir -p ~/.n8n/nodes
+cd ~/.n8n/nodes
 npm install @kyancey-va/n8n-nodes-canvas
 ```
 
-Then restart n8n.
+Then restart n8n. With Docker, run the same commands inside the container
+(`docker exec -it <n8n-container> sh`); the folder is `/home/node/.n8n/nodes` there and has to be
+on a volume, or the package disappears with the container. In queue mode, install it on the
+workers as well.
 
-### Option 3: Docker with Volume Mount
+### Option 3: Mounted Folder (Docker)
 
-For Docker-based n8n installations where you want to install the package manually.
+n8n also loads the nodes it finds in the folders named by `N8N_CUSTOM_EXTENSIONS`. Use this when
+the server cannot reach npm, or to run a build of your own.
 
-#### Step 1: Download and Extract
+> Nodes loaded this way are registered as `CUSTOM.canvas` and `CUSTOM.canvasTrigger`, not as
+> `@kyancey-va/n8n-nodes-canvas.canvas`. A workflow built under one kind of installation shows the
+> node as not installed under the other, so pick one method per n8n instance and stay with it.
+
+#### Step 1: Put the Package in a Folder
+
+Either a release (the `.tgz` attached to each
+[GitHub release](https://github.com/virtualarkansas/n8n-nodes-canvas/releases)):
 
 ```bash
-# On your server, create the custom nodes directory
+VERSION=0.2.0
 mkdir -p /path/to/n8n/custom-nodes/n8n-nodes-canvas
 cd /path/to/n8n/custom-nodes/n8n-nodes-canvas
+wget "https://github.com/virtualarkansas/n8n-nodes-canvas/releases/download/v$VERSION/kyancey-va-n8n-nodes-canvas-$VERSION.tgz"
+tar -xzf "kyancey-va-n8n-nodes-canvas-$VERSION.tgz" --strip-components=1
+```
 
-# Option A: Clone from GitHub and build
-git clone https://github.com/virtualarkansas/n8n-nodes-canvas.git .
+or a clone that you build yourself and update with `git pull`:
+
+```bash
+cd /path/to/n8n
+git clone https://github.com/virtualarkansas/n8n-nodes-canvas.git custom-nodes/n8n-nodes-canvas
+cd custom-nodes/n8n-nodes-canvas
 npm install
 npm run build
-
-# Option B: Download a release (when available)
-# wget https://github.com/virtualarkansas/n8n-nodes-canvas/releases/download/v0.1.0/n8n-nodes-canvas.tar.gz
-# tar -xzvf n8n-nodes-canvas.tar.gz
 ```
 
 #### Step 2: Update Docker Compose
@@ -102,81 +118,18 @@ If you're using n8n workers, add the same to your worker service:
 docker compose down && docker compose up -d
 ```
 
-### Option 4: Docker with npm Install
-
-For Docker setups, you can also install via npm inside the container:
-
-```bash
-# Enable community packages in your docker-compose.yml
-environment:
-  - N8N_COMMUNITY_PACKAGES_ENABLED=true
-
-# Then restart and install via n8n UI, or:
-docker exec -it <n8n-container> npm install @kyancey-va/n8n-nodes-canvas
-docker compose restart
-```
-
-### Option 5: Building from Source
-
-For development or customization:
-
-```bash
-git clone https://github.com/virtualarkansas/n8n-nodes-canvas.git
-cd n8n-nodes-canvas
-npm install
-npm run build
-
-# For development with hot-reload
-npm run dev
-
-# To create a distributable package
-npm pack
-```
-
-### Option 6: Git Clone (Updatable)
-
-For Docker setups where you want easy updates via `git pull`:
-
-#### Step 1: Clone and Build
-
-```bash
-# On your server
-cd /path/to/n8n
-git clone https://github.com/virtualarkansas/n8n-nodes-canvas.git custom-nodes/n8n-nodes-canvas
-cd custom-nodes/n8n-nodes-canvas
-npm install
-npm run build
-```
-
-#### Step 2: Volume Mount
-
-Add to your `docker-compose.yml`:
-
-```yaml
-services:
-  n8n:
-    image: docker.n8n.io/n8nio/n8n
-    environment:
-      - N8N_CUSTOM_EXTENSIONS=/custom-nodes
-    volumes:
-      - ./custom-nodes:/custom-nodes
-```
-
-#### Step 3: Restart
-
-```bash
-docker compose down && docker compose up -d
-```
-
 #### Updating
+
+Replace the folder's contents with the new release, or in a clone:
 
 ```bash
 cd /path/to/n8n/custom-nodes/n8n-nodes-canvas
 git pull
 npm install
 npm run build
-docker compose down && docker compose up -d
 ```
+
+Then restart n8n as in step 3.
 
 ### Verifying Installation
 
@@ -188,8 +141,8 @@ After installation, verify the nodes are loaded:
 4. Search for "**Canvas**"
 
 You should see:
-- **Canvas LMS** - Main node with 92 resources
-- **Canvas Trigger** - Webhook trigger for live events
+- **Canvas LMS** - the action node with its resources and operations
+- **Canvas Trigger** - webhook trigger for Canvas Live Events
 
 ## Nodes
 
@@ -444,8 +397,13 @@ By default a list stops after 5 pages of 10 items. Switch on **Pagination → Re
 ## Development and testing
 
 ```bash
+git clone https://github.com/virtualarkansas/n8n-nodes-canvas.git
+cd n8n-nodes-canvas
+npm install
+npm run dev        # n8n with the nodes loaded and hot reload
 npm run build      # compile
 npm run lint       # n8n community node lint rules
+npm run typecheck  # node, credentials and tests
 npm test           # unit tests, including the audit of every operation against Canvas' route table
 ```
 

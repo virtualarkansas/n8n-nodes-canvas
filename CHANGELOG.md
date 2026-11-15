@@ -108,6 +108,8 @@ corrected. Where that changed what you see in the node:
   because Canvas has no such events (a concluded course or enrollment arrives as `course_updated` /
   `enrollment_updated` with its new `workflow_state`).
 - **Include Metadata** moved into **Options**; the setting of a saved workflow is still honoured.
+- The trigger is no longer offered as an AI tool: the "Canvas Trigger Tool" n8n generated from it
+  could not do anything. The Canvas LMS node remains usable as a tool.
 
 **Credentials**
 
@@ -183,4 +185,9 @@ corrected. Where that changed what you see in the node:
   of every operation against the route table of a real Canvas.
 - Integration battery (`npm run test:integration`): every operation on a local Canvas and n8n; see
   `test/README.md`. CI runs lint, build, type check and unit tests.
+- The release workflow runs the same checks before it publishes, refuses a tag that does not match
+  the version in `package.json`, and takes the release notes from this file.
+- README: the manual installation steps were wrong (n8n loads community packages from
+  `~/.n8n/nodes`) and are corrected; nodes loaded from a mounted folder are registered under a
+  different type name than an installed package.
 - No runtime dependencies.

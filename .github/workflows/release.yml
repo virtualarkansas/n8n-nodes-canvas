@@ -6,30 +6,49 @@ on:
       - 'v*'
 
 permissions:
-  contents: write
+  contents: write  # create the GitHub release
   id-token: write  # required for npm provenance
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      # Never interpolate the tag into a script: it reaches the shell as a variable only.
+      TAG: ${{ github.ref_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Fetch all history for changelog generation
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 22
+          cache: npm
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Tag matches package.json
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          if [ "v$VERSION" != "$TAG" ]; then
+            echo "::error::Tag $TAG does not match the version in package.json ($VERSION)"
+            exit 1
+          fi
 
       - name: Install dependencies
         run: npm ci
 
+      # The same checks as ci.yml: nothing is published that would not pass a pull request.
+      - name: Lint
+        run: npm run lint
+
       - name: Build
         run: npm run build
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
 
       - name: Package
         run: npm pack
@@ -37,72 +56,49 @@ jobs:
       - name: Determine npm dist-tag
         id: npm_tag
         run: |
-          if [[ "${{ github.ref_name }}" == *"alpha"* ]]; then
-            echo "tag=alpha" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == *"beta"* ]]; then
-            echo "tag=beta" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == *"rc"* ]]; then
-            echo "tag=next" >> $GITHUB_OUTPUT
-          else
-            echo "tag=latest" >> $GITHUB_OUTPUT
-          fi
+          case "$TAG" in
+            *alpha*) echo "tag=alpha" >> "$GITHUB_OUTPUT" ;;
+            *beta*)  echo "tag=beta" >> "$GITHUB_OUTPUT" ;;
+            *rc*)    echo "tag=next" >> "$GITHUB_OUTPUT" ;;
+            *)       echo "tag=latest" >> "$GITHUB_OUTPUT" ;;
+          esac
 
       - name: Publish to npm
-        run: npm publish --tag ${{ steps.npm_tag.outputs.tag }}
+        run: npm publish --tag "$DIST_TAG"
         env:
+          DIST_TAG: ${{ steps.npm_tag.outputs.tag }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Get previous tag
-        id: prev_tag
-        run: |
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          echo "tag=$PREV_TAG" >> $GITHUB_OUTPUT
-
-      - name: Generate changelog
-        id: changelog
-        run: |
-          if [ -n "${{ steps.prev_tag.outputs.tag }}" ]; then
-            echo "Generating changelog from ${{ steps.prev_tag.outputs.tag }} to ${{ github.ref_name }}"
-            {
-              echo 'notes<<EOF'
-              echo "## What's Changed"
-              echo ""
-              git log ${{ steps.prev_tag.outputs.tag }}..${{ github.ref_name }} --pretty=format:"- %s" --no-merges | grep -v "Co-Authored-By" || true
-              echo ""
-              echo ""
-              echo "## Install"
-              echo ""
-              echo '```bash'
-              echo "npm install @kyancey-va/n8n-nodes-canvas@${{ steps.npm_tag.outputs.tag }}"
-              echo '```'
-              echo ""
-              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.prev_tag.outputs.tag }}...${{ github.ref_name }}"
-              echo 'EOF'
-            } >> $GITHUB_OUTPUT
-          else
-            echo "First release - no previous tag"
-            {
-              echo 'notes<<EOF'
-              echo "## Initial Release"
-              echo ""
-              echo "First beta release of n8n-nodes-canvas with 92 Canvas LMS API resources."
-              echo ""
-              echo "## Install"
-              echo ""
-              echo '```bash'
-              echo "npm install @kyancey-va/n8n-nodes-canvas@${{ steps.npm_tag.outputs.tag }}"
-              echo '```'
-              echo ""
-              echo "**Full Changelog**: https://github.com/${{ github.repository }}/commits/${{ github.ref_name }}"
-              echo 'EOF'
-            } >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: '*.tgz'
-          body: ${{ steps.changelog.outputs.notes }}
-          prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') || contains(github.ref, 'rc') }}
+      # Release notes: the section of CHANGELOG.md for this version (heading "## X.Y.Z ..."),
+      # followed by how to install it.
+      - name: Release notes
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DIST_TAG: ${{ steps.npm_tag.outputs.tag }}
+        run: |
+          VERSION="${TAG#v}"
+          awk -v version="$VERSION" '
+            /^## / { inside = ($2 == version) ; next }
+            inside { print }
+          ' CHANGELOG.md > notes.md
+          if ! grep -q '[^[:space:]]' notes.md; then
+            echo "See [CHANGELOG.md](https://github.com/$GITHUB_REPOSITORY/blob/$TAG/CHANGELOG.md)." > notes.md
+          fi
+          {
+            echo ""
+            echo "## Install"
+            echo ""
+            echo '```bash'
+            echo "npm install @kyancey-va/n8n-nodes-canvas@$DIST_TAG"
+            echo '```'
+          } >> notes.md
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DIST_TAG: ${{ steps.npm_tag.outputs.tag }}
+        run: |
+          if [ "$DIST_TAG" = "latest" ]; then
+            gh release create "$TAG" ./*.tgz --verify-tag --title "$TAG" --notes-file notes.md
+          else
+            gh release create "$TAG" ./*.tgz --verify-tag --title "$TAG" --notes-file notes.md --prerelease
+          fi
