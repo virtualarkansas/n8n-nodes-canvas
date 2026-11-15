@@ -13,39 +13,6 @@ function splitIds(value: unknown): string[] {
 // Quiz Submission User List
 // ============================================
 
-export function buildQuizSubmissionUserRequest(
-	operation: string,
-	getParam: GetParam,
-	getParamObject: GetParamObject,
-): IRequestConfig {
-	const base = `/api/v1/courses/${getParam('courseId')}/quizzes/${getParam('quizId')}/submission_users`;
-
-	switch (operation) {
-		case 'getAll': {
-			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
-			if (options.submitted !== undefined) {
-				qs.submitted = options.submitted;
-			}
-			// Canvas names this argument "include" in the request although the docs say "includes".
-			if (Array.isArray(options.include) && options.include.length > 0) {
-				qs.include = options.include;
-			}
-			return { method: 'GET', endpoint: base, qs, dataKey: 'users' };
-		}
-		case 'message': {
-			const conversation: IDataObject = {
-				body: getParam('body'),
-				recipients: getParam('recipients', 'unsubmitted'),
-				...getParamObject('additionalFields'),
-			};
-			return { method: 'POST', endpoint: `${base}/message`, body: { conversations: [conversation] } };
-		}
-		default:
-			throw new ApplicationError(`Operation ${operation} not implemented for quizSubmissionUser`);
-	}
-}
-
 // ============================================
 // Quiz Submission Events
 // ============================================
@@ -71,49 +38,6 @@ export function buildQuizSubmissionEventRequest(
 // ============================================
 // Course Quiz Extensions
 // ============================================
-
-export function buildCourseQuizExtensionRequest(
-	operation: string,
-	getParam: GetParam,
-	getParamObject: GetParamObject,
-): IRequestConfig {
-	switch (operation) {
-		case 'set': {
-			const entries = ((getParamObject('extensions').extension as IDataObject[] | undefined) ?? []).filter(
-				(entry) => entry.user_id !== undefined && entry.user_id !== '',
-			);
-			if (entries.length === 0) {
-				throw new ApplicationError('At least one extension with a User ID is required for courseQuizExtension set');
-			}
-			const quizExtensions = entries.map((entry) => {
-				const extension: IDataObject = { user_id: entry.user_id };
-				// 0 means "not set" for the minute and attempt fields; sending both extend_* is an error in Canvas.
-				for (const key of ['extra_attempts', 'extra_time', 'extend_from_now', 'extend_from_end_at']) {
-					if (typeof entry[key] === 'number' && (entry[key] as number) > 0) {
-						extension[key] = entry[key];
-					}
-				}
-				if (entry.manually_unlocked !== undefined) {
-					extension.manually_unlocked = entry.manually_unlocked;
-				}
-				if (extension.extend_from_now !== undefined && extension.extend_from_end_at !== undefined) {
-					throw new ApplicationError(
-						`Extension for user ${String(entry.user_id)}: use either Extend From Now or Extend From End At, not both`,
-					);
-				}
-				return extension;
-			});
-			return {
-				method: 'POST',
-				endpoint: `/api/v1/courses/${getParam('courseId')}/quiz_extensions`,
-				body: { quiz_extensions: quizExtensions },
-				dataKey: 'quiz_extensions',
-			};
-		}
-		default:
-			throw new ApplicationError(`Operation ${operation} not implemented for courseQuizExtension`);
-	}
-}
 
 // ============================================
 // Quiz Assignment Overrides

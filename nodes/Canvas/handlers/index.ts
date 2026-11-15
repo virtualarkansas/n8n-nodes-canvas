@@ -209,12 +209,10 @@ import {
 
 // Quiz extras group
 import {
-	buildCourseQuizExtensionRequest,
 	buildQuizAssignmentOverrideRequest,
 	buildQuizIpFilterRequest,
 	buildQuizSubmissionEventRequest,
 	buildQuizSubmissionQuestionRequest,
-	buildQuizSubmissionUserRequest,
 } from './quizExtras.handler';
 
 // Generic requests group
@@ -384,12 +382,10 @@ export const resourceHandlers: Record<string, ResourceHandler> = {
 	whatIfGrade: buildWhatIfGradeRequest,
 
 	// Quiz extras group
-	courseQuizExtension: buildCourseQuizExtensionRequest,
 	quizAssignmentOverride: buildQuizAssignmentOverrideRequest,
 	quizIpFilter: buildQuizIpFilterRequest,
 	quizSubmissionEvent: buildQuizSubmissionEventRequest,
 	quizSubmissionQuestion: buildQuizSubmissionQuestionRequest,
-	quizSubmissionUser: buildQuizSubmissionUserRequest,
 
 	// Generic requests group
 	apiRequest: buildApiRequestRequest,

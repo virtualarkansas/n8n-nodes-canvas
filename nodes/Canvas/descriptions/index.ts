@@ -541,11 +541,6 @@ export {
 
 // Quiz extras resource group descriptions
 export {
-	courseQuizExtensionOperations,
-	courseQuizExtensionFields,
-} from './CourseQuizExtensionDescription';
-
-export {
 	quizAssignmentOverrideOperations,
 	quizAssignmentOverrideFields,
 } from './QuizAssignmentOverrideDescription';
@@ -564,11 +559,6 @@ export {
 	quizSubmissionQuestionOperations,
 	quizSubmissionQuestionFields,
 } from './QuizSubmissionQuestionDescription';
-
-export {
-	quizSubmissionUserOperations,
-	quizSubmissionUserFields,
-} from './QuizSubmissionUserDescription';
 
 // Generic requests resource group descriptions
 export {
