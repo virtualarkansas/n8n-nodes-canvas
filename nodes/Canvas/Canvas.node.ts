@@ -549,6 +549,7 @@ export class Canvas implements INodeType {
 				: 'Turn on Pagination > Return All (or raise Max Pages) to get all of them.';
 			this.addExecutionHints?.({
 				message: `${lists} returned by Canvas LMS ${cutShort.count === 1 ? 'is' : 'are'} incomplete: Canvas has more records than were read. ${remedy}`,
+				type: 'warning',
 				location: 'outputPane',
 			});
 		}
