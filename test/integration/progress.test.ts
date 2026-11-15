@@ -81,6 +81,48 @@ describe('progress', () => {
 		expect(latest).toMatchObject({ id: actual.id, workflow_state: actual.workflow_state, completion: actual.completion });
 	});
 
+	it('get, waitForCompletion, cancel: accept the progress_url a background job answered with', async () => {
+		const contentExport = await canvas().post<Json>(`/api/v1/courses/${courseId}/content_exports`, {
+			export_type: 'common_cartridge',
+			skip_notifications: true,
+		});
+		const progressUrl = String(contentExport.progress_url);
+		const progressId = progressUrl.split('/').pop() as string;
+		expect(progressUrl).toMatch(/^https?:\/\/.+\/api\/v1\/progress\/\d+$/);
+
+		const [got] = await runOk({ resource: 'progress', operation: 'get', params: { progressId: progressUrl } });
+		expect(got).toMatchObject({ id: Number(progressId), context_type: 'ContentExport' });
+
+		// From an expression, the way a workflow passes the previous node's answer on.
+		const [finished] = await runOk({
+			resource: 'progress',
+			operation: 'waitForCompletion',
+			items: [{ progress_url: progressUrl }],
+			params: { progressId: '={{ $json.progress_url }}', pollInterval: 2, timeout: 150 },
+		});
+		expect(finished).toMatchObject({ id: Number(progressId), workflow_state: 'completed' });
+		expect(await canvas().get<Json>(`/api/v1/progress/${progressId}`)).toMatchObject({ workflow_state: 'completed' });
+
+		// A path works too, and a query string is ignored.
+		const [cancelled] = await runOk({
+			resource: 'progress',
+			operation: 'cancel',
+			params: { progressId: `/api/v1/progress/${progressId}?x=1`, options: { message: 'by URL' } },
+		});
+		expect(cancelled).toMatchObject({ id: Number(progressId), workflow_state: 'failed', message: 'by URL' });
+		expect(await canvas().get<Json>(`/api/v1/progress/${progressId}`)).toMatchObject({ message: 'by URL' });
+
+		// A URL of something else is refused before anything is sent.
+		const wrong = await runNode({
+			resource: 'progress',
+			operation: 'get',
+			params: { progressId: `${canvas().url}/api/v1/courses/${courseId}`, errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(wrong.success).toEqual([]);
+		expect(wrong.error[0]).toMatchObject({ errorType: 'INVALID_PARAMETERS' });
+		expect(String(wrong.error[0].errorMessage)).toContain('expected an ID or a URL ending in /progress/<ID>');
+	});
+
 	it('cancel: marks the job as failed and stores the message', async () => {
 		const progressId = await startExport();
 		const message = 'Cancelled by the battery – "quoted" & <b>tags</b> 🛑';
@@ -219,6 +261,14 @@ describe('progress', () => {
 			user_id: Number(userId),
 			url: progressUrl,
 		});
+		// The progress URL the LTI service answered with works as well.
+		const [byUrl] = await runOk({
+			resource: 'progress',
+			operation: 'getLti',
+			persona,
+			params: { courseId, progressId: progressUrl },
+		});
+		expect(byUrl).toMatchObject({ id: Number(progressId), tag: 'upload_via_url', url: progressUrl });
 		const direct = await ltiRequest(token, 'GET', `/api/lti/courses/${courseId}/progress/${progressId}`);
 		expect(progress).toMatchObject({ id: (direct.data as Json).id, context_id: (direct.data as Json).context_id });
 

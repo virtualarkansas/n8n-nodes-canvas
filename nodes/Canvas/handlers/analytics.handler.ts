@@ -1,6 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { pollUntil, stateIn, toList, withoutBlanks } from './shared';
+import { idFromUrl, pollUntil, stateIn, toList, withoutBlanks } from './shared';
 
 // ============================================
 // ANALYTICS
@@ -123,7 +123,8 @@ export function handleProgressResource(
 	getParam: GetParam,
 	getParamObject: GetParamObject,
 ): IRequestConfig {
-	const progressId = getParam('progressId');
+	// The ID, or the progress_url a background job answered with.
+	const progressId = idFromUrl(getParam('progressId'), 'progress', 'Progress ID');
 
 	switch (operation) {
 		case 'get':

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	attachLinkedRecords,
 	collectionRows,
+	idFromUrl,
 	isBlank,
 	isBlankOrWhitespace,
 	isPlainObject,
@@ -522,5 +523,25 @@ describe('attachLinkedRecords', () => {
 		expect(linkedIfAsked(() => 'false', {})).toBeUndefined();
 		expect(linkedIfAsked((_name, fallback) => fallback ?? '', {})).toBeTypeOf('function');
 		expect(linkedIfAsked(() => 'true', {})).toBeTypeOf('function');
+	});
+});
+
+describe('idFromUrl', () => {
+	it('returns an ID as it is, trimmed', () => {
+		expect(idFromUrl(' 123 ', 'progress', 'Progress ID')).toBe('123');
+		expect(idFromUrl('sis_course_id:A-1', 'progress', 'Progress ID')).toBe('sis_course_id:A-1');
+	});
+
+	it('takes the ID after the segment of a URL or path, ignoring query and fragment', () => {
+		expect(idFromUrl('https://canvas.example.com/api/v1/progress/123', 'progress', 'Progress ID')).toBe('123');
+		expect(idFromUrl('/api/v1/progress/45/?x=1#y', 'progress', 'Progress ID')).toBe('45');
+		expect(idFromUrl('https://c.example/api/lti/courses/3/progress/9', 'progress', 'Progress ID')).toBe('9');
+	});
+
+	it('refuses a URL without the segment', () => {
+		expect(messageOf(() => idFromUrl('https://c.example/api/v1/courses/3', 'progress', 'Progress ID'))).toBe(
+			'Progress ID: expected an ID or a URL ending in /progress/<ID>, got "https://c.example/api/v1/courses/3"',
+		);
+		expect(messageOf(() => idFromUrl('/api/v1/progress/', 'progress', 'Progress ID'))).toContain('Progress ID: expected');
 	});
 });

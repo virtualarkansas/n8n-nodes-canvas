@@ -101,6 +101,29 @@ export function linkedIfAsked(
 	return getParam('includeLinked', 'true') === 'false' ? undefined : attachLinkedRecords(collections);
 }
 
+/**
+ * The ID in a value that may also be the URL Canvas hands out for the record: an ID
+ * (`123`, `sis_course_id:x`) is returned as it is; a URL or path with `/<segment>/<id>`
+ * (`https://canvas.example.com/api/v1/progress/123`, as in a `progress_url`) gives the ID
+ * after the last such segment. Query string and fragment are ignored. Any other value
+ * with a slash throws an ApplicationError naming `label`.
+ */
+export function idFromUrl(value: string, segment: string, label: string): string {
+	const text = value.trim();
+	if (!text.includes('/')) {
+		return text;
+	}
+	const path = text.split(/[?#]/)[0];
+	const parts = path.split('/').filter((part) => part !== '');
+	const index = parts.lastIndexOf(segment);
+	if (index === -1 || index === parts.length - 1) {
+		throw new ApplicationError(
+			`${label}: expected an ID or a URL ending in /${segment}/<ID>, got ${shown(text)}`,
+		);
+	}
+	return decodeURIComponent(parts[index + 1]);
+}
+
 /** A value as it is shown in an error message: its JSON text, cut off after 60 characters. */
 function shown(value: unknown): string {
 	let text: string;
