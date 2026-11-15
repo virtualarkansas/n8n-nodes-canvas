@@ -199,7 +199,7 @@ export const groupCategoryFields: INodeProperties[] = [
 	// ----------------------------------
 	{
 		displayName:
-			'Differentiation tags must be allowed in the settings of the account the course belongs to ("Allow Differentiation Tags"); otherwise Canvas refuses with "unauthorized"',
+			'Canvas only imports and exports differentiation tags where "Differentiation Tags" is switched on in the settings of the account the course belongs to (or of an account above it). Otherwise it answers "unauthorized".',
 		name: 'differentiationTagsNotice',
 		type: 'notice',
 		default: '',
