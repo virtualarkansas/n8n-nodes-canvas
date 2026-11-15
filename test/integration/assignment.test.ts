@@ -155,37 +155,25 @@ describe('assignment', () => {
 		});
 	});
 
-	it('create: anonymous grading needs the course feature; without it Canvas ignores the field', async () => {
-		const run = async (): Promise<Json> => {
-			const [assignment] = await runOk({
-				resource: 'assignment',
-				operation: 'create',
-				params: {
-					courseId,
-					name: unique('Anonymous'),
-					additionalFields: { anonymous_grading: true, points_possible: 5, submission_types: ['online_text_entry'] },
-				},
-			});
-			created.push(String(assignment.id));
-			return fromCanvas(String(assignment.id));
+	it('create: anonymous grading is sent, but Canvas ignores it while the course feature is off', async () => {
+		const params = {
+			courseId,
+			name: unique('Anonymous'),
+			additionalFields: { anonymous_grading: true, points_possible: 5, submission_types: ['online_text_entry'] },
 		};
-		expect((await run()).anonymous_grading).toBe(false);
+		// "Anonymous Grading" is a course feature that the root account has to allow first. It is off on
+		// this instance, and the battery does not change account-wide settings, so the field cannot be
+		// read back as true here. What can be shown: the request carries it under the name Canvas reads
+		// (assignment[anonymous_grading]), and Canvas answers without an error and without applying it.
+		const debug = await runNode({ resource: 'assignment', operation: 'create', params: { ...params, debugMode: true } });
+		expect(debug.debug).toHaveLength(1);
+		expect(debug.debug[0]).toMatchObject({ method: 'POST', body: { assignment: { anonymous_grading: true } } });
 
-		// The feature is off for the root account; allow it just long enough to switch it on for this course.
-		const rootFlag = `/api/v1/accounts/${fx('accountId')}/features/flags/anonymous_marking`;
-		const courseFlag = `/api/v1/courses/${courseId}/features/flags/anonymous_marking`;
-		const before = await canvas().get<Json>(rootFlag);
-		expect(before.state).toBe('off');
-		try {
-			await canvas().put(rootFlag, { state: 'allowed' });
-			await canvas().put(courseFlag, { state: 'on' });
-			expect((await run()).anonymous_grading).toBe(true);
-		} finally {
-			await canvas().request('DELETE', courseFlag);
-			// A root account that opted in cannot delete the flag any more; switching it off restores the state.
-			await canvas().put(rootFlag, { state: 'off' });
-		}
-		expect((await canvas().get<Json>(rootFlag)).state).toBe('off');
+		const [assignment] = await runOk({ resource: 'assignment', operation: 'create', params });
+		created.push(String(assignment.id));
+		expect((await fromCanvas(String(assignment.id))).anonymous_grading).toBe(false);
+		const flag = await canvas().get<Json>(`/api/v1/accounts/${fx('accountId')}/features/flags/anonymous_marking`);
+		expect(flag.state).toBe('off');
 	});
 
 	it('create: external tool and student annotation assignments', async () => {
@@ -452,10 +440,12 @@ describe('assignment', () => {
 			operation: 'getAll',
 			params: { courseId, options: { assignment_group_id: battery.bulkGroupId }, pagination: { returnAll: true } },
 		});
-		expect(inGroup).toHaveLength(60);
+		// 60 bulk assignments, plus whatever other tests are creating without a group right now.
+		expect(inGroup.filter((a) => String(a.name).startsWith('Bulk assignment'))).toHaveLength(60);
 		expect(inGroup.every((a) => a.assignment_group_id === Number(battery.bulkGroupId))).toBe(true);
-		expect(ids(inGroup)).toEqual(
-			ids(await canvas().getAll<Json>(`/api/v1/courses/${courseId}/assignment_groups/${battery.bulkGroupId}/assignments`)),
+		const bulkOnly = (list: Json[]): unknown[] => ids(list.filter((a) => String(a.name).startsWith('Bulk assignment')));
+		expect(bulkOnly(inGroup)).toEqual(
+			bulkOnly(await canvas().getAll<Json>(`/api/v1/courses/${courseId}/assignment_groups/${battery.bulkGroupId}/assignments`)),
 		);
 
 		const userPath = `/api/v1/users/${fx('studentUserId')}/courses/${courseId}/assignments`;

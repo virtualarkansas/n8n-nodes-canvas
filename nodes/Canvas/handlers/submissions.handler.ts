@@ -135,13 +135,7 @@ export function handleSubmissionResource(
 			const body: Fields = {};
 
 			// Comments, the rubric assessment and the grade live in different objects.
-			const { comment, group_comment, rubric_assessment, prefer_points_over_scheme, score, ...submissionFields } = gradeFields;
-
-			// Workflows saved with the former "Score" field: Canvas has no such argument, the
-			// grade is always given as posted_grade.
-			if (score !== undefined && score !== '' && submissionFields.posted_grade === undefined) {
-				submissionFields.posted_grade = String(score);
-			}
+			const { comment, group_comment, rubric_assessment, prefer_points_over_scheme, ...submissionFields } = gradeFields;
 
 			if (Object.keys(submissionFields).length > 0) {
 				body.submission = submissionFields;

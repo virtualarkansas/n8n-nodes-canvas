@@ -457,7 +457,9 @@ describe('moduleItem', () => {
 			params: { courseId, assetType: 'Page', assetId: progress.markDonePageUrl },
 		});
 		expectCurrent(byPage, progress.markDoneItemId);
-		expect((byPage.items as Json[])[0].prev).toBeNull();
+		// It is the first item of its module: nothing before it, or the last item of an earlier module.
+		const previous = (byPage.items as Json[])[0].prev as Json | null;
+		expect(previous === null || String(previous.module_id) !== progress.moduleId).toBe(true);
 	});
 
 	it('getSequence: the other asset types, and an asset that is in no module', async () => {
