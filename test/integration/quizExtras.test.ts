@@ -204,6 +204,79 @@ describe('quiz attempt: quizSubmissionQuestion, quizSubmissionEvent', () => {
 		expect(unflagged).toMatchObject({ flagged: false });
 	});
 
+	it('quizSubmissionQuestion.getFormattedAnswer: a numerical answer the way the quiz page shows it', async () => {
+		const numerical = questionIds[1];
+		const path = `/api/v1/quiz_submissions/${quizSubmissionId}/questions/${numerical}/formatted_answer`;
+
+		// Rounded to four decimal places, trailing zeros removed; one request per input item.
+		const answers = ['12.123456789', '42.0000', '0.5', '-3.14159265', '1234567.891'];
+		const formatted = await runOk({
+			resource: 'quizSubmissionQuestion',
+			operation: 'getFormattedAnswer',
+			credential: takerCredential,
+			items: answers.map((answer) => ({ answer })),
+			params: { quizSubmissionId, questionId: numerical, answer: '={{ $json.answer }}' },
+		});
+		expect(formatted).toEqual([
+			{ formatted_answer: '12.1235' },
+			{ formatted_answer: '42' },
+			{ formatted_answer: '0.5' },
+			{ formatted_answer: '-3.1416' },
+			{ formatted_answer: '1234567.891' },
+		]);
+		for (const [index, answer] of answers.entries()) {
+			expect(formatted[index]).toEqual(await taker.client.get<Json>(`${path}?answer=${encodeURIComponent(answer)}`));
+		}
+
+		// A number arriving as a number from an expression.
+		const [fromNumber] = await runOk({
+			resource: 'quizSubmissionQuestion',
+			operation: 'getFormattedAnswer',
+			credential: takerCredential,
+			items: [{ submission: Number(quizSubmissionId), question: Number(numerical), answer: 7.123456 }],
+			params: { quizSubmissionId: '={{ $json.submission }}', questionId: '={{ $json.question }}', answer: '={{ $json.answer }}' },
+		});
+		expect(fromNumber).toEqual({ formatted_answer: '7.1235' });
+
+		// Answers to other kinds of questions come back unchanged.
+		const text = 'Hello "world" & ünï — 1.50000';
+		const [essay] = await runOk({
+			resource: 'quizSubmissionQuestion',
+			operation: 'getFormattedAnswer',
+			credential: takerCredential,
+			params: { quizSubmissionId, questionId: questionIds[0], answer: text },
+		});
+		expect(essay).toEqual({ formatted_answer: text });
+
+		const eh = { errorHandling: { onError: 'continueWithError' } };
+		// An answer of blanks is no answer.
+		const blank = await runNode({
+			resource: 'quizSubmissionQuestion',
+			operation: 'getFormattedAnswer',
+			credential: takerCredential,
+			params: { quizSubmissionId, questionId: numerical, answer: '  ', ...eh },
+		});
+		expect(blank.success).toEqual([]);
+		expect(blank.error[0]).toMatchObject({ errorCode: 422, resource: 'quizSubmissionQuestion', operation: 'getFormattedAnswer' });
+		expect(String(blank.error[0].errorMessage)).toContain('answer param is required');
+
+		// A question that is not part of the quiz, and a submission that does not exist.
+		const noQuestion = await runNode({
+			resource: 'quizSubmissionQuestion',
+			operation: 'getFormattedAnswer',
+			credential: takerCredential,
+			params: { quizSubmissionId, questionId: '99999999', answer: '1', ...eh },
+		});
+		expect(noQuestion.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND' });
+		const noSubmission = await runNode({
+			resource: 'quizSubmissionQuestion',
+			operation: 'getFormattedAnswer',
+			credential: takerCredential,
+			params: { quizSubmissionId: '99999999', questionId: numerical, answer: '1', ...eh },
+		});
+		expect(noSubmission.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND' });
+	});
+
 	it('quizSubmissionQuestion: a wrong validation token and malformed answers are refused', async () => {
 		const eh = { errorHandling: { onError: 'continueWithError' } };
 		const wrongToken = await runNode({

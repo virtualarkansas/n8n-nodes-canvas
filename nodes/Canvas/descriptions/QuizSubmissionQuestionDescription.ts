@@ -25,6 +25,12 @@ export const quizSubmissionQuestionOperations: INodeProperties[] = [
 				action: 'Flag a quiz submission question',
 			},
 			{
+				name: 'Get Formatted Answer',
+				value: 'getFormattedAnswer',
+				description: 'Get a numerical answer the way the quiz page formats it when a student types it in',
+				action: 'Get a formatted quiz answer',
+			},
+			{
 				name: 'Get Many',
 				value: 'getAll',
 				description: 'List the questions of a quiz submission with the answers given',
@@ -76,10 +82,26 @@ export const quizSubmissionQuestionFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['quizSubmissionQuestion'],
-				operation: ['flag', 'unflag'],
+				operation: ['flag', 'unflag', 'getFormattedAnswer'],
 			},
 		},
 		description: 'The ID of the question',
+	},
+	{
+		displayName: 'Answer',
+		name: 'answer',
+		type: 'string',
+		required: true,
+		default: '',
+		placeholder: '12.123456',
+		displayOptions: {
+			show: {
+				resource: ['quizSubmissionQuestion'],
+				operation: ['getFormattedAnswer'],
+			},
+		},
+		description:
+			'The answer as the student typed it. For a numerical question Canvas returns the number the way the quiz page would show it (rounded to 4 decimal places, or to 16 significant digits when the question asks for a precision); answers to other kinds of questions come back unchanged.',
 	},
 	{
 		displayName: 'Attempt',

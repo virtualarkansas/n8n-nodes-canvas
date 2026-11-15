@@ -104,6 +104,14 @@ export function handleQuizResource(
 				qs: getParamObject('options'),
 			};
 
+		// Classic quizzes and New Quizzes (assignments of the New Quizzes tool) in one list.
+		case 'getAllWithNewQuizzes':
+			return {
+				endpoint: `/api/v1/courses/${courseId}/all_quizzes`,
+				method: 'GET',
+				qs: getParamObject('options'),
+			};
+
 		case 'update':
 			return {
 				endpoint: `/api/v1/courses/${courseId}/quizzes/${quizId}`,

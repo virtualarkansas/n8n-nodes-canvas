@@ -136,6 +136,12 @@ export function buildQuizSubmissionQuestionRequest(
 			return { method: 'PUT', endpoint: `${base}/${getParam('questionId')}/flag`, body: attemptBody(), dataKey };
 		case 'unflag':
 			return { method: 'PUT', endpoint: `${base}/${getParam('questionId')}/unflag`, body: attemptBody(), dataKey };
+		case 'getFormattedAnswer':
+			return {
+				method: 'GET',
+				endpoint: `${base}/${getParam('questionId')}/formatted_answer`,
+				qs: { answer: getParam('answer') },
+			};
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for quizSubmissionQuestion`);
 	}
