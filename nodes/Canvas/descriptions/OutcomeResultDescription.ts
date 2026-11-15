@@ -205,14 +205,10 @@ export const outcomeResultFields: INodeProperties[] = [
 				type: 'options',
 				options: [
 					{ name: 'Outcome Score', value: 'outcome', description: 'Requires Sort Outcome ID' },
-					{ name: 'Student', value: 'student' },
-					{ name: 'Student Integration ID', value: 'student_integration_id' },
-					{ name: 'Student Login ID', value: 'student_login_id' },
-					{ name: 'Student Name', value: 'student_name' },
-					{ name: 'Student SIS ID', value: 'student_sis_id' },
+					{ name: 'Student', value: 'student', description: 'By the sortable name of the student' },
 				],
 				default: 'student',
-				description: 'How to order the student rollups',
+				description: 'How to order the student rollups. Rollups are sorted by student unless set otherwise.',
 			},
 			{
 				displayName: 'Sort Order',

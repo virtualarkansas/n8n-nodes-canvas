@@ -560,15 +560,14 @@ export function handleOutcomeImportResource(
 		case 'create': {
 			const groupId = getParamObject('additionalFields').learning_outcome_group_id;
 			// Canvas reads the CSV from the request body itself (or from a multipart upload), never
-			// from a JSON field. `rawBody` is not part of IRequestConfig yet: until the request layer
-			// sends it, the import is created without a file and Canvas answers with an error.
-			const request: IRequestConfig & { rawBody: { content: string; contentType: string } } = {
+			// from a JSON field, so the text is handed to the request layer as the body: a string
+			// is sent as it is. No `extension` argument: with it Canvas loses the uploaded body.
+			return {
 				method: 'POST',
 				endpoint: `${basePath}/outcome_imports${isBlank(groupId) ? '' : `/group/${String(groupId).trim()}`}`,
-				qs: { import_type: 'instructure_csv', extension: 'csv' },
-				rawBody: { content: getParam('csvData'), contentType: 'text/csv' },
+				qs: { import_type: 'instructure_csv' },
+				body: getParam('csvData') as unknown as Record<string, unknown>,
 			};
-			return request;
 		}
 
 		case 'getStatus': {
@@ -654,6 +653,11 @@ export function handleOutcomeResultResource(
 			}
 			if (options.add_defaults !== undefined) {
 				qs.add_defaults = options.add_defaults;
+			}
+			// Canvas only cuts the student rollups into pages when they are sorted by student or by
+			// an outcome score. Unsorted, every page repeats all rollups (while announcing a next page).
+			if (isBlank(qs.aggregate) && isBlank(qs.sort_by)) {
+				qs.sort_by = 'student';
 			}
 
 			return {
