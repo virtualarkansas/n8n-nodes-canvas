@@ -44,6 +44,8 @@ export { courseNicknameOperations, courseNicknameFields } from './CourseNickname
 
 export { gradebookOperations, gradebookFields } from './GradebookDescription';
 
+export { webZipExportOperations, webZipExportFields } from './WebZipExportDescription';
+
 // User resource group descriptions
 export {
 	userOperations,

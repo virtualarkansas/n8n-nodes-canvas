@@ -126,5 +126,6 @@ export const canvasResources: ICanvasResource[] = [
 	{ name: 'Tab', value: 'tab', operations: descriptions.tabOperations, fields: descriptions.tabFields },
 	{ name: 'User', value: 'user', operations: descriptions.userOperations, fields: descriptions.userFields },
 	{ name: 'User Observee', value: 'userObservee', operations: descriptions.userObserveeOperations, fields: descriptions.userObserveeFields },
+	{ name: 'Web Zip Export', value: 'webZipExport', operations: descriptions.webZipExportOperations, fields: descriptions.webZipExportFields },
 	{ name: 'What-If Grade', value: 'whatIfGrade', operations: descriptions.whatIfGradeOperations, fields: descriptions.whatIfGradeFields },
 ];

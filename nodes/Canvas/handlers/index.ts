@@ -11,6 +11,7 @@ import {
 
 import { buildCourseNicknameRequest } from './courseNickname.handler';
 import { buildGradebookRequest } from './gradebook.handler';
+import { buildWebZipExportRequest } from './webZipExport.handler';
 
 // Users group
 import {
@@ -237,6 +238,7 @@ export const resourceHandlers: Record<string, ResourceHandler> = {
 	courseReport: buildCourseReportRequest,
 	courseNickname: buildCourseNicknameRequest,
 	gradebook: buildGradebookRequest,
+	webZipExport: buildWebZipExportRequest,
 
 	// Users group
 	user: buildUserRequest,
