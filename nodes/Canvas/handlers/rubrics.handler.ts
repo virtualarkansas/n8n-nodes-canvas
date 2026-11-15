@@ -119,6 +119,9 @@ function rubricAssociation(
 		type = 'Course';
 		id = courseId;
 	}
+	if (isBlank(id) && !isBlank(type)) {
+		throw new ApplicationError(`An Association ID is required to associate the rubric with an ${String(type)}`);
+	}
 	if (!isBlank(id)) {
 		association.association_id = typeof id === 'string' ? id.trim() : id;
 		association.association_type = isBlank(type) ? 'Assignment' : type;

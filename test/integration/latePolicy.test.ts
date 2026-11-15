@@ -95,6 +95,17 @@ describe('latePolicy', () => {
 		expect(await policyOf(bare.id)).toMatchObject(defaults);
 	});
 
+	it('get: returns the late policy of a course, as a teacher', async () => {
+		const [output] = await runOk({ resource: 'latePolicy', operation: 'get', persona: 'teacher', params: { courseId: `sis_course_id:${course.sisId}` } });
+		expect(unwrap(output, 'late_policy')).toMatchObject({
+			id: (await policyOf(courseId)).id,
+			late_submission_deduction: 12.5,
+			late_submission_interval: 'hour',
+			missing_submission_deduction: 75,
+			missing_submission_deduction_enabled: true,
+		});
+	});
+
 	it('get: returns the policy, for several courses with a mix of found and missing', async () => {
 		const result = await runNode({
 			resource: 'latePolicy',

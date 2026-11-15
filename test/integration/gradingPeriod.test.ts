@@ -266,6 +266,17 @@ describe('gradingPeriod', () => {
 		expect(result.success).toEqual([]);
 	});
 
+	it('get: returns a period a course inherits from its term\'s set, as a teacher', async () => {
+		const [period] = await runOk({
+			resource: 'gradingPeriod',
+			operation: 'get',
+			persona: 'teacher',
+			params: { courseId: `sis_course_id:${course.sisId}`, gradingPeriodId: periodIds[11] },
+		});
+		expect(period).toMatchObject({ id: periodIds[11], title: 'Period 12', grading_period_group_id: setId, weight: 2, is_closed: false });
+		expect(period.permissions).toMatchObject({ read: true, update: false });
+	});
+
 	it('get: returns the period itself, for several input items with a mix of found and missing', async () => {
 		const result = await runNode({
 			resource: 'gradingPeriod',
