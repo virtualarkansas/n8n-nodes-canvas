@@ -1,5 +1,13 @@
 import type { INodeProperties } from 'n8n-workflow';
 
+const enrollmentTypeOptions = [
+	{ name: 'Designer', value: 'DesignerEnrollment' },
+	{ name: 'Observer', value: 'ObserverEnrollment' },
+	{ name: 'Student', value: 'StudentEnrollment' },
+	{ name: 'TA', value: 'TaEnrollment' },
+	{ name: 'Teacher', value: 'TeacherEnrollment' },
+];
+
 export const enrollmentOperations: INodeProperties[] = [
 	{
 		displayName: 'Operation',
@@ -27,8 +35,20 @@ export const enrollmentOperations: INodeProperties[] = [
 			{
 				name: 'Deactivate',
 				value: 'deactivate',
-				description: 'Deactivate an enrollment',
+				description: 'Deactivate an enrollment: the user stays on the roster but cannot participate',
 				action: 'Deactivate an enrollment',
+			},
+			{
+				name: 'Delete',
+				value: 'delete',
+				description: 'Delete an enrollment',
+				action: 'Delete an enrollment',
+			},
+			{
+				name: 'Get',
+				value: 'get',
+				description: 'Get a single enrollment by ID',
+				action: 'Get an enrollment',
 			},
 			{
 				name: 'Get Many',
@@ -39,8 +59,14 @@ export const enrollmentOperations: INodeProperties[] = [
 			{
 				name: 'Reactivate',
 				value: 'reactivate',
-				description: 'Reactivate an enrollment',
+				description: 'Reactivate an inactive enrollment',
 				action: 'Reactivate an enrollment',
+			},
+			{
+				name: 'Set Last Attended',
+				value: 'setLastAttended',
+				description: 'Set the last attended date of a student in a course',
+				action: 'Set the last attended date of an enrollment',
 			},
 		],
 		default: 'getAll',
@@ -129,7 +155,26 @@ export const enrollmentFields: INodeProperties[] = [
 	},
 
 	// ----------------------------------
-	//         enrollment: create
+	//         enrollment: get
+	// ----------------------------------
+	{
+		displayName: 'Account ID',
+		name: 'accountId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['enrollment'],
+				operation: ['get'],
+			},
+		},
+		description:
+			'The ID of the root account, or of a sub-account the enrollment\'s course belongs to ("self" selects the root account of the Canvas URL)',
+	},
+
+	// ----------------------------------
+	//         enrollment: create, setLastAttended
 	// ----------------------------------
 	{
 		displayName: 'Course ID',
@@ -140,10 +185,10 @@ export const enrollmentFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['enrollment'],
-				operation: ['create'],
+				operation: ['create', 'setLastAttended'],
 			},
 		},
-		description: 'The ID of the course to enroll the user in',
+		description: 'The ID of the course',
 	},
 	{
 		displayName: 'User ID',
@@ -154,10 +199,10 @@ export const enrollmentFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['enrollment'],
-				operation: ['create'],
+				operation: ['create', 'setLastAttended'],
 			},
 		},
-		description: 'The ID of the user to enroll',
+		description: 'The ID of the user',
 	},
 	{
 		displayName: 'Enrollment Type',
@@ -198,11 +243,26 @@ export const enrollmentFields: INodeProperties[] = [
 				description: 'Enroll as a teacher',
 			},
 		],
-		description: 'The type of enrollment',
+		description:
+			'The type of enrollment. When a "Role ID" is given, the type must be the base type of that role.',
+	},
+	{
+		displayName: 'Date',
+		name: 'date',
+		type: 'dateTime',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['enrollment'],
+				operation: ['setLastAttended'],
+			},
+		},
+		description: 'The date the student last attended the course',
 	},
 
 	// ----------------------------------
-	//         enrollment: conclude/deactivate/reactivate
+	//         enrollment: conclude/deactivate/delete/reactivate
 	// ----------------------------------
 	{
 		displayName: 'Course ID',
@@ -213,7 +273,7 @@ export const enrollmentFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['enrollment'],
-				operation: ['conclude', 'deactivate', 'reactivate'],
+				operation: ['conclude', 'deactivate', 'delete', 'reactivate'],
 			},
 		},
 		description: 'The ID of the course',
@@ -227,7 +287,7 @@ export const enrollmentFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['enrollment'],
-				operation: ['conclude', 'deactivate', 'reactivate'],
+				operation: ['conclude', 'deactivate', 'delete', 'get', 'reactivate'],
 			},
 		},
 		description: 'The ID of the enrollment',
@@ -261,7 +321,7 @@ export const enrollmentFields: INodeProperties[] = [
 				name: 'courseSectionId',
 				type: 'string',
 				default: '',
-				description: 'The ID of the course section to enroll the user in',
+				description: 'The ID of the course section to enroll the user in (default: the default section of the course)',
 			},
 			{
 				displayName: 'End At',
@@ -280,7 +340,8 @@ export const enrollmentFields: INodeProperties[] = [
 					{ name: 'Invited', value: 'invited' },
 				],
 				default: 'active',
-				description: 'The initial state of the enrollment',
+				description:
+					'The initial state of the enrollment. Without this field Canvas creates the enrollment as "invited" and the user has to accept it.',
 			},
 			{
 				displayName: 'Limit Privileges to Course Section',
@@ -308,21 +369,15 @@ export const enrollmentFields: INodeProperties[] = [
 				name: 'selfEnrolled',
 				type: 'boolean',
 				default: false,
-				description: 'Whether the user enrolled themselves',
+				description: 'Whether to mark the enrollment as a self-enrollment, which lets students drop the course themselves',
 			},
 			{
 				displayName: 'Self Enrollment Code',
 				name: 'selfEnrollmentCode',
 				type: 'string',
 				default: '',
-				description: 'The self-enrollment code used (if self-enrolled)',
-			},
-			{
-				displayName: 'SIS Enrollment ID',
-				name: 'sisEnrollmentId',
-				type: 'string',
-				default: '',
-				description: 'SIS ID for the enrollment',
+				description:
+					'The self-enrollment code of the course. Lets the current user enroll themselves without permission to manage enrollments: "User ID" must be "self" and all other fields are ignored.',
 			},
 			{
 				displayName: 'Start At',
@@ -355,14 +410,15 @@ export const enrollmentFields: INodeProperties[] = [
 				name: 'enrollmentTermId',
 				type: 'string',
 				default: '',
-				description: 'Filter by enrollment term',
+				description:
+					'Only return enrollments of this term (only when listing by user). SIS IDs work in the form "sis_term_id:ABC".',
 			},
 			{
 				displayName: 'Grading Period ID',
 				name: 'gradingPeriodId',
 				type: 'string',
 				default: '',
-				description: 'Filter by grading period',
+				description: 'Return the grades of this grading period instead of the grades for the whole course',
 			},
 			{
 				displayName: 'Include',
@@ -370,11 +426,11 @@ export const enrollmentFields: INodeProperties[] = [
 				type: 'multiOptions',
 				options: [
 					{ name: 'Avatar URL', value: 'avatar_url' },
+					{ name: 'Can Be Removed', value: 'can_be_removed' },
 					{ name: 'Current Points', value: 'current_points' },
 					{ name: 'Group IDs', value: 'group_ids' },
 					{ name: 'Locked', value: 'locked' },
 					{ name: 'Observed Users', value: 'observed_users' },
-					{ name: 'Total Scores', value: 'total_scores' },
 					{ name: 'UUID', value: 'uuid' },
 				],
 				default: [],
@@ -384,22 +440,23 @@ export const enrollmentFields: INodeProperties[] = [
 				displayName: 'Role',
 				name: 'role',
 				type: 'multiOptions',
-				options: [
-					{ name: 'Designer', value: 'DesignerEnrollment' },
-					{ name: 'Observer', value: 'ObserverEnrollment' },
-					{ name: 'Student', value: 'StudentEnrollment' },
-					{ name: 'TA', value: 'TaEnrollment' },
-					{ name: 'Teacher', value: 'TeacherEnrollment' },
-				],
+				options: enrollmentTypeOptions,
 				default: [],
-				description: 'Filter by enrollment role(s)',
+				description: 'Filter by the base roles. For custom roles use "Role IDs".',
+			},
+			{
+				displayName: 'Role IDs',
+				name: 'roleIds',
+				type: 'string',
+				default: '',
+				description: 'Comma-separated list of role IDs (built-in or custom) to filter by. Takes precedence over "Role" and "Type".',
 			},
 			{
 				displayName: 'SIS Account IDs',
 				name: 'sisAccountIds',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of SIS account IDs to filter by',
+				description: 'Comma-separated list of SIS account IDs to filter by (sub-accounts are not searched)',
 			},
 			{
 				displayName: 'SIS Course IDs',
@@ -430,27 +487,34 @@ export const enrollmentFields: INodeProperties[] = [
 					{ name: 'Active', value: 'active' },
 					{ name: 'Completed', value: 'completed' },
 					{ name: 'Creation Pending', value: 'creation_pending' },
+					{
+						name: 'Current and Concluded (Own Enrollments Only)',
+						value: 'current_and_concluded',
+					},
+					{
+						name: 'Current and Future (Own Enrollments Only)',
+						value: 'current_and_future',
+					},
+					{
+						name: 'Current and Invited (Own Enrollments Only)',
+						value: 'current_and_invited',
+					},
 					{ name: 'Deleted', value: 'deleted' },
 					{ name: 'Inactive', value: 'inactive' },
 					{ name: 'Invited', value: 'invited' },
 					{ name: 'Rejected', value: 'rejected' },
 				],
 				default: [],
-				description: 'Filter by enrollment state(s)',
+				description:
+					'Filter by enrollment state(s). Without this filter Canvas returns active and invited enrollments. The combined states only work when listing the enrollments of the current user.',
 			},
 			{
 				displayName: 'Type',
 				name: 'type',
 				type: 'multiOptions',
-				options: [
-					{ name: 'Designer', value: 'DesignerEnrollment' },
-					{ name: 'Observer', value: 'ObserverEnrollment' },
-					{ name: 'Student', value: 'StudentEnrollment' },
-					{ name: 'TA', value: 'TaEnrollment' },
-					{ name: 'Teacher', value: 'TeacherEnrollment' },
-				],
+				options: enrollmentTypeOptions,
 				default: [],
-				description: 'Filter by enrollment type(s)',
+				description: 'Filter by enrollment type(s). Ignored when a role filter is set.',
 			},
 			{
 				displayName: 'User ID',
