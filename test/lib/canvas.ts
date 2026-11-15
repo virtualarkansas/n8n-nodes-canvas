@@ -33,6 +33,9 @@ export class CanvasClient {
 			method,
 			headers: {
 				authorization: `Bearer ${this.token}`,
+				// Node's fetch sends "Accept-Language: *" by default. Canvas takes that as "any locale",
+				// picks the first one alphabetically (Arabic) and stores it as the user's browser locale.
+				'accept-language': 'en',
 				...(body === undefined ? {} : { 'content-type': 'application/json' }),
 			},
 			body: body === undefined ? undefined : JSON.stringify(body),
