@@ -234,7 +234,16 @@ describe('lists: Return All, Limit and the node-level Pagination options', () =>
 		expect(new Set(smallPages.requests)).toEqual(new Set([20]));
 	});
 
-	it('Items Per Page or Max Pages set on the node decide instead of the Limit (as in workflows saved before 0.2.0)', async () => {
+	it('a Limit the user changed always wins; Items Per Page then only sets the page size', async () => {
+		const small = await read({ returnAll: false, limit: 9, pagination: { perPage: 4 } });
+		expect(small.count).toBe(9);
+		expect(small.requests).toEqual([4, 4, 4]);
+		const capped = await read({ returnAll: false, limit: 120, pagination: { perPage: 100, maxPages: 1 } });
+		expect(capped.count).toBe(120);
+		expect(capped.requests).toEqual([100, 100]);
+	});
+
+	it('with the Limit left at 50, Items Per Page or Max Pages set on the node decide (as in workflows saved before 0.2.0)', async () => {
 		const pages = await read({ returnAll: false, limit: 50, pagination: { perPage: 100, maxPages: 3 } });
 		expect(pages.count).toBe(300);
 		expect(pages.requests).toEqual([100, 100, 100]);

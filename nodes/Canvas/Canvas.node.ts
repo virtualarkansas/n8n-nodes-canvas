@@ -202,7 +202,7 @@ export class Canvas implements INodeType {
 						type: 'number',
 						default: 10,
 						description:
-							'Number of items Canvas is asked for per request (max 100). Setting this or Max Pages replaces the Limit field of a list operation: the node then reads up to Max Pages pages of this size.',
+							'Number of items Canvas is asked for per request (max 100). With the Limit of a list operation left at 50, setting this or Max Pages makes the node read up to Max Pages pages of this size instead.',
 						typeOptions: {
 							minValue: 1,
 							maxValue: 100,
@@ -214,7 +214,7 @@ export class Canvas implements INodeType {
 						type: 'number',
 						default: 5,
 						description:
-							'Maximum pages to fetch (0 = unlimited). Setting this or Items Per Page replaces the Limit field of a list operation.',
+							'Maximum pages to fetch (0 = unlimited). Used for operations without a Limit field, and for list operations whose Limit is left at 50 when this or Items Per Page is set.',
 						typeOptions: {
 							minValue: 0,
 						},
@@ -925,14 +925,19 @@ async function processItem(
 	return { success: false, itemIndex, items: [], error: result.error };
 }
 
+/** The default of every Limit field (n8n's convention). */
+const DEFAULT_LIMIT = 50;
+
 /**
  * How much of a list an operation reads.
  *
  *  1. Everything, when Return All is on: the operation's own field or Pagination > Return All.
- *  2. Otherwise, when Pagination > Items Per Page or Max Pages was set, those decide (pages of
- *     that size, up to that many pages). This is also what a workflow saved before the
- *     operations had a Limit field relies on.
- *  3. Otherwise the operation's Limit, read in as few requests as possible.
+ *  2. Otherwise the operation's Limit, when the user changed it: so many records, in pages of
+ *     Pagination > Items Per Page if that is set, else in as few requests as possible.
+ *  3. With the Limit left at its default: when Pagination > Items Per Page or Max Pages is set,
+ *     those decide (pages of that size, up to that many pages). A workflow saved before the
+ *     operations had a Limit field has exactly this, and must keep returning what it returned.
+ *  4. Otherwise the default Limit.
  *
  * An operation without Return All / Limit fields follows the node-level options alone.
  */
@@ -957,11 +962,16 @@ function resolvePagination(
 	if (returnAll === true || nodePagination.returnAll) {
 		return { enabled, perPage: nodePagination.perPageSet ? perPage : CANVAS_MAX_PER_PAGE, maxPages: 0 };
 	}
-	if (nodePagination.pagesSet) {
+	const itemLimit = toNumber(limit, DEFAULT_LIMIT, 1);
+	if (itemLimit === DEFAULT_LIMIT && nodePagination.pagesSet) {
 		return nodeLevel;
 	}
-	const itemLimit = toNumber(limit, 50, 1);
-	return { enabled, perPage: Math.min(CANVAS_MAX_PER_PAGE, itemLimit), maxPages: 0, limit: itemLimit };
+	return {
+		enabled,
+		perPage: nodePagination.perPageSet ? perPage : Math.min(CANVAS_MAX_PER_PAGE, itemLimit),
+		maxPages: 0,
+		limit: itemLimit,
+	};
 }
 
 /** Top-level parameters of a resource that are JSON fields: a list given to one stays JSON. */

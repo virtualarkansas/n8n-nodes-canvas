@@ -324,9 +324,11 @@ every record turn **Return All** on.
 The **Pagination** collection further down applies to the whole node:
 
 - **Return All**: read whole lists whatever the operation's own fields say
-- **Items Per Page** (1-100) and **Max Pages** (0 = no limit): when either is set, the node reads up
-  to Max Pages pages of that size (10 per page and 5 pages unless set) and the operation's Limit
-  is not used. Workflows saved with 0.1.0 keep working this way.
+- **Items Per Page** (1-100): the page size. With a Limit you have changed, it only decides how
+  many requests the node needs.
+- **Items Per Page** and **Max Pages** (0 = no limit) with the operation's Limit left at 50: when
+  either is set, the node reads up to Max Pages pages of that size (10 per page and 5 pages unless
+  set). This is how workflows saved with 0.1.0 keep returning what they returned.
 
 Operations without Return All / Limit fields (and the Custom API Request for anything but GET)
 follow the Pagination collection alone: 5 pages of 10 unless set otherwise.

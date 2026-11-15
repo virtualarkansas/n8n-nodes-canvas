@@ -18,7 +18,8 @@ This release changes behaviour that workflows saved with 0.1.0 may rely on. Read
   Canvas' pagination, and 134 list operations now have n8n's usual **Return All** and **Limit**
   (default 50) fields. A workflow saved with 0.1.0 returns what it returned before: 50 records
   by default, everything with **Pagination → Return All**, and pages as configured where
-  **Items Per Page** or **Max Pages** were set (those two, when set, decide instead of Limit). New:
+  **Items Per Page** or **Max Pages** were set (with Limit left at 50 those two decide; a Limit
+  you change wins). New:
   when a list is cut short, the output panel says so. In 0.1.0 about ten list operations
   (sub-accounts, gradebook column data, recipients, outcome rollups ...) returned a single page
   whatever the options said, and the Return All / Limit fields that twelve resources showed were
