@@ -32,6 +32,7 @@ const ids = (recipients: Json[]): string[] => recipients.map((r) => String(r.id)
 describe('search', () => {
 	const marker = `catalog${randomUUID().slice(0, 8)}`;
 	const ownCourses: string[] = [];
+	const recipientCourses: string[] = [];
 	let catalogChanged = false;
 	const ownUsers: OwnUser[] = [];
 	let removePersona: (() => Promise<void>) | undefined;
@@ -42,7 +43,7 @@ describe('search', () => {
 		for (const user of ownUsers) {
 			await deleteUser(user);
 		}
-		for (const id of ownCourses) {
+		for (const id of [...ownCourses, ...recipientCourses]) {
 			await canvas().request('DELETE', `/api/v1/courses/${id}?event=delete`);
 		}
 	});
@@ -225,26 +226,73 @@ describe('search', () => {
 			expect(nothing).toEqual([]);
 		});
 
-		it('a student only finds people and contexts they can message', async () => {
-			const student = new CanvasClient('student');
-			const expected = await student.getAll<Json>('/api/v1/search/recipients?search=a');
-			const found = await runOk({
+		it('a student only finds the people and contexts they can message', async () => {
+			// The seeded courses change all the time while other files run, so this uses a course
+			// of its own: the insider of the previous test as a student, with a teacher and a classmate.
+			const insider = ownUsers[0];
+			const stranger = ownUsers[1];
+			const teacher = await createUser('Search teacher');
+			const classmate = await createUser('Search classmate');
+			ownUsers.push(teacher, classmate);
+			const course = await canvas().post<Json>(`/api/v1/accounts/${fx('accountId')}/courses`, {
+				course: { name: `Recipients ${marker}` },
+				offer: true,
+			});
+			const courseId = String(course.id);
+			recipientCourses.push(courseId);
+			for (const [user, type] of [
+				[insider, 'StudentEnrollment'],
+				[classmate, 'StudentEnrollment'],
+				[teacher, 'TeacherEnrollment'],
+			] as Array<[OwnUser, string]>) {
+				await canvas().post(`/api/v1/courses/${courseId}/enrollments`, {
+					enrollment: { user_id: user.id, type, enrollment_state: 'active' },
+				});
+			}
+
+			const everyone = await runOk({
 				resource: 'search',
 				operation: 'findRecipients',
-				persona: 'student',
-				params: { options: { search: 'a' }, pagination: { returnAll: true } },
+				persona: 'searchInsider',
+				params: { options: { search: 'Search', type: 'user' }, pagination: { returnAll: true } },
 			});
-			expect(ids(found)).toEqual(ids(expected));
-			const asAdmin = await canvas().getAll<Json>(`/api/v1/search/recipients?search=a&context=course_${fx('largeCourseId')}`);
-			expect(asAdmin.length).toBeGreaterThan(0);
-			// The large course is not one of the student persona's: nothing of it leaks.
-			const inOtherCourse = await runOk({
+			// The people of the course (the insider included), but not the stranger.
+			expect(ids(everyone).sort()).toEqual([insider.id, classmate.id, teacher.id].sort());
+			expect(ids(everyone)).not.toContain(stranger.id);
+
+			const teachers = await runOk({
 				resource: 'search',
 				operation: 'findRecipients',
-				persona: 'student2',
-				params: { options: { search: 'a', context: `course_${fx('emptyCourseId')}` } },
+				persona: 'searchInsider',
+				params: { options: { context: `course_${courseId}_teachers` } },
 			});
-			expect(inOtherCourse).toEqual([]);
+			expect(ids(teachers)).toEqual([teacher.id]);
+
+			const contexts = await runOk({
+				resource: 'search',
+				operation: 'findRecipients',
+				persona: 'searchInsider',
+				params: { options: { search: marker, type: 'context', permissions: ['send_messages_all'] } },
+			});
+			expect(ids(contexts)).toEqual([`course_${courseId}`]);
+			// A student may not message the whole course at once.
+			expect(contexts[0].permissions).toEqual({});
+
+			// A course the insider is not in gives nothing away.
+			const elsewhere = await runOk({
+				resource: 'search',
+				operation: 'findRecipients',
+				persona: 'searchInsider',
+				params: { options: { search: 'a', context: `course_${fx('largeCourseId')}` } },
+			});
+			expect(elsewhere).toEqual([]);
+			// The admin, in contrast, finds the stranger by name.
+			const asAdmin = await runOk({
+				resource: 'search',
+				operation: 'findRecipients',
+				params: { options: { search: stranger.name, type: 'user' } },
+			});
+			expect(ids(asAdmin)).toEqual([stranger.id]);
 		});
 
 		it('errors: an unknown user ID is a 404 on the Error output', async () => {
