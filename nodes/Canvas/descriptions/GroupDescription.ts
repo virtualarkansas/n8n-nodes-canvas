@@ -37,6 +37,18 @@ export const groupOperations: INodeProperties[] = [
 				action: 'Get a group',
 			},
 			{
+				name: 'Get Activity Stream',
+				value: 'getActivityStream',
+				description: 'Get what recently happened in a group for the user of the access token (discussions, announcements, conversations ...)',
+				action: 'Get the activity stream of a group',
+			},
+			{
+				name: 'Get Activity Stream Summary',
+				value: 'getActivityStreamSummary',
+				description: 'Get the number of items, and of unread items, per kind of activity in a group for the user of the access token',
+				action: 'Get the activity stream summary of a group',
+			},
+			{
 				name: 'Get Many',
 				value: 'getAll',
 				description: 'Get the groups of a course, of an account, or of the current user',
@@ -47,6 +59,18 @@ export const groupOperations: INodeProperties[] = [
 				value: 'getMembership',
 				description: 'Get the membership of one user in a group',
 				action: 'Get a group membership',
+			},
+			{
+				name: 'Get Permissions',
+				value: 'getPermissions',
+				description: 'Check which permissions the user of the access token has in a group',
+				action: 'Get permissions in a group',
+			},
+			{
+				name: 'Get User Differentiation Tags',
+				value: 'getUserDifferentiationTags',
+				description: 'Get the differentiation tags of several users of a course in one request',
+				action: 'Get the differentiation tags of users',
 			},
 			{
 				name: 'Invite',
@@ -65,6 +89,12 @@ export const groupOperations: INodeProperties[] = [
 				value: 'listUsers',
 				description: 'List the users who are members of a group',
 				action: 'List users in a group',
+			},
+			{
+				name: 'Preview HTML',
+				value: 'previewHtml',
+				description: 'Get HTML the way Canvas would store and return it in a group: unsafe markup removed, links to Canvas content made absolute. Nothing is saved.',
+				action: 'Preview processed HTML in a group',
 			},
 			{
 				name: 'Remove Member',
@@ -138,11 +168,88 @@ export const groupFields: INodeProperties[] = [
 					'listMemberships',
 					'addMember',
 					'removeMembers',
+					'getActivityStream',
+					'getActivityStreamSummary',
+					'getPermissions',
+					'previewHtml',
 					...singleMembershipOperations,
 				],
 			},
 		},
 		description: 'The ID of the group (or "sis_group_id:..." for a SIS ID)',
+	},
+
+	// ----------------------------------
+	//         group: getPermissions
+	// ----------------------------------
+	{
+		displayName: 'Permissions',
+		name: 'permissions',
+		type: 'string',
+		default: '',
+		placeholder: 'read_roster,send_messages_all',
+		displayOptions: {
+			show: {
+				resource: ['group'],
+				operation: ['getPermissions'],
+			},
+		},
+		description:
+			'Comma-separated list of permission names to check for the current user (e.g. "manage,post_to_forum"). The result has one true/false property per permission. Leave empty for every permission of the group.',
+	},
+
+	// ----------------------------------
+	//         group: previewHtml
+	// ----------------------------------
+	{
+		displayName: 'HTML',
+		name: 'html',
+		type: 'string',
+		typeOptions: {
+			rows: 4,
+		},
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['group'],
+				operation: ['previewHtml'],
+			},
+		},
+		description: 'The HTML to process',
+	},
+
+	// ----------------------------------
+	//         group: getUserDifferentiationTags
+	// ----------------------------------
+	{
+		displayName: 'Course ID',
+		name: 'courseId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['group'],
+				operation: ['getUserDifferentiationTags'],
+			},
+		},
+		description: 'The ID of the course',
+	},
+	{
+		displayName: 'User IDs',
+		name: 'userIds',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['group'],
+				operation: ['getUserDifferentiationTags'],
+			},
+		},
+		description:
+			'Comma-separated IDs of the users to look up. The result has one property per user ID holding the IDs of the differentiation tags (non-collaborative groups) of the course the user has.',
 	},
 
 	// ----------------------------------
@@ -472,7 +579,7 @@ export const groupFields: INodeProperties[] = [
 				name: 'override_sis_stickiness',
 				type: 'boolean',
 				default: true,
-				description: 'Whether fields that were changed in Canvas after a SIS import ("sticky" fields) may be overwritten. Canvas overwrites them unless this is turned off.',
+				description: 'Whether fields that were changed in Canvas rather than by a SIS import ("sticky" fields; for a group that is its name) may be overwritten. Canvas overwrites them unless this is turned off.',
 			},
 			{
 				displayName: 'SIS Group ID',

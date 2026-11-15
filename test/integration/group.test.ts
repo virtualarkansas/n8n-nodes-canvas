@@ -396,6 +396,47 @@ describe('group', () => {
 		sisGroupId = newSisId;
 	});
 
+	it('update: with "Override SIS Stickiness" off, a name that was set in Canvas is left alone', async () => {
+		// The name of a group is "sticky" once it was set in Canvas instead of by a SIS import.
+		const sisId = unique('SBX-STICKY').replace(/\s/g, '-');
+		const sticky = await canvas().post<Json>(`/api/v1/group_categories/${categoryId}/groups`, {
+			name: 'Sticky name',
+			description: 'Before',
+			sis_group_id: sisId,
+		});
+		const id = String(sticky.id);
+
+		// Off: the name stays, the fields that are not sticky are updated.
+		const [kept] = await runOk({
+			resource: 'group',
+			operation: 'update',
+			params: { groupId: id, updateFields: { name: 'Must not be applied', description: 'After', override_sis_stickiness: false } },
+		});
+		expect(kept).toMatchObject({ id: Number(id), name: 'Sticky name' });
+		expect(await read(id)).toMatchObject({ name: 'Sticky name', description: 'After', sis_group_id: sisId });
+
+		// On, and when the option is not set at all: the name is overwritten.
+		await runOk({
+			resource: 'group',
+			operation: 'update',
+			params: { groupId: id, updateFields: { name: 'Applied with the override', override_sis_stickiness: true } },
+		});
+		expect((await read(id)).name).toBe('Applied with the override');
+		await runOk({ resource: 'group', operation: 'update', params: { groupId: id, updateFields: { name: 'Applied by default' } } });
+		expect((await read(id)).name).toBe('Applied by default');
+
+		// The option is an argument of the request, sent in the query string: in a JSON body
+		// Canvas reads `false` as "not given" and overwrites the name anyway.
+		const debug = await runNode({
+			resource: 'group',
+			operation: 'update',
+			params: { debugMode: true, groupId: id, updateFields: { name: 'Shown only', override_sis_stickiness: false } },
+		});
+		expect(debug.debug[0]).toMatchObject({ method: 'PUT', queryString: { override_sis_stickiness: false }, body: { name: 'Shown only' } });
+		expect(String(debug.debug[0].url)).toContain(`/api/v1/groups/${id}?override_sis_stickiness=false`);
+		expect((await read(id)).name).toBe('Applied by default');
+	});
+
 	it('update: "Members" replaces the membership of the group', async () => {
 		// Student 3 has a credential and is not put into groups by any other test file.
 		const wanted = [students[2], students[5], students[6]];
