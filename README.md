@@ -318,7 +318,9 @@ precedence.
 - **Retry Then Error**: throttling, server errors (5xx) and network errors are retried with
   backoff, then the item goes to the Error output; other errors go there immediately
 
-n8n's own node setting **On Error → Continue** also sends failures to the Error output.
+n8n's own node setting **On Error → Continue** also sends failures to the node's Error output.
+Do not use **On Error → Continue (using error output)**: n8n then adds a third output of its own,
+which stays empty because the failed items are already on the node's Error output.
 
 An item on the Error output looks like this:
 

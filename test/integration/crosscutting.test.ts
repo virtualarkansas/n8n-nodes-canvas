@@ -30,9 +30,6 @@ vi.mock('../lib/state', async (original) =>
  * stands in for Canvas only where Canvas cannot be made to misbehave on demand or
  * where the exact request on the wire matters.
  *
- * Expectations marked `// SHARED-BUG:` describe what the node does today where that
- * is a defect in shared code (GenericFunctions.ts / Canvas.node.ts); the comment says
- * what it should do instead.
  */
 describe('cross-cutting', () => {
 	let admin: DedicatedUser; // account admin of this file's own: own token, own rate-limit quota
@@ -335,11 +332,8 @@ describe('cross-cutting', () => {
 				'continueOnFail: true (legacy setting)': { stop: toErrorOutput, continueWithError: toErrorOutput, ignoreAndContinue: dropped, retryThenError: toErrorOutput },
 				'onError: continueRegularOutput': { stop: toErrorOutput, continueWithError: toErrorOutput, ignoreAndContinue: dropped, retryThenError: toErrorOutput },
 				// "Continue (using error output)" makes n8n add a third output of its own. It stays empty in every
-				// mode: n8n only moves items shaped { error } there, and the node's error items are richer.
-				// SHARED-BUG: a user who picks this setting wires n8n's error output and never receives anything.
-				// Canvas.node.ts should, when `this.getNode().onError === 'continueErrorOutput'`, hand failed items
-				// to n8n in the shape it routes (item.error set), or the README should say to use the node's own
-				// Error output instead of n8n's "error output" setting.
+				// mode: failed items are already on the node's own Error output (n8n only moves items shaped
+				// { error } there, and the node's error items are richer). The README says to use the node's output.
 				'onError: continueErrorOutput': { stop: 'ok [2,1,0]', continueWithError: 'ok [2,1,0]', ignoreAndContinue: 'ok [2,0,0]', retryThenError: 'ok [2,1,0]' },
 			});
 		});
@@ -600,7 +594,7 @@ describe('cross-cutting', () => {
 			expect(directMs).toBeLessThan(waitedMs - 4000);
 		}, 240_000);
 
-		it('(2) a burst into a used-up quota: Canvas\' "403 Forbidden (Rate Limit Exceeded)" should be retried', async () => {
+		it('(2) a burst into a used-up quota: Canvas\' "403 Forbidden (Rate Limit Exceeded)" is retried until it passes', async () => {
 			// 150 over the high water mark: Canvas refuses this token for about fifteen seconds.
 			await setRemaining(burst.token, -150);
 			expect((await directStatus()).status).toBe(403);
@@ -615,32 +609,16 @@ describe('cross-cutting', () => {
 			expect(result.ok).toBe(true);
 			expect(result.success.length + result.error.length).toBe(12);
 
-			// SHARED-BUG: every item should succeed after the node has waited out the refusals (backoff 2 s,
-			// 4 s, 8 s, ...), i.e. `result.error` should be [] and `elapsed` at least 14 s. Today the refusal
-			// is not recognised as a rate limit at all: nothing is retried and the items are lost with a
-			// misleading message. Cause: Canvas sends the refusal as text/plain. n8n's NodeApiError keeps a
-			// response body only when it is a JSON object (`context.data`), and its `cause` (the HTTP error
-			// with `response.data`) is not kept either, so isRateLimitError() in GenericFunctions.ts finds
-			// neither "Rate Limit Exceeded" nor anything else of the body; message and description are n8n's
-			// own texts. Fix: send the request with `ignoreHttpStatusErrors: true` (the full response is
-			// already requested) and decide on status, body and the `X-Rate-Limit-Remaining: 0.0` header of
-			// the response itself; build the error for other failures from that response, so text and HTML
-			// bodies are no longer lost either. The same applies to the probe in checkRateLimit(), which
-			// treats this refusal as "unknown problem, go ahead" (remaining 1000).
-			expect(result.success).toEqual([]);
-			expect(paired(result, 1)).toEqual(items.map((_, index) => index));
-			for (const error of result.error) {
-				expect(error).toMatchObject({
-					errorCode: 403,
-					errorType: 'FORBIDDEN', // should be RATE_LIMITED
-					errorMessage: 'Forbidden - perhaps check your credentials?', // should be Canvas' "403 Forbidden (Rate Limit Exceeded)"
-					endpoint: '/api/v1/users/self',
-				});
-			}
-			expect(elapsed).toBeLessThan(13_000); // no backoff happened (2 s + 4 s + 8 s would be needed)
+			// Canvas refuses with text/plain "403 Forbidden (Rate Limit Exceeded)". The node recognises it,
+			// backs off (2 s, 4 s, 8 s, ...) and every item succeeds once the quota has recovered.
+			expect(result.error).toEqual([]);
+			expect(result.success).toHaveLength(12);
+			expect(result.success.every((u) => u.id === Number(burst.id))).toBe(true);
+			expect(paired(result, 0)).toEqual(items.map((_, index) => index));
+			expect(elapsed).toBeGreaterThanOrEqual(13_000); // at least 2 s + 4 s + 8 s of backoff
 		}, 240_000);
 
-		it('(3) with the rate limit check disabled, throttled responses should still be retried', async () => {
+		it('(3) with the rate limit check disabled, throttled responses are still retried', async () => {
 			const release = holdRemaining(burst.token, -150);
 			try {
 				const started = Date.now();
@@ -651,20 +629,22 @@ describe('cross-cutting', () => {
 				const elapsed = Date.now() - started;
 				expect(result.success).toEqual([]);
 				expect(paired(result, 1)).toEqual([0, 1, 2, 3]);
-				// SHARED-BUG (same cause as above): with the quota held down for the whole run every item should
-				// end as RATE_LIMITED with Canvas' text after two retries each (2 s + 4 s per item). Today each
-				// item fails at once as a plain 403.
+				// The quota stays used up for the whole run: every item ends as RATE_LIMITED, with Canvas'
+				// own text, after two retries each (2 s + 4 s per item).
 				for (const error of result.error) {
-					expect(error).toMatchObject({ errorCode: 403, errorType: 'FORBIDDEN', errorMessage: 'Forbidden - perhaps check your credentials?' });
+					expect(error).toMatchObject({ errorCode: 403, errorType: 'RATE_LIMITED', endpoint: '/api/v1/users/self' });
+					expect(String(error.errorMessage)).toContain('Rate Limit Exceeded');
 				}
-				expect(elapsed).toBeLessThan(20_000); // retrying would take 6 s per item
+				expect(elapsed).toBeGreaterThanOrEqual(4 * 6000);
 
-				// "Retry Then Error" does not help either: a 403 it does not recognise is not retried.
+				// "Retry Then Error" treats the refusal as worth retrying too (2 s + 4 s), then reports it.
+				const retryStarted = Date.now();
 				const retryMode = await whoAmI(
 					{ rateLimiting: { enabled: false, maxRetries: 0 }, errorHandling: { onError: 'retryThenError', maxRetries: 2 } },
 					{ items: items.slice(0, 1) },
 				);
-				expect(retryMode.error[0]).toMatchObject({ errorCode: 403, errorType: 'FORBIDDEN' });
+				expect(retryMode.error[0]).toMatchObject({ errorCode: 403, errorType: 'RATE_LIMITED' });
+				expect(Date.now() - retryStarted).toBeGreaterThanOrEqual(6000);
 			} finally {
 				await release();
 			}
@@ -696,10 +676,7 @@ describe('cross-cutting', () => {
 				for (const error of perItem.error) {
 					expect(error).toMatchObject({
 						errorCode: 0,
-						// SHARED-BUG: should be 'RATE_LIMITED'. The node raises this as a NodeOperationError, and
-						// createErrorOutput() files every NodeOperationError under INVALID_PARAMETERS. Fix: give the
-						// error a marker (or its own class) that createErrorOutput()/isRateLimitError() recognise.
-						errorType: 'INVALID_PARAMETERS',
+						errorType: 'RATE_LIMITED',
 						errorMessage: 'Canvas rate limit quota is still below the threshold (300) after 0 retries',
 						resource: 'user',
 						operation: 'getSelf',
@@ -714,15 +691,9 @@ describe('cross-cutting', () => {
 			try {
 				const stopped = await whoAmI({ rateLimiting: { maxRetries: 1 } });
 				expect(stopped.ok).toBe(false);
-				// SHARED-BUG (same cause as in (2)): should be the "quota is still below the threshold" message
-				// above, with "Last X-Rate-Limit-Remaining: 0", after waiting. Today the refused probe is ignored,
-				// the request is sent anyway and the workflow fails at once with n8n's generic 403 text, which
-				// sends the user looking at their credentials.
-				expect(stopped.failure).toMatchObject({
-					message: 'Forbidden - perhaps check your credentials?',
-					description: 'FORBIDDEN error (HTTP 403) on user/getSelf (/api/v1/users/self)',
-					httpCode: '403',
-				});
+				// The refused probe counts as "nothing left": the node waits, then gives the same clear message.
+				expect(stopped.failure?.message).toBe('Canvas rate limit quota is still below the threshold (300) after 1 retries');
+				expect(String(stopped.failure?.description)).toMatch(/Last X-Rate-Limit-Remaining: 0(\.0)?\b/);
 			} finally {
 				await release();
 			}
@@ -750,16 +721,17 @@ describe('cross-cutting', () => {
 				'probe', // nothing known yet
 				'1',
 				'2', // answer says 250 left: below the threshold of 300
-				'probe', // check before item 3: 200
-				'probe', // wait loop, first look: still 200 -> sleep 2 s
+				'probe', // check before item 3: 200 -> sleep 2 s
+				'probe', // still 200 -> sleep 4 s
 				'probe', // 500 -> go on
 				'3',
 				'4', // 600 again: no probe
 			]);
-			const beforeWait = stub.requests[4].at;
-			const afterWait = stub.requests[5].at;
-			expect(afterWait - beforeWait).toBeGreaterThanOrEqual(1900);
-			expect(afterWait - beforeWait).toBeLessThan(3500);
+			const [lowAt, stillLowAt, recoveredAt] = [stub.requests[3].at, stub.requests[4].at, stub.requests[5].at];
+			expect(stillLowAt - lowAt).toBeGreaterThanOrEqual(1900);
+			expect(stillLowAt - lowAt).toBeLessThan(3500);
+			expect(recoveredAt - stillLowAt).toBeGreaterThanOrEqual(3900);
+			expect(recoveredAt - stillLowAt).toBeLessThan(5500);
 		});
 
 		it('throttle responses seen on the wire: 429, 403 with a JSON body, 403 as plain text; a plain 403 is no rate limit', async () => {
@@ -801,15 +773,10 @@ describe('cross-cutting', () => {
 				errorType: 'FORBIDDEN',
 				errorMessage: 'user not authorized to perform that action',
 			});
-			// SHARED-BUG: the plain-text refusal, which is what Canvas sends by default, should be retried
-			// exactly like the two above (3 attempts, item 4032 on Success). It is not recognised (see (2)).
-			expect(attempts['4032']).toBe(1);
-			expect(result.success.map((u) => u.id)).toEqual([429, 4031]);
-			expect(result.error.find((e) => (e.originalItem as Json).id === 4032)).toMatchObject({
-				errorCode: 403,
-				errorType: 'FORBIDDEN',
-				errorMessage: 'Forbidden - perhaps check your credentials?',
-			});
+			// The plain-text refusal, which is what Canvas sends by default, is retried exactly like the two above.
+			expect(attempts['4032']).toBe(3);
+			expect(result.success.map((u) => u.id)).toEqual([429, 4031, 4032]);
+			expect(result.error).toHaveLength(1);
 
 			// Retries used up on 429: reported as rate limited, with the status Canvas sent.
 			stub.reset(() => ({ status: 429, body: '429 Too Many Requests (Rate Limit Exceeded)\n' }));
@@ -820,9 +787,7 @@ describe('cross-cutting', () => {
 			});
 			expect(stub.calls).toHaveLength(2);
 			expect(exhausted.error[0]).toMatchObject({ errorCode: 429, errorType: 'RATE_LIMITED' });
-			// SHARED-BUG (same cause): the message should be Canvas' "429 Too Many Requests (Rate Limit Exceeded)";
-			// the plain-text body is lost, so n8n's generic text for the status is shown.
-			expect(exhausted.error[0].errorMessage).toBe('The service is receiving too many requests from you');
+			expect(String(exhausted.error[0].errorMessage)).toContain('429 Too Many Requests (Rate Limit Exceeded)');
 		}, 120_000);
 	});
 
@@ -904,21 +869,18 @@ describe('cross-cutting', () => {
 					space: 'found',
 					'plus and ampersand': 'found',
 					'colon and semicolon': 'found',
-					// SHARED-BUG: IDs are pasted into the request path as they are, so "/", "#" and "?" end or split
-					// the path (404), and "%41" is read as "A" (which could even address a different record).
-					// Every one of these should be 'found'. Fix: percent-encode IDs when a handler builds a path,
-					// e.g. a shared helper `pathId(value) = encodeURIComponent(value.trim()).replace(/%3A/gi, ':')`
-					// used for every `${getParam('...Id')}` in an endpoint (misc.handler.ts does this already;
-					// favorite.addCourse and ePortfolio.getAll are tested with such SIS IDs).
-					percent: 'found', // a lone "%" happens to pass
-					slash: 'error 404',
-					hash: 'error 404',
-					'question mark': 'error 404',
+					// IDs are percent-encoded where they form a path segment.
+					percent: 'found',
+					slash: 'found',
+					hash: 'found',
+					'question mark': 'found',
+					'seeded odd user': 'found',
+					// A value that already looks percent-encoded is passed on as it is (so IDs encoded by hand
+					// keep working); an ID that really contains "%41" therefore has to be written as "%2541".
 					'percent that looks like an escape': 'error 404',
-					'seeded odd user': 'error 404',
 				});
 
-				// Until then the user can encode the ID by hand: every one of them is found.
+				// IDs encoded by hand are not encoded a second time: every one of them is found.
 				const encoded = await run({
 					resource: 'user',
 					operation: 'get',
@@ -993,14 +955,9 @@ describe('cross-cutting', () => {
 			const elapsed = Date.now() - started;
 			expect(result.success).toEqual([]);
 			expect(String(result.error[0].errorMessage)).toContain('must be valid JSON');
-			// SHARED-BUG: should be 'INVALID_PARAMETERS', and reported at once. Handlers throw n8n's
-			// ApplicationError, whose `name` is "Error"; createErrorOutput() and isRetryableError() in
-			// GenericFunctions.ts test `error.name === 'ApplicationError'`, which is never true. So handler
-			// validation errors are typed UNKNOWN and "Retry Then Error" retries them with backoff although
-			// nothing was sent and nothing can change. Fix: test `error instanceof ApplicationError`
-			// (import it from n8n-workflow) in both functions.
-			expect(result.error[0].errorType).toBe('UNKNOWN');
-			expect(elapsed).toBeGreaterThanOrEqual(2000);
+			// Nothing was sent and nothing can change: not retried, although the mode is Retry Then Error.
+			expect(result.error[0]).toMatchObject({ errorCode: 0, errorType: 'INVALID_PARAMETERS' });
+			expect(elapsed).toBeLessThan(2000);
 		});
 
 		it('Unicode, emoji, right-to-left text and markup survive the round trip', async () => {
@@ -1151,14 +1108,10 @@ describe('cross-cutting', () => {
 				} else {
 					expect(curl, label).not.toContain('-d ');
 				}
+				// Including per_page on GET requests: the debug URL reproduces the real run exactly.
+				expect(`${stub.url}${sent.url}`, label).toBe(shown.url);
 				if (get) {
-					// SHARED-BUG: for GET requests the real URL carries `per_page=<Items Per Page>` in front of
-					// the other parameters; the debug URL and curl leave it out, so they do not reproduce the page
-					// size (or, for lists, the result) of a real run. Fix in Canvas.node.ts (debug branch): add
-					// `per_page` to the query shown for GET requests, as canvasApiRequestAllItems() does.
-					expect(`${stub.url}${sent.url}`, label).toBe(String(shown.url).replace('?', '?per_page=10&'));
-				} else {
-					expect(`${stub.url}${sent.url}`, label).toBe(shown.url);
+					expect(String(shown.url), label).toContain('per_page=10');
 				}
 				expect(curl.endsWith(`'${String(shown.url)}'`), label).toBe(true);
 			}
@@ -1328,11 +1281,7 @@ describe('cross-cutting', () => {
 				expect(result.success).toEqual([]);
 				expect(result.error[0]).toMatchObject({ errorCode: 0, resource: 'user', operation: 'getSelf', endpoint: '/api/v1/users/self' });
 				expect(String(result.error[0].errorMessage)).toMatch(/ECONNREFUSED|refused|offline/i);
-				// SHARED-BUG: should be 'NETWORK_ERROR'. createErrorOutput() looks for `error.code` or for
-				// ECONNREFUSED/ETIMEDOUT/... in the message, but n8n hands the node a NodeApiError whose message
-				// is a friendly sentence and which has no `code`; the original text survives only in
-				// `error.messages`. Fix: also test `error.messages` (and `error.cause?.code` where present).
-				expect(result.error[0].errorType).toBe('UNKNOWN');
+				expect(result.error[0].errorType).toBe('NETWORK_ERROR');
 
 				const stopped = await runNode({ resource: 'user', operation: 'getSelf', persona: 'dead-host' });
 				expect(stopped.ok).toBe(false);

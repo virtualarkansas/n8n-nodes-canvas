@@ -1242,9 +1242,17 @@ export async function executeWithErrorHandling<T>(
 							description: `${errorOutput.errorType} error on ${where}`,
 						});
 					}
+					const description = `${errorOutput.errorType} error (HTTP ${errorOutput.errorCode}) on ${where}`;
+					if (error instanceof NodeApiError) {
+						// Built from Canvas' response by this node. n8n hands an existing NodeApiError
+						// back unchanged from the constructor, so say where it happened on the error itself.
+						error.description = description;
+						error.context = { ...(error.context ?? {}), itemIndex };
+						throw error;
+					}
 					throw new NodeApiError(this.getNode(), jsonError, {
 						message: errorOutput.errorMessage,
-						description: `${errorOutput.errorType} error (HTTP ${errorOutput.errorCode}) on ${where}`,
+						description,
 						httpCode: String(errorOutput.errorCode),
 						itemIndex,
 					});
