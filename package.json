@@ -1,7 +1,7 @@
 {
 	"name": "@kyancey-va/n8n-nodes-canvas",
-	"version": "0.1.0",
-	"description": "n8n community nodes for Canvas LMS - full API coverage with 92 resources",
+	"version": "0.2.0",
+	"description": "n8n community nodes for Canvas LMS: the REST API as resources and operations, tested against a real Canvas, and a trigger for Live Events",
 	"license": "MIT",
 	"homepage": "https://github.com/virtualarkansas/n8n-nodes-canvas",
 	"keywords": [

@@ -1,7 +1,7 @@
 # n8n-nodes-canvas
 
 Custom n8n community nodes for **Canvas LMS** by Instructure: one node for the Canvas REST API
-(more than 100 resources and 600 operations) and a trigger for Canvas Live Events. Every operation
+(116 resources, more than 700 operations) and a trigger for Canvas Live Events. Every operation
 is tested against a real Canvas through a real n8n; see [`test/COVERAGE.md`](test/COVERAGE.md).
 
 ## Features

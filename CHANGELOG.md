@@ -64,6 +64,7 @@ corrected. Where that changed what you see in the node:
 | Calendar Event | Get Many: `includes` replaced by `include` (the name Canvas reads) | Saved values still work |
 | Content Migration | Default migration type is Course Copy; `workflow_state` removed from Update | Choose the type explicitly |
 | Content Share | Create, Add Users, Update and Delete no longer take a User ID (Canvas only has these routes for the calling user) | Nothing |
+| Course | List Students uses the current roster endpoint: every student once (the old endpoint repeated a student per enrollment), without the test student unless included, and its options now take effect. Sort and include values Canvas cannot serve were removed | Check workflows that counted or de-duplicated students |
 | Course Pace | Create: `start_date` removed | Nothing |
 | Course Report | Only the report type Canvas offers per course remains (Course Pace) | Use Account Report for provisioning, grade export and the other account reports |
 | Custom Gradebook Column | Operation **Get** removed (Canvas has no such route) | Use Get Many |
@@ -73,6 +74,7 @@ corrected. Where that changed what you see in the node:
 | Folder | Get by Path and Get Many only offer the contexts Canvas has routes for | Re-select the context |
 | Grading Period | Batch Update takes the **Grading Period Set ID** (Canvas has no working course form); Update keeps its values in Update Fields | Re-enter the fields |
 | Grading Period Set | Update: `enrollment_term_ids` moved to where Canvas reads it | Re-select |
+| Group | Update: Override SIS Stickiness is sent where Canvas reads it (switched off, it was ignored and sticky fields were overwritten) | Nothing |
 | Line Item, LTI Registration, LTI Resource Link | Return All / Limit replaced by the node's Pagination options | Use Pagination → Return All |
 | Line Item, Progress → Get LTI | Need **Authentication → LTI Advantage** (see below); they never worked with an API token | Create a Canvas LTI Advantage API credential |
 | Moderated Grading | Bulk Select Provisional Grades takes **Provisional Grade IDs** | Re-enter the IDs |
@@ -88,7 +90,7 @@ corrected. Where that changed what you see in the node:
 | Quiz Question Group | Update: question bank ID removed (Canvas accepts it on Create only) | Nothing |
 | Quiz Report | `include` removed (ignored for these requests; file and progress URL are always returned) | Nothing |
 | Quiz Submission | Get Many: `include` removed (lost when unwrapping) | Use Get with Include |
-| Rubric | Create, Update and Delete take the course only; Update takes the complete rubric (Title, Criteria) | Re-enter |
+| Rubric | Create, Update and Delete take the course only; Update takes the complete rubric (Title, Criteria); Get: Include is split into Assessments and Associations | Re-enter |
 | SIS Import | Create really sends the file now: **File Source** (Binary File, Text or Base64 Text). The binary field of 0.1.0 was never read | Check the File Source |
 | Submission | Grade: `score` removed (Canvas ignores it; use Grade); Get Many: Student IDs and Workflow State moved to **Get Many for Students**; Submit a media recording requires the media type | Re-enter |
 | Tab | Update: context choice removed (courses only) | Nothing |
@@ -115,21 +117,43 @@ corrected. Where that changed what you see in the node:
 
 ### Added
 
-- **Resources:** Course Audit Log, CSP Setting, Developer Key Account Binding, Grade Change Log,
-  Gradebook History, Learning Object Date, Live Assessment, Poll Choice, Poll Session, Poll Submission,
-  Quiz Assignment Override, Quiz IP Filter, Quiz Submission Event, Quiz Submission Question, What-If Grade.
+- **New resources (24):** Brand Config, Course Audit Log, Course Nickname, CSP Setting, Custom API
+  Request, Developer Key Account Binding, Error Report, Grade Change Log, Gradebook, Gradebook History,
+  GraphQL, Learning Object Date, Live Assessment, Poll Choice, Poll Session, Poll Submission, Question
+  Bank, Quiz Assignment Override, Quiz IP Filter, Quiz Submission Event, Quiz Submission Question, User
+  Custom Data, Web Zip Export, What-If Grade.
+- **About 195 new operations on existing resources.** The node now reaches 680 of the 775 endpoints
+  in Canvas' API documentation (`test/ROUTE_GAPS.md` lists the rest and why). Among them:
+  - Course: List Users, Get User, settings, permissions, Batch Update, Reset Content, user progress,
+    effective due dates, to-do, activity stream, test student, courses of a user.
+  - User: settings, custom colors, dashboard positions, avatars, page views, missing and graded
+    submissions, activity stream, to-do, upcoming events, expire mobile sessions.
+  - Enrollment: Get, Delete, Set Last Attended, Accept / Reject Invitation, Bulk Enroll.
+  - Account: courses of an account, settings, permissions, help links, terms of service, sub-account
+    delete, restore user.
+  - Assignment: overrides (single and batch), Bulk Update Dates, group members.
+  - Submission: Get Many for Students, summary, gradeable students, bulk grading (per assignment and
+    across assignments), read state, anonymous IDs, Upload File.
+  - Submission Comment: Get Many, Upload File. Peer Review: Allocate, section context.
+  - File: Download, Copy, Get Public URL, usage rights, licenses, Get by Migration ID, Reset Verifier.
+    Folder: Get Media Folder. Media Object: caption tracks.
+  - Module and Module Item: overrides, Duplicate, Get Sequence, Mark Read. Page: revisions, front
+    page, group wikis.
+  - Discussion Topic: entries and replies, read state, ratings, subscriptions.
+  - Group: memberships, activity stream, permissions. Group Category: CSV export and import,
+    differentiation tags. Calendar Event: course timetable.
+  - Quiz: submission users, Message Students, classic and New Quizzes in one list. Quiz Submission:
+    own, outstanding, time, Upload File. Quiz Extension: course-wide extensions.
+  - Rubric: assessments, associations, CSV import. Outcome Result: mastery distribution, outcome
+    order, Learning Mastery Gradebook settings. Outcome: Create. Outcome Group: links.
+  - `npx tsx test/tools/describe.ts --list` prints every resource and operation.
 - **Custom API Request** (any method and path on your Canvas, with the node's pagination, rate limiting
   and error handling) and **GraphQL**.
-- **Operations** on existing resources: more than 100, among them discussion entries and replies,
-  group memberships, assignment overrides and bulk date changes, submission lists for students, bulk
-  grading and read state, module overrides, page revisions and front page, file copy / public URL /
-  usage rights, caption tracks, quiz submission users and outstanding submissions, account courses /
-  settings / permissions, admin and role extras, user restore / split / session termination,
-  enrollment get / delete / last attended, rubric assessments and associations.
-  `npx tsx test/tools/describe.ts --list` prints the complete list.
 - **Request Options → Act as User ID** (masquerading) for every operation, per item.
-- **Wait for Completion** for progress objects, SIS imports, account reports and content exports;
-  **Download File** attaches a finished report or export as binary data.
+- **Wait for Completion** for progress objects, SIS imports, account reports and content exports.
+- **Files in and out:** File → Download, Download File for finished reports and exports, CSV exports
+  attached as files, uploads for submissions, comments and quiz attempts, SIS and CSV imports from a
+  binary file.
 - **Canvas LTI Advantage API** credential: the node obtains and renews the token of an LTI 1.3 tool
   for the LTI Advantage services (Line Item, Progress → Get LTI, `/api/lti` paths).
 - **Trigger:** optional secret token, signed payloads (verified against Instructure's key set),
@@ -141,9 +165,11 @@ corrected. Where that changed what you see in the node:
 
 - Core: throttle detection and retries (also on later pages), pagination decided by Canvas' Link
   header instead of the operation's name, items lost on empty answers, missing `pairedItem`, n8n's
-  Continue On Fail ignored, error types, redirects on writes, the token leaving the configured host
-  through Link/Location URLs, uploads (three steps without a runtime dependency, URL uploads, empty
-  files), expression errors swallowed into empty parameters.
+  Continue On Fail ignored, error types, redirects on writes, uploads (three steps without a runtime
+  dependency, URL uploads, empty files), expression errors swallowed into empty parameters.
+- Security: the credential is only ever sent to the configured Canvas host. Link and Location URLs
+  are re-anchored on it, and a redirect to another host (file storage, a CDN) is followed without
+  the credential; n8n would otherwise have put the Authorization header back on every hop.
 - Wrong routes, methods or body shapes in many operations, among them Account Report →
   Abort, Authentication Provider → Restore, ePortfolio moderation, SIS Integration, New Quiz and
   New Quiz Item updates, moderated grading, course `offer` / `enroll_me`, quiz time limits, module
