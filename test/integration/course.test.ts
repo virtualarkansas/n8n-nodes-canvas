@@ -40,7 +40,7 @@ describe('course', () => {
 					restrict_enrollments_to_course_dates: true,
 					self_enrollment: true,
 					sis_course_id: unique('SIS').replace(/\s/g, '_'),
-					start_at: '2030-01-15T08:00:00Z',
+					start_at: '2020-01-15T08:00:00Z',
 					syllabus_body: '<p>Syllabus <strong>body</strong></p>',
 					term_id: fx('termId'),
 					time_zone: 'America/Chicago',
@@ -68,7 +68,7 @@ describe('course', () => {
 			restrict_enrollments_to_course_dates: true,
 			grade_passback_setting: 'nightly_sync',
 			time_zone: 'America/Chicago',
-			start_at: '2030-01-15T08:00:00Z',
+			start_at: '2020-01-15T08:00:00Z',
 			end_at: '2031-06-30T23:59:00Z',
 			enrollment_term_id: Number(fx('termId')),
 			workflow_state: 'unpublished',
@@ -83,15 +83,23 @@ describe('course', () => {
 		});
 	});
 
-	it('create: "offer" publishes the course', async () => {
+	it('create: "offer" publishes the course and "enroll me" adds the token\'s user as teacher', async () => {
 		const [created] = await runOk({
 			resource: 'course',
 			operation: 'create',
-			params: { accountId: fx('accountId'), name: unique('Offered course'), additionalFields: { offer: true } },
+			params: {
+				accountId: fx('accountId'),
+				name: unique('Offered course'),
+				additionalFields: { offer: true, enroll_me: true, enrollment_term_id: fx('pastTermId') },
+			},
 		});
-		const actual = await canvas().get<Json>(`/api/v1/courses/${String(created.id)}`);
+		const id = String(created.id);
+		const actual = await canvas().get<Json>(`/api/v1/courses/${id}`);
 		expect(actual.workflow_state).toBe('available');
-		await canvas().delete(`/api/v1/courses/${String(created.id)}?event=delete`);
+		expect(actual.enrollment_term_id).toBe(Number(fx('pastTermId')));
+		const teachers = await canvas().getAll<Json>(`/api/v1/courses/${id}/enrollments?type[]=TeacherEnrollment`);
+		expect(teachers.map((e) => e.user_id)).toEqual([Number(fx('adminUserId'))]);
+		await canvas().delete(`/api/v1/courses/${id}?event=delete`);
 	});
 
 	it('get: returns the course, with includes', async () => {
@@ -137,10 +145,10 @@ describe('course', () => {
 					license: 'public_domain',
 					public_description: 'Changed',
 					public_syllabus: false,
-					restrict_enrollments_to_course_dates: false,
+					restrict_enrollments_to_course_dates: true,
 					grade_passback_setting: 'disabled',
 					time_zone: 'Europe/Berlin',
-					start_at: '2030-02-01T08:00:00Z',
+					start_at: '2020-02-01T08:00:00Z',
 					end_at: '2031-07-31T23:59:00Z',
 					syllabus_body: '<p>Second version</p>',
 					term_id: fx('pastTermId'),
@@ -161,15 +169,30 @@ describe('course', () => {
 			license: 'public_domain',
 			public_description: 'Changed',
 			public_syllabus: false,
-			restrict_enrollments_to_course_dates: false,
+			restrict_enrollments_to_course_dates: true,
 			grade_passback_setting: 'disabled',
 			time_zone: 'Europe/Berlin',
-			start_at: '2030-02-01T08:00:00Z',
+			start_at: '2020-02-01T08:00:00Z',
 			end_at: '2031-07-31T23:59:00Z',
 			enrollment_term_id: Number(fx('pastTermId')),
 			workflow_state: 'available',
 		});
 		expect(String(actual.syllabus_body)).toContain('Second version');
+	});
+
+	it('conclude: Canvas refuses a course that has not started yet, and says so', async () => {
+		// Real-world edge: concluding stamps "now" as the end date, which is before a future start date.
+		const future = await canvas().post<Json>(`/api/v1/accounts/${fx('accountId')}/courses`, {
+			course: { name: unique('Future course'), start_at: '2040-01-01T00:00:00Z', restrict_enrollments_to_course_dates: true },
+		});
+		const result = await runNode({
+			resource: 'course',
+			operation: 'conclude',
+			params: { courseId: String(future.id), errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(result.success).toEqual([]);
+		expect(result.error[0]).toMatchObject({ errorCode: 400, errorType: 'VALIDATION_ERROR', operation: 'conclude' });
+		await canvas().request('DELETE', `/api/v1/courses/${String(future.id)}?event=delete`);
 	});
 
 	it('update: an empty update is rejected clearly rather than silently "succeeding"', async () => {

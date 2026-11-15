@@ -223,6 +223,7 @@ Seed.step("enroll.sis_import_1_done", tx: false) do
 
   large = Course.where(root_account_id: Seed.root.id, sis_source_id: "FRSH-100-ALL").first!
   large.offer! unless large.available?
+  Course.where(root_account_id: Seed.root.id, sis_source_id: %w[SIS-HEALTH-9 SIS-PE-9]).each { |c| c.offer! unless c.available? }
   sections = large.course_sections.active.order(:id).pluck(:id)
   cohort = Pseudonym.active.where(account_id: Seed.root.id).where("sis_user_id LIKE 'SIS-STU-%'").order(:sis_user_id).pluck(:user_id)
   ActiveRecord::Base.transaction do

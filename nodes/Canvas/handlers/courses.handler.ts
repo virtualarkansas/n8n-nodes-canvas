@@ -13,12 +13,22 @@ export function buildCourseRequest(
 	const courseId = getParam('courseId');
 
 	switch (operation) {
-		case 'create':
+		case 'create': {
+			const fields = getParamObject('additionalFields');
+			// These three are request-level arguments in Canvas, not attributes of the course.
+			const topLevel: Record<string, unknown> = {};
+			for (const key of ['offer', 'enroll_me', 'enable_sis_reactivation']) {
+				if (fields[key] !== undefined) {
+					topLevel[key] = fields[key];
+					delete fields[key];
+				}
+			}
 			return {
 				method: 'POST',
 				endpoint: `/api/v1/accounts/${getParam('accountId')}/courses`,
-				body: { course: { name: getParam('name'), ...getParamObject('additionalFields') } },
+				body: { course: { name: getParam('name'), ...fields }, ...topLevel },
 			};
+		}
 		case 'delete':
 			return {
 				method: 'DELETE',

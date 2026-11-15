@@ -204,6 +204,13 @@ export const courseFields: INodeProperties[] = [
 				description: 'Course end date in ISO 8601 format',
 			},
 			{
+				displayName: 'Enroll Me',
+				name: 'enroll_me',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to enroll the user who owns the token as a teacher in the new course',
+			},
+			{
 				displayName: 'Enrollment Term ID',
 				name: 'enrollment_term_id',
 				type: 'string',

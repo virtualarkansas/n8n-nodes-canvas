@@ -78,7 +78,7 @@ summary() {
 		  ('delayed_jobs (queued)', (select count(*) from delayed_jobs where run_at <= now() + interval '1 minute' and tag not like 'periodic:%')),
 		  ('failed_jobs', (select count(*) from failed_jobs)),
 		  ('seed steps done', (select count(*) from n8n_seed_steps))
-		) as c(t, n)" 2>/dev/null | column -t -s $'\t'
+		) as c(t, n)" 2>/dev/null | awk -F '\t' '{ printf "  %-42s %s\n", $1, $2 }'
 	echo
 	echo "== sizes =="
 	echo "postgres db:   $(docker exec "$PG" psql -U postgres -d canvas_development -Atc "select pg_size_pretty(pg_database_size('canvas_development'))")"
@@ -98,13 +98,8 @@ LOG="${SEED_LOG:-$(mktemp -t canvas-seed.XXXXXX.log)}"
 only="${SEED_ONLY:-}"
 [ "$MODE" = "--fixtures" ] && only="__fixtures_only__"
 
-docker exec -e SEED_ONLY="$only" -e SEED_FORCE="${SEED_FORCE:-}" "$WEB" \
-	bundle exec rails runner "$REMOTE_DIR/seed.rb" 2>&1 | grep -v --line-buffered "Running via Spring preloader" | tee "$LOG" | grep -v '^FIXTURES_JSON='
-status=${PIPESTATUS[0]}
-
-# Merge whatever completed (even after a failure) into the shared state file.
-if grep -q '^FIXTURES_JSON=' "$LOG"; then
-	grep '^FIXTURES_JSON=' "$LOG" | tail -1 | cut -d= -f2- | node -e '
+merge_fixtures() {
+	node -e '
 		const fs = require("fs");
 		const file = process.argv[1];
 		const add = JSON.parse(fs.readFileSync(0, "utf8"));
@@ -116,10 +111,32 @@ if grep -q '^FIXTURES_JSON=' "$LOG"; then
 		const tmp = file + ".seed-tmp";
 		fs.writeFileSync(tmp, JSON.stringify(state, null, 2) + "\n");
 		fs.renameSync(tmp, file);
-		console.log(`merged ${Object.keys(add.tokens).length} tokens and ${Object.keys(add.fixtures).length} fixtures into ${file}`);
-	' "$STATE_FILE" || { echo "failed to merge fixtures into $STATE_FILE" >&2; status=1; }
-else
-	echo "no FIXTURES_JSON line in the seed output (see $LOG)" >&2
+		console.log(`[run.sh] merged ${Object.keys(add.tokens).length} tokens + ${Object.keys(add.fixtures).length} fixtures into ${file}`);
+	' "$STATE_FILE"
+}
+
+# The loader prints a FIXTURES_JSON line after every phase (and once more on exit, even
+# after a failure); each one is merged into the state file as soon as it appears.
+merged=0
+last=""
+while IFS= read -r line; do
+	case "$line" in
+	"Running via Spring preloader"*) ;;
+	FIXTURES_JSON=*)
+		json="${line#FIXTURES_JSON=}"
+		if [ "$json" != "$last" ]; then
+			if printf '%s' "$json" | merge_fixtures; then merged=1; last="$json"; else echo "[run.sh] failed to merge fixtures into $STATE_FILE" >&2; fi
+		fi
+		;;
+	SEED_EXIT_STATUS=*) ;;
+	*) printf '%s\n' "$line" ;;
+	esac
+	printf '%s\n' "$line" >>"$LOG"
+done < <(docker exec -e SEED_ONLY="$only" -e SEED_FORCE="${SEED_FORCE:-}" "$WEB" bundle exec rails runner "$REMOTE_DIR/seed.rb" 2>&1; echo "SEED_EXIT_STATUS=$?")
+status=$(grep '^SEED_EXIT_STATUS=' "$LOG" | tail -1 | cut -d= -f2)
+status="${status:-1}"
+if [ "$merged" -eq 0 ]; then
+	echo "[run.sh] no FIXTURES_JSON line in the seed output (see $LOG)" >&2
 	status=1
 fi
 
