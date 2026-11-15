@@ -72,7 +72,7 @@ corrected. Where that changed what you see in the node:
 | External Tool | Group context removed (no such routes); Return All / Limit on Get Many replaced by the node's Pagination options | Use Pagination → Return All |
 | File | Get Quota: Folder context removed; Initiate Upload takes **File Name** (it never read the binary field) | Fill in File Name |
 | Folder | Get by Path and Get Many only offer the contexts Canvas has routes for | Re-select the context |
-| Grading Period | Batch Update takes the **Grading Period Set ID** (Canvas has no working course form); Update keeps its values in Update Fields | Re-enter the fields |
+| Grading Period | Batch Update takes the **Grading Period Set ID** (Canvas has no working course form); Update keeps its values in Update Fields; Delete defaults to the **Account** context (a course can only delete legacy periods of its own) | Re-enter the fields; for Delete in a course, select Context → Course again |
 | Grading Period Set | Update: `enrollment_term_ids` moved to where Canvas reads it | Re-select |
 | Group | Update: Override SIS Stickiness is sent where Canvas reads it (switched off, it was ignored and sticky fields were overwritten) | Nothing |
 | Line Item, LTI Registration, LTI Resource Link | Return All / Limit replaced by the node's Pagination options | Use Pagination → Return All |
