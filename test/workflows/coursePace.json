@@ -2,7 +2,7 @@
   "name": "Canvas battery — coursePace",
   "nodes": [
     {
-      "id": "17cf9c93-d8ad-4ca1-853c-5a6e68908f1d",
+      "id": "81c8f1ea-e84b-4c7e-b466-8a9f9ae4c9ea",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "da086c7a-9692-4e8a-9a74-ce16b0b00a5d",
+      "id": "ae437bad-17ff-4457-94e5-3cbf2cb68a03",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -23,20 +23,13 @@
       ],
       "parameters": {
         "assignments": {
-          "assignments": [
-            {
-              "id": "59a52990-12da-4fae-8b23-8567f7dbb4c9",
-              "name": "pacedCourseId",
-              "value": "14",
-              "type": "string"
-            }
-          ]
+          "assignments": []
         },
         "options": {}
       }
     },
     {
-      "id": "8a4e9f39-ced2-4974-b5ba-5e961632b31e",
+      "id": "37035e9f-7afb-424a-aa73-d58bf512cf2e",
       "name": "listContexts — type Course: one entry for the course itself, without a pa",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -48,7 +41,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "course",
         "options": {}
       },
@@ -63,7 +56,7 @@
       "executeOnce": true
     },
     {
-      "id": "2d1046ea-5a08-41e6-9e5c-79d3cb1fc869",
+      "id": "84451fa0-1aa6-4d5b-bc1b-f0fb50bdbdf7",
       "name": "listContexts — type Section: lists every active section, paged",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -75,7 +68,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "section",
         "options": {}
       },
@@ -90,7 +83,7 @@
       "executeOnce": true
     },
     {
-      "id": "e142aef4-0591-4116-99a3-bb6160d8e9b0",
+      "id": "889fdaa3-cdb1-4eec-8761-0ce150cadd94",
       "name": "listContexts — type Section: lists every active section, paged (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -102,7 +95,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "section",
         "options": {},
         "pagination": {
@@ -120,7 +113,7 @@
       "executeOnce": true
     },
     {
-      "id": "a72ac91b-fa03-4281-81f3-7dfd5b83ad4d",
+      "id": "101c3674-adfc-4f68-ac7a-483e8ed450c5",
       "name": "listContexts — type Section: lists every active section, paged (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -132,7 +125,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "section",
         "options": {},
         "pagination": {
@@ -151,7 +144,7 @@
       "executeOnce": true
     },
     {
-      "id": "bd2638bb-fae9-41c7-b69f-21065c2f7512",
+      "id": "f577dcd9-ec52-4af9-a26a-5bb06d5975d5",
       "name": "listContexts — type Section: sort, order, search term and context IDs tak",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -163,7 +156,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "section",
         "options": {
           "sort": "name"
@@ -183,7 +176,7 @@
       "executeOnce": true
     },
     {
-      "id": "f98e5130-5fa3-4195-9c50-9b639ff9b200",
+      "id": "b5f17384-eaa7-4dd4-b7ba-c8e9f107a3ab",
       "name": "listContexts — type Section: sort, order, search term and context IDs tak (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -195,7 +188,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "section",
         "options": {
           "sort": "name",
@@ -216,7 +209,7 @@
       "executeOnce": true
     },
     {
-      "id": "5a7ec0f0-546e-4559-a9ff-dd55baf4e240",
+      "id": "d8fa3b14-43df-423c-a3ea-d8203f1951d4",
       "name": "listContexts — type Section: sort, order, search term and context IDs tak (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -228,7 +221,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "section",
         "options": {
           "search_term": "section 0",
@@ -250,7 +243,7 @@
       "executeOnce": true
     },
     {
-      "id": "642db3ac-3f21-44a5-8e24-cedbc3adce96",
+      "id": "fa4e83b3-dd56-4218-8390-d5a1a2fd6189",
       "name": "listContexts — type Section: sort, order, search term and context IDs tak (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -262,7 +255,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "section",
         "options": {
           "search_term": "ünï"
@@ -279,7 +272,7 @@
       "executeOnce": true
     },
     {
-      "id": "daa35b86-6a0a-4399-a47a-e591aa8d2f41",
+      "id": "0cc689f1-9c44-49e2-b53c-1f6fa02abaa9",
       "name": "listContexts — type Section: sort, order, search term and context IDs tak (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -291,10 +284,10 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "section",
         "options": {
-          "context_ids": " 486 , 489 "
+          "context_ids": " 793 , 796 "
         }
       },
       "credentials": {
@@ -308,7 +301,7 @@
       "executeOnce": true
     },
     {
-      "id": "f8a897e7-ecea-49d3-88ea-4997803391d8",
+      "id": "eefe06a9-c5ae-4060-9ad2-9b9406580930",
       "name": "listContexts — type Section: sort, order, search term and context IDs tak (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -320,7 +313,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "section",
         "options": {
           "search_term": "=no such section {{ $execution.id }}-5"
@@ -337,7 +330,7 @@
       "executeOnce": true
     },
     {
-      "id": "84bbeff4-b525-462d-a569-d89960d01512",
+      "id": "beabe2ca-285a-4d1f-8cb8-3516c5bd1f46",
       "name": "listContexts — type Student Enrollment: one entry per student, with the e",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -349,7 +342,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "student_enrollment",
         "options": {}
       },
@@ -364,7 +357,7 @@
       "executeOnce": true
     },
     {
-      "id": "968eb225-a61c-4fd9-bb13-1d091b344069",
+      "id": "8e167919-f807-49ea-980f-2d718f588eb0",
       "name": "listContexts — type Student Enrollment: one entry per student, with the e (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -376,7 +369,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "student_enrollment",
         "options": {},
         "pagination": {
@@ -395,7 +388,7 @@
       "executeOnce": true
     },
     {
-      "id": "769a9421-386b-4a2e-a97d-7b8530b177a4",
+      "id": "39b6c1ae-a7a0-4db6-8c7f-7003122fc890",
       "name": "listContexts — type Student Enrollment: one entry per student, with the e (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -407,7 +400,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "student_enrollment",
         "options": {
           "sort": "name"
@@ -427,7 +420,7 @@
       "executeOnce": true
     },
     {
-      "id": "4edfad0f-b6bb-4b7c-9842-b00e3ee240cc",
+      "id": "d8b898e8-4201-4c74-9578-ed73becf4a02",
       "name": "listContexts — type Student Enrollment: one entry per student, with the e (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -439,7 +432,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "student_enrollment",
         "options": {
           "sort": "name",
@@ -460,7 +453,7 @@
       "executeOnce": true
     },
     {
-      "id": "8d4c0a13-8b30-4689-a98d-faa9596ccfc3",
+      "id": "cab08dfa-5c22-4336-acce-4bf508f98f8c",
       "name": "listContexts — type Student Enrollment: one entry per student, with the e (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -472,7 +465,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "student_enrollment",
         "options": {
           "search_term": "=paceContexts Paced Student {{ $execution.id }}-3"
@@ -489,7 +482,7 @@
       "executeOnce": true
     },
     {
-      "id": "d0307345-c400-4903-bf07-1e8c86040156",
+      "id": "5980660b-4989-4714-b31b-df1b1553e3dc",
       "name": "listContexts — type Student Enrollment: one entry per student, with the e (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -501,10 +494,10 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "student_enrollment",
         "options": {
-          "context_ids": "4116,4123"
+          "context_ids": "4844,4850"
         }
       },
       "credentials": {
@@ -518,7 +511,7 @@
       "executeOnce": true
     },
     {
-      "id": "007861fc-72d6-4e49-8bf0-40d9fb300c69",
+      "id": "43b99af5-dc7e-43df-942e-db3933468ca9",
       "name": "listContexts — applied pace: a published course pace applies to everything,",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -530,10 +523,10 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "listContexts",
-        "courseId": "363",
+        "courseId": "784",
         "contextType": "student_enrollment",
         "options": {
-          "context_ids": "4111"
+          "context_ids": "4841"
         }
       },
       "credentials": {
@@ -547,7 +540,7 @@
       "executeOnce": true
     },
     {
-      "id": "4d03f54d-ec50-4f22-a7f7-47ca3adbeb79",
+      "id": "14c17275-06ca-4a52-8001-fdcaff28f590",
       "name": "getByContext — getByContext: before any pace exists, returns an unsaved dra",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -559,7 +552,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "getByContext",
-        "courseId": "400",
+        "courseId": "830",
         "paceContext": "course"
       },
       "credentials": {
@@ -573,7 +566,7 @@
       "executeOnce": true
     },
     {
-      "id": "4ad16d99-be7d-4707-88ad-16adfab2c241",
+      "id": "d44e047e-2a99-48a8-bdea-0d279906482e",
       "name": "create — create: every optional field reaches Canvas (default pace of",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -585,7 +578,7 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "create",
-        "courseId": "400",
+        "courseId": "830",
         "additionalFields": {
           "context_type": "Course",
           "end_date": "2027-03-01T00:00:00Z",
@@ -596,15 +589,15 @@
         "moduleItems": {
           "item": [
             {
-              "module_item_id": "733",
+              "module_item_id": "1058",
               "duration": 3
             },
             {
-              "module_item_id": 734,
+              "module_item_id": 1059,
               "duration": 5
             },
             {
-              "module_item_id": "735",
+              "module_item_id": "1060",
               "duration": 0
             }
           ]
@@ -621,7 +614,7 @@
       "executeOnce": true
     },
     {
-      "id": "1c5310d6-a077-484d-9091-9fc84cdb6cb5",
+      "id": "3be490ec-69f3-47a7-b3a9-aac0322fb5d4",
       "name": "create — create: section pace and student pace land on the right cont",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -633,24 +626,24 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "create",
-        "courseId": "400",
+        "courseId": "830",
         "additionalFields": {
           "context_type": "Section",
-          "context_id": 526,
+          "context_id": 871,
           "selected_days_to_skip": "sat,sun"
         },
         "moduleItems": {
           "item": [
             {
-              "module_item_id": "733",
+              "module_item_id": "1058",
               "duration": 2
             },
             {
-              "module_item_id": "734",
+              "module_item_id": "1059",
               "duration": 2
             },
             {
-              "module_item_id": "735",
+              "module_item_id": "1060",
               "duration": 2
             }
           ]
@@ -667,7 +660,7 @@
       "executeOnce": true
     },
     {
-      "id": "eb1e9770-bb3d-420a-a454-84019e8579bc",
+      "id": "6c422957-2679-4639-9cff-d0d4102369ff",
       "name": "create — create: section pace and student pace land on the right cont (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -679,10 +672,10 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "create",
-        "courseId": "400",
+        "courseId": "830",
         "additionalFields": {
           "context_type": "Enrollment",
-          "context_id": "1436"
+          "context_id": "2297"
         }
       },
       "credentials": {
@@ -696,7 +689,7 @@
       "executeOnce": true
     },
     {
-      "id": "f13f6c47-b20b-4bdb-99ae-b40bbec20017",
+      "id": "182b656a-e903-4cc1-8b6a-0c1db5ea5ba6",
       "name": "create — create: workflows saved with the old User context still cr",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -708,10 +701,10 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "create",
-        "courseId": "400",
+        "courseId": "830",
         "additionalFields": {
           "context_type": "User",
-          "context_id": "1436"
+          "context_id": "2297"
         }
       },
       "credentials": {
@@ -725,7 +718,7 @@
       "executeOnce": true
     },
     {
-      "id": "30bdc9d9-0999-4572-bed5-cab817687bed",
+      "id": "1d396bc5-1474-4bbb-931e-80cb7e7eb978",
       "name": "getByContext — getByContext: finds the pace of the course, a section and a ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -737,9 +730,9 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "getByContext",
-        "courseId": "400",
+        "courseId": "830",
         "paceContext": "section",
-        "sectionId": "526"
+        "sectionId": "871"
       },
       "credentials": {
         "canvasApi": {
@@ -752,7 +745,7 @@
       "executeOnce": true
     },
     {
-      "id": "5d5dd1ac-3f84-4300-9a7c-b5ee9457c9cb",
+      "id": "f99467ad-0aa8-4af9-8e74-bd71a47e068d",
       "name": "getByContext — getByContext: finds the pace of the course, a section and a  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -764,9 +757,9 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "getByContext",
-        "courseId": "400",
+        "courseId": "830",
         "paceContext": "enrollment",
-        "enrollmentId": "4171"
+        "enrollmentId": "4956"
       },
       "credentials": {
         "canvasApi": {
@@ -779,7 +772,7 @@
       "executeOnce": true
     },
     {
-      "id": "c18332a4-55f1-4e68-9996-991eb207f83a",
+      "id": "6b83041f-e1e8-4212-b0fa-2f6c90612fb6",
       "name": "update — update: every optional field reaches Canvas, including chang",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -791,8 +784,8 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "update",
-        "courseId": "400",
-        "coursePaceId": "={{ $('Config').first().json.pacedCourseId }}",
+        "courseId": "830",
+        "coursePaceId": "38",
         "updateFields": {
           "end_date": "2027-05-20T00:00:00Z",
           "hard_end_dates": true,
@@ -802,13 +795,13 @@
         "moduleItems": {
           "item": [
             {
-              "id": "34",
-              "module_item_id": "733",
+              "id": "76",
+              "module_item_id": "1058",
               "duration": 9
             },
             {
-              "id": 35,
-              "module_item_id": 734,
+              "id": 77,
+              "module_item_id": 1059,
               "duration": 0
             }
           ]
@@ -825,7 +818,7 @@
       "executeOnce": true
     },
     {
-      "id": "1c7b5f10-027e-4bde-a4d3-6990320fa03c",
+      "id": "dca0a133-f560-4cbb-bbf5-0006e08a7ae7",
       "name": "update — update: an empty list of days clears the skipped days",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -837,8 +830,8 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "update",
-        "courseId": "400",
-        "coursePaceId": "={{ $('Config').first().json.pacedCourseId }}",
+        "courseId": "830",
+        "coursePaceId": "38",
         "updateFields": {
           "selected_days_to_skip": "",
           "hard_end_dates": false
@@ -855,7 +848,7 @@
       "executeOnce": true
     },
     {
-      "id": "a58185d5-15e4-474d-8405-e7988a619e70",
+      "id": "60e6196b-129d-410c-bcac-67d56fc7600a",
       "name": "publish — publish: starts the publishing job for a pace",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -867,8 +860,69 @@
         "authentication": "accessToken",
         "resource": "coursePace",
         "operation": "publish",
-        "courseId": "400",
-        "coursePaceId": "15"
+        "courseId": "830",
+        "coursePaceId": "39"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4e164ce6-025e-48e9-9df7-5a4077a10757",
+      "name": "create — create / update: Exclude Weekends is stored, but the selec",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "coursePace",
+        "operation": "create",
+        "courseId": "830",
+        "additionalFields": {
+          "context_type": "Section",
+          "context_id": 871,
+          "exclude_weekends": false,
+          "selected_days_to_skip": "sat,sun"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3f57c811-b6e9-4843-a054-9606b38140f5",
+      "name": "update — create / update: Exclude Weekends is stored, but the selec",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "coursePace",
+        "operation": "update",
+        "courseId": "830",
+        "coursePaceId": "41",
+        "updateFields": {
+          "exclude_weekends": true,
+          "selected_days_to_skip": "mon"
+        }
       },
       "credentials": {
         "canvasApi": {
@@ -1184,6 +1238,28 @@
         [
           {
             "node": "publish — publish: starts the publishing job for a pace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "publish — publish: starts the publishing job for a pace": {
+      "main": [
+        [
+          {
+            "node": "create — create / update: Exclude Weekends is stored, but the selec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create / update: Exclude Weekends is stored, but the selec": {
+      "main": [
+        [
+          {
+            "node": "update — create / update: Exclude Weekends is stored, but the selec",
             "type": "main",
             "index": 0
           }

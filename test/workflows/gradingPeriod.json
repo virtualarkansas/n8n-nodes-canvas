@@ -2,7 +2,7 @@
   "name": "Canvas battery — gradingPeriod",
   "nodes": [
     {
-      "id": "1b4a900a-78c1-4f3d-9d7f-758932aa718c",
+      "id": "56a793e6-930e-4158-89ac-edd8667ebe4b",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "01e2cace-ab5f-411e-89a9-686454c3cc75",
+      "id": "f977d98a-5144-4501-8ef0-2153980f8151",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "e5c68729-0293-499a-9a01-efb16d019755",
+              "id": "4e7edf46-7e92-4566-be2b-9baaf0b3af4c",
               "name": "accountId",
               "value": "1",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "871112c4-c964-4ac3-8ee3-5817108f0e1f",
+      "id": "2f805150-e34d-4e4e-be0a-710442c97e19",
       "name": "batchUpdate — batchUpdate: creates the periods of a set with every field",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -48,7 +48,7 @@
         "authentication": "accessToken",
         "resource": "gradingPeriod",
         "operation": "batchUpdate",
-        "gradingPeriodSetId": "22",
+        "gradingPeriodSetId": "54",
         "gradingPeriods": {
           "gradingPeriod": [
             {
@@ -149,7 +149,7 @@
       "executeOnce": true
     },
     {
-      "id": "51b9f157-cd5d-4ab7-9eb8-03f960615edd",
+      "id": "d4d25b2a-266a-4684-b4e9-48ee4756b0aa",
       "name": "batchUpdate — batchUpdate: updates listed periods by ID (empty fields keep",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -165,7 +165,7 @@
         "gradingPeriods": {
           "gradingPeriod": [
             {
-              "id": "29",
+              "id": "63",
               "title": "Period 2 (renamed)",
               "start_date": "",
               "end_date": "",
@@ -173,7 +173,7 @@
               "weight": "0"
             },
             {
-              "id": 30,
+              "id": 64,
               "title": "",
               "start_date": "",
               "end_date": "2031-04-01T00:00:00Z",
@@ -202,7 +202,7 @@
       "executeOnce": true
     },
     {
-      "id": "2beb4adc-c46b-4aea-ac68-06e841286692",
+      "id": "ef433d55-2b9e-4adb-9421-499121564eac",
       "name": "getAll — getAll: account context returns the periods of every set, ac",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -228,7 +228,7 @@
       "executeOnce": true
     },
     {
-      "id": "0f74f4f8-7e20-45b4-b4ce-e5f56f44590c",
+      "id": "188efd4c-6c10-4bbb-a9e1-75682e5d29b1",
       "name": "getAll — getAll: account context returns the periods of every set, ac (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -258,7 +258,7 @@
       "executeOnce": true
     },
     {
-      "id": "56e086e9-fbf5-4915-a9c4-a83b313183f4",
+      "id": "96a9adb9-801a-437d-ad9e-b054bea04975",
       "name": "getAll — getAll: account context returns the periods of every set, ac (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -287,7 +287,7 @@
       "executeOnce": true
     },
     {
-      "id": "1c56e9d5-9675-4428-b423-6787f8392c7c",
+      "id": "253c27bd-84b5-483b-b51e-3575fedefd3d",
       "name": "getAll — getAll: course context returns the periods the course inheri",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -316,7 +316,7 @@
       "executeOnce": true
     },
     {
-      "id": "5eaed530-c649-4741-a17a-201a01109102",
+      "id": "ca57a245-09ec-4b29-9a11-3b9893c6fe79",
       "name": "getAll — getAll: a course whose term has no grading period set yields",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -329,7 +329,7 @@
         "resource": "gradingPeriod",
         "operation": "getAll",
         "context": "course",
-        "courseId": "385"
+        "courseId": "815"
       },
       "credentials": {
         "canvasApi": {
@@ -342,7 +342,7 @@
       "executeOnce": true
     },
     {
-      "id": "6db43d50-03fc-450e-9d4b-bf001cebe260",
+      "id": "e4c440fc-f644-445f-aae3-a0abe719f4dc",
       "name": "update — update: changes a legacy course-level period",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -354,8 +354,8 @@
         "authentication": "accessToken",
         "resource": "gradingPeriod",
         "operation": "update",
-        "courseId": "386",
-        "gradingPeriodId": "25",
+        "courseId": "816",
+        "gradingPeriodId": "59",
         "updateFields": {
           "title": "Legacy 1 — renamed \"Q1\" & more 季度",
           "start_date": "2030-01-05T00:00:00Z",
@@ -374,7 +374,7 @@
       "executeOnce": true
     },
     {
-      "id": "00bb817a-de86-4255-9f19-d6f752258081",
+      "id": "dbb522bb-ff57-45a4-80f6-7e4e7e900846",
       "name": "delete — delete: account context removes a period of a set",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -388,7 +388,7 @@
         "operation": "delete",
         "context": "account",
         "accountId": "={{ $('Config').first().json.accountId }}",
-        "gradingPeriodId": 40
+        "gradingPeriodId": 74
       },
       "credentials": {
         "canvasApi": {
@@ -401,7 +401,7 @@
       "executeOnce": true
     },
     {
-      "id": "e2d650c1-b8b5-4cc5-a6ee-380098e96b51",
+      "id": "04175efc-88a7-49e0-b967-a8f5d69c378b",
       "name": "delete — delete: course context removes a legacy period, but not one ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -414,8 +414,8 @@
         "resource": "gradingPeriod",
         "operation": "delete",
         "context": "course",
-        "courseId": "386",
-        "gradingPeriodId": "27"
+        "courseId": "816",
+        "gradingPeriodId": "61"
       },
       "credentials": {
         "canvasApi": {

@@ -2,7 +2,7 @@
   "name": "Canvas battery — accountCalendar",
   "nodes": [
     {
-      "id": "babe833e-c7da-4186-85f1-e93d2abf5545",
+      "id": "7bdadfeb-e8cd-46e9-986b-0fcd2bc561d1",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "090af9ad-e51f-467c-9aff-beeaa751a613",
+      "id": "d8745018-39c2-43a7-b169-ec6c050b83e3",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "2f891e99-9e81-4214-8ab9-31d04f883172",
+              "id": "61bc2d29-5e42-4cbf-8e5f-195d9ec7fb27",
               "name": "accountId",
               "value": "1",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "2681f173-e3ed-473d-906c-a505688c87a0",
+      "id": "0987da79-bb92-4fce-b8a4-ce7818ec2c06",
       "name": "get — get: returns the calendar settings of an account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -48,7 +48,7 @@
         "authentication": "accessToken",
         "resource": "accountCalendar",
         "operation": "get",
-        "accountId": "90"
+        "accountId": "221"
       },
       "credentials": {
         "canvasApi": {
@@ -61,7 +61,7 @@
       "executeOnce": true
     },
     {
-      "id": "c0f0e1c6-813d-477a-9219-f2378740ea20",
+      "id": "282df727-61cf-40f5-9f27-a0b9dd2daca3",
       "name": "update — update: both settings reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -90,7 +90,7 @@
       "executeOnce": true
     },
     {
-      "id": "eceecde3-9c6b-44da-98e6-f5d75f6a8f85",
+      "id": "fa188a9f-c872-4800-8fba-123c54a1e30b",
       "name": "update — update: a single setting leaves the other untouched, and fal",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -118,7 +118,7 @@
       "executeOnce": true
     },
     {
-      "id": "ea05fa8c-9716-4d01-850e-0c27c17ba0c7",
+      "id": "555a0a83-a93c-413d-8e86-d6b69b64df20",
       "name": "update — update: a single setting leaves the other untouched, and fal (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -130,7 +130,7 @@
         "authentication": "accessToken",
         "resource": "accountCalendar",
         "operation": "update",
-        "accountId": "91",
+        "accountId": "222",
         "updateFields": {
           "visible": true
         }
@@ -146,7 +146,7 @@
       "executeOnce": true
     },
     {
-      "id": "d7265612-ca45-4060-af31-c54dc8681cf5",
+      "id": "648b37fa-c001-4f4b-af50-7a72b5c8780e",
       "name": "update — update: a single setting leaves the other untouched, and fal (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -174,7 +174,7 @@
       "executeOnce": true
     },
     {
-      "id": "6619ba97-81ec-4cf0-8ce3-c29a5d6e0b56",
+      "id": "1bd98482-70ec-43ad-9adc-3988169decbc",
       "name": "updateMany — updateMany: updates several calendars from JSON text",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -187,7 +187,7 @@
         "resource": "accountCalendar",
         "operation": "updateMany",
         "accountId": "={{ $('update — update: a single setting leaves the other untouched, and fal').first().json.id }}",
-        "calendars": "[\n  {\n    \"id\": 91,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 92,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 93,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 94,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 95,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 96,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 97,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 98,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 99,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 100,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 101,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 102,\n    \"visible\": false,\n    \"auto_subscribe\": false\n  }\n]"
+        "calendars": "[\n  {\n    \"id\": 222,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 223,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 224,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 225,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 226,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 227,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 228,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 229,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 230,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 231,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 232,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 233,\n    \"visible\": false,\n    \"auto_subscribe\": false\n  }\n]"
       },
       "credentials": {
         "canvasApi": {
@@ -200,7 +200,7 @@
       "executeOnce": true
     },
     {
-      "id": "7010217e-64f6-47c5-bd05-8ee8cbdc619b",
+      "id": "a25b0226-7792-44b9-b3f0-697531b07510",
       "name": "updateMany — updateMany: only the given keys change, and string IDs are a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -213,7 +213,7 @@
         "resource": "accountCalendar",
         "operation": "updateMany",
         "accountId": "={{ $('update — update: a single setting leaves the other untouched, and fal').first().json.id }}",
-        "calendars": "[{\"id\":\"91\",\"auto_subscribe\":false},{\"id\":\"92\",\"visible\":true}]"
+        "calendars": "[{\"id\":\"222\",\"auto_subscribe\":false},{\"id\":\"223\",\"visible\":true}]"
       },
       "credentials": {
         "canvasApi": {
@@ -226,7 +226,7 @@
       "executeOnce": true
     },
     {
-      "id": "c83a6870-3d6d-4730-8069-a289ddc53728",
+      "id": "3ad7f468-eec4-4446-8a95-99ac32190c82",
       "name": "countVisible — countVisible: counts the visible calendars of an account and",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -251,7 +251,7 @@
       "executeOnce": true
     },
     {
-      "id": "ad05af67-6f0b-4a50-b0c0-d85af8fda39f",
+      "id": "9d6c23f9-9237-4956-a52f-2843e7cd3c62",
       "name": "getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -279,7 +279,7 @@
       "executeOnce": true
     },
     {
-      "id": "8f476c8a-5df4-4030-b3f3-38224b7b3f07",
+      "id": "feb10095-2a78-4de0-9d88-d7665fd2646a",
       "name": "getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -304,7 +304,7 @@
       "executeOnce": true
     },
     {
-      "id": "3f5e3caf-7c37-4018-8afc-da61232e5c73",
+      "id": "befc85a8-03ee-4a68-829c-19fe0ab5997d",
       "name": "getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -333,7 +333,7 @@
       "executeOnce": true
     },
     {
-      "id": "b6e9af0c-2f66-486c-ba93-fc7f901439dc",
+      "id": "f99d8b14-7bde-472d-a6fe-18b800a8b05f",
       "name": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -364,7 +364,7 @@
       "executeOnce": true
     },
     {
-      "id": "7ff03e10-cf64-4d21-bdeb-6487590dee80",
+      "id": "6f2031ba-f7c4-4fd0-bf85-83e3c926e461",
       "name": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -395,7 +395,7 @@
       "executeOnce": true
     },
     {
-      "id": "64dc04ad-1e56-4af5-9f2c-4b89a6f73c7f",
+      "id": "a067af69-5a5e-4f28-959d-10257a83d02d",
       "name": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -427,7 +427,7 @@
       "executeOnce": true
     },
     {
-      "id": "514f54f7-505f-4cc2-a29b-a618a0496330",
+      "id": "58d9fca1-0905-44d3-b3ca-9c8078a8d431",
       "name": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -455,7 +455,7 @@
       "executeOnce": true
     },
     {
-      "id": "38875741-7ce6-4bf5-9ef8-07e9aebbf567",
+      "id": "5a836bb7-9cea-4b38-ac48-5fe3cc12349e",
       "name": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

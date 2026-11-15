@@ -113,10 +113,23 @@ describe('quizIpFilter', () => {
 
 describe('quizAssignmentOverride', () => {
 	it('getAll: returns the dates of every classic quiz, one item per quiz', async () => {
+		// Canvas caches these date lists, the title of the base entry ("Everyone") in the language of
+		// whoever asked first: a student with a Spanish locale leaves "Todos" behind for everybody.
+		// That label is Canvas' business; everything else has to be equal.
+		const withoutLabel = (sets: Json[]): Json[] =>
+			sets.map((set) => ({
+				...set,
+				...Object.fromEntries(
+					['all_dates', 'due_dates'].map((key) => [
+						key,
+						((set[key] as Json[] | undefined) ?? []).map((date) => (date.base ? { ...date, title: '(everyone)' } : date)),
+					]),
+				),
+			}));
 		const expected = (await canvas().get<Json>(`/api/v1/courses/${courseId}/quizzes/assignment_overrides?per_page=100`)).quiz_assignment_overrides as Json[];
 		const sets = await runOk({ resource: 'quizAssignmentOverride', operation: 'getAll', params: { courseId, pagination: { returnAll: true } } });
 		expect(sets.map((s) => String(s.quiz_id)).sort()).toEqual([quizId, secondQuizId].sort());
-		expect(sets).toEqual(expected);
+		expect(withoutLabel(sets)).toEqual(withoutLabel(expected));
 		const second = sets.find((s) => String(s.quiz_id) === secondQuizId)!;
 		const dues = (second.all_dates as Json[]).map((d) => d.due_at).sort();
 		expect(dues).toEqual(['2031-04-01T23:59:00Z', '2031-04-20T23:59:00Z']);

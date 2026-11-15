@@ -2,7 +2,7 @@
   "name": "Canvas battery — quizSubmission",
   "nodes": [
     {
-      "id": "20c7e5e3-3f08-4eba-95d8-050a920354fc",
+      "id": "91b5fb6b-d552-46a3-aa5f-dd83ac113bea",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "a9c06449-f537-45d7-9364-a20eeddb0869",
+      "id": "8ec9380a-d648-4f44-8e2a-83cd8eb53efb",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "52641b1b-c76a-4f5b-b0fe-3972c8852ba1",
+      "id": "139210ca-72fc-47ab-9c33-8d6abd45c643",
       "name": "get — get: returns the quiz submission itself; the attempt option ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,8 +42,8 @@
         "resource": "quizSubmission",
         "operation": "get",
         "courseId": "119",
-        "quizId": 132,
-        "submissionId": 476,
+        "quizId": 229,
+        "submissionId": 517,
         "options": {
           "attempt": 1
         }
@@ -59,7 +59,7 @@
       "executeOnce": true
     },
     {
-      "id": "fd913bda-c29a-46fc-a114-702f59ce1498",
+      "id": "77071849-cfea-4878-bbca-9d1f1de1e8b7",
       "name": "get — get: with includes, hands on the compound document with the ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -93,7 +93,7 @@
       "executeOnce": true
     },
     {
-      "id": "975cf79b-53c0-42d3-9216-13b0d7e27819",
+      "id": "c4be865c-e054-47b5-89f5-fed82ca219dc",
       "name": "get — get: with includes, hands on the compound document with the  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -125,7 +125,7 @@
       "executeOnce": true
     },
     {
-      "id": "354b0058-d6d6-4c8c-8945-c3b0d2ceaf1f",
+      "id": "54d5bae4-7d09-458f-9979-9f887b47c49c",
       "name": "updateScore — updateScore: questions as an object from an expression; fudg",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -156,7 +156,7 @@
       "executeOnce": true
     },
     {
-      "id": "3765a667-5392-4c97-8cc0-f9f8bf660f77",
+      "id": "a0f5706e-ce4d-473f-bfbd-7d52649b0f36",
       "name": "updateScore — updateScore: questions as an object from an expression; fudg (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -187,7 +187,7 @@
       "executeOnce": true
     },
     {
-      "id": "cda2671c-7492-455f-87a1-5857ccd17257",
+      "id": "a09cccdb-0c2b-44b3-b5e7-97cb3df01efb",
       "name": "get — start + complete: a second attempt; get then returns eithe",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -217,7 +217,7 @@
       "executeOnce": true
     },
     {
-      "id": "ea7e38dc-c5a6-450d-8ab2-5689a57d7a71",
+      "id": "fbf1da97-16fa-4304-9605-cd4033b9ed1a",
       "name": "get — start + complete: a second attempt; get then returns eithe (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -244,7 +244,7 @@
       "executeOnce": true
     },
     {
-      "id": "07ff1f20-f4e2-419b-8557-624baf14db79",
+      "id": "db38b170-5e9a-447e-a33a-7f7724fe9988",
       "name": "getAll — getAll: graders get the attempts of every student, students ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -257,7 +257,7 @@
         "resource": "quizSubmission",
         "operation": "getAll",
         "courseId": "119",
-        "quizId": "133"
+        "quizId": "230"
       },
       "credentials": {
         "canvasApi": {
@@ -270,7 +270,7 @@
       "executeOnce": true
     },
     {
-      "id": "cd0fbfaf-328a-47d9-a67c-5d10e7fe2d88",
+      "id": "248ee8ed-5841-427d-be33-938d64b54077",
       "name": "getAll — getAll: pages through more quiz submissions than one page ho",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -296,7 +296,7 @@
       "executeOnce": true
     },
     {
-      "id": "bd318e03-0425-4687-87af-734adbb1e5ae",
+      "id": "a1accbb5-9505-4aeb-be00-d306481e449a",
       "name": "getAll — getAll: pages through more quiz submissions than one page ho (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -325,7 +325,7 @@
       "executeOnce": true
     },
     {
-      "id": "087e062e-4a21-4d58-9258-7201708976b0",
+      "id": "8add429a-a462-4f45-b738-b804248fd384",
       "name": "getAll — getAll: pages through more quiz submissions than one page ho (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -355,7 +355,7 @@
       "executeOnce": true
     },
     {
-      "id": "dcd3bac4-0250-4103-b64f-4977c13215f4",
+      "id": "7136015e-be44-4373-b816-bf594cd1bea7",
       "name": "getAllOutstanding — getAllOutstanding + gradeOutstanding: an attempt left open p",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -368,7 +368,7 @@
         "resource": "quizSubmission",
         "operation": "getAllOutstanding",
         "courseId": "119",
-        "quizId": "134"
+        "quizId": "231"
       },
       "credentials": {
         "canvasApi": {

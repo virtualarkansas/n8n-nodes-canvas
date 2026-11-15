@@ -2,7 +2,7 @@
   "name": "Canvas battery — role",
   "nodes": [
     {
-      "id": "2e40560f-c3b0-4745-985d-deac876e20fa",
+      "id": "e6f19a20-8c04-4fb0-9ea6-846874fcdfd0",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "9fac108a-04c4-4a06-9478-85dbdb28e2be",
+      "id": "9838d458-738a-45bc-b26b-5157691f5a00",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "2932230b-0ace-4494-828e-5add1b171a7a",
+              "id": "423ee8e6-bf75-489d-aaf8-6c5da8c4c611",
               "name": "customRoleId",
               "value": "17",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "6d4d832a-23de-447b-9df9-a94ee0530817",
+      "id": "bd3b590f-7fee-4039-8c8c-9c654d28321d",
       "name": "create — create: an account role with every optional field; permissio",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -48,7 +48,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "create",
-        "accountId": "87",
+        "accountId": "236",
         "label": "=RoleBat-{{ $execution.id }}-1 Ünïcødé 角色 \"quoted\" & <b>tags</b> 🎭",
         "additionalFields": {
           "base_role_type": "AccountMembership",
@@ -66,7 +66,7 @@
       "executeOnce": true
     },
     {
-      "id": "6869e2ad-851b-4ef5-8765-b4484df52e1f",
+      "id": "de7fccbc-8019-4601-9720-2cf89c1b3738",
       "name": "create — create: without optional fields Canvas makes an account role",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -78,7 +78,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "create",
-        "accountId": "87",
+        "accountId": "236",
         "label": "=RoleBat-{{ $execution.id }}-1 minimal"
       },
       "credentials": {
@@ -92,7 +92,7 @@
       "executeOnce": true
     },
     {
-      "id": "a89e9a96-672e-425a-8763-5e97c9ce94b4",
+      "id": "2f70a3dd-fbb1-4914-a455-2b8accb57cdb",
       "name": "get — get: returns a role with its permissions; inherited and buil",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -104,7 +104,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "get",
-        "accountId": "87",
+        "accountId": "236",
         "roleId": "={{ $('create — create: an account role with every optional field; permissio').first().json.id }}"
       },
       "credentials": {
@@ -118,7 +118,7 @@
       "executeOnce": true
     },
     {
-      "id": "67f7b315-4c9a-46c8-8643-29377600962c",
+      "id": "e6d8de04-c97d-4ec5-9f3d-e7e77c70d924",
       "name": "getAll — getAll: active roles of the account by default (built-in rol",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -130,7 +130,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "getAll",
-        "accountId": "87",
+        "accountId": "236",
         "pagination": {
           "returnAll": true
         }
@@ -146,7 +146,7 @@
       "executeOnce": true
     },
     {
-      "id": "7ac1dcdb-54fe-4cd5-87f2-0954eeb9edae",
+      "id": "44f95d99-6de0-48d0-9a13-2aa094993f85",
       "name": "getAll — getAll: inherited roles and inactive roles on request, acros",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -158,7 +158,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "getAll",
-        "accountId": "87",
+        "accountId": "236",
         "options": {
           "show_inherited": true,
           "state": [
@@ -181,7 +181,7 @@
       "executeOnce": true
     },
     {
-      "id": "3cfcf2a3-7e6d-489d-8763-d4ecaec8896b",
+      "id": "5f7decac-ac20-413f-9e07-117a01e7a6b0",
       "name": "getAll — getAll: inherited roles and inactive roles on request, acros (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -193,7 +193,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "getAll",
-        "accountId": "87",
+        "accountId": "236",
         "options": {
           "show_inherited": true,
           "state": [
@@ -215,7 +215,7 @@
       "executeOnce": true
     },
     {
-      "id": "57b3290f-8e0a-42c6-8f82-00de20a60726",
+      "id": "dd770f05-9281-4d6e-9b3e-ccf9bad61911",
       "name": "getAll — getAll: inherited roles and inactive roles on request, acros (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -227,7 +227,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "getAll",
-        "accountId": "87",
+        "accountId": "236",
         "options": {
           "show_inherited": true,
           "state": [
@@ -251,7 +251,7 @@
       "executeOnce": true
     },
     {
-      "id": "6a464921-0555-4b19-96af-698cd96065e5",
+      "id": "2e8a166e-d411-45a5-b497-393ccd5d0436",
       "name": "getAll — getAll: inherited roles and inactive roles on request, acros (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -263,7 +263,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "getAll",
-        "accountId": "87",
+        "accountId": "236",
         "options": {
           "show_inherited": true,
           "state": [
@@ -283,7 +283,7 @@
       "executeOnce": true
     },
     {
-      "id": "5ba42359-cbc5-4f6f-b3a3-19b51891f017",
+      "id": "64f5ea9d-34fe-4199-a67a-b1049d671ed3",
       "name": "getAll — getAll: the seeded root account roles, and a teacher is refu",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -314,7 +314,7 @@
       "executeOnce": true
     },
     {
-      "id": "eb5eab2e-03fb-445e-ab8d-c69e207b664b",
+      "id": "e9f640da-24d2-4847-9211-4b0b47fc04ba",
       "name": "getPermissions — getPermissions: lists the assignable permissions, one item p",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -326,7 +326,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "getPermissions",
-        "accountId": "87",
+        "accountId": "236",
         "pagination": {
           "returnAll": true
         }
@@ -342,7 +342,7 @@
       "executeOnce": true
     },
     {
-      "id": "0308b4f4-10d4-41c0-85c2-7cfac1aace54",
+      "id": "6f3555e7-c31d-46e2-8c69-4e8d9a819f7d",
       "name": "getPermissions — getPermissions: lists the assignable permissions, one item p (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -354,7 +354,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "getPermissions",
-        "accountId": "87"
+        "accountId": "236"
       },
       "credentials": {
         "canvasApi": {
@@ -367,7 +367,7 @@
       "executeOnce": true
     },
     {
-      "id": "0797742e-0224-4cba-999f-c6f49355c26f",
+      "id": "4d8fc7a9-cde3-4116-b06c-d2cb04b0820b",
       "name": "getPermissions — getPermissions: the search term narrows the list",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -379,7 +379,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "getPermissions",
-        "accountId": "87",
+        "accountId": "236",
         "options": {
           "search_term": "_sis"
         }
@@ -395,7 +395,7 @@
       "executeOnce": true
     },
     {
-      "id": "d57221d6-72c7-403e-be0c-79e7f28574a8",
+      "id": "d54c488f-084d-4807-b300-e1a9ba027894",
       "name": "getPermissions — getPermissions: the search term narrows the list (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -407,7 +407,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "getPermissions",
-        "accountId": "87",
+        "accountId": "236",
         "options": {
           "search_term": "zzz-no-such-permission"
         }
@@ -423,7 +423,7 @@
       "executeOnce": true
     },
     {
-      "id": "1c5fc434-e4de-440b-b7d3-89173ed31128",
+      "id": "143b00e6-c798-417e-b724-597d2dad0e74",
       "name": "update — update: label and permissions reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -435,7 +435,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "update",
-        "accountId": "87",
+        "accountId": "236",
         "roleId": "={{ $('get — get: returns a role with its permissions; inherited and buil').first().json.id }}",
         "updateFields": {
           "label": "=RoleBat-{{ $execution.id }}-1 Ünïcødé 角色 \"quoted\" & <b>tags</b> 🎭 (renamed)",
@@ -453,7 +453,7 @@
       "executeOnce": true
     },
     {
-      "id": "9259d654-8070-45ef-b547-8182c98c4ed3",
+      "id": "3358eada-0db6-4c35-a491-6f4e12a53255",
       "name": "update — update: an override for an inherited role is stored in this ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -465,7 +465,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "update",
-        "accountId": "87",
+        "accountId": "236",
         "roleId": "={{ $('Config').first().json.customRoleId }}",
         "updateFields": {
           "permissions": "{\"read_forum\":{\"explicit\":true,\"enabled\":false}}"
@@ -482,7 +482,7 @@
       "executeOnce": true
     },
     {
-      "id": "e026052d-ec7a-4106-8a04-905765995ade",
+      "id": "4bb5e502-67f9-470e-9768-aed4d60f8aa3",
       "name": "deactivate — deactivate: hides a custom role; built-in, inactive and unkn",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -494,7 +494,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "deactivate",
-        "accountId": "87",
+        "accountId": "236",
         "roleId": "={{ $('update — update: label and permissions reach Canvas').first().json.id }}"
       },
       "credentials": {
@@ -508,7 +508,7 @@
       "executeOnce": true
     },
     {
-      "id": "594995c6-0c9f-49b2-82fa-11bd8a13a749",
+      "id": "6504e91d-72a4-46ff-a37f-0c27ddd3c1e2",
       "name": "activate — activate: brings an inactive role back; an active role is re",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -520,7 +520,7 @@
         "authentication": "accessToken",
         "resource": "role",
         "operation": "activate",
-        "accountId": "87",
+        "accountId": "236",
         "roleId": "={{ $('deactivate — deactivate: hides a custom role; built-in, inactive and unkn').first().json.id }}"
       },
       "credentials": {

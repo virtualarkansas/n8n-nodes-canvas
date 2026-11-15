@@ -2,7 +2,7 @@
   "name": "Canvas battery — quizReport",
   "nodes": [
     {
-      "id": "1b1f4c32-c698-4a66-af7a-4af15a943f2d",
+      "id": "65f64505-cfef-491b-bb26-07588294b073",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "f4062972-ce27-4740-9f4a-c62d9ff6a49c",
+      "id": "29f6a4ea-3b3d-441d-ab2a-bbf3c6e1dd74",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "531bd3f2-6c45-4e7b-9905-5481d3083ecd",
+      "id": "2c1921fb-1394-4a20-aeef-f481361a4ad3",
       "name": "getAll — getAll: before anything was generated Canvas lists both repo",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,7 +42,7 @@
         "resource": "quizReport",
         "operation": "getAll",
         "courseId": "119",
-        "quizId": "160"
+        "quizId": "257"
       },
       "credentials": {
         "canvasApi": {
@@ -55,7 +55,7 @@
       "executeOnce": true
     },
     {
-      "id": "280724f9-f963-4b39-874f-04a27055d8fd",
+      "id": "91634f48-e68c-4145-95bf-4ac36c40f964",
       "name": "create — create: an item analysis; all versions does not apply to i",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -82,7 +82,7 @@
       "executeOnce": true
     },
     {
-      "id": "29310f49-796c-44e8-aa8e-ff1959868e4c",
+      "id": "6276328a-daa9-4990-b85d-58b58e39d51b",
       "name": "create — create: asking again for a report that is up to date returns",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -112,7 +112,7 @@
       "executeOnce": true
     },
     {
-      "id": "737c5cc0-3917-443c-934e-dd9add6518ad",
+      "id": "69b31f7c-3869-423b-8328-eb831b76c341",
       "name": "create — create: only the latest attempt of each student when all ve",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -142,7 +142,7 @@
       "executeOnce": true
     },
     {
-      "id": "a7a8fd61-59bc-4091-b89f-7272d60b0c2f",
+      "id": "a8531ca5-d9e9-4df4-9e07-dcefa7341f94",
       "name": "getAll — getAll: the all versions option selects which reports are ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -174,7 +174,7 @@
       "executeOnce": true
     },
     {
-      "id": "faeb9f86-1314-4637-9087-70dc8d77cc34",
+      "id": "276f5a7e-d877-46c0-a0a4-67fd9daea95a",
       "name": "create — create: a quiz nobody has taken still gets a report",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -187,7 +187,7 @@
         "resource": "quizReport",
         "operation": "create",
         "courseId": "119",
-        "quizId": "161",
+        "quizId": "258",
         "reportType": "student_analysis"
       },
       "credentials": {

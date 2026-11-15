@@ -2,7 +2,7 @@
   "name": "Canvas battery — contentShare",
   "nodes": [
     {
-      "id": "520c6de1-c44f-4f8e-a4a6-1bfbde131599",
+      "id": "293908df-614a-43c4-93e4-42b2805011e5",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "ea7cc68a-f1f3-429a-91a0-d945ecc876aa",
+      "id": "96f6d120-2991-4d1f-97ac-9e46805d7f7a",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "caf69c50-dcd7-4205-beac-1b073f8ff7fc",
+      "id": "0f170ceb-a3fd-406e-86ce-845c1d513e0f",
       "name": "get — get, getAll, getUnreadCount: an admin reads the shares of an",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,8 +41,8 @@
         "authentication": "accessToken",
         "resource": "contentShare",
         "operation": "get",
-        "userId": "1399",
-        "contentShareId": "39"
+        "userId": "2279",
+        "contentShareId": "87"
       },
       "credentials": {
         "canvasApi": {
@@ -55,7 +55,7 @@
       "executeOnce": true
     },
     {
-      "id": "bdd72437-4a89-4d4d-ba48-60d0d7e20015",
+      "id": "6bd7fca4-d047-4ae0-85d6-2506010d99c7",
       "name": "getUnreadCount — get, getAll, getUnreadCount: an admin reads the shares of an",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -67,7 +67,7 @@
         "authentication": "accessToken",
         "resource": "contentShare",
         "operation": "getUnreadCount",
-        "userId": "1400"
+        "userId": "2280"
       },
       "credentials": {
         "canvasApi": {

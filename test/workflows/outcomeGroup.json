@@ -2,7 +2,7 @@
   "name": "Canvas battery — outcomeGroup",
   "nodes": [
     {
-      "id": "d0a4d730-aa02-48db-b5bf-33722df91d90",
+      "id": "7c77b4e2-1421-406f-8e46-d71eda703645",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "4997990a-03e2-4bf8-8259-5c6b211543ea",
+      "id": "1f540789-da3a-4e65-b32c-4c2ae7e5103e",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "edf0fc91-ed55-413a-ac12-7a3ccb7e3cbe",
+      "id": "516b8c74-d14b-417b-842c-e643c68ba79c",
       "name": "getRoot — getRoot: follows Canvas redirect to the root group in every",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,7 +42,7 @@
         "resource": "outcomeGroup",
         "operation": "getRoot",
         "context": "course",
-        "courseId": "345"
+        "courseId": "757"
       },
       "credentials": {
         "canvasApi": {
@@ -55,7 +55,7 @@
       "executeOnce": true
     },
     {
-      "id": "444a086d-6426-4022-b717-2268523f46b1",
+      "id": "c4f5c930-16ae-496b-9162-f17d4df32aba",
       "name": "getRoot — getRoot: follows Canvas redirect to the root group in every (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -68,7 +68,7 @@
         "resource": "outcomeGroup",
         "operation": "getRoot",
         "context": "account",
-        "accountId": "83"
+        "accountId": "211"
       },
       "credentials": {
         "canvasApi": {
@@ -81,7 +81,7 @@
       "executeOnce": true
     },
     {
-      "id": "e7cbe05d-070f-4bdf-9e20-29697e79d564",
+      "id": "86c4e71f-633a-47aa-ba0d-b6c975083f65",
       "name": "create — create: a subgroup with every optional field, in every conte",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -94,7 +94,7 @@
         "resource": "outcomeGroup",
         "operation": "create",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "outcomeGroupId": "={{ $('getRoot — getRoot: follows Canvas redirect to the root group in every').first().json.id }}",
         "title": "=Gröup \"quoted\" & <b>tags</b> 成果 🎯 {{ $execution.id }}-1",
         "additionalFields": {
@@ -113,7 +113,7 @@
       "executeOnce": true
     },
     {
-      "id": "ed941d7e-98ab-421c-8fb3-cbe835d67123",
+      "id": "1f31521f-a9b2-4c0e-a22b-d56b73b9197d",
       "name": "create — create: a subgroup with every optional field, in every conte (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -126,7 +126,7 @@
         "resource": "outcomeGroup",
         "operation": "create",
         "context": "account",
-        "accountId": 83,
+        "accountId": 211,
         "outcomeGroupId": "={{ $('getRoot — getRoot: follows Canvas redirect to the root group in every (2)').first().json.id }}",
         "title": "=Account standards {{ $execution.id }}-5"
       },
@@ -141,7 +141,7 @@
       "executeOnce": true
     },
     {
-      "id": "b3a78664-e459-4bd6-a875-f965649638b3",
+      "id": "77d4a32c-b332-4174-9045-b521fd01efcb",
       "name": "create — create: a subgroup with every optional field, in every conte (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -168,7 +168,7 @@
       "executeOnce": true
     },
     {
-      "id": "ea87c6bb-519c-4887-9997-5555314b5369",
+      "id": "6ef07335-3ed8-40a2-94a0-a1a59b40f817",
       "name": "get — get: in every context, with a mix of found and missing",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -181,7 +181,7 @@
         "resource": "outcomeGroup",
         "operation": "get",
         "context": "account",
-        "accountId": "83",
+        "accountId": "211",
         "outcomeGroupId": "={{ $('create — create: a subgroup with every optional field, in every conte (2)').first().json.id }}"
       },
       "credentials": {
@@ -195,7 +195,7 @@
       "executeOnce": true
     },
     {
-      "id": "a18a134d-58f8-4cf4-b5e2-72f9f1402aef",
+      "id": "8731ede5-bdc9-4232-b642-19b7abe61784",
       "name": "get — get: in every context, with a mix of found and missing (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -221,7 +221,7 @@
       "executeOnce": true
     },
     {
-      "id": "ef2bf9ca-4540-4300-a037-63b689896653",
+      "id": "ba478f7e-0aef-4c51-85e1-b3de87e57288",
       "name": "getAll — getAll: every group of a course exactly once, across pages",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -234,7 +234,7 @@
         "resource": "outcomeGroup",
         "operation": "getAll",
         "context": "course",
-        "courseId": "345"
+        "courseId": "757"
       },
       "credentials": {
         "canvasApi": {
@@ -247,7 +247,7 @@
       "executeOnce": true
     },
     {
-      "id": "40df4e18-063d-463b-a6be-b69b64085c0e",
+      "id": "190469ae-9894-4f43-858d-99fe4f0520bb",
       "name": "getAll — getAll: every group of a course exactly once, across pages (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -260,7 +260,7 @@
         "resource": "outcomeGroup",
         "operation": "getAll",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "pagination": {
           "returnAll": true
         }
@@ -276,7 +276,7 @@
       "executeOnce": true
     },
     {
-      "id": "36fc02f4-f892-43c6-9437-ad42914cd379",
+      "id": "a675208b-e4f1-4ad9-9ffe-2a891e9201da",
       "name": "getAll — getAll: account context",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -289,7 +289,7 @@
         "resource": "outcomeGroup",
         "operation": "getAll",
         "context": "account",
-        "accountId": "83",
+        "accountId": "211",
         "pagination": {
           "returnAll": true
         }
@@ -305,7 +305,7 @@
       "executeOnce": true
     },
     {
-      "id": "47e900c8-d8c2-4f35-8c10-911bb906dd01",
+      "id": "b76a5732-e253-407e-8d47-302bad396113",
       "name": "listSubgroups — listSubgroups: pages through the immediate subgroups, in eve",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -318,7 +318,7 @@
         "resource": "outcomeGroup",
         "operation": "listSubgroups",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "outcomeGroupId": "={{ $('create — create: a subgroup with every optional field, in every conte').first().json.id }}"
       },
       "credentials": {
@@ -332,7 +332,7 @@
       "executeOnce": true
     },
     {
-      "id": "483c9251-4283-4ca5-8a79-93a19f3427ee",
+      "id": "859e942b-e6b6-4a33-9730-9715f19ca3c9",
       "name": "listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -345,7 +345,7 @@
         "resource": "outcomeGroup",
         "operation": "listSubgroups",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "outcomeGroupId": "={{ $('create — create: a subgroup with every optional field, in every conte').first().json.id }}",
         "pagination": {
           "perPage": 5,
@@ -363,7 +363,7 @@
       "executeOnce": true
     },
     {
-      "id": "0351f9b4-a1a2-4710-8678-3fd2d2f8774c",
+      "id": "f322bc2e-1722-45a2-8388-a67ab7ef0f82",
       "name": "listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -376,7 +376,7 @@
         "resource": "outcomeGroup",
         "operation": "listSubgroups",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "outcomeGroupId": "={{ $('getAll — getAll: every group of a course exactly once, across pages (2)').first().json.id }}"
       },
       "credentials": {
@@ -390,7 +390,7 @@
       "executeOnce": true
     },
     {
-      "id": "b3da8c4d-18b7-422a-9b2e-ea11ebc45f8a",
+      "id": "1807fa24-3c89-4287-a394-70c864817be4",
       "name": "listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -403,7 +403,7 @@
         "resource": "outcomeGroup",
         "operation": "listSubgroups",
         "context": "account",
-        "accountId": "83",
+        "accountId": "211",
         "outcomeGroupId": "={{ $('getAll — getAll: account context').first().json.id }}"
       },
       "credentials": {
@@ -417,7 +417,7 @@
       "executeOnce": true
     },
     {
-      "id": "9d5e5b95-4f90-42d1-a19f-67f87578fcc1",
+      "id": "4ebf926e-e314-4000-b703-b699a3bb56a9",
       "name": "listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -446,7 +446,7 @@
       "executeOnce": true
     },
     {
-      "id": "fe1bc8f3-86ef-49b9-8576-e78ac5c57d54",
+      "id": "ae5126e6-6cdd-491b-8796-c1c2a4a40f22",
       "name": "listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -459,7 +459,7 @@
         "resource": "outcomeGroup",
         "operation": "listSubgroups",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "outcomeGroupId": "={{ $('listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (2)').first().json.id }}"
       },
       "credentials": {
@@ -473,7 +473,7 @@
       "executeOnce": true
     },
     {
-      "id": "2d495f4e-add9-4b8b-8fd3-e8dfc1af992a",
+      "id": "e6969130-1c66-4dac-8ce4-7c497aa7d615",
       "name": "update — update: every field, including a move to another parent grou",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -486,13 +486,13 @@
         "resource": "outcomeGroup",
         "operation": "update",
         "context": "course",
-        "courseId": "345",
-        "outcomeGroupId": "72",
+        "courseId": "757",
+        "outcomeGroupId": "224",
         "updateFields": {
           "title": "=Moved & renamed {{ $execution.id }}-19",
           "description": "<em>New</em> description",
           "vendor_guid": "VG-2",
-          "parent_outcome_group_id": "75"
+          "parent_outcome_group_id": "222"
         }
       },
       "credentials": {
@@ -506,7 +506,7 @@
       "executeOnce": true
     },
     {
-      "id": "cab47c5f-e450-46ff-951c-77cb7b0c11c9",
+      "id": "0d026cf3-3c93-41c1-935c-e048aec53f5e",
       "name": "update — update: account and global context; a root group cannot be c",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -519,7 +519,7 @@
         "resource": "outcomeGroup",
         "operation": "update",
         "context": "account",
-        "accountId": "83",
+        "accountId": "211",
         "outcomeGroupId": "={{ $('listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (4)').first().json.id }}",
         "updateFields": {
           "description": "Account group description"
@@ -536,7 +536,7 @@
       "executeOnce": true
     },
     {
-      "id": "c69dcdbc-a824-4daa-8d91-bea20a439e75",
+      "id": "50af5651-780c-4090-9394-847025cddcf6",
       "name": "update — update: account and global context; a root group cannot be c (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -565,7 +565,7 @@
       "executeOnce": true
     },
     {
-      "id": "621197d3-cdb1-452d-a06c-6dd904461d40",
+      "id": "f55fbbbe-4710-4795-a256-43d089c5067a",
       "name": "listOutcomes — listOutcomes: abbreviated by default, full on request, acros",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -578,7 +578,7 @@
         "resource": "outcomeGroup",
         "operation": "listOutcomes",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "outcomeGroupId": "={{ $('listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (3)').first().json.id }}"
       },
       "credentials": {
@@ -592,7 +592,7 @@
       "executeOnce": true
     },
     {
-      "id": "ffc4157e-1db8-4d23-8dea-b29d21304c19",
+      "id": "e7d5d317-6515-44f4-a16a-b2f536362a34",
       "name": "listOutcomes — listOutcomes: abbreviated by default, full on request, acros (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -605,7 +605,7 @@
         "resource": "outcomeGroup",
         "operation": "listOutcomes",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "outcomeGroupId": "={{ $('listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (3)').first().json.id }}",
         "options": {
           "outcome_style": "full"
@@ -626,7 +626,7 @@
       "executeOnce": true
     },
     {
-      "id": "d956d6f7-8e35-4342-a686-41c2a6caf153",
+      "id": "bbd4286d-8fcc-45bb-8e6a-4ba8b7db7e81",
       "name": "linkOutcome — linkOutcome: links an existing outcome into a second group, ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -639,9 +639,9 @@
         "resource": "outcomeGroup",
         "operation": "linkOutcome",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "outcomeGroupId": "={{ $('listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (2)').first().json.id }}",
-        "outcomeId": "={{ $('getAll — getAll: every group of a course exactly once, across pages (2)').first().json.id }}"
+        "outcomeId": 197
       },
       "credentials": {
         "canvasApi": {
@@ -654,7 +654,7 @@
       "executeOnce": true
     },
     {
-      "id": "ef002949-543b-4388-b549-9c02fff6bd30",
+      "id": "e5e828e8-e3cb-4a70-ba68-7870ccd4814e",
       "name": "linkOutcome — linkOutcome: links an existing outcome into a second group,  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -667,11 +667,11 @@
         "resource": "outcomeGroup",
         "operation": "linkOutcome",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "outcomeGroupId": "={{ $('listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (2)').first().json.id }}",
-        "outcomeId": "={{ $('getAll — getAll: account context').first().json.id }}",
+        "outcomeId": "198",
         "options": {
-          "move_from": 66
+          "move_from": 219
         }
       },
       "credentials": {
@@ -685,7 +685,7 @@
       "executeOnce": true
     },
     {
-      "id": "0e0e39e6-7643-4673-adba-572b264fd2a1",
+      "id": "f2c9602d-9a03-4658-b7b5-ad4648dbbec7",
       "name": "getAllLinks — getAllLinks: every outcome link of a context, with the style",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -698,7 +698,7 @@
         "resource": "outcomeGroup",
         "operation": "getAllLinks",
         "context": "course",
-        "courseId": "345"
+        "courseId": "757"
       },
       "credentials": {
         "canvasApi": {
@@ -711,7 +711,7 @@
       "executeOnce": true
     },
     {
-      "id": "11b077d4-b3ea-4759-a4f7-5893d2afe10b",
+      "id": "05bf3c46-6b26-4e61-9c38-08e8492d7d8d",
       "name": "getAllLinks — getAllLinks: every outcome link of a context, with the style (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -724,7 +724,7 @@
         "resource": "outcomeGroup",
         "operation": "getAllLinks",
         "context": "account",
-        "accountId": "83",
+        "accountId": "211",
         "options": {
           "outcome_style": "abbrev"
         },
@@ -743,7 +743,7 @@
       "executeOnce": true
     },
     {
-      "id": "a4a71c3c-054e-4eac-bc09-3cb4ea97e39f",
+      "id": "554cfa64-64e3-4932-92cd-9dc4bfd24bc1",
       "name": "unlinkOutcome — unlinkOutcome: removes a link; the outcome itself goes with ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -756,9 +756,9 @@
         "resource": "outcomeGroup",
         "operation": "unlinkOutcome",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "outcomeGroupId": "={{ $('listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (2)').first().json.id }}",
-        "outcomeId": "={{ $('getAll — getAll: every group of a course exactly once, across pages (2)').first().json.id }}"
+        "outcomeId": 197
       },
       "credentials": {
         "canvasApi": {
@@ -771,7 +771,7 @@
       "executeOnce": true
     },
     {
-      "id": "f50fdf48-2e97-4de9-bd95-65cd11d0f27f",
+      "id": "71ed58fa-4316-494f-9d36-b17497fcb704",
       "name": "unlinkOutcome — unlinkOutcome: removes a link; the outcome itself goes with  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -784,9 +784,9 @@
         "resource": "outcomeGroup",
         "operation": "unlinkOutcome",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "outcomeGroupId": "={{ $('listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (3)').first().json.id }}",
-        "outcomeId": "={{ $('getAll — getAll: every group of a course exactly once, across pages (2)').first().json.id }}"
+        "outcomeId": "197"
       },
       "credentials": {
         "canvasApi": {
@@ -799,7 +799,7 @@
       "executeOnce": true
     },
     {
-      "id": "f5e35633-ccc4-4307-a351-d4f88acb57c4",
+      "id": "4e15f96c-5a00-4b1b-b7e0-f0dd7a6b81b9",
       "name": "import — import: copies an account group with its outcomes into a cou",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -812,7 +812,7 @@
         "resource": "outcomeGroup",
         "operation": "import",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "outcomeGroupId": "={{ $('listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (2)').first().json.id }}",
         "sourceOutcomeGroupId": "={{ $('update — update: account and global context; a root group cannot be c').first().json.id }}"
       },
@@ -827,7 +827,7 @@
       "executeOnce": true
     },
     {
-      "id": "47b73482-6248-4056-a289-7e72c8068d77",
+      "id": "90a013ee-dd61-4228-a387-0fa893cc9ed8",
       "name": "import — import: asynchronously, Canvas returns a Progress that leads",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -840,7 +840,7 @@
         "resource": "outcomeGroup",
         "operation": "import",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "outcomeGroupId": "={{ $('listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (3)').first().json.id }}",
         "sourceOutcomeGroupId": "={{ $('update — update: account and global context; a root group cannot be c (2)').first().json.id }}",
         "options": {
@@ -858,8 +858,8 @@
       "executeOnce": true
     },
     {
-      "id": "b956d4c8-c5c2-459a-9cd2-953c91e15fe3",
-      "name": "delete — delete: removes a group with its subgroups and links; a root",
+      "id": "8a9ac050-5dbd-4edd-8ba7-ad3391fa263c",
+      "name": "linkOutcome — linkOutcome, listOutcomes, unlinkOutcome, import: account an",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
@@ -869,9 +869,212 @@
       "parameters": {
         "authentication": "accessToken",
         "resource": "outcomeGroup",
+        "operation": "linkOutcome",
+        "context": "account",
+        "accountId": "211",
+        "outcomeGroupId": "236",
+        "outcomeId": 210
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bfaae220-4736-4484-9011-e8e34f93d596",
+      "name": "listOutcomes — linkOutcome, listOutcomes, unlinkOutcome, import: account an",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "outcomeGroup",
+        "operation": "listOutcomes",
+        "context": "account",
+        "accountId": "211",
+        "outcomeGroupId": "={{ $('update — update: account and global context; a root group cannot be c').first().json.id }}",
+        "options": {
+          "outcome_style": "full"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a11d65c0-bef8-47d6-b601-74aa67e4333d",
+      "name": "unlinkOutcome — linkOutcome, listOutcomes, unlinkOutcome, import: account an",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "outcomeGroup",
+        "operation": "unlinkOutcome",
+        "context": "account",
+        "accountId": "211",
+        "outcomeGroupId": "236",
+        "outcomeId": 210
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "630461fe-ab07-4d13-b349-fc6914ee5aa4",
+      "name": "import — linkOutcome, listOutcomes, unlinkOutcome, import: account an",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "outcomeGroup",
+        "operation": "import",
+        "context": "account",
+        "accountId": "211",
+        "outcomeGroupId": "236",
+        "sourceOutcomeGroupId": "={{ $('update — update: account and global context; a root group cannot be c').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bdc2aaa2-732f-4b0c-ac8c-b7ba4397c534",
+      "name": "linkOutcome — linkOutcome, listOutcomes, unlinkOutcome, import: account an (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "outcomeGroup",
+        "operation": "linkOutcome",
+        "context": "global",
+        "outcomeGroupId": "238",
+        "outcomeId": 211
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e43e0f3e-851b-43e5-a036-1141d51636b2",
+      "name": "listOutcomes — linkOutcome, listOutcomes, unlinkOutcome, import: account an (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "outcomeGroup",
+        "operation": "listOutcomes",
+        "context": "global",
+        "outcomeGroupId": "={{ $('update — update: account and global context; a root group cannot be c (2)').first().json.id }}",
+        "options": {
+          "outcome_style": "full"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7360c496-35d5-4d01-8ce5-b204db187af0",
+      "name": "import — linkOutcome, listOutcomes, unlinkOutcome, import: account an (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "outcomeGroup",
+        "operation": "import",
+        "context": "global",
+        "outcomeGroupId": "238",
+        "sourceOutcomeGroupId": "={{ $('update — update: account and global context; a root group cannot be c (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d5ef4149-4f0a-4b15-9237-55f8d4910dba",
+      "name": "delete — delete: removes a group with its subgroups and links; a root",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "outcomeGroup",
         "operation": "delete",
         "context": "course",
-        "courseId": "345",
+        "courseId": "757",
         "outcomeGroupId": "={{ $('listSubgroups — listSubgroups: pages through the immediate subgroups, in eve (2)').first().json.id }}"
       },
       "credentials": {
@@ -885,13 +1088,13 @@
       "executeOnce": true
     },
     {
-      "id": "eab7216b-3b8e-4aa9-b190-322063483065",
+      "id": "ef0765bb-818c-4f73-b9a5-33e5de8c1f0f",
       "name": "delete — delete: removes a group with its subgroups and links; a root (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
-        1100
+        720,
+        1320
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -911,20 +1114,20 @@
       "executeOnce": true
     },
     {
-      "id": "7e8ec3eb-186a-4166-af8a-2bf5755cce28",
+      "id": "ab25711e-212e-4b91-b3bb-478dfeb7cc8b",
       "name": "delete — delete: removes a group with its subgroups and links; a root (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
-        1100
+        980,
+        1320
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "outcomeGroup",
         "operation": "delete",
         "context": "account",
-        "accountId": "83",
+        "accountId": "211",
         "outcomeGroupId": "={{ $('update — update: account and global context; a root group cannot be c').first().json.id }}"
       },
       "credentials": {
@@ -1270,6 +1473,83 @@
       ]
     },
     "import — import: asynchronously, Canvas returns a Progress that leads": {
+      "main": [
+        [
+          {
+            "node": "linkOutcome — linkOutcome, listOutcomes, unlinkOutcome, import: account an",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "linkOutcome — linkOutcome, listOutcomes, unlinkOutcome, import: account an": {
+      "main": [
+        [
+          {
+            "node": "listOutcomes — linkOutcome, listOutcomes, unlinkOutcome, import: account an",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listOutcomes — linkOutcome, listOutcomes, unlinkOutcome, import: account an": {
+      "main": [
+        [
+          {
+            "node": "unlinkOutcome — linkOutcome, listOutcomes, unlinkOutcome, import: account an",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unlinkOutcome — linkOutcome, listOutcomes, unlinkOutcome, import: account an": {
+      "main": [
+        [
+          {
+            "node": "import — linkOutcome, listOutcomes, unlinkOutcome, import: account an",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "import — linkOutcome, listOutcomes, unlinkOutcome, import: account an": {
+      "main": [
+        [
+          {
+            "node": "linkOutcome — linkOutcome, listOutcomes, unlinkOutcome, import: account an (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "linkOutcome — linkOutcome, listOutcomes, unlinkOutcome, import: account an (2)": {
+      "main": [
+        [
+          {
+            "node": "listOutcomes — linkOutcome, listOutcomes, unlinkOutcome, import: account an (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listOutcomes — linkOutcome, listOutcomes, unlinkOutcome, import: account an (2)": {
+      "main": [
+        [
+          {
+            "node": "import — linkOutcome, listOutcomes, unlinkOutcome, import: account an (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "import — linkOutcome, listOutcomes, unlinkOutcome, import: account an (2)": {
       "main": [
         [
           {

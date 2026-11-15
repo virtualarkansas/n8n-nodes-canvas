@@ -2,7 +2,7 @@
   "name": "Canvas battery — brandConfig",
   "nodes": [
     {
-      "id": "c8ae1e05-2c39-4bf7-9d93-692cae07bbe4",
+      "id": "48b65a88-923a-4f4d-8182-6cf69a65c999",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "beb87ce3-2f28-4b8a-bb23-04195a4b3f97",
+      "id": "e89609d8-1999-4f09-8db8-dd7bb8ade643",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "68e1a2ae-3b60-4177-a3a0-b15a002c705e",
+      "id": "d63fc085-22dc-4650-ac34-c117bf414928",
       "name": "share — share: a brand config gets a name in an account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,7 +41,7 @@
         "authentication": "accessToken",
         "resource": "brandConfig",
         "operation": "share",
-        "accountId": "114",
+        "accountId": "247",
         "name": "=Crimson & \"Gold\" — ünï 主題 {{ $execution.id }}-2",
         "brandConfigMd5": " 3f38c01c65835e7de842d709a89ec3e8 "
       },
@@ -56,7 +56,7 @@
       "executeOnce": true
     },
     {
-      "id": "1ae91a6b-c3df-44fe-8462-77d5291a2f3c",
+      "id": "0850faae-4703-487f-bc8b-7db516d9e834",
       "name": "updateShared — updateShared: the name, the brand config, or both",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -85,7 +85,7 @@
       "executeOnce": true
     },
     {
-      "id": "022bd285-ef8c-4ff1-94f8-e8a75a5a61eb",
+      "id": "0d34b354-a186-4458-8a05-69ec962957b3",
       "name": "updateShared — updateShared: the name, the brand config, or both (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -114,7 +114,7 @@
       "executeOnce": true
     },
     {
-      "id": "367c7bcf-113e-4398-b86f-d8a162ac3958",
+      "id": "f68acb0f-b228-4758-8d8a-f7c6269dcb66",
       "name": "unshare — unshare: removes the shared theme, not the brand config",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

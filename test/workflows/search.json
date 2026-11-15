@@ -2,7 +2,7 @@
   "name": "Canvas battery — search",
   "nodes": [
     {
-      "id": "900aa46d-7cbe-4d2b-a57b-12607a0cae90",
+      "id": "008ef015-feda-45a3-bd51-e76b18f5da2c",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "fa7a187e-01c4-4ab4-94ab-8fa6b4704dea",
+      "id": "cfe00758-8a5d-42b2-866a-efb281f29e4c",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "7c82983b-4947-4a73-8b66-fdc7c0501c07",
+      "id": "2d5d6ab4-db6d-4b9d-a9c8-2220aaf8c779",
       "name": "findRecipients — pages through the students of a large course",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -57,7 +57,7 @@
       "executeOnce": true
     },
     {
-      "id": "d8366bac-738b-4e57-a378-978f737bd77c",
+      "id": "449ddea7-5eba-41ef-a6e4-30ba742b3f4e",
       "name": "findRecipients — pages through the students of a large course (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -88,7 +88,7 @@
       "executeOnce": true
     },
     {
-      "id": "20405be4-cc9d-4ffd-aa20-bb49d0581010",
+      "id": "8ed48d61-0da1-4fd0-9c2c-2e63e31c7eae",
       "name": "findRecipients — pages through the students of a large course (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -120,7 +120,7 @@
       "executeOnce": true
     },
     {
-      "id": "8560ecfb-9674-43a2-aeb9-383036e7c321",
+      "id": "d45857e5-2953-44b0-8846-a9f3335baad0",
       "name": "findRecipients — search terms: every word must match; names with accents, apo",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -151,7 +151,7 @@
       "executeOnce": true
     },
     {
-      "id": "cb1b27af-f964-44a4-993b-928aa521f298",
+      "id": "caff1a4f-7a11-4780-8c87-70d231189bd1",
       "name": "findRecipients — search terms: every word must match; names with accents, apo (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -182,7 +182,7 @@
       "executeOnce": true
     },
     {
-      "id": "5f6c123e-b801-49b4-9f38-25b7c817926f",
+      "id": "910f3e23-ae41-4790-b6f8-47d0407dd244",
       "name": "findRecipients — search terms: every word must match; names with accents, apo (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -213,7 +213,7 @@
       "executeOnce": true
     },
     {
-      "id": "be74c2b1-63c0-42a5-b081-4cf2d9fe8148",
+      "id": "216aea97-7a31-4cc5-b90d-9ba47465af72",
       "name": "findRecipients — search terms: every word must match; names with accents, apo (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -244,7 +244,7 @@
       "executeOnce": true
     },
     {
-      "id": "a056e31a-096d-4164-a4c4-fdd3a950ad22",
+      "id": "1bf7a660-f312-4dc3-a681-455e8d47ede3",
       "name": "findRecipients — search terms: every word must match; names with accents, apo (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -275,7 +275,7 @@
       "executeOnce": true
     },
     {
-      "id": "4c2903d2-75c1-4d5b-b628-eeaf6cc5cb8e",
+      "id": "52c6b3f1-a97c-4336-bf42-a0babaee36b9",
       "name": "findRecipients — search terms: every word must match; names with accents, apo (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -303,7 +303,7 @@
       "executeOnce": true
     },
     {
-      "id": "16124211-fb0c-493b-bfcf-c7889993a700",
+      "id": "ec75fba4-e9d4-4716-9346-d219bd9fa35b",
       "name": "findRecipients — exclude: users by number, contexts by prefixed ID",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -334,7 +334,7 @@
       "executeOnce": true
     },
     {
-      "id": "5238dd4a-e95b-43e2-84da-d25cb6a121ef",
+      "id": "d083ffc1-c3c1-4b4a-b698-9155d4ca65ab",
       "name": "findRecipients — without a search term, a context or a user ID there is nothi",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -358,7 +358,7 @@
       "executeOnce": true
     },
     {
-      "id": "0f04f1c7-8f4f-47e9-bb1d-613e9e0e86c6",
+      "id": "1001ee36-2755-4d88-885c-d4840265a061",
       "name": "findRecipients — a student only finds the people and contexts they can messag",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -386,7 +386,7 @@
       "executeOnce": true
     },
     {
-      "id": "9ce169a9-5438-49a2-9797-0a685e313c38",
+      "id": "8376bc87-b727-40f9-9620-5563d598bcae",
       "name": "listAllCourses — lists the indexed, published courses; filters by search term",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -399,7 +399,7 @@
         "resource": "search",
         "operation": "listAllCourses",
         "options": {
-          "search": "catalogc53f0106"
+          "search": "catalogef12a425"
         }
       },
       "credentials": {
@@ -413,7 +413,7 @@
       "executeOnce": true
     },
     {
-      "id": "05e7cb12-3062-4765-9143-9425376b042d",
+      "id": "ec350a27-df3f-4323-8bcb-6569d71e6561",
       "name": "listAllCourses — lists the indexed, published courses; filters by search term (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -426,7 +426,7 @@
         "resource": "search",
         "operation": "listAllCourses",
         "options": {
-          "search": "catalogc53f0106"
+          "search": "catalogef12a425"
         },
         "pagination": {
           "perPage": 5,
@@ -444,7 +444,7 @@
       "executeOnce": true
     },
     {
-      "id": "6f172139-3bb6-40e5-bd97-c8e0d7c2dcd8",
+      "id": "22a99e02-7bad-4454-a59f-a9fb3988d2fa",
       "name": "listAllCourses — lists the indexed, published courses; filters by search term (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -457,7 +457,7 @@
         "resource": "search",
         "operation": "listAllCourses",
         "options": {
-          "search": "catalogc53f0106",
+          "search": "catalogef12a425",
           "public_only": true
         },
         "pagination": {
@@ -475,7 +475,7 @@
       "executeOnce": true
     },
     {
-      "id": "87bc6d48-6632-45b8-b558-2021fc5debf2",
+      "id": "88b11d16-d5f6-42f5-b1f2-6c7c774b8056",
       "name": "listAllCourses — lists the indexed, published courses; filters by search term (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -488,7 +488,7 @@
         "resource": "search",
         "operation": "listAllCourses",
         "options": {
-          "search": "catalogc53f0106",
+          "search": "catalogef12a425",
           "public_only": true,
           "open_enrollment_only": true
         },
@@ -507,7 +507,7 @@
       "executeOnce": true
     },
     {
-      "id": "4424f8f3-89f5-47c8-9527-4230e04a4c5a",
+      "id": "21286413-0eaf-461b-800f-ddd0e90d63a8",
       "name": "listAllCourses — lists the indexed, published courses; filters by search term (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -520,7 +520,7 @@
         "resource": "search",
         "operation": "listAllCourses",
         "options": {
-          "search": "catalogc53f0106",
+          "search": "catalogef12a425",
           "public_only": false,
           "open_enrollment_only": false
         },
@@ -539,7 +539,7 @@
       "executeOnce": true
     },
     {
-      "id": "620ec109-430c-4d47-b7b7-ab20af6a4bb0",
+      "id": "0f945fd0-81b3-4c24-b49e-f89e44c77c13",
       "name": "listAllCourses — lists the indexed, published courses; filters by search term (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -552,7 +552,7 @@
         "resource": "search",
         "operation": "listAllCourses",
         "options": {
-          "search": "catalogc53f0106 no such course"
+          "search": "catalogef12a425 no such course"
         }
       },
       "credentials": {

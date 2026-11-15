@@ -2,7 +2,7 @@
   "name": "Canvas battery — quizQuestion",
   "nodes": [
     {
-      "id": "e6d7357b-1dae-4b31-9162-e82bda44b08b",
+      "id": "3b3fb733-b6f0-4354-8e04-37639e194fdc",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "f44fe04f-4fec-4ddf-9921-6fbfcab6d694",
+      "id": "c93c0195-eeff-4fd1-a7cd-efd8f3fb14b8",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "b34a4fb9-05e3-4a29-bfe7-d082c987de01",
+      "id": "12029a5a-50c5-453d-8eaf-98dbb7d5383e",
       "name": "create — create: every optional field reaches Canvas (answers typed a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,7 +42,7 @@
         "resource": "quizQuestion",
         "operation": "create",
         "courseId": "119",
-        "quizId": "151",
+        "quizId": "253",
         "questionName": "=Prime numbers \"quoted\" & <b>bold</b> ñ 素数 {{ $execution.id }}-2",
         "questionText": "<p>Which of these is <em>not</em> prime? ¿Cuál? 🤔</p>",
         "questionType": "multiple_choice_question",
@@ -55,7 +55,7 @@
           "neutral_comments": "See chapter 2.",
           "neutral_comments_html": "<p>See <a href=\"https://example.com/ch2\">chapter 2</a>.</p>",
           "points_possible": 2.5,
-          "quiz_group_id": "23"
+          "quiz_group_id": "57"
         }
       },
       "credentials": {
@@ -69,7 +69,7 @@
       "executeOnce": true
     },
     {
-      "id": "5c4d27b8-c1b1-4983-b368-e72aab4b40be",
+      "id": "246d08bf-3051-43c4-ba88-ca5689da21bf",
       "name": "create — create: each question type keeps its answers",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -101,7 +101,7 @@
       "executeOnce": true
     },
     {
-      "id": "51d6dbda-5788-499e-82ee-dec2516aa7d5",
+      "id": "e7864431-b862-4244-a35d-1761ad67b225",
       "name": "create — create: each question type keeps its answers (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -133,7 +133,7 @@
       "executeOnce": true
     },
     {
-      "id": "427a108a-d970-4c24-944f-c85c663c711b",
+      "id": "a01fff10-15f5-4582-b5c1-2a2f822a0db7",
       "name": "create — create: each question type keeps its answers (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -165,7 +165,7 @@
       "executeOnce": true
     },
     {
-      "id": "659e1bd3-12c3-4715-a21c-fa72e1b3dcac",
+      "id": "e863c015-3351-46ee-8ca4-5d72b80f58b7",
       "name": "create — create: each question type keeps its answers (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -197,7 +197,7 @@
       "executeOnce": true
     },
     {
-      "id": "7589872c-429a-4dba-8523-dd733c50220b",
+      "id": "9c84521e-486a-409b-a26f-359cd1c43164",
       "name": "create — create: each question type keeps its answers (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -230,7 +230,7 @@
       "executeOnce": true
     },
     {
-      "id": "e7c36170-5208-4ff3-8bc6-8576a675a49d",
+      "id": "2cba2691-f8bb-44a0-997a-903087517d12",
       "name": "create — create: each question type keeps its answers (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -262,7 +262,7 @@
       "executeOnce": true
     },
     {
-      "id": "dbd5dc01-affe-489c-889a-058ee6f828ec",
+      "id": "fdc012fb-6879-4f39-8ef2-476021eec69a",
       "name": "create — create: each question type keeps its answers (7)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -294,7 +294,7 @@
       "executeOnce": true
     },
     {
-      "id": "af98eb89-e113-40ed-880a-3d1ef78df2c8",
+      "id": "2fe8a428-7451-4310-b7b7-f35cd8d121a6",
       "name": "create — create: each question type keeps its answers (8)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -324,7 +324,7 @@
       "executeOnce": true
     },
     {
-      "id": "3b9c4507-1e5b-4258-b9b2-edd0246a41c4",
+      "id": "0e3f1277-3104-4fd8-9416-04f275adccaf",
       "name": "create — create: each question type keeps its answers (9)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -354,7 +354,7 @@
       "executeOnce": true
     },
     {
-      "id": "9feed040-7a2c-4874-938f-2744ec4e0718",
+      "id": "55627033-24c5-45bb-9e75-24c69f589936",
       "name": "create — create: each question type keeps its answers (10)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -386,7 +386,7 @@
       "executeOnce": true
     },
     {
-      "id": "c4dc5548-aa71-4e72-bf37-94dc7002c615",
+      "id": "5ace1cb8-5d41-467a-a13e-240d136ed29a",
       "name": "update — update: every field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -413,7 +413,7 @@
           "question_name": "Planets — updated",
           "question_text": "<p>Select the planets.</p>",
           "question_type": "multiple_answers_question",
-          "quiz_group_id": "23"
+          "quiz_group_id": "57"
         }
       },
       "credentials": {
@@ -427,7 +427,7 @@
       "executeOnce": true
     },
     {
-      "id": "7f39f632-2958-4e77-9fad-0fd3f2b58ba0",
+      "id": "1ab85d4b-70cd-4780-9b29-772f7b8afcb5",
       "name": "update — update: Canvas merges onto the question as first created, no",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -441,7 +441,7 @@
         "operation": "update",
         "courseId": "119",
         "quizId": "={{ $('update — update: every field reaches Canvas').first().json.quiz_id }}",
-        "questionId": "={{ $('update — update: every field reaches Canvas').first().json.assessment_question_id }}",
+        "questionId": "435",
         "updateFields": {
           "points_possible": 9
         }
@@ -457,7 +457,7 @@
       "executeOnce": true
     },
     {
-      "id": "89e780e1-1a29-46d8-883e-f6ad94a37a90",
+      "id": "803d2bfa-e888-436a-b1d5-883e728613b4",
       "name": "update — update: Canvas merges onto the question as first created, no (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -487,7 +487,7 @@
       "executeOnce": true
     },
     {
-      "id": "e3403edf-f5cd-4915-b688-dece2d8a680a",
+      "id": "fb2a013d-5325-4f4e-a23d-5cc382902188",
       "name": "update — update: Canvas merges onto the question as first created, no (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -518,7 +518,7 @@
       "executeOnce": true
     },
     {
-      "id": "538eeab1-3a0a-42ce-9547-0a35c9780900",
+      "id": "77b0e488-d28b-47e2-ac7b-a9e5444bb54a",
       "name": "getAll — getAll: pages through a quiz with more questions than one pa",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -544,7 +544,7 @@
       "executeOnce": true
     },
     {
-      "id": "32801850-8230-4556-9c9d-930584997b35",
+      "id": "8fc5a9c9-c26d-4f2d-9615-b4322bd518c7",
       "name": "getAll — getAll: pages through a quiz with more questions than one pa (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -573,7 +573,7 @@
       "executeOnce": true
     },
     {
-      "id": "030f99e3-8f62-4ea9-bfd2-b2c1add1a133",
+      "id": "f2bc2e24-ca4d-49a1-b441-8a4d9e995b52",
       "name": "getAll — getAll: pages through a quiz with more questions than one pa (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -603,7 +603,7 @@
       "executeOnce": true
     },
     {
-      "id": "42ad028d-3b40-4582-9ae6-ef57d35f132a",
+      "id": "3eddae75-d370-4f41-bf5e-f9ebc97298d6",
       "name": "getAll — getAll: a quiz without questions gives no items",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -616,7 +616,7 @@
         "resource": "quizQuestion",
         "operation": "getAll",
         "courseId": "119",
-        "quizId": "152"
+        "quizId": "254"
       },
       "credentials": {
         "canvasApi": {
@@ -629,7 +629,7 @@
       "executeOnce": true
     },
     {
-      "id": "04f48a6f-28ef-46ba-8faa-7975fdc5b2af",
+      "id": "6b0db5cf-90ad-4def-9e96-efe71131c73f",
       "name": "getAll — getAll: with a quiz submission, returns the questions as tha",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -642,7 +642,7 @@
         "resource": "quizQuestion",
         "operation": "getAll",
         "courseId": "119",
-        "quizId": "153"
+        "quizId": "255"
       },
       "credentials": {
         "canvasApi": {
@@ -655,7 +655,7 @@
       "executeOnce": true
     },
     {
-      "id": "db8c6129-4d2b-4aae-ad5f-fb80ba692d3d",
+      "id": "a52f4488-b1f2-44a1-8114-6b6a077dacdc",
       "name": "getAll — getAll: with a quiz submission, returns the questions as tha (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -670,7 +670,7 @@
         "courseId": "119",
         "quizId": "={{ $('getAll — getAll: with a quiz submission, returns the questions as tha').first().json.quiz_id }}",
         "options": {
-          "quiz_submission_id": "486",
+          "quiz_submission_id": "529",
           "quiz_submission_attempt": 1
         }
       },
@@ -685,7 +685,7 @@
       "executeOnce": true
     },
     {
-      "id": "3666b1d8-e7cf-476f-94d9-397be300b120",
+      "id": "9fe16eba-596c-4616-a1a3-edd2f91beaf7",
       "name": "getAll — getAll: with a quiz submission, returns the questions as tha (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -700,7 +700,7 @@
         "courseId": "119",
         "quizId": "={{ $('getAll — getAll: with a quiz submission, returns the questions as tha (2)').first().json.quiz_id }}",
         "options": {
-          "quiz_submission_id": 486
+          "quiz_submission_id": 529
         }
       },
       "credentials": {
@@ -714,7 +714,7 @@
       "executeOnce": true
     },
     {
-      "id": "f6063ec1-bc1b-40f0-a067-33099bbd1187",
+      "id": "9addeeeb-5bd7-4ac4-a4b9-f45bf78cc437",
       "name": "delete — delete: removes the question",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

@@ -2,7 +2,7 @@
   "name": "Canvas battery — developerKey",
   "nodes": [
     {
-      "id": "dca2c94e-c02e-4a2a-b625-5cf3c8c4e6f1",
+      "id": "04551ad6-eb99-4494-83d1-3eb03910c39e",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "5d11fe16-4047-4535-9dbf-6500a0f51f2c",
+      "id": "d09dfc7e-c313-4106-9d9d-b94b75803da6",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,13 +25,13 @@
         "assignments": {
           "assignments": [
             {
-              "id": "f16ae6a6-8cc0-413d-8349-3c7d2c7b27d4",
+              "id": "fab77943-8989-4e0e-8140-5bd147998baf",
               "name": "accountId",
               "value": "1",
               "type": "string"
             },
             {
-              "id": "8dff86a9-f8ea-463e-ab78-a43f1a9b9299",
+              "id": "f1d55370-0480-4c10-a382-34b73a95dcdc",
               "name": "accountRubricId",
               "value": "2",
               "type": "string"
@@ -42,7 +42,7 @@
       }
     },
     {
-      "id": "1f3f53b1-4c36-4332-829f-84fbb28ab736",
+      "id": "41fa3f92-4e74-4f3f-8464-876d67bafb0f",
       "name": "create — create: every optional field reaches Canvas; the secret is r",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -81,7 +81,7 @@
       "executeOnce": true
     },
     {
-      "id": "84104384-1508-4c57-8af8-935f7a99f7e2",
+      "id": "cd09e403-3e89-4af8-b72b-0fbcb1c3db0b",
       "name": "create — create: Visible only applies to Site Admin keys",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -110,7 +110,7 @@
       "executeOnce": true
     },
     {
-      "id": "0b76377e-954b-4eed-90b7-30266d3db970",
+      "id": "bc8b0137-13e3-4552-95a8-eaca241c975e",
       "name": "create — create: Visible only applies to Site Admin keys (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -139,7 +139,7 @@
       "executeOnce": true
     },
     {
-      "id": "ac03ea04-3cac-417e-a145-0f47c7d182c4",
+      "id": "0514f60c-1493-4ddb-9822-69a6c2da8075",
       "name": "update — create: Visible only applies to Site Admin keys",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -167,7 +167,7 @@
       "executeOnce": true
     },
     {
-      "id": "7f4e2dbb-5941-4c00-8c96-0547b4da7d8e",
+      "id": "b5415f77-9a56-4f23-91bb-ceebd783d9d4",
       "name": "getAll — create: Visible only applies to Site Admin keys",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -196,7 +196,7 @@
       "executeOnce": true
     },
     {
-      "id": "3c7e2f0d-a7f7-4688-9f96-7dd995d79816",
+      "id": "3214be53-1f1f-4f3e-9654-d81b8165c22f",
       "name": "getAll — getAll: lists the keys of the account; Return All and Limit ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -222,7 +222,7 @@
       "executeOnce": true
     },
     {
-      "id": "258ed4d6-5095-4140-90e3-46e6a53a6113",
+      "id": "5ffe6a97-39a6-4dcc-93f5-e9fe28ae47c2",
       "name": "getAll — getAll: lists the keys of the account; Return All and Limit  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -252,7 +252,7 @@
       "executeOnce": true
     },
     {
-      "id": "af713e57-ad68-48af-941e-757faa80e3e7",
+      "id": "12b481d1-d799-4acf-8ea3-9f92c0811389",
       "name": "getAll — getAll: lists the keys of the account; Return All and Limit  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -277,7 +277,7 @@
       "executeOnce": true
     },
     {
-      "id": "392951d0-7dec-40e9-a558-e58cc7d6df48",
+      "id": "0ce9bc56-b43e-49a1-8aff-94e8391c3a81",
       "name": "getAll — getAll: Inherited off lists the accounts own keys, on lis",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -306,7 +306,7 @@
       "executeOnce": true
     },
     {
-      "id": "7cd89a74-1fce-4a8f-b6ba-f4eb98e78ac0",
+      "id": "ef5e3034-43e1-4696-aed7-f5eed41b4bbb",
       "name": "getAll — getAll: a single key by ID; an unknown ID yields nothing; a ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -334,7 +334,7 @@
       "executeOnce": true
     },
     {
-      "id": "7c59c6d2-2f97-4337-ad54-93b658945dc4",
+      "id": "36d8b0b4-336f-41c6-8144-ca66471cd88c",
       "name": "setAccountBinding — setAccountBinding: switches a key on and off in the account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -361,7 +361,7 @@
       "executeOnce": true
     },
     {
-      "id": "f961f3d1-57a0-4ff0-b100-93648e910f29",
+      "id": "3c3971db-6e4f-4c56-b5e4-ca3b7bc5168d",
       "name": "setAccountBinding — setAccountBinding: switches a key on and off in the account (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -387,7 +387,7 @@
       "executeOnce": true
     },
     {
-      "id": "b771ce23-2ad8-4210-ba22-047ea8fc089a",
+      "id": "de9f8ae2-8897-4d5d-bf4d-94e8aca54efd",
       "name": "update — update: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -426,7 +426,7 @@
       "executeOnce": true
     },
     {
-      "id": "1eb7671d-e8dd-4def-88db-d4d9ea94e109",
+      "id": "eec50513-1a8c-4bde-8e67-27a12884ab54",
       "name": "update — update: deactivates and activates a key; the short ID works ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -438,7 +438,7 @@
         "authentication": "accessToken",
         "resource": "developerKey",
         "operation": "update",
-        "developerKeyId": "64",
+        "developerKeyId": "137",
         "updateFields": {
           "event": "deactivate"
         }
@@ -454,7 +454,7 @@
       "executeOnce": true
     },
     {
-      "id": "2e2f0ecc-b7f7-435d-bb31-42bec9cf2148",
+      "id": "f8c82a35-8aa4-44f2-9b37-1782855a1aab",
       "name": "delete — delete: a deleted key cannot be deleted again, and a teacher",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

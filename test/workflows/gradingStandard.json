@@ -2,7 +2,7 @@
   "name": "Canvas battery — gradingStandard",
   "nodes": [
     {
-      "id": "c69aa70d-6b64-451e-8af7-5483fd9a0aab",
+      "id": "d57bc031-f6dd-4475-9140-b0731ca952de",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "52a1d4de-da4b-4b68-9bb0-98d25fa7f6c2",
+      "id": "7e1d04db-614c-440c-a349-4b60a19d5129",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "5b2c61e5-a339-44c2-9739-ba37ff29ff2b",
+              "id": "55e35510-4b85-4f6c-9ef0-9f5a0bcc0203",
               "name": "accountId",
               "value": "1",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "f5cc5716-a746-41fc-93e7-bb409367ef19",
+      "id": "818128a1-a8b2-40c3-a05e-7b9987481fd1",
       "name": "create — create: course context, points based with every optional fie",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -49,7 +49,7 @@
         "resource": "gradingStandard",
         "operation": "create",
         "context": "course",
-        "courseId": "388",
+        "courseId": "822",
         "title": "=Schéma \"quoted\" & <b>tags</b> 成绩 🎓 {{ $execution.id }}-1",
         "gradingScheme": {
           "gradeEntry": [
@@ -87,7 +87,7 @@
       "executeOnce": true
     },
     {
-      "id": "277a30ac-b0f7-4607-be43-42c0fd7f02d3",
+      "id": "45da1813-b45e-4a0a-8258-e738a8e39573",
       "name": "create — create: account context, percentages; entries are stored sor",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -130,7 +130,7 @@
       "executeOnce": true
     },
     {
-      "id": "59ea7aa8-50de-4930-beb8-8ec06ee25b0e",
+      "id": "11e5ccd8-4bf0-4097-8959-27917d761c7e",
       "name": "get — get: course and account context",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -157,7 +157,7 @@
       "executeOnce": true
     },
     {
-      "id": "d802bd0d-d7ba-4473-a709-cb4545cc9446",
+      "id": "32b1fb93-c89e-4aaa-9972-0bdd87783c52",
       "name": "get — get: course and account context (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -184,7 +184,7 @@
       "executeOnce": true
     },
     {
-      "id": "204b0622-f2c5-42b3-a225-c739a74fc9a1",
+      "id": "320aa271-cca9-4e46-96d9-135be7770d16",
       "name": "getAll — getAll: course context returns every scheme of the course (C",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -197,7 +197,7 @@
         "resource": "gradingStandard",
         "operation": "getAll",
         "context": "course",
-        "courseId": "388"
+        "courseId": "822"
       },
       "credentials": {
         "canvasApi": {
@@ -210,7 +210,7 @@
       "executeOnce": true
     },
     {
-      "id": "ed2ac12b-8212-4b5a-a431-60cc7314dc07",
+      "id": "1812bc8a-acca-46e2-bee8-b16a107b50be",
       "name": "getAll — getAll: course context returns every scheme of the course (C (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -222,7 +222,7 @@
         "authentication": "accessToken",
         "resource": "gradingStandard",
         "operation": "getAll",
-        "courseId": "388",
+        "courseId": "822",
         "pagination": {
           "perPage": 3,
           "maxPages": 1
@@ -239,7 +239,7 @@
       "executeOnce": true
     },
     {
-      "id": "0a5aa0db-560f-422f-852e-740e59396a4b",
+      "id": "21393890-a78e-4716-be29-6a1175278ef1",
       "name": "getAll — getAll: account context lists the accounts own schemes; a c",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -268,7 +268,7 @@
       "executeOnce": true
     },
     {
-      "id": "3df98398-9ad5-4335-bb91-764a8b52c792",
+      "id": "1124b217-f2e9-4602-9a62-a243aad50c8a",
       "name": "getAll — getAll: a course without schemes yields no items",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -280,7 +280,7 @@
         "authentication": "accessToken",
         "resource": "gradingStandard",
         "operation": "getAll",
-        "courseId": "391"
+        "courseId": "825"
       },
       "credentials": {
         "canvasApi": {
@@ -293,7 +293,7 @@
       "executeOnce": true
     },
     {
-      "id": "aadef7cd-d450-446b-97ee-a9c8950c82dd",
+      "id": "0a0fee49-414d-4cf4-97a0-5279b299a27b",
       "name": "update — update: the title alone leaves the scheme untouched",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -306,7 +306,7 @@
         "resource": "gradingStandard",
         "operation": "update",
         "context": "course",
-        "courseId": "388",
+        "courseId": "822",
         "gradingStandardId": "={{ $('getAll — getAll: course context returns every scheme of the course (C (2)').first().json.id }}",
         "updateFields": {
           "title": "=Schéma \"quoted\" & <b>tags</b> 成绩 🎓 {{ $execution.id }}-1 (renamed)"
@@ -323,7 +323,7 @@
       "executeOnce": true
     },
     {
-      "id": "ed36da1f-e1b2-4b5f-8a0b-93d8791ae374",
+      "id": "b614310e-1998-4dc9-be54-863ef8dbe6c9",
       "name": "update — update: every field, replacing the grades of the scheme",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -336,7 +336,7 @@
         "resource": "gradingStandard",
         "operation": "update",
         "context": "course",
-        "courseId": "388",
+        "courseId": "822",
         "gradingStandardId": "={{ $('update — update: the title alone leaves the scheme untouched').first().json.id }}",
         "updateFields": {
           "title": "=Schéma \"quoted\" & <b>tags</b> 成绩 🎓 {{ $execution.id }}-1 (v3)",
@@ -367,7 +367,7 @@
       "executeOnce": true
     },
     {
-      "id": "e9d7203f-f496-4a0f-a6a7-60e424dc730f",
+      "id": "66f807e8-4d71-4b4e-bf34-5dc581c390fa",
       "name": "update — update: account context, back to percentages",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -418,7 +418,7 @@
       "executeOnce": true
     },
     {
-      "id": "e18ecf04-3cc2-4d45-876c-41b150990542",
+      "id": "befd935f-3457-4741-850a-cddc09f77ccb",
       "name": "update — update: once a scheme has been used for grading only its tit",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -430,8 +430,8 @@
         "authentication": "accessToken",
         "resource": "gradingStandard",
         "operation": "update",
-        "courseId": "388",
-        "gradingStandardId": "36",
+        "courseId": "822",
+        "gradingStandardId": "65",
         "updateFields": {
           "title": "Used scheme (renamed)"
         }
@@ -447,7 +447,7 @@
       "executeOnce": true
     },
     {
-      "id": "6a436cdf-7697-4802-90f0-4ed2811442ea",
+      "id": "1fb7e21d-06b0-49fa-993a-5e35b6c5621a",
       "name": "delete — delete: course and account context",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -460,7 +460,7 @@
         "resource": "gradingStandard",
         "operation": "delete",
         "context": "course",
-        "courseId": "388",
+        "courseId": "822",
         "gradingStandardId": "={{ $('update — update: every field, replacing the grades of the scheme').first().json.id }}"
       },
       "credentials": {
@@ -474,7 +474,7 @@
       "executeOnce": true
     },
     {
-      "id": "c4d88679-3ade-46ed-9127-0191d8622faa",
+      "id": "69024721-9e65-41e0-b56a-062b467e2255",
       "name": "delete — delete: course and account context (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

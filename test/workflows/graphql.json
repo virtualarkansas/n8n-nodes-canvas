@@ -2,7 +2,7 @@
   "name": "Canvas battery — graphql",
   "nodes": [
     {
-      "id": "60889768-49b7-4871-9e4f-77474c9f4c0e",
+      "id": "b82f8152-e1c4-4c4a-b9cc-eef266a9eeea",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "107e1a97-a83a-4864-90a6-38d66317f8e0",
+      "id": "bb497343-9398-4a44-b633-2eacba40305f",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "de57c84d-915c-40e9-9a6d-b9966f85a62e",
+      "id": "cb4c0683-5202-487a-9667-a2afaf196bfa",
       "name": "query — query: returns data for a query with variables",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -55,7 +55,7 @@
       "executeOnce": true
     },
     {
-      "id": "03fb9feb-d0bb-468d-b491-ea315bcad9b6",
+      "id": "32a189dc-2f7d-4377-b94f-68e93ca4c5d3",
       "name": "query — query: reaches connection data with cursors, as the web inte",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -84,7 +84,7 @@
       "executeOnce": true
     },
     {
-      "id": "4ed8b3c8-1273-4fb9-9454-eadd607d9b68",
+      "id": "5b6abdba-96c4-4724-ab5c-a78432e95f22",
       "name": "query — mutation: changes data",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -98,7 +98,7 @@
         "operation": "query",
         "query": "mutation ($id: ID!, $name: String!) { updateAssignment(input: { id: $id, name: $name }) { assignment { _id name } errors { message } } }",
         "variables": {
-          "id": "1258",
+          "id": "1973",
           "name": "After — renamed through GraphQL"
         }
       },
@@ -113,7 +113,7 @@
       "executeOnce": true
     },
     {
-      "id": "eb161d76-2d95-4dc3-b178-d0f6fa7310b1",
+      "id": "2d964708-a779-439f-9917-ec76f0b67429",
       "name": "query — errors: partial data can be kept on request",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

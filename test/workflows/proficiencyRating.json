@@ -2,7 +2,7 @@
   "name": "Canvas battery — proficiencyRating",
   "nodes": [
     {
-      "id": "a7f13b42-0bb3-45ec-a7b5-1f4dd9d3c66d",
+      "id": "17ba9ac3-38dc-4712-b916-f3c9d2484848",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "79bcb0b7-398c-46ac-8a57-01dd11e2bdac",
+      "id": "177bc30e-a4c9-4d32-b39a-9b38d4545631",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "6022f6b8-f76a-46a2-9227-f45432a3f568",
+      "id": "792fcd8b-d825-493d-8659-7c75ff3d7dda",
       "name": "get — get: an account or course without ratings of its own shows t",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,7 +42,7 @@
         "resource": "proficiencyRating",
         "operation": "get",
         "context": "account",
-        "accountId": "111"
+        "accountId": "246"
       },
       "credentials": {
         "canvasApi": {
@@ -55,7 +55,7 @@
       "executeOnce": true
     },
     {
-      "id": "2e84564c-5872-428c-85f3-f80ce196f59f",
+      "id": "fcfc6896-0b03-4df9-95a4-e8ab0b2991c3",
       "name": "set — set: account context, with colors as the color picker delive",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -68,7 +68,7 @@
         "resource": "proficiencyRating",
         "operation": "set",
         "context": "account",
-        "accountId": "111",
+        "accountId": "246",
         "ratings": {
           "rating": [
             {
@@ -109,7 +109,7 @@
       "executeOnce": true
     },
     {
-      "id": "89f579ca-6d62-4a1b-a785-9dbaa72826b2",
+      "id": "fdf12b51-deea-4712-ba7a-543b3775fcb2",
       "name": "set — set: a second call replaces all ratings",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -122,7 +122,7 @@
         "resource": "proficiencyRating",
         "operation": "set",
         "context": "course",
-        "courseId": "409",
+        "courseId": "844",
         "ratings": {
           "rating": [
             {

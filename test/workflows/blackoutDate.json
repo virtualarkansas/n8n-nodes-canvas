@@ -2,7 +2,7 @@
   "name": "Canvas battery — blackoutDate",
   "nodes": [
     {
-      "id": "30b8edfb-19d1-4780-922b-c1d0e913db56",
+      "id": "7c72570d-fde0-4f7e-bd1d-ed49ff6c1c59",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "6c9d03dc-a3ef-4cf6-ad44-1e860affc5ba",
+      "id": "984c0a7f-4db8-4329-b679-42d363398d62",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "baf07128-cb1d-4479-9ed8-967320e21915",
+      "id": "b3319d98-cc21-4b2e-a69c-f2eb842fe623",
       "name": "create — create (account): on the batterys own sub-account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -58,7 +58,7 @@
       "executeOnce": true
     },
     {
-      "id": "c21895d0-3758-49d9-b375-08f17609b1be",
+      "id": "384ed657-dfa1-49b0-9f2c-4ca7e5be28e9",
       "name": "get — get: in both contexts",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -85,7 +85,7 @@
       "executeOnce": true
     },
     {
-      "id": "b2c90d54-f696-451e-8665-52850f852a22",
+      "id": "39c9257b-af17-43f4-b75f-204d20600c1a",
       "name": "getAll — getAll: in both contexts, ordered by start date, with more e",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -111,7 +111,7 @@
       "executeOnce": true
     },
     {
-      "id": "27cb6507-8a0f-451b-aaa1-9c0ae3076ae3",
+      "id": "504894da-c860-403a-ac8c-ce4b342ef99b",
       "name": "update — update: each field on its own and all together, in both cont",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -143,7 +143,7 @@
       "executeOnce": true
     },
     {
-      "id": "2951d07a-632f-48c3-9d4f-f1b7b3fe683c",
+      "id": "2fb28993-9f4a-42c9-869f-e828e22d84ad",
       "name": "delete — delete: in both contexts, several input items with one unkno",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

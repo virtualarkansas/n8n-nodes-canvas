@@ -2,7 +2,7 @@
   "name": "Canvas battery — sisImportError",
   "nodes": [
     {
-      "id": "0edee3b8-2d90-4e96-bdb9-5b024ba53733",
+      "id": "07c3cefe-2ac0-4980-bf8b-675cf0b9ac18",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "f974695b-6fba-4c88-9b21-a4755d1846b0",
+      "id": "42d05227-3324-4059-b5c6-c60919a661cd",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "e81cd235-030b-4e46-af64-f36778784539",
+              "id": "b1994947-875f-4b4c-b5a9-677383354bff",
               "name": "accountId",
               "value": "1",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "d518e97a-a5ac-4bc0-9fce-2f1261e43a74",
+      "id": "9f4c65b0-84d8-4662-9ee7-c2a1393ff9e0",
       "name": "getAll — getAll: one item per error of the import, across pages",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -49,7 +49,7 @@
         "resource": "sisImportError",
         "operation": "getAll",
         "accountId": "={{ $('Config').first().json.accountId }}",
-        "importId": "63",
+        "importId": "140",
         "pagination": {
           "returnAll": true
         }
@@ -65,7 +65,7 @@
       "executeOnce": true
     },
     {
-      "id": "ae0475d8-516e-44d6-a5b0-1803fd351e1a",
+      "id": "baa65a1c-8d6d-4fa4-b6db-f25524cd1bc6",
       "name": "getAll — getAll: one item per error of the import, across pages (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -91,7 +91,7 @@
       "executeOnce": true
     },
     {
-      "id": "d08bd1fd-7fe4-4a6a-864f-582945771740",
+      "id": "71664afd-a805-46f1-9422-a09415536f40",
       "name": "getAll — getAll: Failure Only keeps the errors that made an import ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -120,7 +120,7 @@
       "executeOnce": true
     },
     {
-      "id": "48047c57-9e9a-48de-ad0d-65028e625086",
+      "id": "e5921969-ebad-4cf3-b571-cd49a3c1c690",
       "name": "getAll — getAll: Failure Only keeps the errors that made an import  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -133,7 +133,7 @@
         "resource": "sisImportError",
         "operation": "getAll",
         "accountId": "={{ $('Config').first().json.accountId }}",
-        "importId": "64",
+        "importId": "141",
         "options": {
           "failure": true
         }
@@ -149,7 +149,7 @@
       "executeOnce": true
     },
     {
-      "id": "ef891116-1d51-435d-aba8-7cd39bbeaeb1",
+      "id": "0073344e-17e5-45e6-b0c6-5106bf07f043",
       "name": "getAll — getAll: Failure Only keeps the errors that made an import  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -181,7 +181,7 @@
       "executeOnce": true
     },
     {
-      "id": "1a6d1255-2110-4c92-b7a2-a2f448d57fa4",
+      "id": "788d52f9-8536-413c-b4fe-794ddcd60a5b",
       "name": "getAllForAccount — getAllForAccount: the errors of every import of the account,",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -209,7 +209,7 @@
       "executeOnce": true
     },
     {
-      "id": "2f369ff2-74d4-4201-87c8-ec5ea2e53b75",
+      "id": "e508c400-b773-4513-a322-49b5133c4641",
       "name": "getAllForAccount — getAllForAccount: the errors of every import of the account, (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -234,7 +234,7 @@
       "executeOnce": true
     },
     {
-      "id": "feff3b95-bbdd-42e8-bb4e-300a948e8e00",
+      "id": "981cb160-a10b-4993-bf4f-bed187e97d1c",
       "name": "getAllForAccount — getAllForAccount: the errors of every import of the account, (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -263,7 +263,7 @@
       "executeOnce": true
     },
     {
-      "id": "ee9d17b6-377b-4ebd-9452-18b8604b4e90",
+      "id": "adaa8a0f-00d4-416d-aa7a-783bca89265d",
       "name": "getAllForAccount — getAllForAccount: Failure Only filters across imports",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

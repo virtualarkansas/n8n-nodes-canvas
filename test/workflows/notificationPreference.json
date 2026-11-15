@@ -2,7 +2,7 @@
   "name": "Canvas battery — notificationPreference",
   "nodes": [
     {
-      "id": "c193255e-c6b3-4036-acb9-f93c7007b833",
+      "id": "610c8700-ae64-4372-b5d7-470974b1d983",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "53180165-d403-48da-81d1-5be78fc250e0",
+      "id": "3f97dd95-649e-4021-8294-494ee194e1b3",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "9088c2a7-d210-49d7-8e18-5de4edd55e7e",
+      "id": "4a121336-c9c8-49cc-b6d0-ab52db7004a6",
       "name": "getAll — getAll: every preference of the channel is returned, one ite",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -55,7 +55,7 @@
       "executeOnce": true
     },
     {
-      "id": "f4f2f464-6d0d-480d-b225-bd0e5ba82307",
+      "id": "b24f88fa-54d0-4da4-a2ed-692738994ccb",
       "name": "getAll — getAll: every preference of the channel is returned, one ite (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -85,7 +85,7 @@
       "executeOnce": true
     },
     {
-      "id": "7c9bef78-ebb7-4d30-8a8a-d2fb2352409a",
+      "id": "109b0e06-4903-4f90-99b4-d886591563fe",
       "name": "getAll — getAll / get: the channel can be identified by type and addr",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -113,7 +113,7 @@
       "executeOnce": true
     },
     {
-      "id": "012252c8-3459-456c-9f84-2e44026c3fd2",
+      "id": "60397a7e-b934-48dc-97f0-1702b1768b5f",
       "name": "get — getAll / get: the channel can be identified by type and addr",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -142,7 +142,7 @@
       "executeOnce": true
     },
     {
-      "id": "cac38a59-7a33-4ab1-a61b-31b9efe3cfd1",
+      "id": "44e44b91-1ad0-4008-a4e5-bb4618365126",
       "name": "getCategories — getCategories: one item listing the category slugs",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -168,7 +168,7 @@
       "executeOnce": true
     },
     {
-      "id": "94eee3e8-1fb3-4a6e-a006-4b340f1182fa",
+      "id": "2dabdd76-f761-49b3-9165-4338e2511ec7",
       "name": "update — update: an admin changes another users preference with Act",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -182,7 +182,7 @@
         "operation": "update",
         "channelId": "634",
         "notification": "new_announcement",
-        "frequency": "weekly",
+        "frequency": "daily",
         "options": {
           "as_user_id": " 644 "
         }
@@ -198,7 +198,7 @@
       "executeOnce": true
     },
     {
-      "id": "c18cdf23-986f-453c-bd49-76ff69f8ec49",
+      "id": "5fab5bf3-392f-4c5b-a806-90d72b5bafc1",
       "name": "updateByCategory — updateByCategory: categories whose slug differs from the ca",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -212,7 +212,7 @@
         "operation": "updateByCategory",
         "channelId": "634",
         "category": "discussionentry",
-        "frequency": "daily",
+        "frequency": "weekly",
         "options": {
           "as_user_id": "644"
         }
@@ -228,7 +228,7 @@
       "executeOnce": true
     },
     {
-      "id": "a4d1d269-26a8-4621-9537-80344e6bd460",
+      "id": "c4ba891f-b205-4c3f-93f5-a3d54623efb6",
       "name": "updateMultiple — updateMultiple: several notifications with different frequen",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

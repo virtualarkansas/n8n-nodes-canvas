@@ -2,7 +2,7 @@
   "name": "Canvas battery — page",
   "nodes": [
     {
-      "id": "ddb944e5-0ede-4d2a-bff9-9c0c5565df60",
+      "id": "0268171b-62da-42bf-8a5c-4f1ffbe13171",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "f7ea2b9d-74ae-4459-9319-78bcfcd49b92",
+      "id": "7be652d8-be30-46c3-a902-1f9a212aaeea",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "7f93db94-fe62-452d-9468-b1ef693f384d",
+      "id": "fd5335f9-86bd-4d75-b771-c5382ae76b37",
       "name": "create — create: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -66,7 +66,7 @@
       "executeOnce": true
     },
     {
-      "id": "5d08c427-8299-4b9a-af02-72bb8562ece5",
+      "id": "df3fc159-bc09-4f53-9e80-aa8b7230b033",
       "name": "create — create: minimal page is unpublished and editable by teachers",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -92,7 +92,7 @@
       "executeOnce": true
     },
     {
-      "id": "2f22f8f2-37ab-47f2-9c32-f9246319f98e",
+      "id": "24b1c9ba-d8a8-4917-8232-63cd8a49c33b",
       "name": "get — get: by URL, by numeric ID and by page_id: reference",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -118,7 +118,7 @@
       "executeOnce": true
     },
     {
-      "id": "8a9f2d20-6424-4e84-8f49-28e660c0c4a2",
+      "id": "8820fd39-f82e-4a9d-b004-c3e970e3b898",
       "name": "get — get: by URL, by numeric ID and by page_id: reference (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -131,7 +131,7 @@
         "resource": "page",
         "operation": "get",
         "courseId": "161",
-        "pageUrl": "page_id:401"
+        "pageUrl": "page_id:570"
       },
       "credentials": {
         "canvasApi": {
@@ -144,7 +144,7 @@
       "executeOnce": true
     },
     {
-      "id": "4197ac95-6d15-4fed-a47c-2fdfa3c5e440",
+      "id": "420c6b4d-445e-4d09-a970-26d571bb5d38",
       "name": "get — get: page URLs with characters that need encoding",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -170,7 +170,7 @@
       "executeOnce": true
     },
     {
-      "id": "d953acfd-c353-457d-83a3-e42375c28b95",
+      "id": "a2e1e01e-cd82-465a-b02a-5a13a28ba190",
       "name": "delete — get: page URLs with characters that need encoding",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -196,7 +196,7 @@
       "executeOnce": true
     },
     {
-      "id": "0b491745-9b23-4296-8eeb-f23248623ef5",
+      "id": "bedb4914-f824-405a-9650-a229f48584c6",
       "name": "getAll — getAll: pages through more than 100 pages without duplicates",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -225,7 +225,7 @@
       "executeOnce": true
     },
     {
-      "id": "3f1199b3-6028-4b24-938d-e89e50a7d909",
+      "id": "c7ed0ccb-35e9-404c-aec1-1fd79d780806",
       "name": "getAll — getAll: pages through more than 100 pages without duplicates (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -257,7 +257,7 @@
       "executeOnce": true
     },
     {
-      "id": "1ad52af5-e1ee-44e8-bb2d-b77224794dd4",
+      "id": "5a2bbdbd-8472-4743-98c3-e484d4d54d2d",
       "name": "getAll — getAll: pages through more than 100 pages without duplicates (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -290,7 +290,7 @@
       "executeOnce": true
     },
     {
-      "id": "10cd6311-28cb-44a9-824b-c5a5cd41d21e",
+      "id": "09e99369-0dbe-4af7-92b6-333de538200a",
       "name": "getAll — getAll: sort, order, search term, published filter and body ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -323,7 +323,7 @@
       "executeOnce": true
     },
     {
-      "id": "32230bcf-f3fe-4409-bae7-4e2d30785c0c",
+      "id": "9d98858d-2296-4282-8774-211e5eadd184",
       "name": "getAll — getAll: sort, order, search term, published filter and body  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -355,7 +355,7 @@
       "executeOnce": true
     },
     {
-      "id": "a60522a9-f02f-4fb4-ab68-baef8b1978b5",
+      "id": "553dc53b-8f91-4ab7-b064-149c872b4d8c",
       "name": "getAll — getAll: sort, order, search term, published filter and body  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -387,7 +387,7 @@
       "executeOnce": true
     },
     {
-      "id": "a0a3e6c6-54b0-424e-8d1c-b8d781584fc7",
+      "id": "68df035f-cb25-4c6a-834f-c6c2cb6125dc",
       "name": "getAll — getAll: sort, order, search term, published filter and body  (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -422,7 +422,7 @@
       "executeOnce": true
     },
     {
-      "id": "d886bb87-d0a5-418e-a7c1-be52285db398",
+      "id": "bc3f82e7-0e04-4910-8192-41950f284def",
       "name": "getAll — getAll: sort, order, search term, published filter and body  (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -454,7 +454,7 @@
       "executeOnce": true
     },
     {
-      "id": "e80e3172-5655-43fd-9ee6-93debf9f0df0",
+      "id": "eba10d03-c8dd-470e-b824-2733fd8865ed",
       "name": "getAll — getAll: sort, order, search term, published filter and body  (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -485,7 +485,7 @@
       "executeOnce": true
     },
     {
-      "id": "f32f84fa-100b-48f6-9f4c-7e1e91fc4559",
+      "id": "b351ebbc-8331-4631-b4a6-bc1a70e9aea1",
       "name": "update — update: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -523,7 +523,7 @@
       "executeOnce": true
     },
     {
-      "id": "0971cb1d-c222-4759-b1ee-8d38d0970957",
+      "id": "e5b361d2-229b-43e8-871b-e7df1560bc90",
       "name": "update — update: publish, make it the front page, remove the to-do da",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -555,7 +555,7 @@
       "executeOnce": true
     },
     {
-      "id": "104c2f3f-f9d1-4593-9b45-ed514216e0ca",
+      "id": "7b15f0d9-278c-4ddd-bf3c-90dfd71787b9",
       "name": "getFrontPage — getFrontPage: returns the front page of the course",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -580,7 +580,7 @@
       "executeOnce": true
     },
     {
-      "id": "3cbca7c5-ee00-4ce1-a252-cd2f1231b08e",
+      "id": "2dc1d6b6-25c2-46b0-95af-80fcbb35abb4",
       "name": "updateFrontPage — updateFrontPage: changes the front page without knowing its ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -614,7 +614,7 @@
       "executeOnce": true
     },
     {
-      "id": "f6997b79-e6bc-4062-95d5-e6fb1d1e48dd",
+      "id": "ab9a4ed2-497b-4221-a6c3-a881ca0bc835",
       "name": "update — update: an unknown page URL creates that page (Canvas updat",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -643,7 +643,7 @@
       "executeOnce": true
     },
     {
-      "id": "48e0f84b-47be-463b-8969-089193f8aa77",
+      "id": "e65b81af-a39f-4dbe-8a3c-94ba4efebd01",
       "name": "duplicate — duplicate: copies the page",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -669,7 +669,7 @@
       "executeOnce": true
     },
     {
-      "id": "6871f9ee-4e93-48ce-99c7-b53464404024",
+      "id": "f6a7ec31-00f7-4f8b-8aca-6f23d47ea13d",
       "name": "listRevisions — listRevisions: returns every revision, newest first, and pag",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -695,7 +695,7 @@
       "executeOnce": true
     },
     {
-      "id": "d0546bcd-0b6c-4503-9b9f-81ca5ff62e0d",
+      "id": "ff5c3a0a-b88d-4ce9-8d43-a889b811bbef",
       "name": "listRevisions — listRevisions: returns every revision, newest first, and pag (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -708,7 +708,7 @@
         "resource": "page",
         "operation": "listRevisions",
         "courseId": "161",
-        "pageUrl": "page_id:401",
+        "pageUrl": "page_id:570",
         "pagination": {
           "perPage": 1,
           "maxPages": 2
@@ -725,7 +725,7 @@
       "executeOnce": true
     },
     {
-      "id": "cd63389f-05c4-417c-9da9-6f429544fe4e",
+      "id": "264cda0e-85a7-44eb-83c6-6a63eb6291b9",
       "name": "getRevision — getRevision: latest by default, a specific revision, with or",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -751,7 +751,7 @@
       "executeOnce": true
     },
     {
-      "id": "c620a498-f38d-4f4d-a66f-e7594811c4e3",
+      "id": "939df2bd-8c56-4bc3-9223-ac95b9bd3e7e",
       "name": "getRevision — getRevision: latest by default, a specific revision, with or (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -781,7 +781,7 @@
       "executeOnce": true
     },
     {
-      "id": "9cb150f4-a2bc-4a15-925d-28bfd76ef9de",
+      "id": "ccf65cb2-1471-4216-902f-c1f64c09fbea",
       "name": "revert — revert: restores an earlier revision as a new revision",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -808,7 +808,7 @@
       "executeOnce": true
     },
     {
-      "id": "603dea95-8c7e-4f9a-85ee-c1e849da955d",
+      "id": "3a2a5fad-3366-41c0-850a-9503d7e95b7a",
       "name": "create — group context: create, get, list, update, revisions, front p",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -842,7 +842,7 @@
       "executeOnce": true
     },
     {
-      "id": "457f90f9-5757-4cdb-accd-b85e2a192b03",
+      "id": "d26afee7-7248-43c0-a936-3caf7c4bd06e",
       "name": "get — group context: create, get, list, update, revisions, front p",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -869,7 +869,7 @@
       "executeOnce": true
     },
     {
-      "id": "99b90c1c-3092-472b-b962-2204ff52c301",
+      "id": "37306c93-0148-4e96-9fc2-cf7d59eebe23",
       "name": "getAll — group context: create, get, list, update, revisions, front p",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -904,7 +904,7 @@
       "executeOnce": true
     },
     {
-      "id": "6fd3f455-cb3d-4dc1-bb0b-3bc83f6ee6a5",
+      "id": "8fddc925-7f6f-4fd1-81c6-ee77b1e69e23",
       "name": "update — group context: create, get, list, update, revisions, front p",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -936,7 +936,7 @@
       "executeOnce": true
     },
     {
-      "id": "a9e18c7f-7c5e-42cb-9bd4-07ebbea8abcc",
+      "id": "c8fa1b2e-d4d4-41c8-8699-6b28105b4227",
       "name": "getFrontPage — group context: create, get, list, update, revisions, front p",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -962,7 +962,7 @@
       "executeOnce": true
     },
     {
-      "id": "54b53163-e993-49de-9557-5fc4c66ac7df",
+      "id": "d90d827d-ec30-418f-88cb-b32fa40d98f4",
       "name": "updateFrontPage — group context: create, get, list, update, revisions, front p",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -991,7 +991,7 @@
       "executeOnce": true
     },
     {
-      "id": "614d80dd-f6c5-4026-a1f3-c151b06298d8",
+      "id": "1d1d0f2d-6b25-486f-bf7f-464e3db3d03f",
       "name": "listRevisions — group context: create, get, list, update, revisions, front p",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1018,7 +1018,7 @@
       "executeOnce": true
     },
     {
-      "id": "4112690b-29ed-490a-a975-42d949dbbfb7",
+      "id": "dc3bb8d7-89e1-4ad7-9f07-585d5f21f6e8",
       "name": "getRevision — group context: create, get, list, update, revisions, front p",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1049,7 +1049,7 @@
       "executeOnce": true
     },
     {
-      "id": "95aaaf41-160f-439d-a6b6-170529cbba16",
+      "id": "7fd67e7f-1c60-4d67-94cb-3e8ff0905275",
       "name": "revert — group context: create, get, list, update, revisions, front p",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1077,13 +1077,44 @@
       "executeOnce": true
     },
     {
-      "id": "a38e0a3f-9966-4cc8-81a3-31e0d0a2750b",
-      "name": "delete — group context: create, get, list, update, revisions, front p",
+      "id": "bdbdfce2-2153-4fd4-867c-20518d6bbc2f",
+      "name": "create — group context: create, get, list, update, revisions, front p (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
         1760,
         1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "page",
+        "operation": "create",
+        "contextType": "group",
+        "groupId": "131",
+        "title": "=Group front {{ $execution.id }}-8",
+        "additionalFields": {
+          "published": true,
+          "front_page": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "719152d9-f15b-4e90-9c26-99edf41dd4c7",
+      "name": "delete — group context: create, get, list, update, revisions, front p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1320
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1104,12 +1135,12 @@
       "executeOnce": true
     },
     {
-      "id": "09aec5b4-5cde-40e1-8c43-ce8765b302b6",
+      "id": "bbc6b437-971f-4af6-991f-27469223b2ba",
       "name": "delete — delete: removes the page",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
+        720,
         1320
       ],
       "parameters": {
@@ -1528,6 +1559,17 @@
       ]
     },
     "revert — group context: create, get, list, update, revisions, front p": {
+      "main": [
+        [
+          {
+            "node": "create — group context: create, get, list, update, revisions, front p (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — group context: create, get, list, update, revisions, front p (2)": {
       "main": [
         [
           {

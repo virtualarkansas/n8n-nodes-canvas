@@ -2,7 +2,7 @@
   "name": "Canvas battery — gradebookHistory",
   "nodes": [
     {
-      "id": "3a72a007-7402-4b24-84b1-251be3793359",
+      "id": "69462ed5-df4e-4b3d-a3e2-284abcf5184a",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "c09c29e3-bdb5-4785-8c78-63389e868ca0",
+      "id": "2e76f885-2dc6-45a5-bc9d-b349e506f904",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "dba7e21a-fb8a-4938-88d4-77b7b76792d3",
+      "id": "c12cdfa7-c106-4838-8233-1b09efb901c4",
       "name": "getDays — getDays: one entry per day with every grader and assignment,",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,7 +41,7 @@
         "authentication": "accessToken",
         "resource": "gradebookHistory",
         "operation": "getDays",
-        "courseId": "321",
+        "courseId": "717",
         "pagination": {}
       },
       "credentials": {
@@ -55,7 +55,7 @@
       "executeOnce": true
     },
     {
-      "id": "8220e63d-6b6c-4d2d-b69b-746d87825774",
+      "id": "2386a597-23e0-4995-9284-fe405479f10e",
       "name": "getDays — getDays: one entry per day with every grader and assignment, (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -67,7 +67,7 @@
         "authentication": "accessToken",
         "resource": "gradebookHistory",
         "operation": "getDays",
-        "courseId": "321",
+        "courseId": "717",
         "pagination": {
           "perPage": 5,
           "maxPages": 1
@@ -84,7 +84,7 @@
       "executeOnce": true
     },
     {
-      "id": "76eec4f6-1f10-4ac0-ba59-f426b13fceec",
+      "id": "32c2a9da-7f6d-4b0d-8873-94033a0bd68f",
       "name": "getDayDetails — getDayDetails: every grader once with all their assignments,",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -96,7 +96,7 @@
         "authentication": "accessToken",
         "resource": "gradebookHistory",
         "operation": "getDayDetails",
-        "courseId": "321",
+        "courseId": "717",
         "date": "2026-11-15",
         "pagination": {
           "perPage": 3,
@@ -114,7 +114,7 @@
       "executeOnce": true
     },
     {
-      "id": "6be61df0-6e36-4faf-8969-c8f2967bcb90",
+      "id": "c7bdde59-3292-46e4-af19-b38b670ad527",
       "name": "getDayDetails — getDayDetails: every grader once with all their assignments, (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -126,7 +126,7 @@
         "authentication": "accessToken",
         "resource": "gradebookHistory",
         "operation": "getDayDetails",
-        "courseId": "321",
+        "courseId": "717",
         "date": "2026-11-15T15:30:00Z",
         "pagination": {
           "perPage": 3,
@@ -144,7 +144,7 @@
       "executeOnce": true
     },
     {
-      "id": "c0805b64-a70c-40b5-ae32-6a3690695044",
+      "id": "47151cd8-3261-40bb-b8e8-ba293a773903",
       "name": "getSubmissions — getSubmissions: returns the graded submissions with their ve",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -156,10 +156,10 @@
         "authentication": "accessToken",
         "resource": "gradebookHistory",
         "operation": "getSubmissions",
-        "courseId": "321",
+        "courseId": "717",
         "date": "2026-11-15",
         "graderId": "1",
-        "assignmentId": "1213",
+        "assignmentId": "1823",
         "pagination": {
           "returnAll": true
         }
@@ -175,7 +175,7 @@
       "executeOnce": true
     },
     {
-      "id": "8b1efcce-74ee-48ee-993b-5e592cee76e6",
+      "id": "44b957f7-35b7-4137-9f56-da14cf190467",
       "name": "getFeed — getFeed: pages through every submission version, with filter",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -187,7 +187,7 @@
         "authentication": "accessToken",
         "resource": "gradebookHistory",
         "operation": "getFeed",
-        "courseId": "321",
+        "courseId": "717",
         "pagination": {
           "returnAll": true
         }
@@ -203,7 +203,7 @@
       "executeOnce": true
     },
     {
-      "id": "929f3f81-5de9-4c1c-8c11-8b484337a56f",
+      "id": "fb9ee163-7c29-4cef-aa6b-da497de420a8",
       "name": "getFeed — getFeed: pages through every submission version, with filter (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -215,7 +215,7 @@
         "authentication": "accessToken",
         "resource": "gradebookHistory",
         "operation": "getFeed",
-        "courseId": "321",
+        "courseId": "717",
         "pagination": {
           "perPage": 4,
           "maxPages": 2
@@ -232,7 +232,7 @@
       "executeOnce": true
     },
     {
-      "id": "ed0bf59c-3b98-495e-8356-91af4ee8516b",
+      "id": "04faccb7-546b-4e34-a0c2-3b9d9a0a7319",
       "name": "getFeed — getFeed: pages through every submission version, with filter (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -244,10 +244,10 @@
         "authentication": "accessToken",
         "resource": "gradebookHistory",
         "operation": "getFeed",
-        "courseId": "321",
+        "courseId": "717",
         "options": {
-          "assignment_id": "1214",
-          "user_id": "1331",
+          "assignment_id": "1825",
+          "user_id": "2153",
           "ascending": true
         },
         "pagination": {

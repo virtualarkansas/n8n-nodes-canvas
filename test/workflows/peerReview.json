@@ -2,7 +2,7 @@
   "name": "Canvas battery — peerReview",
   "nodes": [
     {
-      "id": "f121a938-1259-42c2-859d-99fc2058fcca",
+      "id": "aeafe7a1-e583-4138-a97a-aa4d6a07ba95",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "c31505dc-145f-4172-871a-563cd95269d1",
+      "id": "130b409d-80c0-4aa3-9ed4-7f61d0a18883",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "9868093b-e9e2-4f09-b857-e98ed55ec4e2",
+      "id": "aca1d4c4-4a3d-4810-ab49-8887713f2e10",
       "name": "getAll — getAll: an assignment without peer reviews yields no items",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -55,7 +55,7 @@
       "executeOnce": true
     },
     {
-      "id": "193e7d79-da9e-49db-af62-dceedcc9170c",
+      "id": "afe31576-0007-48b3-acab-c7efdf7a8623",
       "name": "create — create: assigns a reviewer to a submission",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -83,7 +83,7 @@
       "executeOnce": true
     },
     {
-      "id": "03681e9a-b03f-4915-888f-1109c62f1ad1",
+      "id": "ca0cceea-6d18-4dcb-b92c-02b12282f34b",
       "name": "getAll — getAll: lists the reviews of the assignment, with includes",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -112,7 +112,7 @@
       "executeOnce": true
     },
     {
-      "id": "f9059a96-8631-45a0-8369-afd8dbafa2c7",
+      "id": "7d5b4791-fefd-41c3-9785-7fa6fe8f7fe4",
       "name": "getAll — getAll: lists the reviews of the assignment, with includes (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -144,7 +144,7 @@
       "executeOnce": true
     },
     {
-      "id": "097612b1-cafa-44dc-b756-8bda046bdd8a",
+      "id": "097c9802-a11b-4be8-b02c-7dd16470a266",
       "name": "getAll — getAll: submission ID narrows the list to one submission",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -173,7 +173,7 @@
       "executeOnce": true
     },
     {
-      "id": "e7fe0257-7c69-4bfb-b746-4f02e114d1c4",
+      "id": "97cacadb-1cad-4040-b85b-822349bd179e",
       "name": "delete — delete: removes one reviewer from a submission",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -188,7 +188,7 @@
         "courseId": "111",
         "assignmentId": "702",
         "submissionId": "25627",
-        "reviewerUserId": "={{ $('getAll — getAll: lists the reviews of the assignment, with includes (2)').first().json.user_id }}"
+        "reviewerUserId": "742"
       },
       "credentials": {
         "canvasApi": {
@@ -201,7 +201,7 @@
       "executeOnce": true
     },
     {
-      "id": "5a980cf9-982b-4085-a5b2-f98c923c9b22",
+      "id": "90f46b5c-11ab-4192-8098-c25f047abde9",
       "name": "getAll — section context: reviews are created, listed and deleted thr",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -234,7 +234,7 @@
       "executeOnce": true
     },
     {
-      "id": "856cf457-e054-4246-893c-4f13980fff75",
+      "id": "327c967e-b674-4b5e-85c1-433a6121e846",
       "name": "getAll — section context: reviews are created, listed and deleted thr (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -264,7 +264,7 @@
       "executeOnce": true
     },
     {
-      "id": "084fe0a1-fe4b-4266-b3c5-ae44c819a850",
+      "id": "66d6004d-5a20-482b-a53f-633c81b43f64",
       "name": "getAll — section context: reviews are created, listed and deleted thr (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -294,7 +294,7 @@
       "executeOnce": true
     },
     {
-      "id": "2e180e32-e2f7-4ad1-9085-89dccef48c20",
+      "id": "87b41a16-cd91-4c07-9baf-e7a2ef39e725",
       "name": "delete — section context: reviews are created, listed and deleted thr",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -323,7 +323,7 @@
       "executeOnce": true
     },
     {
-      "id": "2b957d28-c18d-4755-9d85-a7e254ce9a01",
+      "id": "bd597349-2af2-4f0b-8f7b-513dc9da243a",
       "name": "getAll — section context: reviews are created, listed and deleted thr (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -356,7 +356,7 @@
       "executeOnce": true
     },
     {
-      "id": "f6bf3cde-c0d1-4503-ba02-4707c4d69714",
+      "id": "544f1306-6fe2-4beb-ad7c-a43d38f6b8b4",
       "name": "getAll — section context: reviews are created, listed and deleted thr (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -386,7 +386,7 @@
       "executeOnce": true
     },
     {
-      "id": "9f846f9c-867b-4be0-86be-06bce052e109",
+      "id": "3853567d-1f49-40c7-a547-7b980f773846",
       "name": "getAll — section context: reviews are created, listed and deleted thr (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -416,7 +416,7 @@
       "executeOnce": true
     },
     {
-      "id": "42fd243b-57c7-4c24-98aa-144bbd6bb809",
+      "id": "f8dded42-ba47-42c9-ab10-d07f0daf9534",
       "name": "delete — section context: reviews are created, listed and deleted thr (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

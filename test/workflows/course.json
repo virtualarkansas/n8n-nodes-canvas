@@ -2,7 +2,7 @@
   "name": "Canvas battery — course",
   "nodes": [
     {
-      "id": "e1344c67-27a2-42c5-b34e-93a3ce0c13b8",
+      "id": "b00f269f-5a6a-4d93-883c-6884477c039b",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "c1842fa0-b4da-4b55-97a2-e352d216f675",
+      "id": "65436d7c-b998-48f0-bacd-ee7e4209882c",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,43 +25,43 @@
         "assignments": {
           "assignments": [
             {
-              "id": "6805ffe5-27ea-467b-8878-2cfc551000d2",
+              "id": "1ee15ae2-7620-4bec-aa2d-2ba9f7274438",
               "name": "largeCourseId",
               "value": "93",
               "type": "string"
             },
             {
-              "id": "83efca8f-1e73-42e9-b892-dda69500564c",
+              "id": "b9dc6141-72fa-4e4b-8d83-3e5bdbda67ac",
               "name": "courseId",
               "value": "1",
               "type": "string"
             },
             {
-              "id": "c1c556a9-7120-49d5-8ad7-190a91f8d3c6",
+              "id": "45509793-eb52-4ff9-be3f-06b1e2bf918c",
               "name": "emptyCourseId",
               "value": "3",
               "type": "string"
             },
             {
-              "id": "67dcf889-c1d4-490f-9b80-0cc642898535",
+              "id": "a0e0e4bb-d072-4e21-8039-b295956d3997",
               "name": "studentUserId",
               "value": "5",
               "type": "string"
             },
             {
-              "id": "c1b58e97-2161-4f8a-a8c0-c88b4afe5646",
+              "id": "89d4d0e5-e045-4bf1-b9e7-ff9b11d9f8ab",
               "name": "inactiveStudentUserId",
               "value": "197",
               "type": "string"
             },
             {
-              "id": "3c302e1d-e50a-48b3-832b-b835e5f3943e",
+              "id": "e305d4e3-cfc4-4aea-87dd-04d2721a5e39",
               "name": "teacherUserId",
               "value": "2",
               "type": "string"
             },
             {
-              "id": "b10ed082-915e-4e72-81aa-fc3d896797ef",
+              "id": "942f6e28-c3ab-49e4-b485-012716db815b",
               "name": "accountId",
               "value": "1",
               "type": "string"
@@ -72,7 +72,7 @@
       }
     },
     {
-      "id": "c6775a4a-a03a-4367-8b2d-e761a50e1850",
+      "id": "330f448a-dd0c-4252-9048-b21ecbafa72b",
       "name": "listUsers — listUsers: pages through a roster of more than 200 users wit",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -97,7 +97,7 @@
       "executeOnce": true
     },
     {
-      "id": "c9a3cccd-9d11-4311-a5c4-3a0bc220e595",
+      "id": "cadee33c-6d11-40c3-a5f0-e0836a27b56c",
       "name": "listUsers — listUsers: pages through a roster of more than 200 users wit (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -125,7 +125,7 @@
       "executeOnce": true
     },
     {
-      "id": "9c00f024-3c30-4071-856f-c8554decfa93",
+      "id": "2bfccb73-b3f3-4971-ad6f-480a34657f89",
       "name": "listUsers — listUsers: pages through a roster of more than 200 users wit (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -154,7 +154,7 @@
       "executeOnce": true
     },
     {
-      "id": "eb16d65d-2266-4272-ae62-38eac6922b51",
+      "id": "721364a6-a891-4a9a-a380-eb69443f36a0",
       "name": "listUsers — listUsers: without options returns the active and invited us",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -182,7 +182,7 @@
       "executeOnce": true
     },
     {
-      "id": "b887af74-70a9-415c-818c-4982d5892606",
+      "id": "9df4b4f7-78b5-4ff1-a1d0-288449227b33",
       "name": "listUsers — listUsers: enrollment type teacher returns exactly the use",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -215,7 +215,7 @@
       "executeOnce": true
     },
     {
-      "id": "3f4ec8eb-cd8e-45ae-8117-99d5658ffff7",
+      "id": "753a2d6c-5a47-4dec-811b-fba83b970e27",
       "name": "listUsers — listUsers: enrollment type ta returns exactly the users en",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -248,7 +248,7 @@
       "executeOnce": true
     },
     {
-      "id": "6ef71afd-cdb5-4bfe-afdd-c8f532572e1f",
+      "id": "ae14f6ef-118e-4438-a4a6-1fde1801a5f8",
       "name": "listUsers — listUsers: enrollment type student returns exactly the use",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -281,7 +281,7 @@
       "executeOnce": true
     },
     {
-      "id": "f7b29749-70e8-4f2b-a18b-e367db1fe299",
+      "id": "82852ef6-7019-4c3f-b7a5-60be39b932f0",
       "name": "listUsers — listUsers: enrollment type observer returns exactly the us",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -314,7 +314,7 @@
       "executeOnce": true
     },
     {
-      "id": "d2c5df00-d5e7-43af-b863-29e860fa9b57",
+      "id": "ceaaf65f-f8b6-4314-aef6-acf882e8295c",
       "name": "listUsers — listUsers: enrollment type designer returns exactly the us",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -347,7 +347,7 @@
       "executeOnce": true
     },
     {
-      "id": "6b1e3104-716b-4bce-a5a5-c11029f848f7",
+      "id": "b5cb0a1a-717a-471e-b7da-97361c294cdb",
       "name": "listUsers — listUsers: several enrollment types are combined, Test Stud",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -382,7 +382,7 @@
       "executeOnce": true
     },
     {
-      "id": "a434c0dc-ee56-4208-ad41-d68b1ae7dee4",
+      "id": "d822fa7c-302c-4b00-a50b-dfdfbb0ffc25",
       "name": "listUsers — listUsers: several enrollment types are combined, Test Stud (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -412,7 +412,7 @@
       "executeOnce": true
     },
     {
-      "id": "7a153d95-f685-4a51-9e06-242096a0f0a4",
+      "id": "149733ef-d0fa-4e56-af79-3680286ffa9f",
       "name": "listUsers — listUsers: enrollment role ID filters by built-in and by cus",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -443,7 +443,7 @@
       "executeOnce": true
     },
     {
-      "id": "31c157a6-8806-4813-8af1-2f8866611da9",
+      "id": "f90d1ca1-60c7-4dfa-845c-6eebedea0317",
       "name": "listUsers — listUsers: enrollment role ID filters by built-in and by cus (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -474,7 +474,7 @@
       "executeOnce": true
     },
     {
-      "id": "9684c841-90e2-45e4-a3b0-b27b661ca47b",
+      "id": "03bc3f64-40c3-4990-9686-6d3f8a0478a7",
       "name": "listUsers — listUsers: enrollment role ID filters by built-in and by cus (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -505,7 +505,7 @@
       "executeOnce": true
     },
     {
-      "id": "651d8c36-d120-41c7-850e-cd33cfa5a41d",
+      "id": "a787b06a-ac3e-4b4e-97f5-fe16d237f88e",
       "name": "listUsers — listUsers: enrollment state active returns exactly the use",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -538,7 +538,7 @@
       "executeOnce": true
     },
     {
-      "id": "a46b99f8-69b4-44a9-ba0e-956442c985a0",
+      "id": "e40f3b78-f621-4b03-ad09-0ee46f72fd06",
       "name": "listUsers — listUsers: enrollment state invited returns exactly the us",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -571,7 +571,7 @@
       "executeOnce": true
     },
     {
-      "id": "e73264d5-911b-4e33-9e22-293ed9c85ff0",
+      "id": "e28dbaa1-18cb-404a-a740-a50c424d09bb",
       "name": "listUsers — listUsers: enrollment state completed returns exactly the ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -604,7 +604,7 @@
       "executeOnce": true
     },
     {
-      "id": "478c98ad-5a8c-4280-8e3b-2fd9e2315daf",
+      "id": "1213b586-35b8-4e88-98ea-0bb9cfdb22cf",
       "name": "listUsers — listUsers: enrollment state inactive returns exactly the u",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -637,7 +637,7 @@
       "executeOnce": true
     },
     {
-      "id": "66011fd4-588a-40f4-b8cb-0a361989c500",
+      "id": "c3096b6f-c95d-4809-b9ea-921f8fc79fdb",
       "name": "listUsers — listUsers: enrollment state rejected returns exactly the u",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -670,7 +670,7 @@
       "executeOnce": true
     },
     {
-      "id": "72d65af4-2786-4b5d-96aa-ef9f0c953ec8",
+      "id": "89497fd1-9e1d-43e1-9c04-c5ef7c0f7964",
       "name": "listUsers — listUsers: several enrollment states, and Include Inactive",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -704,7 +704,7 @@
       "executeOnce": true
     },
     {
-      "id": "6427d8cc-3b17-45c6-8d2d-c9f7521ec48d",
+      "id": "bc2945d3-f2dd-4add-98ae-5efe99296095",
       "name": "listUsers — listUsers: several enrollment states, and Include Inactive (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -735,7 +735,7 @@
       "executeOnce": true
     },
     {
-      "id": "f2ff2e35-3767-4800-ad7f-674e9989e35a",
+      "id": "79960e13-ffb8-457e-9a8b-e0de7e9caf6d",
       "name": "listUsers — listUsers: section IDs (typed with spaces, or an array from ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -766,7 +766,7 @@
       "executeOnce": true
     },
     {
-      "id": "db98d1f9-7070-4632-9b00-1ae240d881c9",
+      "id": "9b5db1b4-9e22-4587-a995-e614dc9896b1",
       "name": "listUsers — listUsers: section IDs (typed with spaces, or an array from  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -797,7 +797,7 @@
       "executeOnce": true
     },
     {
-      "id": "5af29563-2c52-487d-8767-4ad615fe57a6",
+      "id": "cbdc4f85-548e-405b-8567-a2e6475b66ad",
       "name": "listUsers — listUsers: user IDs return only those users; unknown IDs are",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -825,7 +825,7 @@
       "executeOnce": true
     },
     {
-      "id": "272ab960-be28-4af2-b9cf-d8229ba284dc",
+      "id": "171e4b3c-8e27-45b1-957f-d24159dd405a",
       "name": "listUsers — listUsers: search term matches names (also non-Latin), login",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -853,7 +853,7 @@
       "executeOnce": true
     },
     {
-      "id": "07669b36-b760-424f-af92-457706e62bfe",
+      "id": "3361f7e7-5d02-4cc8-b230-b89c3045522f",
       "name": "listUsers — listUsers: search term matches names (also non-Latin), login (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -881,7 +881,7 @@
       "executeOnce": true
     },
     {
-      "id": "709dfc8c-92da-408d-a2e3-96e98b6f3d49",
+      "id": "d1bc7600-d15e-4b2f-bd0b-e171499909c3",
       "name": "listUsers — listUsers: search term matches names (also non-Latin), login (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -912,7 +912,7 @@
       "executeOnce": true
     },
     {
-      "id": "ff9152a2-b3fe-4754-b434-be2e12b51500",
+      "id": "c6964557-34bd-4e18-a9f0-f6445421f5d9",
       "name": "listUsers — listUsers: search term matches names (also non-Latin), login (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -940,7 +940,7 @@
       "executeOnce": true
     },
     {
-      "id": "d180bc30-29d0-4b91-8692-c8dd11831b69",
+      "id": "6fd24bfb-1f7c-424f-9ef6-02ed68abd240",
       "name": "listUsers — listUsers: search and filters combine",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -971,7 +971,7 @@
       "executeOnce": true
     },
     {
-      "id": "6e8b3298-4324-4a81-9862-91c97b31ec57",
+      "id": "e8387a3d-7646-4225-822a-9db756b31cdc",
       "name": "listUsers — listUsers: search and filters combine (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1006,7 +1006,7 @@
       "executeOnce": true
     },
     {
-      "id": "5b9143b3-c2bd-4509-b409-d20a228f7ced",
+      "id": "c432352f-83f4-4d0f-924c-c2e4f09f8930",
       "name": "listUsers — listUsers: sort orders the roster by email, SIS ID or name",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1035,7 +1035,7 @@
       "executeOnce": true
     },
     {
-      "id": "8d352f5e-830a-4828-a176-0c21f4e23097",
+      "id": "8e4018e4-3b2c-44b1-83d1-70acf1fb2028",
       "name": "listUsers — listUsers: sort orders the roster by email, SIS ID or name (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1066,7 +1066,7 @@
       "executeOnce": true
     },
     {
-      "id": "97cf7fac-bfc6-4740-8082-d72a06a8341a",
+      "id": "05dde55a-ca2c-43db-b9ef-25646291c570",
       "name": "listUsers — listUsers: sort orders the roster by email, SIS ID or name (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1097,7 +1097,7 @@
       "executeOnce": true
     },
     {
-      "id": "47429082-3fb4-4961-a3b9-f8c0ab20096a",
+      "id": "ce75d04c-5e6b-4ef6-a28e-c759623cd9bf",
       "name": "listUsers — listUsers: sort orders the roster by email, SIS ID or name (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1128,7 +1128,7 @@
       "executeOnce": true
     },
     {
-      "id": "7b32ff40-9db5-4b02-8491-9216a6ad2cf8",
+      "id": "8e233e82-427f-42f2-962b-023d1e5c14e1",
       "name": "listUsers — listUsers: Page Containing User ID returns exactly the ros",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1160,7 +1160,7 @@
       "executeOnce": true
     },
     {
-      "id": "57ff9cf8-4109-411d-a164-d20ec0ff81be",
+      "id": "efe4d12e-2817-4c8a-9c9d-28713375590a",
       "name": "listUsers — listUsers: Page Containing User ID returns exactly the ros (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1191,7 +1191,7 @@
       "executeOnce": true
     },
     {
-      "id": "b916bfbf-ebf4-4b89-8d6f-dbddb680ef1c",
+      "id": "edc2138a-3714-46a3-98ec-cba88f07863a",
       "name": "listUsers — listUsers: Page Containing User ID returns exactly the ros (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1222,7 +1222,7 @@
       "executeOnce": true
     },
     {
-      "id": "60b89dd7-09af-4708-8804-1c5742deffb2",
+      "id": "be94ebd6-9412-4fb4-bd9c-f927eed0135a",
       "name": "listUsers — listUsers: Page Containing User ID returns exactly the ros (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1254,7 +1254,7 @@
       "executeOnce": true
     },
     {
-      "id": "1f270f3d-4ac1-4217-ade8-62fff75ea7ad",
+      "id": "acfcdf85-bee4-4d69-89a3-928e2ba14691",
       "name": "listUsers — listUsers: every include adds its data",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1295,7 +1295,7 @@
       "executeOnce": true
     },
     {
-      "id": "c7a56675-082f-4755-afb4-09feee233b51",
+      "id": "23ae2b1c-e71d-4eab-a166-ff9c55b678b6",
       "name": "listUsers — listUsers: enrollments follow the enrollment state and type ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1335,7 +1335,7 @@
       "executeOnce": true
     },
     {
-      "id": "0038b840-8df6-458a-9168-d50bdf3d9d05",
+      "id": "feeb961a-c32d-4b7d-8091-408432d2bdba",
       "name": "listUsers — listUsers: accepts a SIS course ID; an empty course yields n",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1365,7 +1365,7 @@
       "executeOnce": true
     },
     {
-      "id": "ad91cbe1-88f8-4dc8-bed8-1afdb6ff6ebb",
+      "id": "f89d4277-0c22-4f6a-9065-0363954ad6ed",
       "name": "listUsers — listUsers: accepts a SIS course ID; an empty course yields n (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1395,7 +1395,7 @@
       "executeOnce": true
     },
     {
-      "id": "27d4ac6a-deb0-4b1e-b654-b1e916c2f3fc",
+      "id": "cd6dabc5-d64c-44d4-b9c2-fbbe7a65a979",
       "name": "getUser — getUser: returns one user of the course with every include",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1434,7 +1434,7 @@
       "executeOnce": true
     },
     {
-      "id": "294c0d2b-cf08-47e7-b99b-554432ac16f0",
+      "id": "eb3a4ea5-fb9e-4022-9c6b-28ad7da89a36",
       "name": "getUser — getUser: without includes there is no email and no enrollmen",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1460,7 +1460,7 @@
       "executeOnce": true
     },
     {
-      "id": "649c3272-3a2b-479c-912a-e54d4171669f",
+      "id": "58fae5ed-4439-4c80-9d05-55d303ab0c5e",
       "name": "getUser — getUser: accepts SIS IDs for course and user, and self",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1486,7 +1486,7 @@
       "executeOnce": true
     },
     {
-      "id": "44821bbf-9848-407c-8f5a-60525506813a",
+      "id": "72e6615d-3fd1-4b06-a62f-eb84780484d2",
       "name": "getUser — getUser: a user with an inactive enrollment is only found wi",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1518,7 +1518,7 @@
       "executeOnce": true
     },
     {
-      "id": "a45caa7a-04ab-43a3-851e-c884908a3132",
+      "id": "1ab96b75-b54f-446f-87fe-5914e88a78e8",
       "name": "listStudents — listStudents: lists every student once, also students with s",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1547,7 +1547,7 @@
       "executeOnce": true
     },
     {
-      "id": "e65eeaab-3c32-4520-8330-1ab03d9ec75a",
+      "id": "5f7e1c52-f237-4c6f-9776-e8a54f686ab3",
       "name": "listStudents — listStudents: every option takes effect",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1578,7 +1578,7 @@
       "executeOnce": true
     },
     {
-      "id": "0d3ac5c1-0c23-4ca1-8efa-cc495bcfd800",
+      "id": "e5434291-f382-4bbb-8ca7-c2afbce6f028",
       "name": "listStudents — listStudents: every option takes effect (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1615,7 +1615,7 @@
       "executeOnce": true
     },
     {
-      "id": "2b5d335b-3465-46e2-aec3-e31778201de8",
+      "id": "39681ee5-1d3e-44f5-a273-e54119628e09",
       "name": "listStudents — listStudents: every option takes effect (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1643,7 +1643,7 @@
       "executeOnce": true
     },
     {
-      "id": "2aeec151-7608-46ea-858b-d911e448939b",
+      "id": "598f1770-19c6-4afa-b36c-4a1d7a6419f1",
       "name": "listStudents — listStudents: every option takes effect (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1671,7 +1671,7 @@
       "executeOnce": true
     },
     {
-      "id": "61ef6925-ed47-4d87-b339-f78fec259a62",
+      "id": "fc24a29f-2ca5-46ed-ac10-1ab1eea32d69",
       "name": "listStudents — listStudents: a workflow saved with the former Last Login ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1699,7 +1699,7 @@
       "executeOnce": true
     },
     {
-      "id": "0be4bee0-6c84-477b-9e9e-4c8a6cfdf64c",
+      "id": "c280e790-4e93-4d23-ac23-437b12c36f97",
       "name": "listContentShareUsers — listContentShareUsers: finds teachers and admins by name or ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1725,7 +1725,7 @@
       "executeOnce": true
     },
     {
-      "id": "d537cf56-b5f4-4624-9de7-f17de4d3eec9",
+      "id": "abb2d0c0-e6b0-4821-9d86-74c9338ec8fb",
       "name": "listContentShareUsers — listContentShareUsers: finds teachers and admins by name or  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1754,7 +1754,7 @@
       "executeOnce": true
     },
     {
-      "id": "21660298-79c3-4de2-b7b5-7847b377838c",
+      "id": "7df0f9a6-11db-476d-960e-2ec6743b79da",
       "name": "listContentShareUsers — listContentShareUsers: finds teachers and admins by name or  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1784,7 +1784,7 @@
       "executeOnce": true
     },
     {
-      "id": "cda83783-3246-4ae5-bf1f-49536d80094e",
+      "id": "b7a5b815-c2e5-4bb8-9c18-604a9650685e",
       "name": "listContentShareUsers — listContentShareUsers: finds teachers and admins by name or  (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1810,7 +1810,7 @@
       "executeOnce": true
     },
     {
-      "id": "9e758042-605c-4c31-89c7-56c1f925f81b",
+      "id": "7b0d04d9-1467-4c4c-a9a5-ab6f4cc4d138",
       "name": "listRecentStudents — listRecentStudents: orders students by their last login, mos",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1822,7 +1822,7 @@
         "authentication": "accessToken",
         "resource": "course",
         "operation": "listRecentStudents",
-        "courseId": "272"
+        "courseId": "697"
       },
       "credentials": {
         "canvasApi": {
@@ -1835,7 +1835,7 @@
       "executeOnce": true
     },
     {
-      "id": "828aa9bd-554b-40b4-9823-dc26178a560b",
+      "id": "f1464178-49ae-45c3-9552-bc0d1b752a05",
       "name": "getTestStudent — getTestStudent: creates the test student of a course that ha",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1847,7 +1847,7 @@
         "authentication": "accessToken",
         "resource": "course",
         "operation": "getTestStudent",
-        "courseId": "272"
+        "courseId": "697"
       },
       "credentials": {
         "canvasApi": {
@@ -1860,7 +1860,7 @@
       "executeOnce": true
     },
     {
-      "id": "09f9fbf1-f4d5-482a-afe9-2d250188e5f4",
+      "id": "55efd9a0-cf7d-4715-a195-7dda537384cb",
       "name": "getTestStudent — getTestStudent: returns the existing test student of a seede",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1885,7 +1885,7 @@
       "executeOnce": true
     },
     {
-      "id": "5f776237-e246-4d64-a887-5453ee8a9965",
+      "id": "fcac89d5-a2b4-41b4-8ab7-04e59c1afed1",
       "name": "listRecentStudents — listRecentStudents: pages through the students of the large ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1910,7 +1910,7 @@
       "executeOnce": true
     },
     {
-      "id": "0e6342dc-04e0-4afd-b592-2dbb76198cb9",
+      "id": "b9e776cd-11e1-4203-8718-09b973bc9636",
       "name": "listRecentStudents — listRecentStudents: pages through the students of the large  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1938,7 +1938,7 @@
       "executeOnce": true
     },
     {
-      "id": "675ec9b1-ad81-46a3-898a-8f877c9f1e84",
+      "id": "643caca5-b0bc-4eef-883a-06eb694f4a6a",
       "name": "listRecentStudents — listRecentStudents: pages through the students of the large  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1967,7 +1967,7 @@
       "executeOnce": true
     },
     {
-      "id": "8228f9b3-9281-4089-8e67-810fa392a955",
+      "id": "2b0e8857-93ca-45da-9079-6c805ab9add0",
       "name": "getUserProgress — getUserProgress: counts the completed module requirements of",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1979,8 +1979,8 @@
         "authentication": "accessToken",
         "resource": "course",
         "operation": "getUserProgress",
-        "courseId": "278",
-        "userId": "1176"
+        "courseId": "731",
+        "userId": "2170"
       },
       "credentials": {
         "canvasApi": {
@@ -1993,7 +1993,7 @@
       "executeOnce": true
     },
     {
-      "id": "f1a3c204-5b38-4dc2-afe1-337e946aa62d",
+      "id": "98c62cb9-0823-4dad-bcb4-df6b498f5bb9",
       "name": "getBulkUserProgress — getBulkUserProgress: one entry per student with their progre",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2005,7 +2005,7 @@
         "authentication": "accessToken",
         "resource": "course",
         "operation": "getBulkUserProgress",
-        "courseId": "278"
+        "courseId": "731"
       },
       "credentials": {
         "canvasApi": {
@@ -2018,7 +2018,7 @@
       "executeOnce": true
     },
     {
-      "id": "3e07cb24-67b9-4042-b5f3-599ecbff55fb",
+      "id": "ad0309d5-91f3-430d-897b-f89b00be1481",
       "name": "getBulkUserProgress — getBulkUserProgress: pages through the students of the main ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2043,7 +2043,7 @@
       "executeOnce": true
     },
     {
-      "id": "5e159200-eb8f-4636-bf75-0a89dc630bea",
+      "id": "ff0d69e9-0138-49c7-8a44-21c80f1ea234",
       "name": "getBulkUserProgress — getBulkUserProgress: pages through the students of the main  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2071,7 +2071,7 @@
       "executeOnce": true
     },
     {
-      "id": "7ce61755-adc7-4e02-ab94-903cfdad5427",
+      "id": "6a3c6fa2-24bb-49e0-80be-b18c3268d1ce",
       "name": "getBulkUserProgress — getBulkUserProgress: pages through the students of the main  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2100,7 +2100,7 @@
       "executeOnce": true
     },
     {
-      "id": "29a167f9-92c3-4d5e-97b4-abe85ecc2a89",
+      "id": "19a7b6e3-8a35-4f42-afd0-aa3a050c272f",
       "name": "getEffectiveDueDates — getEffectiveDueDates: one item per assignment and student, w",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2112,7 +2112,7 @@
         "authentication": "accessToken",
         "resource": "course",
         "operation": "getEffectiveDueDates",
-        "courseId": "278"
+        "courseId": "731"
       },
       "credentials": {
         "canvasApi": {
@@ -2125,7 +2125,7 @@
       "executeOnce": true
     },
     {
-      "id": "652ec273-43f3-4ecc-b5cf-903cd257bdc5",
+      "id": "02384af7-310e-4bba-9585-6c8d730628ac",
       "name": "getEffectiveDueDates — getEffectiveDueDates: assignment IDs limit the result (typed",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2137,7 +2137,7 @@
         "authentication": "accessToken",
         "resource": "course",
         "operation": "getEffectiveDueDates",
-        "courseId": "278",
+        "courseId": "731",
         "options": {
           "assignment_ids": "1"
         }
@@ -2153,7 +2153,7 @@
       "executeOnce": true
     },
     {
-      "id": "81793cb9-b17a-4615-9ad5-2b774498365b",
+      "id": "d02b0f53-34f8-4b45-8170-65572b1933b0",
       "name": "getEffectiveDueDates — getEffectiveDueDates: grading periods of a seeded course are",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2181,7 +2181,7 @@
       "executeOnce": true
     },
     {
-      "id": "9d2b9184-d7ef-42b9-a7ab-977996fbb189",
+      "id": "37a19870-b2e4-4c41-8d98-59c5a4e4ad30",
       "name": "listTodoItems — listTodoItems: a teacher has the handed-in essay to grade",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2193,7 +2193,7 @@
         "authentication": "accessToken",
         "resource": "course",
         "operation": "listTodoItems",
-        "courseId": "278"
+        "courseId": "731"
       },
       "credentials": {
         "canvasApi": {
@@ -2206,7 +2206,7 @@
       "executeOnce": true
     },
     {
-      "id": "377f124a-e8e3-4db7-9fee-065038c4593e",
+      "id": "5633f4d8-8cca-4352-9c82-01f08de95d88",
       "name": "getActivityStream — getActivityStream / Summary: an empty stream yields no items",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2231,7 +2231,7 @@
       "executeOnce": true
     },
     {
-      "id": "182e7045-1e39-4520-804c-3961edc836cd",
+      "id": "2014dc5f-cb3a-4ea7-847e-355c7c8bede4",
       "name": "getAllForUser — getAllForUser: an admin lists the courses of a teacher, page",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2256,7 +2256,7 @@
       "executeOnce": true
     },
     {
-      "id": "3f0c85ae-41cf-4b98-b01f-094edf91ac43",
+      "id": "aa7a7d0d-e088-4cce-b4ce-6649f8914514",
       "name": "getAllForUser — getAllForUser: an admin lists the courses of a teacher, page (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2284,7 +2284,7 @@
       "executeOnce": true
     },
     {
-      "id": "ad3bd99a-c3e3-4e7b-b09f-5fed8635d2b1",
+      "id": "d954d421-2c41-4e42-b648-4df47ae603ff",
       "name": "getAllForUser — getAllForUser: an admin lists the courses of a teacher, page (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2313,7 +2313,7 @@
       "executeOnce": true
     },
     {
-      "id": "d0c669fd-3dee-4aef-b5f3-fdbb2fcca6d0",
+      "id": "5ce9a750-3861-4b7e-b5c2-f46038528391",
       "name": "getAllForUser — getAllForUser: every include adds its data",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2367,7 +2367,7 @@
       "executeOnce": true
     },
     {
-      "id": "4c2bf842-9835-49d1-b32e-d2fbd20297a1",
+      "id": "5a3719ba-f270-4a0e-940a-3c6428737671",
       "name": "getAllForUser — getAllForUser: filters by account, state, enrollment state a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2381,7 +2381,7 @@
         "operation": "getAllForUser",
         "userId": "={{ $('Config').first().json.studentUserId }}",
         "options": {
-          "account_id": "74"
+          "account_id": "208"
         },
         "pagination": {
           "returnAll": true
@@ -2398,7 +2398,7 @@
       "executeOnce": true
     },
     {
-      "id": "469ce3f6-c8aa-4659-975d-c33c85a0d333",
+      "id": "4ee79fa0-35c4-4319-a0d5-3faa6db8020f",
       "name": "getAllForUser — getAllForUser: filters by account, state, enrollment state a (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2431,7 +2431,7 @@
       "executeOnce": true
     },
     {
-      "id": "3ec72d61-c051-4969-b227-5c92690f1b24",
+      "id": "a48b758f-415d-41f9-94a4-35a7b2bcda6b",
       "name": "getAllForUser — getAllForUser: filters by account, state, enrollment state a (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2464,7 +2464,7 @@
       "executeOnce": true
     },
     {
-      "id": "66ca16ab-ab51-4430-b78a-b92db5682943",
+      "id": "b476065f-6315-49d8-ba1c-8b160d2c3557",
       "name": "getAllForUser — getAllForUser: filters by account, state, enrollment state a (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2495,7 +2495,7 @@
       "executeOnce": true
     },
     {
-      "id": "94de9717-7e82-4fca-b901-193e043acdde",
+      "id": "1043af8c-df98-487f-acc6-127cdba0055d",
       "name": "getAllForUser — getAllForUser: filters by account, state, enrollment state a (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2526,7 +2526,7 @@
       "executeOnce": true
     },
     {
-      "id": "ab0e4d46-f929-4c14-a2a9-8fa48a5cb503",
+      "id": "d6fd5ae0-fa94-4d22-aed7-45db64eb0cfe",
       "name": "getAllForUser — getAllForUser: filters by account, state, enrollment state a (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2557,7 +2557,7 @@
       "executeOnce": true
     },
     {
-      "id": "e51fb35b-5247-4738-847f-de39be7da14e",
+      "id": "f19e212f-accf-433d-a91d-e8a4cba69e2d",
       "name": "getAllForUser — getAllForUser: filters by account, state, enrollment state a (7)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2588,7 +2588,7 @@
       "executeOnce": true
     },
     {
-      "id": "aae6e80b-1002-48c3-bf38-e43a025d1b36",
+      "id": "a86e3451-dac0-4d68-9524-bd3ee7067ca9",
       "name": "getAllForUser — getAllForUser: filters by account, state, enrollment state a (8)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2619,7 +2619,7 @@
       "executeOnce": true
     },
     {
-      "id": "4a65f280-8a03-4286-b43d-31f23feae76e",
+      "id": "1ed38467-cb2e-456d-b19a-9e1ca691f7a6",
       "name": "getAllForUser — getAllForUser: filters by account, state, enrollment state a (9)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2650,7 +2650,7 @@
       "executeOnce": true
     },
     {
-      "id": "baf0ccc9-3c9a-4864-9607-ff660d544a95",
+      "id": "e95039ad-7668-4bc1-85c9-e3702d5067a9",
       "name": "getAllForUser — getAllForUser: filters by account, state, enrollment state a (10)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2681,7 +2681,7 @@
       "executeOnce": true
     },
     {
-      "id": "ab31c990-8651-42f2-b3f9-1160fe38e188",
+      "id": "f7347a04-78de-4063-82f4-48138527a8fc",
       "name": "getAllForUser — getAllForUser: filters by account, state, enrollment state a (11)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2712,7 +2712,7 @@
       "executeOnce": true
     },
     {
-      "id": "27ec2130-07bf-45c9-9fc5-8aeed148a9fa",
+      "id": "ae9a2808-89ee-4d1b-bd9e-0ef2a36fb9d0",
       "name": "getAllForUser — getAllForUser: Homeroom keeps only homeroom courses",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2724,7 +2724,7 @@
         "authentication": "accessToken",
         "resource": "course",
         "operation": "getAllForUser",
-        "userId": "1178"
+        "userId": "2171"
       },
       "credentials": {
         "canvasApi": {
@@ -2737,7 +2737,7 @@
       "executeOnce": true
     },
     {
-      "id": "bc85ac2b-4db6-4134-aebc-a5cfeaeb0355",
+      "id": "f569eec1-dd51-4a53-9c7d-7a66c37c3928",
       "name": "getAllForUser — getAllForUser: Homeroom keeps only homeroom courses (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -2749,7 +2749,7 @@
         "authentication": "accessToken",
         "resource": "course",
         "operation": "getAllForUser",
-        "userId": "1178",
+        "userId": "2171",
         "options": {
           "homeroom": true
         }
@@ -2765,8 +2765,8 @@
       "executeOnce": true
     },
     {
-      "id": "1f6ef347-1694-4d26-945e-62585466c157",
-      "name": "getSettings — getSettings: returns the settings of the course, for admin, ",
+      "id": "6ee7fa97-15e3-4c5f-88b6-a19771a23c6e",
+      "name": "create — create: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
@@ -2776,8 +2776,39 @@
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
-        "operation": "getSettings",
-        "courseId": "316"
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "name": "=Battery Course Ünïcødé 课程 \"quoted\" & <b>tags</b> {{ $execution.id }}-1",
+        "additionalFields": {
+          "account_id": "3",
+          "allow_student_forum_attachments": false,
+          "allow_wiki_comments": true,
+          "apply_assignment_group_weights": true,
+          "course_code": "BAT-101",
+          "course_format": "blended",
+          "default_view": "syllabus",
+          "default_wiki_editing_roles": "teachers,students",
+          "grading_standard_id": "1",
+          "end_at": "2031-06-30T23:59:00Z",
+          "grade_passback_setting": "nightly_sync",
+          "hide_final_grades": true,
+          "integration_id": "=int-{{ $execution.id }}-2",
+          "is_public": true,
+          "is_public_to_auth_users": true,
+          "license": "cc_by_sa",
+          "open_enrollment": true,
+          "public_description": "Public description with emoji 🎓",
+          "public_syllabus": true,
+          "public_syllabus_to_auth": true,
+          "restrict_enrollments_to_course_dates": true,
+          "self_enrollment": true,
+          "sis_course_id": "=SIS_{{ $execution.id }}-3",
+          "start_at": "2020-01-15T08:00:00Z",
+          "storage_quota_mb": 1234,
+          "syllabus_body": "<p>Syllabus <strong>body</strong></p>",
+          "term_id": "6",
+          "time_zone": "America/Chicago"
+        }
       },
       "credentials": {
         "canvasApi": {
@@ -2790,8 +2821,8 @@
       "executeOnce": true
     },
     {
-      "id": "421cba6f-143b-437a-bd5f-2d74bb869ea3",
-      "name": "updateSettings — updateSettings: every setting reaches Canvas",
+      "id": "e520069a-4bb2-4e61-be7e-93581afa5d42",
+      "name": "create — create: template makes a course template, and update turns",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
@@ -2801,8 +2832,633 @@
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "name": "=Template course {{ $execution.id }}-4",
+        "additionalFields": {
+          "template": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bb6726fa-4ab6-4ea3-a9af-0eed024aede1",
+      "name": "update — create: template makes a course template, and update turns",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        3300
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "update",
+        "courseId": "={{ $('create — create: template makes a course template, and update turns').first().json.id }}",
+        "updateFields": {
+          "template": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f7bed1fb-35e4-4d7c-954b-25bb3cd2fcb8",
+      "name": "create — create: enable SIS reactivation brings back a deleted cour",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        3300
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "name": "=Revived course {{ $execution.id }}-7",
+        "additionalFields": {
+          "sis_course_id": "=SIS-revive_{{ $execution.id }}-5",
+          "enable_sis_reactivation": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0811e1c9-cca2-4494-9816-736dadfbd637",
+      "name": "create — create: offer publishes the course and enroll me adds th",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        3300
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "name": "=Offered course {{ $execution.id }}-8",
+        "additionalFields": {
+          "offer": true,
+          "enroll_me": true,
+          "enrollment_term_id": "4"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3e45b30f-b7cd-465d-a5be-6e978bb9ad3d",
+      "name": "get — get: returns the course, with includes",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        3300
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "get",
+        "courseId": "={{ $('create — create: every optional field reaches Canvas').first().json.id }}",
+        "options": {
+          "include": [
+            "term",
+            "teachers",
+            "total_students",
+            "syllabus_body",
+            "sections",
+            "permissions"
+          ],
+          "teacher_limit": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3caae49c-f9af-4c16-9c96-3244a4921320",
+      "name": "get — get: accepts SIS IDs in place of numeric IDs",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        3300
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "get",
+        "courseId": "=sis_course_id:SIS_{{ $execution.id }}-3"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b9a9fb35-01ad-48a0-99ed-ebdcfa35e04b",
+      "name": "update — update: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        3520
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "update",
+        "courseId": "={{ $('get — get: accepts SIS IDs in place of numeric IDs').first().json.id }}",
+        "updateFields": {
+          "account_id": "12",
+          "allow_student_forum_attachments": true,
+          "allow_wiki_comments": false,
+          "blueprint": true,
+          "blueprint_restrictions": [
+            "content",
+            "points"
+          ],
+          "default_wiki_editing_roles": "teachers",
+          "grading_standard_id": "",
+          "open_enrollment": false,
+          "override_sis_stickiness": true,
+          "public_syllabus_to_auth": false,
+          "self_enrollment": false,
+          "storage_quota_mb": 2345,
+          "use_blueprint_restrictions_by_object_type": false,
+          "name": "=Battery Course Ünïcødé 课程 \"quoted\" & <b>tags</b> {{ $execution.id }}-1 (renamed)",
+          "course_code": "BAT-102",
+          "course_format": "online",
+          "default_view": "assignments",
+          "apply_assignment_group_weights": false,
+          "hide_final_grades": false,
+          "is_public": false,
+          "is_public_to_auth_users": false,
+          "license": "public_domain",
+          "public_description": "Changed",
+          "public_syllabus": false,
+          "restrict_enrollments_to_course_dates": true,
+          "grade_passback_setting": "disabled",
+          "time_zone": "Europe/Berlin",
+          "start_at": "2020-02-01T08:00:00Z",
+          "end_at": "2031-07-31T23:59:00Z",
+          "syllabus_body": "<p>Second version</p>",
+          "term_id": "4",
+          "event": "offer"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0e9c5d9a-f79f-4763-bdc9-037dc12df9b0",
+      "name": "update — update: blueprint restrictions per object type, then the cou",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        3520
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "update",
+        "courseId": "={{ $('update — update: every optional field reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "use_blueprint_restrictions_by_object_type": true,
+          "blueprint_restrictions_by_object_type": "{\"assignment\":{\"content\":true,\"points\":true},\"wiki_page\":{\"content\":true}}"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0d553a2b-8e90-48aa-b1fd-1c295ccae1ee",
+      "name": "update — update: blueprint restrictions per object type, then the cou (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        3520
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "update",
+        "courseId": "={{ $('update — update: blueprint restrictions per object type, then the cou').first().json.id }}",
+        "updateFields": {
+          "blueprint": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f3ce9c6f-76d2-4ab6-85eb-6b430757405b",
+      "name": "update — update: with Override SIS Stickiness off, Canvas leaves th",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        3520
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "update",
+        "courseId": "={{ $('update — update: blueprint restrictions per object type, then the cou (2)').first().json.id }}",
+        "updateFields": {
+          "name": "Must not be applied",
+          "course_code": "NOPE",
+          "public_description": "Applied",
+          "override_sis_stickiness": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d9881e8d-872f-4184-8ed7-d08c9820aec5",
+      "name": "update — update: an empty update is rejected clearly rather than sile",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        3520
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "update",
+        "courseId": "={{ $('update — update: with Override SIS Stickiness off, Canvas leaves th').first().json.id }}",
+        "updateFields": {},
+        "errorHandling": {
+          "onError": "continueWithError"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ee6435c3-e1aa-49fc-94a9-bd5efdeaeff1",
+      "name": "getAll — getAll: lists the courses of the tokens user, honouring fil",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        3520
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "getAll",
+        "options": {
+          "state": [
+            "available",
+            "unpublished"
+          ],
+          "include": [
+            "term",
+            "total_students"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5a473d7b-f22d-4020-9591-2e71cc6b37ee",
+      "name": "listStudents — listStudents: returns every student of a large course exactl",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        3740
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "listStudents",
+        "courseId": "={{ $('Config').first().json.largeCourseId }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0eaa488e-d0bc-4896-9aa4-2d231f0c7a75",
+      "name": "conclude — conclude: ends the course without deleting it",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        3740
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "conclude",
+        "courseId": "={{ $('update — update: an empty update is rejected clearly rather than sile').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d71bff55-fd26-4225-8240-26d25d3deed4",
+      "name": "delete — delete: removes the course",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        3740
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "delete",
+        "courseId": "={{ $('update — update: an empty update is rejected clearly rather than sile').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "89ee9a08-1f5d-4349-87b8-cc947b23427e",
+      "name": "copy — copy: without options, everything is copied",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        3740
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "copy",
+        "courseId": "747",
+        "sourceCourseId": "746",
+        "options": {}
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "041f8e02-61c7-443a-9742-d51fd3ef0bcd",
+      "name": "copy — copy: Only copies just the chosen types",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        3740
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "copy",
+        "courseId": "748",
+        "sourceCourseId": "746",
+        "options": {
+          "only": [
+            "assignments",
+            "wiki_pages"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "03a72a2c-63d7-4f34-8da5-e3be97c784ac",
+      "name": "copy — copy: Except copies everything but the chosen types, cours",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        3740
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "copy",
+        "courseId": "749",
+        "sourceCourseId": "746",
+        "options": {
+          "except": [
+            "assignments",
+            "wiki_pages"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "47e4cde8-874e-4423-bf0b-7c71cafe6626",
+      "name": "copy — copy: Only and Except together copy the Only types minus",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        3960
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "copy",
+        "courseId": "750",
+        "sourceCourseId": "746",
+        "options": {
+          "only": [
+            "modules",
+            "attachments",
+            "syllabus_body"
+          ],
+          "except": [
+            "attachments"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ba207c02-f8b4-4fb2-887c-dfe9b5de202c",
+      "name": "getSettings — getSettings: returns the settings of the course, for admin, ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        3960
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
+        "operation": "getSettings",
+        "courseId": "765"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3de3da72-42e1-441b-9be6-fbd2f18734e9",
+      "name": "updateSettings — updateSettings: every setting reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        3960
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "course",
         "operation": "updateSettings",
-        "courseId": "316",
+        "courseId": "765",
         "settings": {
           "allow_final_grade_override": true,
           "allow_student_anonymous_discussion_topics": true,
@@ -2837,19 +3493,19 @@
       "executeOnce": true
     },
     {
-      "id": "a0c9dece-dfff-449f-a1a6-6aa159c05745",
+      "id": "624244c4-f7aa-4cf3-bc0c-bb563fcebe86",
       "name": "updateSettings — updateSettings: Allow Final Grade Override shows once the ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
-        3300
+        1240,
+        3960
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
         "operation": "updateSettings",
-        "courseId": "316",
+        "courseId": "765",
         "settings": {
           "allow_final_grade_override": false
         }
@@ -2865,19 +3521,19 @@
       "executeOnce": true
     },
     {
-      "id": "9724a5cd-020d-42f0-8dc9-b3d96344fe94",
+      "id": "e614121c-30d9-400a-8303-5b68e734c8fc",
       "name": "updateSettings — updateSettings: Allow Final Grade Override shows once the  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
-        3300
+        1500,
+        3960
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
         "operation": "updateSettings",
-        "courseId": "316",
+        "courseId": "765",
         "settings": {
           "allow_final_grade_override": true
         }
@@ -2893,19 +3549,19 @@
       "executeOnce": true
     },
     {
-      "id": "c8a3048a-2e0e-4461-a875-8a408cce6321",
+      "id": "c3d8a484-db10-407a-8848-00bad113b537",
       "name": "updateSettings — updateSettings: switching every setting back (false values, ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
-        3300
+        1760,
+        3960
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
         "operation": "updateSettings",
-        "courseId": "316",
+        "courseId": "765",
         "settings": {
           "allow_final_grade_override": false,
           "allow_student_anonymous_discussion_topics": false,
@@ -2940,19 +3596,19 @@
       "executeOnce": true
     },
     {
-      "id": "56579e1a-1ce2-4d28-9b85-9e2e04ade09a",
+      "id": "23c4fe9a-3eb5-4445-9225-6ac8b2006c4a",
       "name": "updateSettings — updateSettings: only the given settings change; values from ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
-        3300
+        460,
+        4180
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
         "operation": "updateSettings",
-        "courseId": "316",
+        "courseId": "765",
         "settings": {}
       },
       "credentials": {
@@ -2966,19 +3622,19 @@
       "executeOnce": true
     },
     {
-      "id": "47ba0db2-a9fb-478a-aa8b-38f1ca04ffb7",
+      "id": "9d4efc30-6f1c-4ddd-96f5-e7e8c94fdabd",
       "name": "updateSettings — updateSettings: Canvas reads times loosely; a due time it ca",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
-        3300
+        720,
+        4180
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
         "operation": "updateSettings",
-        "courseId": "316",
+        "courseId": "765",
         "settings": {
           "default_due_time": "5:45 pm"
         }
@@ -2994,19 +3650,19 @@
       "executeOnce": true
     },
     {
-      "id": "5d62652f-74a5-40de-bb05-b864d1b304d9",
+      "id": "42d566a8-39f7-40d6-8b3a-a73e0ce1db2e",
       "name": "updateSettings — updateSettings: Canvas reads times loosely; a due time it ca (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
-        3520
+        980,
+        4180
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
         "operation": "updateSettings",
-        "courseId": "316",
+        "courseId": "765",
         "settings": {
           "default_due_time": "half past nine"
         }
@@ -3022,19 +3678,19 @@
       "executeOnce": true
     },
     {
-      "id": "fe1fc552-431a-49e3-bedc-45b2eea69c76",
+      "id": "50ad09f1-f3b7-45a1-99f6-f9d203e2b1f4",
       "name": "getPermissions — getPermissions: answers true/false for each named permission",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
-        3520
+        1240,
+        4180
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
         "operation": "getPermissions",
-        "courseId": "316",
+        "courseId": "765",
         "permissions": " manage_grades , send_messages , read_roster , manage_course_content_edit , no_such_permission "
       },
       "credentials": {
@@ -3048,20 +3704,20 @@
       "executeOnce": true
     },
     {
-      "id": "55e68ea3-5b2d-4aa3-9ae3-55bfa4d525c8",
+      "id": "afe3a51b-89c8-44cb-9e90-992dcd134668",
       "name": "previewHtml — previewHtml: returns the HTML as Canvas would keep it",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
-        3520
+        1500,
+        4180
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
         "operation": "previewHtml",
-        "courseId": "316",
-        "html": "<p><badhtml></badhtml>processed html <script>alert(1)</script><a href=\"/courses/316/files/1/download\" onclick=\"steal()\">file</a> <b>Ünï \"quoted\" &amp; 🎓</b></p>"
+        "courseId": "765",
+        "html": "<p><badhtml></badhtml>processed html <script>alert(1)</script><a href=\"/courses/765/files/1/download\" onclick=\"steal()\">file</a> <b>Ünï \"quoted\" &amp; 🎓</b></p>"
       },
       "credentials": {
         "canvasApi": {
@@ -3074,19 +3730,19 @@
       "executeOnce": true
     },
     {
-      "id": "e097f283-594d-4ddc-9044-7a5de8f2cbe1",
+      "id": "6159d52f-c11e-46c2-80df-67d154fd107b",
       "name": "get — restoreVersion: brings back an earlier syllabus as a new ver",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
-        3520
+        1760,
+        4180
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
         "operation": "get",
-        "courseId": "316",
+        "courseId": "765",
         "options": {
           "include": [
             "syllabus_versions",
@@ -3105,20 +3761,20 @@
       "executeOnce": true
     },
     {
-      "id": "be28204b-ba26-4b58-8b36-ff7480574bd5",
+      "id": "61e6266d-a4d8-4b29-a26c-5eeabf4d76ea",
       "name": "batchUpdate — offer: publishes the listed courses (IDs typed with spaces, ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
-        3520
+        460,
+        4400
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
         "operation": "batchUpdate",
         "accountId": "={{ $('get — restoreVersion: brings back an earlier syllabus as a new ver').first().json.account_id }}",
-        "courseIds": "= 329 , sis_course_id:W2-BATCH-{{ $execution.id }}-5 ",
+        "courseIds": "= 772 , sis_course_id:W2-BATCH-{{ $execution.id }}-5 ",
         "event": "offer"
       },
       "credentials": {
@@ -3132,20 +3788,20 @@
       "executeOnce": true
     },
     {
-      "id": "696c2b45-a3a8-4d66-83d3-72ffd9e474e6",
+      "id": "fd6d3fbf-673d-4d2e-bd1e-671fdd8e8080",
       "name": "batchUpdate — delete, then undelete: restores the courses as unpublished c",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
-        3520
+        720,
+        4400
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
         "operation": "batchUpdate",
         "accountId": "={{ $('get — restoreVersion: brings back an earlier syllabus as a new ver').first().json.account_id }}",
-        "courseIds": "329,330,331",
+        "courseIds": "772,773,774",
         "event": "delete"
       },
       "credentials": {
@@ -3159,20 +3815,20 @@
       "executeOnce": true
     },
     {
-      "id": "448faa2f-339d-4bb4-9a9d-3cfeb555b4a5",
+      "id": "00a1c13c-6945-4cf3-92af-387516f9e4a6",
       "name": "batchUpdate — delete, then undelete: restores the courses as unpublished c (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
-        3740
+        980,
+        4400
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
         "operation": "batchUpdate",
         "accountId": "={{ $('get — restoreVersion: brings back an earlier syllabus as a new ver').first().json.account_id }}",
-        "courseIds": "329,331",
+        "courseIds": "772,774",
         "event": "undelete"
       },
       "credentials": {
@@ -3186,385 +3842,19 @@
       "executeOnce": true
     },
     {
-      "id": "71416d90-1ac5-4fe5-98a9-ffa80dab5912",
+      "id": "a2f8273f-c4a1-468a-9b02-b4630c4341e7",
       "name": "resetContent — replaces the course by an empty one that keeps name, section",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
-        3740
+        1240,
+        4400
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "course",
         "operation": "resetContent",
-        "courseId": "333"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "fffd9b9a-2b63-4cd8-bc83-dd747f932023",
-      "name": "create — create: every optional field reaches Canvas",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        980,
-        3740
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "course",
-        "operation": "create",
-        "accountId": "={{ $('Config').first().json.accountId }}",
-        "name": "=Battery Course Ünïcødé 课程 \"quoted\" & <b>tags</b> {{ $execution.id }}-1",
-        "additionalFields": {
-          "allow_student_assignment_edits": true,
-          "allow_student_forum_attachments": true,
-          "allow_wiki_comments": true,
-          "apply_assignment_group_weights": true,
-          "course_code": "BAT-101",
-          "course_format": "blended",
-          "default_view": "syllabus",
-          "end_at": "2031-06-30T23:59:00Z",
-          "grade_passback_setting": "nightly_sync",
-          "hide_final_grades": true,
-          "integration_id": "=int-{{ $execution.id }}-2",
-          "is_public": true,
-          "is_public_to_auth_users": true,
-          "license": "cc_by_sa",
-          "open_enrollment": true,
-          "public_description": "Public description with emoji 🎓",
-          "public_syllabus": true,
-          "restrict_enrollments_to_course_dates": true,
-          "self_enrollment": true,
-          "sis_course_id": "=SIS_{{ $execution.id }}-3",
-          "start_at": "2020-01-15T08:00:00Z",
-          "syllabus_body": "<p>Syllabus <strong>body</strong></p>",
-          "term_id": "6",
-          "time_zone": "America/Chicago"
-        }
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "5ab988c3-7994-4919-aa19-e4764de10daa",
-      "name": "create — create: offer publishes the course and enroll me adds th",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1240,
-        3740
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "course",
-        "operation": "create",
-        "accountId": "={{ $('Config').first().json.accountId }}",
-        "name": "=Offered course {{ $execution.id }}-4",
-        "additionalFields": {
-          "offer": true,
-          "enroll_me": true,
-          "enrollment_term_id": "4"
-        }
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "7688b924-dd97-4f0a-9c84-35863cedf4fa",
-      "name": "get — get: returns the course, with includes",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1500,
-        3740
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "course",
-        "operation": "get",
-        "courseId": "={{ $('create — create: every optional field reaches Canvas').first().json.id }}",
-        "options": {
-          "include": [
-            "term",
-            "teachers",
-            "total_students",
-            "syllabus_body",
-            "sections",
-            "permissions"
-          ],
-          "teacher_limit": 3
-        }
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "dd36fdd1-4068-4043-b8ca-cc1cd3b037fb",
-      "name": "get — get: accepts SIS IDs in place of numeric IDs",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1760,
-        3740
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "course",
-        "operation": "get",
-        "courseId": "=sis_course_id:SIS_{{ $execution.id }}-3"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "41bebc9b-3c81-464f-b379-b0105827e1b1",
-      "name": "update — update: every optional field reaches Canvas",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        460,
-        3960
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "course",
-        "operation": "update",
-        "courseId": "={{ $('get — get: accepts SIS IDs in place of numeric IDs').first().json.id }}",
-        "updateFields": {
-          "name": "=Battery Course Ünïcødé 课程 \"quoted\" & <b>tags</b> {{ $execution.id }}-1 (renamed)",
-          "course_code": "BAT-102",
-          "course_format": "online",
-          "default_view": "assignments",
-          "apply_assignment_group_weights": false,
-          "hide_final_grades": false,
-          "is_public": false,
-          "is_public_to_auth_users": false,
-          "license": "public_domain",
-          "public_description": "Changed",
-          "public_syllabus": false,
-          "restrict_enrollments_to_course_dates": true,
-          "grade_passback_setting": "disabled",
-          "time_zone": "Europe/Berlin",
-          "start_at": "2020-02-01T08:00:00Z",
-          "end_at": "2031-07-31T23:59:00Z",
-          "syllabus_body": "<p>Second version</p>",
-          "term_id": "4",
-          "event": "offer"
-        }
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "d67c6625-6d7c-4969-9967-d28420a57e4a",
-      "name": "update — update: an empty update is rejected clearly rather than sile",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        720,
-        3960
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "course",
-        "operation": "update",
-        "courseId": "={{ $('update — update: every optional field reaches Canvas').first().json.id }}",
-        "updateFields": {},
-        "errorHandling": {
-          "onError": "continueWithError"
-        }
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "6ade81bc-2548-46c8-ab4c-e5abceb85e5d",
-      "name": "getAll — getAll: lists the courses of the tokens user, honouring fil",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        980,
-        3960
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "course",
-        "operation": "getAll",
-        "options": {
-          "state": [
-            "available",
-            "unpublished"
-          ],
-          "include": [
-            "term",
-            "total_students"
-          ]
-        },
-        "pagination": {
-          "returnAll": true
-        }
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "d7fbb4c2-7e10-452f-8681-1d30b56bb4e0",
-      "name": "listStudents — listStudents: returns every student of a large course exactl",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1240,
-        3960
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "course",
-        "operation": "listStudents",
-        "courseId": "={{ $('Config').first().json.largeCourseId }}",
-        "pagination": {
-          "returnAll": true
-        }
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "aaa0ad00-88eb-4d7a-b668-bba9ac855fee",
-      "name": "copy — copy: starts a course copy migration from another course",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1500,
-        3960
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "course",
-        "operation": "copy",
-        "courseId": "={{ $('update — update: an empty update is rejected clearly rather than sile').first().json.id }}",
-        "sourceCourseId": "={{ $('getAll — getAll: lists the courses of the tokens user, honouring fil').first().json.id }}",
-        "options": {
-          "only": [
-            "assignments",
-            "wiki_pages"
-          ]
-        }
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "d1e90fe8-6c33-4584-8ce0-1d1e985c1d3c",
-      "name": "conclude — conclude: ends the course without deleting it",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1760,
-        3960
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "course",
-        "operation": "conclude",
-        "courseId": "={{ $('update — update: an empty update is rejected clearly rather than sile').first().json.id }}"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "42e89159-6a92-44fd-aadb-d1ff3b0983ce",
-      "name": "delete — delete: removes the course",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        460,
-        4180
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "course",
-        "operation": "delete",
-        "courseId": "={{ $('update — update: an empty update is rejected clearly rather than sile').first().json.id }}"
+        "courseId": "776"
       },
       "credentials": {
         "canvasApi": {
@@ -4572,6 +4862,226 @@
       "main": [
         [
           {
+            "node": "create — create: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create: template makes a course template, and update turns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: template makes a course template, and update turns": {
+      "main": [
+        [
+          {
+            "node": "update — create: template makes a course template, and update turns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — create: template makes a course template, and update turns": {
+      "main": [
+        [
+          {
+            "node": "create — create: enable SIS reactivation brings back a deleted cour",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: enable SIS reactivation brings back a deleted cour": {
+      "main": [
+        [
+          {
+            "node": "create — create: offer publishes the course and enroll me adds th",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: offer publishes the course and enroll me adds th": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns the course, with includes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns the course, with includes": {
+      "main": [
+        [
+          {
+            "node": "get — get: accepts SIS IDs in place of numeric IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: accepts SIS IDs in place of numeric IDs": {
+      "main": [
+        [
+          {
+            "node": "update — update: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: blueprint restrictions per object type, then the cou",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: blueprint restrictions per object type, then the cou": {
+      "main": [
+        [
+          {
+            "node": "update — update: blueprint restrictions per object type, then the cou (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: blueprint restrictions per object type, then the cou (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: with Override SIS Stickiness off, Canvas leaves th",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: with Override SIS Stickiness off, Canvas leaves th": {
+      "main": [
+        [
+          {
+            "node": "update — update: an empty update is rejected clearly rather than sile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: an empty update is rejected clearly rather than sile": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the courses of the tokens user, honouring fil",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the courses of the tokens user, honouring fil": {
+      "main": [
+        [
+          {
+            "node": "listStudents — listStudents: returns every student of a large course exactl",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listStudents — listStudents: returns every student of a large course exactl": {
+      "main": [
+        [
+          {
+            "node": "conclude — conclude: ends the course without deleting it",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conclude — conclude: ends the course without deleting it": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes the course",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — delete: removes the course": {
+      "main": [
+        [
+          {
+            "node": "copy — copy: without options, everything is copied",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "copy — copy: without options, everything is copied": {
+      "main": [
+        [
+          {
+            "node": "copy — copy: Only copies just the chosen types",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "copy — copy: Only copies just the chosen types": {
+      "main": [
+        [
+          {
+            "node": "copy — copy: Except copies everything but the chosen types, cours",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "copy — copy: Except copies everything but the chosen types, cours": {
+      "main": [
+        [
+          {
+            "node": "copy — copy: Only and Except together copy the Only types minus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "copy — copy: Only and Except together copy the Only types minus": {
+      "main": [
+        [
+          {
             "node": "getSettings — getSettings: returns the settings of the course, for admin, ",
             "type": "main",
             "index": 0
@@ -4727,127 +5237,6 @@
         [
           {
             "node": "resetContent — replaces the course by an empty one that keeps name, section",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "resetContent — replaces the course by an empty one that keeps name, section": {
-      "main": [
-        [
-          {
-            "node": "create — create: every optional field reaches Canvas",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "create — create: every optional field reaches Canvas": {
-      "main": [
-        [
-          {
-            "node": "create — create: offer publishes the course and enroll me adds th",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "create — create: offer publishes the course and enroll me adds th": {
-      "main": [
-        [
-          {
-            "node": "get — get: returns the course, with includes",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "get — get: returns the course, with includes": {
-      "main": [
-        [
-          {
-            "node": "get — get: accepts SIS IDs in place of numeric IDs",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "get — get: accepts SIS IDs in place of numeric IDs": {
-      "main": [
-        [
-          {
-            "node": "update — update: every optional field reaches Canvas",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "update — update: every optional field reaches Canvas": {
-      "main": [
-        [
-          {
-            "node": "update — update: an empty update is rejected clearly rather than sile",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "update — update: an empty update is rejected clearly rather than sile": {
-      "main": [
-        [
-          {
-            "node": "getAll — getAll: lists the courses of the tokens user, honouring fil",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "getAll — getAll: lists the courses of the tokens user, honouring fil": {
-      "main": [
-        [
-          {
-            "node": "listStudents — listStudents: returns every student of a large course exactl",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "listStudents — listStudents: returns every student of a large course exactl": {
-      "main": [
-        [
-          {
-            "node": "copy — copy: starts a course copy migration from another course",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "copy — copy: starts a course copy migration from another course": {
-      "main": [
-        [
-          {
-            "node": "conclude — conclude: ends the course without deleting it",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "conclude — conclude: ends the course without deleting it": {
-      "main": [
-        [
-          {
-            "node": "delete — delete: removes the course",
             "type": "main",
             "index": 0
           }

@@ -2,7 +2,7 @@
   "name": "Canvas battery — admin",
   "nodes": [
     {
-      "id": "4d1fff65-269a-4f44-a5be-21763c120f1f",
+      "id": "c23cc1bc-ff2b-4c3a-b1df-a52a052d77d7",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "7f820acb-0840-4b72-9a02-6e6e2cecbf30",
+      "id": "ace80f34-821c-4a70-863f-89e00874ff39",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,13 +25,13 @@
         "assignments": {
           "assignments": [
             {
-              "id": "c37e2731-7aa4-42d5-a7fc-5de9aa5f5ae9",
+              "id": "76fe989e-f68c-40d7-8c6e-b240607b8c69",
               "name": "accountId",
               "value": "1",
               "type": "string"
             },
             {
-              "id": "aa8fe78e-6c6d-4ec4-8150-b14093b92d3f",
+              "id": "6c197c74-4a3a-4e0f-8991-0a7671963815",
               "name": "accountRoleId",
               "value": "23",
               "type": "string"
@@ -42,7 +42,7 @@
       }
     },
     {
-      "id": "7d148d8e-e943-45fb-b57c-7ca46a04b939",
+      "id": "3f0a0cd0-8c85-4e9b-8bcd-2aa73f94adea",
       "name": "create — create: every optional field reaches Canvas (custom role, no",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -54,8 +54,8 @@
         "authentication": "accessToken",
         "resource": "admin",
         "operation": "create",
-        "accountId": "80",
-        "userId": "1363",
+        "accountId": "216",
+        "userId": "2235",
         "additionalFields": {
           "role_id": "23",
           "send_confirmation": false
@@ -72,7 +72,7 @@
       "executeOnce": true
     },
     {
-      "id": "0e6e2978-97e9-4f54-bb8c-b4526bef86d6",
+      "id": "099dfde2-e7de-42cf-9dee-425615527037",
       "name": "create — create: defaults to the Account Admin role and notifies the ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -84,7 +84,7 @@
         "authentication": "accessToken",
         "resource": "admin",
         "operation": "create",
-        "accountId": "80",
+        "accountId": "216",
         "userId": "=sis_user_id:n8nbat_AdminBat-{{ $execution.id }}-1_1"
       },
       "credentials": {
@@ -98,7 +98,7 @@
       "executeOnce": true
     },
     {
-      "id": "bd176421-57e0-419c-a670-77bf9cd0eabe",
+      "id": "043fa9ae-5e8b-4ab4-bfb8-50149a2ddfca",
       "name": "create — create: Canvas does not validate the role: an unknown Role I",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -110,8 +110,8 @@
         "authentication": "accessToken",
         "resource": "admin",
         "operation": "create",
-        "accountId": "80",
-        "userId": "1366",
+        "accountId": "216",
+        "userId": "2238",
         "additionalFields": {
           "role_id": "99999999",
           "send_confirmation": false
@@ -128,7 +128,7 @@
       "executeOnce": true
     },
     {
-      "id": "902ca720-9333-4ef6-901e-6c50db4ac9ed",
+      "id": "8b699603-92cb-4f06-9dfb-ed5db7c3054a",
       "name": "getAll — getAll: lists the admins of an account across pages, without",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -140,7 +140,7 @@
         "authentication": "accessToken",
         "resource": "admin",
         "operation": "getAll",
-        "accountId": "80",
+        "accountId": "216",
         "pagination": {
           "returnAll": true
         }
@@ -156,7 +156,7 @@
       "executeOnce": true
     },
     {
-      "id": "3fb86231-7726-491a-98c1-1397f977adda",
+      "id": "d5c6de20-07ba-449c-afa5-bae2dead2672",
       "name": "getAll — getAll: lists the admins of an account across pages, without (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -168,7 +168,7 @@
         "authentication": "accessToken",
         "resource": "admin",
         "operation": "getAll",
-        "accountId": "80"
+        "accountId": "216"
       },
       "credentials": {
         "canvasApi": {
@@ -181,7 +181,7 @@
       "executeOnce": true
     },
     {
-      "id": "7c0c7a3e-1cb6-43fd-85d3-779eb6d955ee",
+      "id": "6e654ef6-227c-4208-be0b-b4a729663cac",
       "name": "getAll — getAll: lists the admins of an account across pages, without (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -193,7 +193,7 @@
         "authentication": "accessToken",
         "resource": "admin",
         "operation": "getAll",
-        "accountId": "80",
+        "accountId": "216",
         "pagination": {
           "perPage": 4,
           "maxPages": 2
@@ -210,7 +210,7 @@
       "executeOnce": true
     },
     {
-      "id": "5d302022-8711-4d5e-b4f2-90a4ec5214cd",
+      "id": "31317b36-91cb-4ff5-b905-a530ad8de576",
       "name": "getAll — getAll: filters by user IDs (several, with spaces, SIS IDs) ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -222,9 +222,9 @@
         "authentication": "accessToken",
         "resource": "admin",
         "operation": "getAll",
-        "accountId": "80",
+        "accountId": "216",
         "options": {
-          "user_id": "=1363, 1368 ,sis_user_id:n8nbat_AdminBat-{{ $execution.id }}-1_6"
+          "user_id": "=2235, 2240 ,sis_user_id:n8nbat_AdminBat-{{ $execution.id }}-1_6"
         },
         "pagination": {
           "returnAll": true
@@ -241,7 +241,7 @@
       "executeOnce": true
     },
     {
-      "id": "826a405c-64b8-4df3-887d-c89cb64def3a",
+      "id": "ede0ff08-a98c-4055-afc7-220e528cf88a",
       "name": "getAll — getAll: filters by user IDs (several, with spaces, SIS IDs)  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -253,7 +253,7 @@
         "authentication": "accessToken",
         "resource": "admin",
         "operation": "getAll",
-        "accountId": "80",
+        "accountId": "216",
         "options": {
           "search_term": "Zoë Ünïcødé"
         }
@@ -269,7 +269,7 @@
       "executeOnce": true
     },
     {
-      "id": "3357cbd6-679c-4e02-9e8a-c4f7b7156127",
+      "id": "2e8c7447-3f75-4a0f-b035-e1837d2bf888",
       "name": "getAll — getAll: filters by user IDs (several, with spaces, SIS IDs)  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -281,7 +281,7 @@
         "authentication": "accessToken",
         "resource": "admin",
         "operation": "getAll",
-        "accountId": "80",
+        "accountId": "216",
         "options": {
           "search_term": "zzz-nobody-zzz"
         }
@@ -297,7 +297,7 @@
       "executeOnce": true
     },
     {
-      "id": "c7cfcfab-0a9c-4371-b613-858b24d09579",
+      "id": "6e5b4bdf-d1cb-4446-a843-cdaeadac6c07",
       "name": "getAll — getAll: the seeded root account admins, read only",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -325,7 +325,7 @@
       "executeOnce": true
     },
     {
-      "id": "f3d12300-ee3f-470e-ac5a-10ffe8611434",
+      "id": "96b4f61e-6bd5-4ffe-b69a-4c0c8cce1505",
       "name": "getSelfRoles — getSelfRoles: lists the roles of the tokens user in an acco",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -350,7 +350,7 @@
       "executeOnce": true
     },
     {
-      "id": "0d4d4d78-d7bd-4715-b73e-5d462e01e151",
+      "id": "6fc13dee-859f-4fd6-9cc1-a3a9643c8558",
       "name": "delete — delete: removes one role and leaves the users other role in",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -362,8 +362,8 @@
         "authentication": "accessToken",
         "resource": "admin",
         "operation": "delete",
-        "accountId": "80",
-        "userId": "1364",
+        "accountId": "216",
+        "userId": "2236",
         "roleId": "={{ $('Config').first().json.accountRoleId }}"
       },
       "credentials": {
@@ -377,7 +377,7 @@
       "executeOnce": true
     },
     {
-      "id": "2992f1d8-56c0-4c4e-b768-ed778bef43f4",
+      "id": "7a174160-93cf-497d-9ccb-b0998238c7d3",
       "name": "delete — delete: without a role ID the Account Admin role is removed;",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -389,7 +389,7 @@
         "authentication": "accessToken",
         "resource": "admin",
         "operation": "delete",
-        "accountId": "80",
+        "accountId": "216",
         "userId": "=sis_user_id:n8nbat_AdminBat-{{ $execution.id }}-1_1"
       },
       "credentials": {
@@ -403,7 +403,7 @@
       "executeOnce": true
     },
     {
-      "id": "336aca5f-612b-4a32-9b0e-45111ce57d9c",
+      "id": "f995b0e5-0fd2-4790-8f30-b5d05cb8dc0a",
       "name": "getAll — delete: without a role ID the Account Admin role is removed;",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -415,10 +415,10 @@
         "authentication": "accessToken",
         "resource": "admin",
         "operation": "getAll",
-        "accountId": "80",
+        "accountId": "216",
         "options": {
           "include_deleted": true,
-          "user_id": "1364"
+          "user_id": "2236"
         },
         "pagination": {
           "returnAll": true
@@ -435,7 +435,7 @@
       "executeOnce": true
     },
     {
-      "id": "05bb4881-1a8c-4bbb-83b6-5ea74cf0f991",
+      "id": "910385a7-8875-4f15-beba-78d018b26f49",
       "name": "getAll — delete: without a role ID the Account Admin role is removed; (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -447,10 +447,10 @@
         "authentication": "accessToken",
         "resource": "admin",
         "operation": "getAll",
-        "accountId": "80",
+        "accountId": "216",
         "options": {
           "include_deleted": false,
-          "user_id": "1364"
+          "user_id": "2236"
         }
       },
       "credentials": {

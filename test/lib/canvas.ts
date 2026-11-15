@@ -51,8 +51,21 @@ export class CanvasClient {
 		return { status: res.status, data, headers: res.headers };
 	}
 
+	/**
+	 * A read that Canvas answers with a server error is asked once more. The local Canvas runs
+	 * in development mode, where a race inside Canvas (a record changed by another test file
+	 * while it is being listed) surfaces as a 500 that a moment later is gone. Only reads, and
+	 * only for the test's own set-up and read-back: what the node receives is never repeated here.
+	 */
+	private async read(path: string): Promise<{ status: number; data: unknown; headers: Headers }> {
+		const res = await this.request('GET', path);
+		if (res.status < 500) return res;
+		await new Promise((resolve) => setTimeout(resolve, 1000));
+		return this.request('GET', path);
+	}
+
 	private async expectOk<T>(method: string, path: string, body?: unknown): Promise<T> {
-		const res = await this.request(method, path, body);
+		const res = method === 'GET' ? await this.read(path) : await this.request(method, path, body);
 		if (res.status >= 400) {
 			throw new Error(`Canvas ${method} ${path} -> ${res.status}: ${JSON.stringify(res.data).slice(0, 400)}`);
 		}
@@ -77,7 +90,7 @@ export class CanvasClient {
 		const out: T[] = [];
 		let next: string | undefined = `${path}${path.includes('?') ? '&' : '?'}per_page=100`;
 		while (next) {
-			const res = await this.request('GET', next);
+			const res = await this.read(next);
 			if (res.status >= 400) {
 				throw new Error(`Canvas GET ${next} -> ${res.status}: ${JSON.stringify(res.data).slice(0, 400)}`);
 			}

@@ -2,7 +2,7 @@
   "name": "Canvas battery — announcement",
   "nodes": [
     {
-      "id": "5fe43fd6-6657-4c76-9c67-9af9d8cb25e4",
+      "id": "b54ce0bd-5f93-42a2-bea0-47357091a248",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "54d579f4-b13e-4f8b-9e95-7327b9756c92",
+      "id": "8bad8191-c575-4ee2-8d0e-021f678a4bb6",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "c488c9e1-97c1-4d43-bd27-7f7b0bff3d66",
+      "id": "32419350-0b00-4480-8651-be083ccf539c",
       "name": "create — create: every optional field of a course announcement reache",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -70,7 +70,7 @@
       "executeOnce": true
     },
     {
-      "id": "3bf5d72f-7ac0-4a62-a663-0d9a1c88c280",
+      "id": "2ced33df-26a8-434d-b190-3efdd24f8f94",
       "name": "create — create: title and message only; comments can be disabled fro",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -101,7 +101,7 @@
       "executeOnce": true
     },
     {
-      "id": "7c33890b-665d-4a90-8420-ab1bd744813d",
+      "id": "5738b701-de48-484a-a511-eeb621e5afa1",
       "name": "get — get: returns the announcement; includes add the sections",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -115,7 +115,7 @@
         "operation": "get",
         "contextType": "course",
         "courseId": "113",
-        "announcementId": " 394 "
+        "announcementId": " 657 "
       },
       "credentials": {
         "canvasApi": {
@@ -128,7 +128,7 @@
       "executeOnce": true
     },
     {
-      "id": "9858db4e-d9fd-40c0-ae4c-b226010d5a1b",
+      "id": "866203d7-0ddd-4d83-88aa-9c488c526638",
       "name": "update — update: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -170,7 +170,7 @@
       "executeOnce": true
     },
     {
-      "id": "3424fd32-ca6f-4938-a2b1-050d6525924e",
+      "id": "00f5db74-c232-42eb-85ec-c19374ccf6a0",
       "name": "update — update: every optional field reaches Canvas (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -201,7 +201,7 @@
       "executeOnce": true
     },
     {
-      "id": "a45dd469-0cf9-4f52-9067-601c1cc06b0c",
+      "id": "23221f9b-f688-49c6-b4fe-b97622c38996",
       "name": "update — update: Canvas reopens comments on every update that does no",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -231,7 +231,7 @@
       "executeOnce": true
     },
     {
-      "id": "21bea946-cbcc-49b2-a41e-21ed04c0bd6c",
+      "id": "6910b012-89a7-4ddf-b8e0-696f9e8a919e",
       "name": "update — update: Canvas reopens comments on every update that does no (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -261,7 +261,7 @@
       "executeOnce": true
     },
     {
-      "id": "cf492d51-cf22-4e76-90d5-0a78a476b1b5",
+      "id": "590d6143-c37b-45d5-9597-af00486891ac",
       "name": "update — update: Canvas reopens comments on every update that does no (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -292,7 +292,7 @@
       "executeOnce": true
     },
     {
-      "id": "60630080-0c73-4c7c-b5e6-d7b51d3752f8",
+      "id": "4624b380-1f45-4e20-aa55-f11b3917cad8",
       "name": "getAll — getAll: pages through more announcements than one page holds",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -320,7 +320,7 @@
       "executeOnce": true
     },
     {
-      "id": "e45350a0-4207-4ab8-aee1-5356e9948965",
+      "id": "bffaed37-4d57-442e-a63f-65648b408bd0",
       "name": "getAll — getAll: pages through more announcements than one page holds (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -345,7 +345,7 @@
       "executeOnce": true
     },
     {
-      "id": "f04149c7-e0ec-44b5-ab85-fdc568fbb0ed",
+      "id": "724eb9bb-89ab-4330-b6eb-287c1286127f",
       "name": "getAll — getAll: pages through more announcements than one page holds (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -374,7 +374,7 @@
       "executeOnce": true
     },
     {
-      "id": "56e31eea-34bd-4e53-92d8-fc470d83f35e",
+      "id": "10eaa3aa-b2a7-4975-abd7-4a7c08efce9f",
       "name": "getAll — getAll: several courses, date window, latest only, active on",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -402,7 +402,7 @@
       "executeOnce": true
     },
     {
-      "id": "27703047-4fef-4dc6-8846-b39aa7a6e0f5",
+      "id": "31c1ef60-a744-4291-9820-9ff1e3777a54",
       "name": "getAll — getAll: several courses, date window, latest only, active on (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -430,7 +430,7 @@
       "executeOnce": true
     },
     {
-      "id": "7d306c4d-3042-4a70-bb03-1d2923b13724",
+      "id": "5cee86e1-16cd-44ee-a19a-849cedb28b58",
       "name": "getAll — getAll: several courses, date window, latest only, active on (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -459,7 +459,7 @@
       "executeOnce": true
     },
     {
-      "id": "cd9c18e7-dec4-4e29-97c8-767399d4f62a",
+      "id": "3ac31e48-af23-498a-a59e-8600c1a7932b",
       "name": "getAll — getAll: several courses, date window, latest only, active on (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -495,7 +495,7 @@
       "executeOnce": true
     },
     {
-      "id": "5fbeefb6-67e4-4f6d-ac81-fa6a8782498c",
+      "id": "bf2ce284-87a1-417f-98b1-a7f02af594e3",
       "name": "getAll — getAll: several courses, date window, latest only, active on (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -528,7 +528,7 @@
       "executeOnce": true
     },
     {
-      "id": "f18eb426-9467-47d2-835b-8c62e574035b",
+      "id": "c9b6d3fb-209a-4715-9ca1-b3e8a80bfba6",
       "name": "getAll — getAll: a course that does not exist, a group code, a course",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

@@ -2,7 +2,7 @@
   "name": "Canvas battery — discussionTopic",
   "nodes": [
     {
-      "id": "afb66045-1bf2-4a63-ac0f-2764c87f813d",
+      "id": "b4b6cfb6-9291-4482-96f3-0568bda43f44",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "0e49b538-af6a-4884-b89f-58fd7eef5139",
+      "id": "ceaf3dea-9f28-4e03-b2de-9338ecc3daed",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "b01a8d4c-eeeb-417a-bf40-d1d5656d742f",
+      "id": "f562adf1-49d0-4d57-b2fb-03997e98832f",
       "name": "create — create: every optional field of an ungraded course topic rea",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -76,7 +76,7 @@
       "executeOnce": true
     },
     {
-      "id": "38f52852-4e8e-4d04-9976-4170936c98d9",
+      "id": "42fb38ed-810c-48c2-bf4a-62dfa5b4b2cd",
       "name": "create — create: a graded discussion gets an assignment",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -108,7 +108,7 @@
       "executeOnce": true
     },
     {
-      "id": "0ab7e262-840a-4357-9710-da21203e032c",
+      "id": "6ed7ce4d-bdae-4f80-9d91-b3b892bd0518",
       "name": "create — create: a group discussion gets a child topic per group of t",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -139,7 +139,7 @@
       "executeOnce": true
     },
     {
-      "id": "b06f01e8-051c-4ad6-838f-90cb939bf528",
+      "id": "233e5f86-db9e-4696-867a-b331ef491cf6",
       "name": "create — create: an announcement with comments disabled; a discussion",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -171,7 +171,7 @@
       "executeOnce": true
     },
     {
-      "id": "490fdaf6-e202-4056-a532-3695c8bb46d6",
+      "id": "cceb2705-3004-4cdb-aeed-aa2432e1195a",
       "name": "create — create: an announcement with comments disabled; a discussion (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -189,7 +189,7 @@
         "additionalFields": {
           "locked": true,
           "pinned": true,
-          "position_after": "356",
+          "position_after": "610",
           "published": true
         }
       },
@@ -204,7 +204,7 @@
       "executeOnce": true
     },
     {
-      "id": "e1c40195-c3ac-4737-8157-eb265c7f9900",
+      "id": "f3a21136-e514-4f13-a623-91408aa0d07a",
       "name": "get — get: returns the topic; includes add sections and dates; num",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -218,7 +218,7 @@
         "operation": "get",
         "contextType": "course",
         "courseId": "113",
-        "topicId": " 356 "
+        "topicId": " 610 "
       },
       "credentials": {
         "canvasApi": {
@@ -231,7 +231,7 @@
       "executeOnce": true
     },
     {
-      "id": "f7f3679c-eabd-46f5-94cd-39437df10521",
+      "id": "85e681ea-c7c3-44c3-9b08-d539cfc19979",
       "name": "update — update: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -279,7 +279,7 @@
       "executeOnce": true
     },
     {
-      "id": "bb70ae76-6916-4669-80c6-0c979aeec068",
+      "id": "b7e2b3ab-7a77-43ae-be03-1d6103b94807",
       "name": "update — update: closing and reopening for comments; turning into a g",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -311,7 +311,7 @@
       "executeOnce": true
     },
     {
-      "id": "4c1ab7c8-fdb8-447e-bc09-57cc7cdcbb2f",
+      "id": "5cc4eac5-ee02-4fa0-935c-61ee3ef3acb9",
       "name": "update — update: closing and reopening for comments; turning into a g (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -343,7 +343,7 @@
       "executeOnce": true
     },
     {
-      "id": "87cf8a0d-69c8-41d2-80d1-bf6e55abc45b",
+      "id": "1aa2f5b8-54c4-4930-bff6-229445bcdf86",
       "name": "update — update: closing and reopening for comments; turning into a g (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -375,13 +375,103 @@
       "executeOnce": true
     },
     {
-      "id": "a0bdedb3-3fc4-4dad-84f7-77ff8e483e91",
-      "name": "duplicate — duplicate: copies the topic as an unpublished draft",
+      "id": "c4374636-05ba-4f2c-9554-84dcbb43aa24",
+      "name": "update — update: Lock Comment of an announcement, Position After ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
         1500,
         220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "619",
+        "updateFields": {
+          "lock_comment": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "18fcf101-ae2f-44c3-840c-bb61216e9db1",
+      "name": "update — update: Lock Comment of an announcement, Position After  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "={{ $('update — update: Lock Comment of an announcement, Position After ').first().json.id }}",
+        "updateFields": {
+          "lock_comment": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3df470d7-b14d-42be-86fb-00e142e8b287",
+      "name": "update — update: Lock Comment of an announcement, Position After  (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "discussionTopic",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "113",
+        "topicId": "622",
+        "updateFields": {
+          "position_after": "620"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f1c38049-383f-47e8-8852-6a7ba566ae4b",
+      "name": "duplicate — duplicate: copies the topic as an unpublished draft",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -402,13 +492,13 @@
       "executeOnce": true
     },
     {
-      "id": "e2f38193-9749-47e9-8616-ab8dc9dea9c2",
+      "id": "d7d8ee46-66aa-4a6d-ae99-3eb085268c2b",
       "name": "reorderPinned — reorderPinned: pinned topics take the given order",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
-        220
+        980,
+        440
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -416,7 +506,7 @@
         "operation": "reorderPinned",
         "contextType": "course",
         "courseId": "113",
-        "order": "367 , 366 , 356"
+        "order": "625 , 624 , 610 , 438"
       },
       "credentials": {
         "canvasApi": {
@@ -429,12 +519,12 @@
       "executeOnce": true
     },
     {
-      "id": "8df084d1-cfb4-4cb0-b6e0-9e4669041392",
+      "id": "7df2c813-9264-4ce6-a3f6-e1be006c2ee2",
       "name": "getAll — getAll: pages through a course with more topics than one pag",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
+        1240,
         440
       ],
       "parameters": {
@@ -455,12 +545,12 @@
       "executeOnce": true
     },
     {
-      "id": "bba803e5-b94d-4a05-9b2a-1f4ebe877713",
+      "id": "e29b3eee-b7d8-44f7-ab41-a1849f6bc241",
       "name": "getAll — getAll: pages through a course with more topics than one pag (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
+        1500,
         440
       ],
       "parameters": {
@@ -484,12 +574,12 @@
       "executeOnce": true
     },
     {
-      "id": "31a1758e-5a61-4b35-838b-2a0c35b488d1",
+      "id": "3bb8cdc0-39e2-4c14-9db4-34a1cb198afb",
       "name": "getAll — getAll: pages through a course with more topics than one pag (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
+        1760,
         440
       ],
       "parameters": {
@@ -514,13 +604,13 @@
       "executeOnce": true
     },
     {
-      "id": "2393ef15-4fca-4471-aa70-eba25f771468",
+      "id": "f24ed996-1670-43c1-b702-b212b6447379",
       "name": "getAll — getAll: search, order, state filters, includes and announcem",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
-        440
+        460,
+        660
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -547,13 +637,13 @@
       "executeOnce": true
     },
     {
-      "id": "361e7a94-4f41-4e7a-8a1f-ccd2d717bace",
+      "id": "c8c4fe3c-2779-47b7-a8d1-f2660bbcc391",
       "name": "getAll — getAll: search, order, state filters, includes and announcem (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
-        440
+        720,
+        660
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -581,13 +671,13 @@
       "executeOnce": true
     },
     {
-      "id": "feaa3f35-9199-436c-be86-08b8c20ecc63",
+      "id": "13a05bc0-2c18-48a0-9301-619f3c79b2aa",
       "name": "getAll — getAll: search, order, state filters, includes and announcem (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
-        440
+        980,
+        660
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -616,12 +706,12 @@
       "executeOnce": true
     },
     {
-      "id": "396e3b14-18ae-4bc6-ac9d-7a9e95117669",
+      "id": "6050a754-a3be-4cc0-a1eb-deb08ea61ff9",
       "name": "getAll — getAll: search, order, state filters, includes and announcem (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
+        1240,
         660
       ],
       "parameters": {
@@ -651,12 +741,12 @@
       "executeOnce": true
     },
     {
-      "id": "df9d1078-8631-4036-a3d1-cfa8df2c8252",
+      "id": "695a20e2-5ca4-4a68-95a0-bacdf0e19957",
       "name": "getAll — getAll: search, order, state filters, includes and announcem (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
+        1500,
         660
       ],
       "parameters": {
@@ -685,12 +775,12 @@
       "executeOnce": true
     },
     {
-      "id": "6c867518-fcad-460f-b082-91f4ac9cc1fc",
+      "id": "037a7bba-b1df-49ba-9c32-f85d7c658de0",
       "name": "getAll — getAll: students do not get drafts; unread depends on the ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
+        1760,
         660
       ],
       "parameters": {
@@ -717,13 +807,13 @@
       "executeOnce": true
     },
     {
-      "id": "40ef5e2f-7ad0-4c10-9da9-feffbb65b26c",
+      "id": "c617e566-2810-41fe-a1c2-4c13a97a17a2",
       "name": "getAllReplies — getAllEntries / getAllReplies: top-level entries with their ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
-        660
+        460,
+        880
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -731,8 +821,8 @@
         "operation": "getAllReplies",
         "contextType": "course",
         "courseId": "113",
-        "topicId": "368",
-        "entryId": "1431"
+        "topicId": "626",
+        "entryId": "1463"
       },
       "credentials": {
         "canvasApi": {
@@ -745,13 +835,13 @@
       "executeOnce": true
     },
     {
-      "id": "bd802e69-e041-4fc3-a6ff-35020611c616",
+      "id": "076f16f6-fa56-48b3-bda1-627c2c2835ce",
       "name": "getEntriesById — getEntriesById: returns the listed entries and replies in ID",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
-        660
+        720,
+        880
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -759,8 +849,8 @@
         "operation": "getEntriesById",
         "contextType": "course",
         "courseId": "113",
-        "topicId": "368",
-        "entryIds": " 1433, 1431 "
+        "topicId": "626",
+        "entryIds": " 1464, 1463 "
       },
       "credentials": {
         "canvasApi": {
@@ -773,13 +863,13 @@
       "executeOnce": true
     },
     {
-      "id": "8ef8a8a0-5bbf-434c-a582-7d43a7fb5558",
+      "id": "8d63d606-e2d8-4b06-8f27-61e708ce1b63",
       "name": "getFullTopic — getFullTopic: the whole thread in one item",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
-        660
+        980,
+        880
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -787,7 +877,7 @@
         "operation": "getFullTopic",
         "contextType": "course",
         "courseId": "113",
-        "topicId": "368"
+        "topicId": "626"
       },
       "credentials": {
         "canvasApi": {
@@ -800,12 +890,12 @@
       "executeOnce": true
     },
     {
-      "id": "b318e288-4e61-4bbe-92d8-68f5ba9bcfdc",
+      "id": "015ccc06-50e3-4325-970d-9f35a618f13a",
       "name": "getAllEntries — getAllEntries / getAllReplies: page through more entries and",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
+        1240,
         880
       ],
       "parameters": {
@@ -827,12 +917,12 @@
       "executeOnce": true
     },
     {
-      "id": "00701112-e8da-45ea-a996-14e0793cdbaa",
+      "id": "6216b344-c261-47f7-9168-030ccd20e42a",
       "name": "getAllEntries — getAllEntries / getAllReplies: page through more entries and (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
+        1500,
         880
       ],
       "parameters": {
@@ -857,12 +947,12 @@
       "executeOnce": true
     },
     {
-      "id": "35fe3ea7-4b69-4b7b-8c9f-63abcb97323f",
+      "id": "67fcd21f-f211-4aa8-9a1c-5dac0ea5977a",
       "name": "getAllEntries — getAllEntries / getAllReplies: page through more entries and (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
+        1760,
         880
       ],
       "parameters": {
@@ -888,13 +978,13 @@
       "executeOnce": true
     },
     {
-      "id": "dcb129e1-d24c-4c93-b918-19d535fbfc5d",
+      "id": "fb315dec-800d-4987-8caf-c8a9f14ac613",
       "name": "getAllReplies — getAllEntries / getAllReplies: page through more entries and",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
-        880
+        460,
+        1100
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -919,13 +1009,13 @@
       "executeOnce": true
     },
     {
-      "id": "380d3e37-1ffc-4e1e-b488-43e6dbfd02f7",
+      "id": "f2d77ae9-570b-409f-99f2-c0b3b71f2fb1",
       "name": "getAllReplies — getAllEntries / getAllReplies: page through more entries and (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
-        880
+        720,
+        1100
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -951,13 +1041,13 @@
       "executeOnce": true
     },
     {
-      "id": "1b1ac014-249d-421d-860f-fe3b0241a60e",
+      "id": "a568d080-60aa-4dce-9949-086fe3dfc784",
       "name": "getEntriesById — getAllEntries / getAllReplies: page through more entries and",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
-        880
+        980,
+        1100
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -982,12 +1072,12 @@
       "executeOnce": true
     },
     {
-      "id": "781189f9-075d-4689-9c5e-9b23ace526c9",
+      "id": "d8d3851e-11f2-4067-b9f6-6d29f65ad512",
       "name": "duplicate — get, getAll, update, duplicate, reorderPinned work on the gr",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
+        1240,
         1100
       ],
       "parameters": {
@@ -996,7 +1086,7 @@
         "operation": "duplicate",
         "contextType": "group",
         "groupId": "55",
-        "topicId": "372"
+        "topicId": "630"
       },
       "credentials": {
         "canvasApi": {
@@ -1009,12 +1099,12 @@
       "executeOnce": true
     },
     {
-      "id": "fc1e847f-8754-46d4-9f5c-9418ea8f1651",
+      "id": "1d19a126-070a-4691-b4c9-98462803d581",
       "name": "reorderPinned — get, getAll, update, duplicate, reorderPinned work on the gr",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
+        1500,
         1100
       ],
       "parameters": {
@@ -1023,7 +1113,7 @@
         "operation": "reorderPinned",
         "contextType": "group",
         "groupId": "55",
-        "order": "374,373,372"
+        "order": "632,631,630"
       },
       "credentials": {
         "canvasApi": {
@@ -1036,12 +1126,12 @@
       "executeOnce": true
     },
     {
-      "id": "66256c7b-842e-4601-a374-21b5fc95d221",
+      "id": "83a776c5-a825-488a-ac2b-e5ba08cff48a",
       "name": "delete — delete: students may not delete a teachers topic; the owner",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
+        1760,
         1100
       ],
       "parameters": {
@@ -1186,6 +1276,39 @@
       ]
     },
     "update — update: closing and reopening for comments; turning into a g (3)": {
+      "main": [
+        [
+          {
+            "node": "update — update: Lock Comment of an announcement, Position After ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Lock Comment of an announcement, Position After ": {
+      "main": [
+        [
+          {
+            "node": "update — update: Lock Comment of an announcement, Position After  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Lock Comment of an announcement, Position After  (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: Lock Comment of an announcement, Position After  (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Lock Comment of an announcement, Position After  (3)": {
       "main": [
         [
           {

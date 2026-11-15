@@ -2,7 +2,7 @@
   "name": "Canvas battery — calendarEvent",
   "nodes": [
     {
-      "id": "7db127f9-863e-4e7a-8ccf-90218dad27d3",
+      "id": "cb8d282c-a6c4-4410-ab9e-3336bd00f629",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "7ce97a4e-0ff2-4fe6-9f81-3a22daa8f7d1",
+      "id": "5812b22a-22c7-4a3e-983a-bd1e49925b8e",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "ba48817b-321c-4217-9cc5-1642d04fdb59",
+      "id": "3325053c-011f-4b95-9e37-0483bdd56ff5",
       "name": "create — create: personal, group and account calendars",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -59,7 +59,7 @@
       "executeOnce": true
     },
     {
-      "id": "1af3f5c2-96cc-4bb8-a55d-832b71022cbd",
+      "id": "f0abae53-63d1-42ba-87f6-861d56c29084",
       "name": "getAll — getAll: User ID reads another users calendar",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -88,7 +88,7 @@
       "executeOnce": true
     },
     {
-      "id": "1e7ced7a-1e56-4691-8bac-63b2b90278b4",
+      "id": "eec2c89f-6689-43f7-98d6-a1423340d445",
       "name": "getAll — getAll: User ID reads another users calendar (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -116,7 +116,7 @@
       "executeOnce": true
     },
     {
-      "id": "d7272841-5291-46ce-9765-1255ea35a0cb",
+      "id": "610e3d72-8455-4502-acd4-42c77002e709",
       "name": "getAll — getAll: User ID reads another users calendar (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -146,7 +146,7 @@
       "executeOnce": true
     },
     {
-      "id": "188b4583-1a6f-45ea-af3c-c990b3b87242",
+      "id": "2e1581fc-3a97-4a00-a7da-1962439df91b",
       "name": "getTimetable — getTimetable: a course without a timetable returns an empty ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -158,7 +158,7 @@
         "authentication": "accessToken",
         "resource": "calendarEvent",
         "operation": "getTimetable",
-        "courseId": "389"
+        "courseId": "823"
       },
       "credentials": {
         "canvasApi": {
@@ -171,7 +171,7 @@
       "executeOnce": true
     },
     {
-      "id": "63aa6cc8-7147-4c8f-b9a7-2b79db742dc6",
+      "id": "fe1d0f8d-f59a-494d-8d6b-bcbecf667005",
       "name": "setTimetableEvents — setTimetableEvents: without a section the list is the timeta",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -183,7 +183,7 @@
         "authentication": "accessToken",
         "resource": "calendarEvent",
         "operation": "setTimetableEvents",
-        "courseId": "389",
+        "courseId": "823",
         "events": {
           "event": [
             {

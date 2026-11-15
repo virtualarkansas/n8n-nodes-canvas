@@ -2,7 +2,7 @@
   "name": "Canvas battery — group",
   "nodes": [
     {
-      "id": "f616c7bf-edc8-4e8b-b060-df28342f374f",
+      "id": "24d3c4ca-4f13-4c84-9404-d92495915a88",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "97ea3edc-20e8-44fa-91c4-f932d4968aea",
+      "id": "fa1696a3-a3ef-427b-b4af-0cdb6bca8676",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "fa2005f4-5876-4812-b17d-c1956f223ec0",
+      "id": "5c75de7c-0314-4fe5-87f0-db4cdea35a13",
       "name": "create — create: a course group with every optional field",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,7 +42,7 @@
         "resource": "group",
         "operation": "create",
         "name": "=Lab team \"A\" & <b>co</b> ünï 班 {{ $execution.id }}-3",
-        "groupCategoryId": " 69 ",
+        "groupCategoryId": " 188 ",
         "additionalFields": {
           "description": "Meets on Wednesdays — \"bring goggles\" 🥽",
           "is_public": true,
@@ -63,7 +63,7 @@
       "executeOnce": true
     },
     {
-      "id": "a0b21642-16f1-4efe-897e-e354cf3d2316",
+      "id": "75c97967-bc1e-4516-93e9-879cd3f3294e",
       "name": "create — create: without a category Canvas makes a community group, w",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -93,7 +93,7 @@
       "executeOnce": true
     },
     {
-      "id": "d03e287c-1c0f-4b47-9ccb-4001ce9dc96e",
+      "id": "cc302a47-db68-4f65-ac41-758d5f68b9dd",
       "name": "get — get: by ID, by SIS ID, with includes",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -118,7 +118,7 @@
       "executeOnce": true
     },
     {
-      "id": "fbd7dad8-f9a6-4484-9501-42f8430a4daf",
+      "id": "0f3b3ad7-edf1-4a76-8588-c807ef842e45",
       "name": "get — get: by ID, by SIS ID, with includes (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -149,7 +149,7 @@
       "executeOnce": true
     },
     {
-      "id": "a8871fcb-f974-4284-a6cb-a674a9bf1b72",
+      "id": "0fa1428c-da2b-441b-a69b-cd7707150c10",
       "name": "addMember — addMember: adds users one input item each; adding twice retu",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -175,7 +175,7 @@
       "executeOnce": true
     },
     {
-      "id": "a395aee1-6c22-4e4d-b5d3-dbfa0c00662c",
+      "id": "66d2f91b-e30e-426a-96d5-99b26cf79b4e",
       "name": "addMember — addMember: within one category a user is moved, not added a ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -187,7 +187,7 @@
         "authentication": "accessToken",
         "resource": "group",
         "operation": "addMember",
-        "groupId": "294",
+        "groupId": "675",
         "userId": "664"
       },
       "credentials": {
@@ -201,7 +201,7 @@
       "executeOnce": true
     },
     {
-      "id": "bd76a146-1e69-4b97-868d-16700a75e674",
+      "id": "e47b82ca-c881-4670-9e07-55477370e94e",
       "name": "addMember — addMember: within one category a user is moved, not added a  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -213,7 +213,7 @@
         "authentication": "accessToken",
         "resource": "group",
         "operation": "addMember",
-        "groupId": "295",
+        "groupId": "674",
         "userId": "={{ $('addMember — addMember: within one category a user is moved, not added a ').first().json.user_id }}"
       },
       "credentials": {
@@ -227,7 +227,7 @@
       "executeOnce": true
     },
     {
-      "id": "daf3e709-e34b-4153-9cc6-2ed2cbc55895",
+      "id": "29b96276-1a80-4f6d-969b-8a8c03cc1ed6",
       "name": "getMembership — getMembership: by user ID and by membership ID",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -254,7 +254,7 @@
       "executeOnce": true
     },
     {
-      "id": "b9ff8de7-eec8-4270-ba5f-39c135fcca50",
+      "id": "b8252e84-09c6-49ab-b7ca-3d4e08ebc526",
       "name": "getMembership — getMembership: by user ID and by membership ID (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -268,7 +268,7 @@
         "operation": "getMembership",
         "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
         "membershipBy": "membership",
-        "membershipId": "554"
+        "membershipId": "1216"
       },
       "credentials": {
         "canvasApi": {
@@ -281,7 +281,7 @@
       "executeOnce": true
     },
     {
-      "id": "703c1ea9-98e1-41e3-a919-b80b735eb417",
+      "id": "5124a9ca-a05d-43e7-87c9-115244a1f1b1",
       "name": "updateMembership — updateMembership: moderator rights on and off, by user and b",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -310,7 +310,7 @@
       "executeOnce": true
     },
     {
-      "id": "fb05f474-0fc2-43ac-9071-533993af8d0c",
+      "id": "061e787c-f525-4464-9e96-4c2250d3bbde",
       "name": "updateMembership — updateMembership: moderator rights on and off, by user and b (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -324,7 +324,7 @@
         "operation": "updateMembership",
         "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
         "membershipBy": "membership",
-        "membershipId": "554",
+        "membershipId": "1216",
         "updateFields": {
           "moderator": false
         }
@@ -340,7 +340,7 @@
       "executeOnce": true
     },
     {
-      "id": "4ed31967-5a2c-441b-9de6-2acc872f558b",
+      "id": "793040e2-08a8-4ae8-bd67-de2d2669b7ca",
       "name": "listMemberships — listMemberships: all memberships, and the state filter",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -365,7 +365,7 @@
       "executeOnce": true
     },
     {
-      "id": "4ac76265-57b3-4d8f-b491-7f1c16725281",
+      "id": "a28f8d4b-8de9-4672-9766-62aec81e668c",
       "name": "listMemberships — listMemberships: all memberships, and the state filter (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -395,7 +395,7 @@
       "executeOnce": true
     },
     {
-      "id": "de4d9d88-b33f-4042-b33f-21db3a99ccb7",
+      "id": "e1176a50-4053-4a6d-a9c6-424953c5a4d1",
       "name": "listMemberships — listMemberships: all memberships, and the state filter (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -426,7 +426,7 @@
       "executeOnce": true
     },
     {
-      "id": "8679d5e4-f1d4-4dfe-987e-c861e3498b0c",
+      "id": "30457a72-2209-4ff8-a3a8-6ef247f53655",
       "name": "listMemberships — updateMembership Accept + listMemberships states: a join r",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -438,7 +438,7 @@
         "authentication": "accessToken",
         "resource": "group",
         "operation": "listMemberships",
-        "groupId": "296",
+        "groupId": "676",
         "options": {
           "filter_states": [
             "requested"
@@ -456,7 +456,7 @@
       "executeOnce": true
     },
     {
-      "id": "829d4167-fd5d-46e3-8e0d-4e279ded1844",
+      "id": "bf48f537-c9ad-45b6-b17d-d440a6f716c3",
       "name": "listMemberships — updateMembership Accept + listMemberships states: a join r (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -486,7 +486,7 @@
       "executeOnce": true
     },
     {
-      "id": "877d920e-c8b9-48f4-9a68-1808b6477ade",
+      "id": "53a7c242-9d12-4df3-be6c-ea719d0bc65a",
       "name": "updateMembership — updateMembership Accept + listMemberships states: a join r",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -516,7 +516,7 @@
       "executeOnce": true
     },
     {
-      "id": "a331b394-50b2-40e4-9382-2de51ee38f65",
+      "id": "5f078659-5ad4-40bb-bccf-4211efc69ae0",
       "name": "updateMembership — updateMembership Accept + listMemberships states: a join r (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -545,7 +545,7 @@
       "executeOnce": true
     },
     {
-      "id": "028f1e57-01fe-4713-941b-dd85a0004ee8",
+      "id": "5618482d-56be-4900-9fc5-7dc51988bb52",
       "name": "removeMember — removeMember: by user ID and by membership ID",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -571,7 +571,7 @@
       "executeOnce": true
     },
     {
-      "id": "c8c15782-1035-467e-8559-bd4aea75a995",
+      "id": "2ea26c79-6b1d-45c5-873e-c72aa14dbf9a",
       "name": "removeMember — removeMember: by user ID and by membership ID (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -585,7 +585,7 @@
         "operation": "removeMember",
         "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
         "membershipBy": "membership",
-        "membershipId": "551"
+        "membershipId": "1215"
       },
       "credentials": {
         "canvasApi": {
@@ -598,7 +598,7 @@
       "executeOnce": true
     },
     {
-      "id": "99f2cc30-171d-4969-b7d0-45fa2a6f240a",
+      "id": "b28199d4-b358-4a71-a637-9cf3eb1d10db",
       "name": "removeMembers — removeMembers: several users in one request; unknown IDs are",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -624,7 +624,7 @@
       "executeOnce": true
     },
     {
-      "id": "a33726c0-753a-4c68-a4de-b08c0cd065a8",
+      "id": "083a3630-975a-4d96-af84-d01c7752c4df",
       "name": "update — update: every optional field",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -638,7 +638,7 @@
         "operation": "update",
         "groupId": "={{ $('get — get: by ID, by SIS ID, with includes (2)').first().json.id }}",
         "updateFields": {
-          "avatar_id": "2075",
+          "avatar_id": "3355",
           "description": "Now meets on Fridays",
           "is_public": true,
           "join_level": "invitation_only",
@@ -660,7 +660,7 @@
       "executeOnce": true
     },
     {
-      "id": "0c0ffbee-63e5-438c-a4a9-90e2c306bcc5",
+      "id": "bf03540b-828e-4dba-b909-b9e4337726c3",
       "name": "update — update: with Override SIS Stickiness off, a name that was ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -672,7 +672,7 @@
         "authentication": "accessToken",
         "resource": "group",
         "operation": "update",
-        "groupId": "297",
+        "groupId": "678",
         "updateFields": {
           "name": "Must not be applied",
           "description": "After",
@@ -690,7 +690,7 @@
       "executeOnce": true
     },
     {
-      "id": "be06b53f-2490-4c98-9511-f671b37cf633",
+      "id": "896c8512-909d-4930-955c-5d94aa9bdb9b",
       "name": "update — update: with Override SIS Stickiness off, a name that was  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -719,7 +719,7 @@
       "executeOnce": true
     },
     {
-      "id": "da106069-8ed0-4849-903e-e37c7d8c73eb",
+      "id": "4170a698-1b1a-4471-84f5-0aeea056313b",
       "name": "update — update: with Override SIS Stickiness off, a name that was  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -747,7 +747,7 @@
       "executeOnce": true
     },
     {
-      "id": "a113ab36-d4cc-4317-946d-e2903f6704dd",
+      "id": "741ab395-2fff-4463-9173-d1912cac4c65",
       "name": "update — update: Members replaces the membership of the group",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -775,7 +775,7 @@
       "executeOnce": true
     },
     {
-      "id": "54f869a4-c662-4b27-9b12-7ef1a0540517",
+      "id": "e9db1110-5dbf-4f0f-85e1-a47a259950d2",
       "name": "update — update: Members replaces the membership of the group (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -804,7 +804,7 @@
       "executeOnce": true
     },
     {
-      "id": "6ae3d996-7187-432e-b019-3c25bbb92964",
+      "id": "f518c720-790b-4d6f-a14b-a0ee3b3deafb",
       "name": "listUsers — listUsers: a group with more members than a page",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -816,7 +816,7 @@
         "authentication": "accessToken",
         "resource": "group",
         "operation": "listUsers",
-        "groupId": "298",
+        "groupId": "679",
         "pagination": {
           "returnAll": true
         }
@@ -832,7 +832,7 @@
       "executeOnce": true
     },
     {
-      "id": "5c2b7265-5ca5-4a22-af4b-8b6285c2565f",
+      "id": "345071e0-d60c-4a1c-823d-e509ac394e3b",
       "name": "listUsers — listUsers: a group with more members than a page (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -844,7 +844,7 @@
         "authentication": "accessToken",
         "resource": "group",
         "operation": "listUsers",
-        "groupId": "298"
+        "groupId": "679"
       },
       "credentials": {
         "canvasApi": {
@@ -857,7 +857,7 @@
       "executeOnce": true
     },
     {
-      "id": "3140cecb-3f54-49e7-bb08-4816c02a3d15",
+      "id": "f75968ef-8dcc-4529-b090-5b96f6fa0e5c",
       "name": "listUsers — listUsers: a group with more members than a page (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -869,7 +869,7 @@
         "authentication": "accessToken",
         "resource": "group",
         "operation": "listUsers",
-        "groupId": "298",
+        "groupId": "679",
         "pagination": {
           "perPage": 7,
           "maxPages": 3
@@ -886,7 +886,7 @@
       "executeOnce": true
     },
     {
-      "id": "6c4b71fb-7619-4fe8-995a-db08a3726201",
+      "id": "5e8fb6a6-ebaf-4672-a0d5-e6df30aa82ea",
       "name": "listUsers — listUsers: a group with more members than a page (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -898,7 +898,7 @@
         "authentication": "accessToken",
         "resource": "group",
         "operation": "listUsers",
-        "groupId": "298",
+        "groupId": "679",
         "options": {
           "search_term": "O'Brien",
           "include": [
@@ -920,7 +920,7 @@
       "executeOnce": true
     },
     {
-      "id": "64a8c3b0-3583-49bb-a257-a5f32818ad90",
+      "id": "c3ead749-dc37-43f9-b8a2-ab1663e65a3a",
       "name": "listUsers — listUsers: a group with more members than a page (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -932,7 +932,7 @@
         "authentication": "accessToken",
         "resource": "group",
         "operation": "listUsers",
-        "groupId": "298",
+        "groupId": "679",
         "options": {
           "search_term": "zzzznobody"
         }
@@ -948,7 +948,7 @@
       "executeOnce": true
     },
     {
-      "id": "3401b42b-0938-4c7b-8a9d-c64c9e2d985b",
+      "id": "bd6e1d6f-0a60-4965-ae23-d0eef0893a3f",
       "name": "listUsers — listUsers: Exclude Inactive leaves out members whose enrol",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -960,7 +960,7 @@
         "authentication": "accessToken",
         "resource": "group",
         "operation": "listUsers",
-        "groupId": "299",
+        "groupId": "680",
         "options": {
           "exclude_inactive": false
         }
@@ -976,7 +976,7 @@
       "executeOnce": true
     },
     {
-      "id": "e0a5d3f1-e32f-41a2-aa6a-66c5634fb949",
+      "id": "f0465aa8-4f7b-4283-abb5-36096a61d96f",
       "name": "listUsers — listUsers: Exclude Inactive leaves out members whose enrol (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -988,7 +988,7 @@
         "authentication": "accessToken",
         "resource": "group",
         "operation": "listUsers",
-        "groupId": "299",
+        "groupId": "680",
         "options": {
           "exclude_inactive": true
         }
@@ -1004,7 +1004,7 @@
       "executeOnce": true
     },
     {
-      "id": "ae2a7aa0-773d-40ab-89a4-641bbfea48f6",
+      "id": "c350c028-96e2-4712-93bb-2a2a5e5b8fd7",
       "name": "getAll — getAll (course): more groups than a page",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1017,7 +1017,7 @@
         "resource": "group",
         "operation": "getAll",
         "context": "course",
-        "courseId": "309",
+        "courseId": "758",
         "pagination": {
           "returnAll": true
         }
@@ -1033,7 +1033,7 @@
       "executeOnce": true
     },
     {
-      "id": "4422f829-5bf4-43fd-8c6c-c6b925edea6b",
+      "id": "ebc8f5dc-1518-453d-9942-f3f2fe0e2078",
       "name": "getAll — getAll (course): more groups than a page (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1059,7 +1059,7 @@
       "executeOnce": true
     },
     {
-      "id": "f33f26b5-07f2-476a-a440-906c0cf605a4",
+      "id": "4d8479dd-fee7-430a-b87a-92ab97aa41f6",
       "name": "getAll — getAll (course): more groups than a page (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1089,7 +1089,7 @@
       "executeOnce": true
     },
     {
-      "id": "83c3e5b8-92e8-4f09-8a82-fd8dba89be20",
+      "id": "20c93b0a-1afa-4d92-90d2-7013f8a23508",
       "name": "getAll — getAll (course): Include and Collaboration State",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1124,7 +1124,7 @@
       "executeOnce": true
     },
     {
-      "id": "d23f9359-c104-480a-8260-b34eb91efbfb",
+      "id": "286cb15e-2d26-4589-af8b-59db6571ae77",
       "name": "getAll — getAll (course): Include and Collaboration State (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1154,7 +1154,7 @@
       "executeOnce": true
     },
     {
-      "id": "7b83b30b-0f00-4c28-9842-a0abe1911109",
+      "id": "41968f7b-2b14-4d3e-be5d-96b630904c3e",
       "name": "getAll — getAll (course): Include and Collaboration State (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1186,7 +1186,7 @@
       "executeOnce": true
     },
     {
-      "id": "a3c99e0f-0001-45fb-a92e-72630bf01bfa",
+      "id": "43c3a2b0-6b8e-493b-960e-400c81c0282d",
       "name": "getAll — getAll (course): Include and Collaboration State (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1218,7 +1218,7 @@
       "executeOnce": true
     },
     {
-      "id": "ad168024-d537-44d0-89aa-65c4916acc66",
+      "id": "cf721d9e-e58d-4dbe-8275-904d467b7e68",
       "name": "getAll — getAll (course): Include and Collaboration State (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1250,7 +1250,7 @@
       "executeOnce": true
     },
     {
-      "id": "58f1aafc-63af-4414-b57f-131c8232f908",
+      "id": "94591320-f089-408b-9287-c91d53daa78b",
       "name": "getAll — getAll (account): the groups of an account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1279,7 +1279,7 @@
       "executeOnce": true
     },
     {
-      "id": "8f6a2240-ae10-4c53-9e85-fb1918982c2b",
+      "id": "0298bd4a-2dc8-48bf-9ee2-24429a4e6b58",
       "name": "delete — delete: removes the group and its memberships",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1304,7 +1304,7 @@
       "executeOnce": true
     },
     {
-      "id": "3c5660bf-9903-417b-8a49-00d148e567b1",
+      "id": "b42cafdd-7ed1-48c8-86d0-4e597ca4a2b5",
       "name": "getActivityStream — getActivityStream: the stream belongs to the caller, so an a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1316,7 +1316,7 @@
         "authentication": "accessToken",
         "resource": "group",
         "operation": "getActivityStream",
-        "groupId": "392",
+        "groupId": "776",
         "pagination": {
           "returnAll": true
         }
@@ -1332,7 +1332,7 @@
       "executeOnce": true
     },
     {
-      "id": "da768ea5-40df-4f08-9cc8-2db8ee26c760",
+      "id": "9aaab2bc-7d80-4de2-9669-df8e41a85611",
       "name": "getActivityStreamSummary — getActivityStreamSummary: one item per kind of activity, wit",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1344,7 +1344,7 @@
         "authentication": "accessToken",
         "resource": "group",
         "operation": "getActivityStreamSummary",
-        "groupId": "392"
+        "groupId": "776"
       },
       "credentials": {
         "canvasApi": {

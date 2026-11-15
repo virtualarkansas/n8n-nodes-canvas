@@ -8,7 +8,7 @@ the workflows create, change and delete records).
 Each step continues on error, so one failing step does not stop the tour. Steps can fail where they
 refer to a record the battery prepared outside the workflow.
 
-Last verification (`npx tsx test/tools/verify-workflows.ts`): 94 workflows imported and run on n8n; 1735 of 1735 steps executed, 1119 without an error.
+Last verification (`npx tsx test/tools/verify-workflows.ts`): 94 workflows imported and run on n8n; 1803 of 1803 steps executed, 1147 without an error.
 
 | Workflow | Run | Steps | Executed | Succeeded |
 |---|---|---:|---:|---:|
@@ -22,37 +22,37 @@ Last verification (`npx tsx test/tools/verify-workflows.ts`): 94 workflows impor
 | announcementExternalFeed | success | 6 | 6 | 6 |
 | apiRequest | success | 10 | 10 | 10 |
 | apiTokenScope | success | 4 | 4 | 4 |
-| assignment | success | 50 | 50 | 42 |
+| assignment | success | 58 | 58 | 34 |
 | assignmentExtension | success | 3 | 3 | 0 |
 | assignmentGroup | success | 17 | 17 | 13 |
 | authenticationProvider | success | 34 | 34 | 31 |
-| authenticationsLog | success | 12 | 12 | 12 |
+| authenticationsLog | success | 15 | 15 | 15 |
 | blackoutDate | success | 5 | 5 | 5 |
 | blueprintCourse | success | 28 | 28 | 19 |
 | brandConfig | success | 4 | 4 | 0 |
 | calendarEvent | success | 6 | 6 | 4 |
 | commMessage | success | 9 | 9 | 9 |
 | communicationChannel | success | 7 | 7 | 3 |
-| contentExport | success | 28 | 28 | 5 |
-| contentMigration | success | 28 | 28 | 6 |
+| contentExport | success | 30 | 30 | 6 |
+| contentMigration | success | 40 | 40 | 10 |
 | contentShare | success | 2 | 2 | 2 |
 | conversation | success | 6 | 6 | 6 |
-| course | success | 115 | 115 | 99 |
-| courseAuditLog | success | 3 | 3 | 3 |
-| coursePace | success | 27 | 27 | 2 |
+| course | success | 124 | 124 | 104 |
+| courseAuditLog | success | 8 | 8 | 8 |
+| coursePace | success | 29 | 29 | 2 |
 | courseReport | success | 3 | 3 | 0 |
 | cspSetting | success | 10 | 10 | 10 |
 | customGradebookColumn | success | 17 | 17 | 0 |
 | developerKey | success | 15 | 15 | 13 |
 | developerKeyAccountBinding | success | 3 | 3 | 3 |
-| discussionTopic | success | 33 | 33 | 19 |
+| discussionTopic | success | 36 | 36 | 19 |
 | enrollment | success | 33 | 33 | 11 |
 | enrollmentTerm | success | 14 | 14 | 14 |
 | errorReport | success | 1 | 1 | 1 |
 | externalTool | success | 36 | 36 | 5 |
-| file | success | 59 | 59 | 49 |
+| file | success | 60 | 60 | 49 |
 | folder | success | 41 | 41 | 33 |
-| gradeChangeLog | success | 7 | 7 | 7 |
+| gradeChangeLog | success | 14 | 14 | 14 |
 | gradebook | success | 6 | 6 | 0 |
 | gradebookHistory | success | 8 | 8 | 8 |
 | gradingPeriod | success | 10 | 10 | 3 |
@@ -74,29 +74,29 @@ Last verification (`npx tsx test/tools/verify-workflows.ts`): 94 workflows impor
 | moduleItem | success | 33 | 33 | 13 |
 | notificationPreference | success | 8 | 8 | 8 |
 | outcome | success | 6 | 6 | 2 |
-| outcomeGroup | success | 32 | 32 | 5 |
+| outcomeGroup | success | 39 | 39 | 6 |
 | outcomeImport | success | 7 | 7 | 0 |
 | outcomeResult | success | 30 | 30 | 0 |
-| page | success | 37 | 37 | 33 |
+| page | success | 38 | 38 | 34 |
 | peerReview | success | 14 | 14 | 12 |
 | proficiencyRating | success | 3 | 3 | 0 |
-| progress | success | 20 | 20 | 20 |
+| progress | success | 24 | 24 | 24 |
 | questionBank | success | 11 | 11 | 11 |
 | quiz | success | 25 | 25 | 25 |
 | quizAssignmentOverride | success | 4 | 4 | 4 |
 | quizExtension | success | 5 | 5 | 5 |
 | quizIpFilter | success | 1 | 1 | 1 |
-| quizQuestion | success | 23 | 23 | 19 |
+| quizQuestion | success | 23 | 23 | 23 |
 | quizQuestionGroup | success | 8 | 8 | 8 |
 | quizReport | success | 6 | 6 | 6 |
 | quizStatistics | success | 4 | 4 | 4 |
 | quizSubmission | success | 12 | 12 | 12 |
 | quizSubmissionEvent | success | 1 | 1 | 1 |
 | role | success | 17 | 17 | 1 |
-| rubric | success | 34 | 34 | 2 |
+| rubric | success | 38 | 38 | 2 |
 | search | success | 18 | 18 | 12 |
 | section | success | 24 | 24 | 7 |
-| sisImport | success | 49 | 49 | 47 |
+| sisImport | success | 49 | 49 | 48 |
 | sisImportError | success | 9 | 9 | 9 |
 | sisIntegration | success | 9 | 9 | 0 |
 | submission | success | 67 | 67 | 67 |

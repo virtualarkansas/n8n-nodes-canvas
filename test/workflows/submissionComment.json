@@ -2,7 +2,7 @@
   "name": "Canvas battery — submissionComment",
   "nodes": [
     {
-      "id": "15a142ef-2577-4573-8899-c2a9c8383c6f",
+      "id": "456e1d53-a767-4c2b-9e9b-eb482cfa52cc",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "1ec6605e-1597-4d5e-9bf8-f842419f7497",
+      "id": "26ed8e1f-fbb3-40f3-a194-4e2db468dd08",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "41740fb7-6874-4ed4-a69e-20797a6ddd95",
+      "id": "ce2fe2d7-6143-465e-ba7a-a177290c7030",
       "name": "create — create: a plain comment returns the submission with its comm",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -57,7 +57,7 @@
       "executeOnce": true
     },
     {
-      "id": "02142bbc-d2c1-475f-ae03-d79a412354aa",
+      "id": "60fd5519-02a4-420f-87e1-0281d2136646",
       "name": "create — create: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -75,9 +75,9 @@
         "comment": "=Kommentar {{ $execution.id }}-1 with everything",
         "additionalFields": {
           "attempt": 1,
-          "file_ids": " 2131 ",
+          "file_ids": " 3365 ",
           "group_comment": false,
-          "media_comment_id": "m-cmwhxk7lknp73",
+          "media_comment_id": "m-cmwi2ii48dip3",
           "media_comment_type": "audio"
         }
       },
@@ -92,7 +92,7 @@
       "executeOnce": true
     },
     {
-      "id": "6a9828a6-daa8-42c2-a7d7-4e1e7faa7365",
+      "id": "26a208f2-c623-4f47-aa14-0e81b09ebba7",
       "name": "create — create: a group comment reaches every member of the group",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -123,7 +123,7 @@
       "executeOnce": true
     },
     {
-      "id": "88906696-9e80-4875-9a91-076e9569363e",
+      "id": "9b618288-e6a9-4846-aa97-8ce5e988dd7f",
       "name": "create — create: a group comment reaches every member of the group (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -151,7 +151,7 @@
       "executeOnce": true
     },
     {
-      "id": "6b2fa171-94ca-4a51-bdf6-1860eb055b9c",
+      "id": "e86dcf3c-3baa-448d-96df-834f4c83b9dd",
       "name": "create — uploadFile + create: files uploaded for a comment are attach",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -168,7 +168,7 @@
         "userId": "={{ $('create — create: every optional field reaches Canvas').first().json.user_id }}",
         "comment": "=Kommentar {{ $execution.id }}-1 with uploaded files",
         "additionalFields": {
-          "file_ids": "2132, 2133"
+          "file_ids": "3366, 3367"
         }
       },
       "credentials": {
@@ -182,7 +182,7 @@
       "executeOnce": true
     },
     {
-      "id": "d147e613-3b17-4733-b54a-9a81cf0e8816",
+      "id": "fd313a86-7a8e-4024-8194-ba99b2af77e7",
       "name": "uploadFile — uploadFile from URL: Canvas fetches the file for the comment",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -198,7 +198,7 @@
         "assignmentId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.assignment_id }}",
         "userId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.user_id }}",
         "uploadSource": "url",
-        "fileUrl": "=http://192.0.2.2:37793/rubric%20url%20{{ $execution.id }}-6.bin?download=1",
+        "fileUrl": "=http://192.0.2.2:46441/rubric%20url%20{{ $execution.id }}-6.bin?download=1",
         "options": {
           "content_type": "application/zip",
           "name": "=Bewertung ünï url {{ $execution.id }}-6.zip"
@@ -215,7 +215,7 @@
       "executeOnce": true
     },
     {
-      "id": "32d126f6-1a47-44da-8730-6b5cd408d38a",
+      "id": "34880f22-da73-4863-b543-bea3dd65864b",
       "name": "uploadFile — uploadFile from URL: Canvas fetches the file for the comment (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -231,7 +231,7 @@
         "assignmentId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.assignment_id }}",
         "userId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.user_id }}",
         "uploadSource": "url",
-        "fileUrl": "http://192.0.2.2:37793/background.txt",
+        "fileUrl": "http://192.0.2.2:46441/background.txt",
         "waitForCompletion": false
       },
       "credentials": {
@@ -245,7 +245,7 @@
       "executeOnce": true
     },
     {
-      "id": "9c69027a-a5eb-434b-9df1-ccf3e987ecac",
+      "id": "b2acd449-2fd6-4d20-99c7-af91e638d224",
       "name": "getAll — getAll: returns every comment of a submission as its own ite",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -272,7 +272,7 @@
       "executeOnce": true
     },
     {
-      "id": "573c1329-b59d-4b73-ad93-89a90500dceb",
+      "id": "ed6ebbd0-860f-44bd-996a-f63a06f0f032",
       "name": "getAll — getAll: returns every comment of a submission as its own ite (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -299,7 +299,7 @@
       "executeOnce": true
     },
     {
-      "id": "01974ab4-a21a-493c-bbf9-3f173824953a",
+      "id": "89ef8925-5cfc-4057-b02a-a01abf966dcf",
       "name": "delete — delete: removes comments, reporting the ones that are alread",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -314,7 +314,7 @@
         "courseId": "111",
         "assignmentId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.assignment_id }}",
         "userId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.user_id }}",
-        "commentId": "788"
+        "commentId": "921"
       },
       "credentials": {
         "canvasApi": {

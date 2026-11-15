@@ -2,7 +2,7 @@
   "name": "Canvas battery — accessToken",
   "nodes": [
     {
-      "id": "c781dff0-e05d-48b4-a1fa-2bb1be38497d",
+      "id": "427f8c30-f19b-4163-ae9c-cf6c38c1c2d1",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "49c389ad-3c6f-43c7-b33d-655266f8605f",
+      "id": "697f60de-5e39-4bfa-bcd7-25fd1471d459",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "15de058f-5569-41fb-a366-6b39737b30c0",
+      "id": "d90582d1-da10-4bb3-a660-72cbe0b9cd7a",
       "name": "create — create: every optional field reaches Canvas; the token value",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,7 +41,7 @@
         "authentication": "accessToken",
         "resource": "accessToken",
         "operation": "create",
-        "userId": "1395",
+        "userId": "2283",
         "purpose": "=Battery token Ünïcødé 令牌 \"quoted\" & <b>tags</b> {{ $execution.id }}-1",
         "additionalFields": {
           "expires_at": "2031-06-30T23:59:00Z",
@@ -59,7 +59,7 @@
       "executeOnce": true
     },
     {
-      "id": "7c380f26-be72-46a9-8882-6355e25264e0",
+      "id": "0a017115-12e0-43c7-a331-485f11605472",
       "name": "create — create: without optional fields the token never expires and ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -71,7 +71,7 @@
         "authentication": "accessToken",
         "resource": "accessToken",
         "operation": "create",
-        "userId": "1396",
+        "userId": "2284",
         "purpose": "Minimal"
       },
       "credentials": {
@@ -85,7 +85,7 @@
       "executeOnce": true
     },
     {
-      "id": "4d23b546-6571-479b-ac49-ee45a38ef11c",
+      "id": "3642e4fa-11d5-4b01-8d96-9a8e084bed9f",
       "name": "get — get: by ID and by token hint; never returns the full token v",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -111,7 +111,7 @@
       "executeOnce": true
     },
     {
-      "id": "871b7762-e274-4406-94ad-e270ad7673b7",
+      "id": "88108760-2cb4-4554-889f-9d4e01f32621",
       "name": "get — get: by ID and by token hint; never returns the full token v (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -124,7 +124,7 @@
         "resource": "accessToken",
         "operation": "get",
         "userId": "={{ $('get — get: by ID and by token hint; never returns the full token v').first().json.user_id }}",
-        "tokenId": "JkCrQ"
+        "tokenId": "2k9GE"
       },
       "credentials": {
         "canvasApi": {
@@ -137,7 +137,7 @@
       "executeOnce": true
     },
     {
-      "id": "b54fb4d0-09b7-4ca5-9df7-ee1281603203",
+      "id": "c88e8437-8097-414a-8970-bc8af7f76ae3",
       "name": "getAll — getAll: lists the users manually generated tokens; Return A",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -163,7 +163,7 @@
       "executeOnce": true
     },
     {
-      "id": "47db1cd1-415c-40ba-b9bf-7812dfcce472",
+      "id": "4c78bcbf-6d6c-49d7-8ef6-7d0078ceb699",
       "name": "getAll — getAll: lists the users manually generated tokens; Return A (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -190,7 +190,7 @@
       "executeOnce": true
     },
     {
-      "id": "da15c4ac-828c-4903-a075-3c1b859b295e",
+      "id": "451befb5-912a-480d-9bcb-031338bc5cfc",
       "name": "getAll — getAll: lists the users manually generated tokens; Return A (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -215,7 +215,7 @@
       "executeOnce": true
     },
     {
-      "id": "2891eb16-a22f-47d2-8509-4ce52db9a1cd",
+      "id": "2b17199f-2a10-49dd-b7c6-7a5f06d4b617",
       "name": "getAll — getAll: lists the users manually generated tokens; Return A (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -245,7 +245,7 @@
       "executeOnce": true
     },
     {
-      "id": "99997699-ff2a-48e0-8a6b-b7d4199e90f2",
+      "id": "18eb6836-463b-42f5-9f4d-87fe27bcda9b",
       "name": "getAll — getAll: a user without tokens yields no items; a lesser pers",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -257,7 +257,7 @@
         "authentication": "accessToken",
         "resource": "accessToken",
         "operation": "getAll",
-        "userId": "1398"
+        "userId": "2285"
       },
       "credentials": {
         "canvasApi": {
@@ -270,7 +270,7 @@
       "executeOnce": true
     },
     {
-      "id": "ce4cdd4a-0ab0-4569-8b20-8c8ac0a44b6e",
+      "id": "e6fba380-60b1-4892-aad3-55ddbbd6d9b4",
       "name": "update — update: purpose, expiry and scopes reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -301,7 +301,7 @@
       "executeOnce": true
     },
     {
-      "id": "87e812c2-aa0c-43b3-b485-b868c942461f",
+      "id": "24a89522-9c00-4ea8-9254-04e0ff22071e",
       "name": "update — update: Regenerate issues a new token value, addressed by th",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -314,7 +314,7 @@
         "resource": "accessToken",
         "operation": "update",
         "userId": "={{ $('update — update: purpose, expiry and scopes reach Canvas').first().json.user_id }}",
-        "tokenId": "JkCrQ",
+        "tokenId": "2k9GE",
         "updateFields": {
           "regenerate": true
         }
@@ -330,7 +330,7 @@
       "executeOnce": true
     },
     {
-      "id": "7a627106-11ea-437e-a98f-c4cb602ed3d4",
+      "id": "8ae6487f-6feb-4bd7-b2d4-64317eed189b",
       "name": "update — update: Regenerate issues a new token value, addressed by th (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -360,7 +360,7 @@
       "executeOnce": true
     },
     {
-      "id": "b721ea48-ecd2-4277-af88-bee820160ee3",
+      "id": "22857be8-8303-4ba3-b694-81bba3c16e37",
       "name": "update — update: an expired token can only be regenerated together wi",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -389,7 +389,7 @@
       "executeOnce": true
     },
     {
-      "id": "0fe24f36-0da6-4d7a-91b6-1009c449f090",
+      "id": "3579aaf5-8a74-4943-9761-53389462dc31",
       "name": "update — update: an expired token can only be regenerated together wi (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -419,7 +419,7 @@
       "executeOnce": true
     },
     {
-      "id": "c82f3dc3-da22-4436-8e46-6a930dd91237",
+      "id": "e031fc9b-9046-4bab-ab19-7db6a5c1b75b",
       "name": "delete — delete: a deleted token cannot be deleted again, and a lesse",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

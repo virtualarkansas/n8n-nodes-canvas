@@ -9,7 +9,7 @@ Everything here can still be called through the **Custom API Request** resource.
 | Documented by Instructure | 775 | 680 | 95 |
 | Not documented | 205 | 14 | 191 |
 
-20 documented endpoints are reached for some of their contexts only (listed at the end).
+22 documented endpoints are reached for some of their contexts only (listed at the end).
 
 ## Documented endpoints without an operation
 
@@ -615,6 +615,7 @@ Used by the Canvas web interface or internal tooling. They accept an API token b
 
 - **assignments_api#index**: not reached: `GET /courses/:course_id/assignment_groups/:assignment_group_id/assignments`
 - **calendar_events_api#reserve**: not reached: `POST /calendar_events/:id/reservations/:participant_id`
+- **content_migrations#content_list**: not reached: `GET /groups/:group_id/content_migrations/:id/selective_data`, `GET /users/:user_id/content_migrations/:id/selective_data`
 - **courses#show**: not reached: `GET /accounts/:account_id/courses/:id`
 - **courses#users**: not reached: `GET /courses/:course_id/search_users`
 - **enrollments_api#create**: not reached: `POST /sections/:section_id/enrollments`
@@ -625,6 +626,7 @@ Used by the Canvas web interface or internal tooling. They accept an API token b
 - **learning_object_dates#show**: not reached: `GET /courses/:course_id/files/:attachment_id/date_details`
 - **learning_object_dates#update**: not reached: `PUT /courses/:course_id/files/:attachment_id/date_details`
 - **media_objects#index**: not reached: `GET /courses/:course_id/media_attachments`, `GET /groups/:group_id/media_attachments`, `GET /media_attachments`
+- **outcome_groups_api#unlink**: not reached: `DELETE /global/outcome_groups/:id/outcomes/:outcome_id`
 - **search#recipients**: not reached: `GET /conversations/find_recipients`
 - **sections#show**: not reached: `GET /courses/:course_id/sections/:id`
 - **submissions_api#submission_summary**: not reached: `GET /sections/:section_id/assignments/:assignment_id/submission_summary`

@@ -2,7 +2,7 @@
   "name": "Canvas battery — quizStatistics",
   "nodes": [
     {
-      "id": "9a752205-536d-42a8-abc9-6dfd8cfa9ee2",
+      "id": "475a59f5-2cd3-4513-821f-ac3c7d3ce3d8",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "a967081e-28fd-4c91-9ea9-56fd17acbcbb",
+      "id": "60a55107-5747-4313-a3cf-1c0529536642",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "a70db93d-8f79-4c83-9efc-a07341d667bd",
+      "id": "da98e854-6700-4958-a463-48e6cb73a13c",
       "name": "get — get: returns the statistics record itself, with question and",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -55,7 +55,7 @@
       "executeOnce": true
     },
     {
-      "id": "e935973f-09d6-4566-abd6-a012bfa9a681",
+      "id": "955d1d4d-15b6-4fc5-95b9-b996fa568549",
       "name": "get — get: all versions counts every attempt",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -84,7 +84,7 @@
       "executeOnce": true
     },
     {
-      "id": "39bc5e35-826f-4245-8829-69afebacbf09",
+      "id": "f473809f-b117-49aa-9445-8f5a17591e3e",
       "name": "get — get: section IDs restrict the statistics to the students of ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -113,7 +113,7 @@
       "executeOnce": true
     },
     {
-      "id": "854c30b1-254c-46d0-bec7-772b4ae4bc0f",
+      "id": "148908c8-ce7b-43c6-a751-972b1f991891",
       "name": "get — get: section IDs restrict the statistics to the students of  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

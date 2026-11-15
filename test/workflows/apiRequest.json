@@ -2,7 +2,7 @@
   "name": "Canvas battery — apiRequest",
   "nodes": [
     {
-      "id": "a17f1afa-b33d-497c-ba1d-7b70ca066f78",
+      "id": "5d316104-471f-4f41-bf4a-eddd9c3afa70",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "17530e8a-7764-4bd4-b60d-34c0b49e894d",
+      "id": "d6d0a32d-88aa-49d1-9f17-a2523f736567",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "69f76d7d-055a-4af7-b645-27ce46050e46",
+      "id": "3596c6f4-8793-4ff7-896c-918489632e60",
       "name": "request — GET: a documented list is paginated like any other operation",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -56,7 +56,7 @@
       "executeOnce": true
     },
     {
-      "id": "d4d2514b-94f4-4c06-b6a8-12d4173e8339",
+      "id": "91ca4969-c0e7-48a2-8d55-d5a155cd0f2f",
       "name": "request — GET: a documented list is paginated like any other operation (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -90,7 +90,7 @@
       "executeOnce": true
     },
     {
-      "id": "02c3f47e-d174-484e-afef-5c78986d9b5c",
+      "id": "ca81d644-bcb4-430e-b96b-49d46a966d62",
       "name": "request — GET: a single record comes back as one item",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -117,7 +117,7 @@
       "executeOnce": true
     },
     {
-      "id": "6f60eccf-8527-4a74-ace6-8b14432ccf17",
+      "id": "3e22b960-2f83-4927-9fb1-3e7ecc929118",
       "name": "request — GET: an endpoint Instructure does not document works too",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -143,7 +143,7 @@
       "executeOnce": true
     },
     {
-      "id": "97086773-585d-45ce-8dcb-3f932ab29b66",
+      "id": "54f530c7-598e-43cc-b877-9f9d3a54b5bf",
       "name": "request — GET: a wrapped list is unwrapped with Unwrap Key",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -176,7 +176,7 @@
       "executeOnce": true
     },
     {
-      "id": "e2a26bbf-3294-40c9-865a-d7593a1698f9",
+      "id": "33571a92-8204-4050-9eb0-f95d5d6099b3",
       "name": "request — GET: a wrapped list is unwrapped with Unwrap Key (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -205,7 +205,7 @@
       "executeOnce": true
     },
     {
-      "id": "b08d2df6-23e1-471c-b7c8-b2553b52cb1a",
+      "id": "52b487b4-41c5-44fc-81fa-40d322cf729b",
       "name": "request — POST, PUT, DELETE: create, change and remove a record throug",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -232,7 +232,7 @@
       "executeOnce": true
     },
     {
-      "id": "35501705-70a6-4a19-946c-8d9ac6fa36c5",
+      "id": "d1ce750b-3de0-4486-adec-047298a1c622",
       "name": "request — POST, PUT, DELETE: create, change and remove a record throug (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -245,7 +245,7 @@
         "resource": "apiRequest",
         "operation": "request",
         "method": "PUT",
-        "path": "/api/v1/courses/382",
+        "path": "/api/v1/courses/838",
         "body": {
           "course": {
             "course_code": "RAW-2"
@@ -263,7 +263,7 @@
       "executeOnce": true
     },
     {
-      "id": "f5f81fbf-e314-4b1b-aad3-26a3e378833e",
+      "id": "7921f8f1-62af-4898-968c-2b0ba4dd7ca1",
       "name": "request — POST, PUT, DELETE: create, change and remove a record throug (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -276,7 +276,7 @@
         "resource": "apiRequest",
         "operation": "request",
         "method": "DELETE",
-        "path": "/api/v1/courses/382",
+        "path": "/api/v1/courses/838",
         "query": "{\"event\": \"delete\"}"
       },
       "credentials": {
@@ -290,7 +290,7 @@
       "executeOnce": true
     },
     {
-      "id": "74379dee-ced7-4823-8618-a4c2f1e9f64d",
+      "id": "0a0be5a6-6c8f-491c-880e-2998751b3482",
       "name": "request — a full URL is reduced to its path, so the token only ever go",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

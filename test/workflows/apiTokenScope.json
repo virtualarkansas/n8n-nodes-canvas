@@ -2,7 +2,7 @@
   "name": "Canvas battery — apiTokenScope",
   "nodes": [
     {
-      "id": "163ebf99-cbbb-45c0-babc-75746aee0219",
+      "id": "96841db4-b34f-48f0-9968-0fa062c6dba3",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "f4eb89aa-b42d-4adf-947b-a87bbad21bb4",
+      "id": "b578e930-d85c-437b-97b5-027b1cfbefbe",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "ddfc6c30-d2f1-4afc-850c-9b57fbb4a64e",
+              "id": "2e6a1265-aea1-4cd8-a771-003dff9522ef",
               "name": "accountId",
               "value": "1",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "4ca799f6-d2d4-4ad7-86a2-e384f6a15c96",
+      "id": "c85bafd6-960a-49fb-841c-be67f2e9ee52",
       "name": "getAll — getAll: Return All lists every scope Canvas knows, one item ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -62,7 +62,7 @@
       "executeOnce": true
     },
     {
-      "id": "29664755-a04b-4b95-b7b9-aa808be21a88",
+      "id": "e7bc0f6a-07b2-47ae-8eec-9db104b6376d",
       "name": "getAll — getAll: Limit is honoured (default 50), also with the accoun",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -87,7 +87,7 @@
       "executeOnce": true
     },
     {
-      "id": "9ff03a78-28b3-46ce-81d0-870c19bf8951",
+      "id": "cd8acd31-4b70-491c-a037-ecdf45d81594",
       "name": "getAll — getAll: Limit is honoured (default 50), also with the accoun (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -114,7 +114,7 @@
       "executeOnce": true
     },
     {
-      "id": "9e8e35f1-a867-4599-ba32-982c5740bea7",
+      "id": "07dc6b66-569a-4186-b9d5-82a4022273d5",
       "name": "getAll — getAll: grouped by resource the result is one item with a li",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

@@ -2,7 +2,7 @@
   "name": "Canvas battery — account",
   "nodes": [
     {
-      "id": "06904dc6-c8f5-41e1-80b7-0ec4f9f3012b",
+      "id": "d4932dc3-ba7c-4934-9648-f1739723af9b",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "a2ac4038-7ab2-47e1-b31c-6b4f916483c7",
+      "id": "71a76312-564c-4d57-bfb2-a8f14f168657",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,13 +25,13 @@
         "assignments": {
           "assignments": [
             {
-              "id": "93ee9b9d-1b97-4b17-9004-474ba3136fe1",
+              "id": "514671d4-3aee-4484-894c-f4384ba5d90d",
               "name": "subAccountId",
               "value": "3",
               "type": "string"
             },
             {
-              "id": "669008e5-fac4-4af3-b96f-99efabb90248",
+              "id": "ab318cc5-1ccc-44d6-97bb-f0c479ed0e51",
               "name": "deepSubAccountId",
               "value": "5",
               "type": "string"
@@ -42,7 +42,7 @@
       }
     },
     {
-      "id": "04df8336-2127-4094-9764-fcfec4864f73",
+      "id": "432dd7b6-cf47-44a4-9247-d5d6b66db71c",
       "name": "getAll — getAll: an admin sees their accounts, with every include",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -76,7 +76,7 @@
       "executeOnce": true
     },
     {
-      "id": "5042b0b0-b4d3-4e08-9029-4b24c345e4bf",
+      "id": "2d5e6378-7770-497b-81f1-9353024388ba",
       "name": "getAll — getAll: works without the new Accounts to List parameter (",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -100,7 +100,7 @@
       "executeOnce": true
     },
     {
-      "id": "2ddee0c8-58ac-4eb3-a39d-8072bf3a29e6",
+      "id": "6fd51f9a-2c2f-467b-ac33-6093c9ca3231",
       "name": "getAll — getAll (manageable): returns the whole tree an admin manages",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -128,7 +128,7 @@
       "executeOnce": true
     },
     {
-      "id": "8bff7e02-01ae-4341-894c-1740b0f287cf",
+      "id": "311635ee-0a64-4917-8830-0eb5aafda71e",
       "name": "getAll — getAll (manageable): returns the whole tree an admin manages (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -153,7 +153,7 @@
       "executeOnce": true
     },
     {
-      "id": "b788427b-3a4e-4af1-8610-65815388883c",
+      "id": "96f90864-1879-4519-a299-3e813050466a",
       "name": "getAll — getAll (manageable): returns the whole tree an admin manages (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -182,7 +182,7 @@
       "executeOnce": true
     },
     {
-      "id": "95949830-5149-494d-bfdd-94800bffc3a8",
+      "id": "d8e3302c-7a24-4baa-a0d1-2dbda974207f",
       "name": "getAll — getAll (courseCreation): lists where the user may create cou",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -210,7 +210,7 @@
       "executeOnce": true
     },
     {
-      "id": "a464f552-9dd2-400a-a86a-fca016d11748",
+      "id": "277ee37f-8c7e-437d-8dd6-ca094d13ab0c",
       "name": "get — get: returns the account, with includes",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -244,7 +244,7 @@
       "executeOnce": true
     },
     {
-      "id": "dd4da1b2-1a89-4c5c-a09e-08097078b468",
+      "id": "d6503156-dc1a-4fbf-828c-55ef626f7523",
       "name": "get — get: accepts self, SIS IDs, and numeric IDs arriving as nu",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -269,7 +269,7 @@
       "executeOnce": true
     },
     {
-      "id": "5428150d-f9b6-4a7f-b55f-f908995eb17f",
+      "id": "d4f0ada0-6381-43a9-a0cf-736dbdd26f77",
       "name": "get — get: accepts self, SIS IDs, and numeric IDs arriving as nu (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -294,7 +294,7 @@
       "executeOnce": true
     },
     {
-      "id": "3d67cefd-cec5-41b1-b1d6-2021b5602dc0",
+      "id": "69ab97b3-462c-4edf-9ceb-43add89957f2",
       "name": "getSubAccounts — getSubAccounts: direct children by default, sorted by name o",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -327,7 +327,7 @@
       "executeOnce": true
     },
     {
-      "id": "ebab1401-c66c-400f-8986-7c08ac196d74",
+      "id": "c4774624-c17f-45fe-8fd6-b92012737249",
       "name": "getSubAccounts — getSubAccounts: recursive returns the whole tree, across pag",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -358,7 +358,7 @@
       "executeOnce": true
     },
     {
-      "id": "0731e92c-09f7-4a0c-b5f3-201ee14114da",
+      "id": "341aaac8-a99a-43f8-9645-38dbdedcd89a",
       "name": "getSubAccounts — getSubAccounts: recursive returns the whole tree, across pag (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -386,7 +386,7 @@
       "executeOnce": true
     },
     {
-      "id": "81d0df78-1b97-476f-8918-ab4e784befad",
+      "id": "8a06fb59-ff43-4efc-a8ce-7bb0cdf38b32",
       "name": "getSubAccounts — getSubAccounts: recursive returns the whole tree, across pag (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -418,7 +418,7 @@
       "executeOnce": true
     },
     {
-      "id": "f1f6d1c9-44d9-4e1f-a85d-d6654cc614fc",
+      "id": "f836c473-cc01-4a47-8cfa-19582ff58ed0",
       "name": "getSubAccounts — getSubAccounts: an account without children yields no items",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -446,7 +446,7 @@
       "executeOnce": true
     },
     {
-      "id": "e32a98c4-7687-4253-b324-b2307ba760a1",
+      "id": "7c69d6e4-3b84-487f-8296-6fa0caa93d6f",
       "name": "createSubAccount — createSubAccount: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -478,7 +478,7 @@
       "executeOnce": true
     },
     {
-      "id": "799c5023-a633-4e3b-a27d-745df964bc82",
+      "id": "c4d8c42a-3bb4-4c9a-aa31-c5864dfabb39",
       "name": "createSubAccount — createSubAccount: nests under a sub-account given by SIS ID ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -504,7 +504,7 @@
       "executeOnce": true
     },
     {
-      "id": "fafe59a8-d00d-41a2-a0fa-a12a765739a6",
+      "id": "2595e013-23b7-4495-81b1-1796032d11a6",
       "name": "update — update: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -539,7 +539,7 @@
       "executeOnce": true
     },
     {
-      "id": "4896fb02-79e4-4683-8422-7e440a0be0f0",
+      "id": "16d711e9-348e-46b3-b121-a4aa56649c3e",
       "name": "update — update: moves a sub-account to another parent and can clear ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -568,7 +568,7 @@
       "executeOnce": true
     },
     {
-      "id": "f7997949-9a68-418d-8e42-52e1a8846556",
+      "id": "433a5d87-31c4-4a6f-9dd3-d85130d95936",
       "name": "update — update: moves a sub-account to another parent and can clear  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -596,7 +596,7 @@
       "executeOnce": true
     },
     {
-      "id": "cf1601fd-c34a-4d69-acbe-11cbc53436ba",
+      "id": "630a67bf-dd40-4397-b175-12253bc5bf65",
       "name": "update — update: sets, replaces with no template and clears the cou",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -610,7 +610,7 @@
         "operation": "update",
         "accountId": "={{ $('createSubAccount — createSubAccount: every optional field reaches Canvas').first().json.id }}",
         "updateFields": {
-          "course_template_id": "277"
+          "course_template_id": "696"
         }
       },
       "credentials": {
@@ -624,7 +624,7 @@
       "executeOnce": true
     },
     {
-      "id": "0b97cca9-4d85-4acd-ab54-7d2d20c50046",
+      "id": "ffb3e91a-790d-4f12-abb3-0056c6a3d048",
       "name": "update — update: sets, replaces with no template and clears the cou (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -652,7 +652,7 @@
       "executeOnce": true
     },
     {
-      "id": "07b7b391-a401-4f81-bef7-ff38db7cf9f7",
+      "id": "67831a2b-6ec1-479e-b876-003d0bb1b666",
       "name": "update — update: sets, replaces with no template and clears the cou (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -680,7 +680,7 @@
       "executeOnce": true
     },
     {
-      "id": "f5f71956-b2af-4f40-9e19-05cb269cb483",
+      "id": "0d2a5adb-de29-4f23-bf30-f57bae830c9a",
       "name": "getSettings — getSettings: returns the settings Canvas exposes (K5 mode se",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -705,7 +705,7 @@
       "executeOnce": true
     },
     {
-      "id": "4275d898-9000-411b-b4e6-a697f1164791",
+      "id": "d86d750d-d414-4478-94d2-89cc037f240a",
       "name": "update — getSettings: returns the settings Canvas exposes (K5 mode se",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -733,7 +733,7 @@
       "executeOnce": true
     },
     {
-      "id": "e4c0d516-b480-4efd-92d8-1853c879ac16",
+      "id": "0471b2dc-c29b-4718-bfbc-96c1b7fddfda",
       "name": "getPermissions — getPermissions: reports each requested permission for the to",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -759,7 +759,7 @@
       "executeOnce": true
     },
     {
-      "id": "da399af9-6ed7-4136-b44d-bda61897b2de",
+      "id": "f451510b-4786-4969-b454-50f805c68f9b",
       "name": "getHelpLinks — getHelpLinks: returns the help menu of the root account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -784,7 +784,7 @@
       "executeOnce": true
     },
     {
-      "id": "80d2df0c-214b-4cdc-97c0-58fd3ff9df10",
+      "id": "1e0c73c3-95b8-498b-a5a1-82a0ca51944f",
       "name": "getTermsOfService — getTermsOfService: returns the terms of the root account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -809,7 +809,7 @@
       "executeOnce": true
     },
     {
-      "id": "823b08a8-10ab-40ce-87b1-b5ee3eb0d536",
+      "id": "a429bf2a-3139-4785-87c8-625029a1c9d9",
       "name": "getCourses — getCourses: default paging, everything, and a small page siz",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -834,7 +834,7 @@
       "executeOnce": true
     },
     {
-      "id": "4372717e-4bd0-4fbf-821b-e7fc68f194fc",
+      "id": "864cb968-38a1-4450-8956-52bbbecf50cc",
       "name": "getCourses — getCourses: default paging, everything, and a small page siz (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -862,7 +862,7 @@
       "executeOnce": true
     },
     {
-      "id": "4af9a16b-c40a-4623-8992-39ddea73e4e3",
+      "id": "141d3636-a5e1-4aa8-a979-54b47aa43516",
       "name": "getCourses — getCourses: default paging, everything, and a small page siz (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -891,7 +891,7 @@
       "executeOnce": true
     },
     {
-      "id": "203577fa-1b0c-4ad8-b24a-6b3b982c0d8b",
+      "id": "a56ca2b2-0e89-4320-bc3c-b6bdb6cb590d",
       "name": "getCourses — getCourses: a sub-account includes the courses of its depart",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -919,7 +919,7 @@
       "executeOnce": true
     },
     {
-      "id": "631d33b0-1008-439d-9259-f39cec99b88b",
+      "id": "a2151530-53fa-4c7f-8856-e1954276a178",
       "name": "getCourses — getCourses: filter published returns exactly what Canvas r",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -950,7 +950,7 @@
       "executeOnce": true
     },
     {
-      "id": "41df6997-9e7d-46cb-9a0b-5272e604b34f",
+      "id": "d6059bbd-dfca-4f79-8ea6-552d195439ef",
       "name": "getCourses — getCourses: filter unpublished returns exactly what Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -981,7 +981,7 @@
       "executeOnce": true
     },
     {
-      "id": "6b61784f-ba62-4d64-a6f7-4ccada67f1b0",
+      "id": "311e8b4d-0ed3-4cc6-9f92-873496f417d6",
       "name": "getCourses — getCourses: filter completed returns exactly what Canvas r",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1012,7 +1012,7 @@
       "executeOnce": true
     },
     {
-      "id": "89fb1dfc-782d-4e5e-8036-39629270eb0d",
+      "id": "b62ba3d1-dedd-459f-aa25-27fd4312be41",
       "name": "getCourses — getCourses: filter not completed returns exactly what Canv",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1043,7 +1043,7 @@
       "executeOnce": true
     },
     {
-      "id": "a4605102-c68a-42c1-8620-8bf5d9c4bb2f",
+      "id": "0776468e-8354-40a6-a977-b48bb6795229",
       "name": "getCourses — getCourses: filter blueprint returns exactly what Canvas r",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1074,7 +1074,7 @@
       "executeOnce": true
     },
     {
-      "id": "d5147fca-eff6-4f06-b333-c7d9ef17103f",
+      "id": "172de7c7-1c21-48a9-b82f-6e60c3b00fac",
       "name": "getCourses — getCourses: filter not blueprint returns exactly what Canv",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1105,7 +1105,7 @@
       "executeOnce": true
     },
     {
-      "id": "67c937bb-849b-4346-a053-b3880c5985d8",
+      "id": "e72b5883-f545-4d37-89d5-00316aa1c409",
       "name": "getCourses — getCourses: filter blueprint associated returns exactly wh",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1136,7 +1136,7 @@
       "executeOnce": true
     },
     {
-      "id": "cf879262-2df6-4f64-ae98-d0c51ccf10ca",
+      "id": "b5d5d121-0cc3-4fe1-83be-61ea6611ef71",
       "name": "getCourses — getCourses: filter public returns exactly what Canvas retu",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1167,7 +1167,7 @@
       "executeOnce": true
     },
     {
-      "id": "e7404ec1-4938-4804-adda-0e399f932e33",
+      "id": "5ad318f1-23d2-4c12-97ff-0177ef4b5be9",
       "name": "getCourses — getCourses: filter not public returns exactly what Canvas ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1198,7 +1198,7 @@
       "executeOnce": true
     },
     {
-      "id": "8a984730-aa93-4746-b55a-c60229770e54",
+      "id": "f7eeecaf-5725-4b68-89e5-2666a5cc8c4a",
       "name": "getCourses — getCourses: filter with enrollments returns exactly what C",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1229,7 +1229,7 @@
       "executeOnce": true
     },
     {
-      "id": "6ef6e0fb-ae50-4e24-adaf-1aeaaafe9581",
+      "id": "54a3d51f-5d87-4ece-a7e0-9b1cdcd8cae7",
       "name": "getCourses — getCourses: filter without enrollments returns exactly wha",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1260,7 +1260,7 @@
       "executeOnce": true
     },
     {
-      "id": "ac5850c6-b03d-4101-ab7f-f7300d070901",
+      "id": "6fb80f9d-ad71-4037-8c09-b80cec8a45a9",
       "name": "getCourses — getCourses: filter states incl. deleted returns exactly wh",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1294,7 +1294,7 @@
       "executeOnce": true
     },
     {
-      "id": "74bc91a8-4c5e-4acb-bdcc-3e0fe15865db",
+      "id": "46ea1094-23be-469a-841c-3db27db79d74",
       "name": "getCourses — getCourses: filter state all returns exactly what Canvas r",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1327,7 +1327,7 @@
       "executeOnce": true
     },
     {
-      "id": "fa613d63-ed52-4ba0-8563-663cbe465a5c",
+      "id": "e64c258c-dc91-41a6-90c9-cb36132d03eb",
       "name": "getCourses — getCourses: filter term by ID returns exactly what Canvas ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1358,7 +1358,7 @@
       "executeOnce": true
     },
     {
-      "id": "f8b96e6c-7c95-4b5a-b01b-fecb4608bcdf",
+      "id": "a384702b-3295-496e-8964-e9f380b6c32b",
       "name": "getCourses — getCourses: filter term by SIS ID returns exactly what Can",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1389,7 +1389,7 @@
       "executeOnce": true
     },
     {
-      "id": "905241e8-bfad-41f0-b184-783a9e01dd28",
+      "id": "f74575f2-9f38-4bb3-a728-fa8a1ae7874d",
       "name": "getCourses — getCourses: filter teachers returns exactly what Canvas re",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1420,7 +1420,7 @@
       "executeOnce": true
     },
     {
-      "id": "b9b55fa9-231e-4843-b461-62b98212597a",
+      "id": "6a4bed7c-40ee-4421-9e1c-7f37c666e621",
       "name": "getCourses — getCourses: filter sub-accounts returns exactly what Canva",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1451,7 +1451,7 @@
       "executeOnce": true
     },
     {
-      "id": "802a6627-f06c-4439-a1ed-2691d2d0c0e9",
+      "id": "93b982c8-ad37-4df6-b1e0-bd95df2f0d69",
       "name": "getCourses — getCourses: filter enrollment type returns exactly what Ca",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1485,7 +1485,7 @@
       "executeOnce": true
     },
     {
-      "id": "eb469a55-e92b-494a-b816-b2d327991f00",
+      "id": "db925fd6-2dc7-415f-bf81-fb6b2f6681ca",
       "name": "getCourses — getCourses: filter enrollment state returns exactly what C",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1519,7 +1519,7 @@
       "executeOnce": true
     },
     {
-      "id": "b72cfeef-9c01-46bb-a30c-4bbfb1f1c24c",
+      "id": "d679b61b-3b24-460f-9089-57ac8500b102",
       "name": "getCourses — getCourses: filter search term (course) returns exactly wh",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1551,7 +1551,7 @@
       "executeOnce": true
     },
     {
-      "id": "8c0391cf-686d-4420-9306-186744f0bb29",
+      "id": "9e736bd6-5bb6-4557-802c-bf62d535a232",
       "name": "getCourses — getCourses: filter search term (teacher) returns exactly w",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1583,7 +1583,7 @@
       "executeOnce": true
     },
     {
-      "id": "9dd48b39-ddf8-4073-8016-b284aa3570d9",
+      "id": "f38686e5-c988-45fa-bb35-1652c4d3f534",
       "name": "getCourses — getCourses: filter starts before returns exactly what Canv",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1614,7 +1614,7 @@
       "executeOnce": true
     },
     {
-      "id": "4b8889b0-f5d2-4788-8f19-952e2e2c00d9",
+      "id": "9ea3d50a-e1db-4889-8847-dee193cf1553",
       "name": "getCourses — getCourses: filter ends after returns exactly what Canvas ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1645,7 +1645,7 @@
       "executeOnce": true
     },
     {
-      "id": "c73d657f-5514-4e9e-beb8-0e76fda029eb",
+      "id": "444883f0-dc3e-44b0-b9ce-2707d9bc4879",
       "name": "getCourses — getCourses: filter combined returns exactly what Canvas re",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1682,7 +1682,7 @@
       "executeOnce": true
     },
     {
-      "id": "197497a7-9ce0-4178-bc9b-b42c007ff721",
+      "id": "b1667bfd-ff70-41e7-a28e-793a685fd14e",
       "name": "getCourses — getCourses: includes and sorting reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1723,7 +1723,7 @@
       "executeOnce": true
     },
     {
-      "id": "b6c64d60-8ae1-4fd8-b3ff-489fc9fb3c2d",
+      "id": "930b9cf3-7434-4190-b10a-330ec4bddd0c",
       "name": "getCourses — getCourses: includes and sorting reach Canvas (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1754,7 +1754,7 @@
       "executeOnce": true
     },
     {
-      "id": "0c712ede-8c76-43ca-b91a-b174f3d14eb1",
+      "id": "c0aec680-321e-4dd0-8130-01c00364edd6",
       "name": "getCourses — getCourses: an empty result is an empty output, and a too-sh",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1782,7 +1782,7 @@
       "executeOnce": true
     },
     {
-      "id": "529f126e-dd21-40ee-8f30-ea91a7e50313",
+      "id": "a698707a-d2e6-47df-8aa6-185f472d892f",
       "name": "restoreUser — restoreUser: brings a deleted user and their login back",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1795,7 +1795,7 @@
         "resource": "account",
         "operation": "restoreUser",
         "accountId": "={{ $('getCourses — getCourses: filter combined returns exactly what Canvas re').first().json.id }}",
-        "userId": "1256"
+        "userId": "2001"
       },
       "credentials": {
         "canvasApi": {
@@ -1808,7 +1808,7 @@
       "executeOnce": true
     },
     {
-      "id": "df320a11-6df2-407d-bb3b-28b1ece21e7b",
+      "id": "41aa83e9-e483-49e0-9b32-81fbacadb12f",
       "name": "deleteSubAccount — deleteSubAccount: removes empty sub-accounts, child before p",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1834,7 +1834,7 @@
       "executeOnce": true
     },
     {
-      "id": "d2efe481-d3b9-491b-9cfd-cff4db2ab4b6",
+      "id": "9ab61686-1e87-4d55-a6c2-99f1794759fd",
       "name": "getManuallyCreatedCoursesAccount — getManuallyCreatedCoursesAccount: returns the sub-account fo",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

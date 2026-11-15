@@ -2,7 +2,7 @@
   "name": "Canvas battery — quizAssignmentOverride",
   "nodes": [
     {
-      "id": "2fcff748-f46d-483a-b7c1-9cf8768e4c69",
+      "id": "20a3aaf1-fb94-49ad-82d0-bae2abdf1090",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "7533f539-5709-4640-b821-bdc4be40edea",
+      "id": "5f88d1af-8368-42b9-ba3c-1ca593610bfc",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "40b7a35c-6e46-4b48-9274-9b268c505170",
+      "id": "1f22c0d2-c1ad-482c-80dd-7f18b44525e6",
       "name": "getAll — getAll: returns the dates of every classic quiz, one item pe",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,7 +41,7 @@
         "authentication": "accessToken",
         "resource": "quizAssignmentOverride",
         "operation": "getAll",
-        "courseId": "349",
+        "courseId": "845",
         "pagination": {
           "returnAll": true
         }
@@ -57,7 +57,7 @@
       "executeOnce": true
     },
     {
-      "id": "ab7b9dd5-1597-44d9-85e7-8f6f2fda51a8",
+      "id": "8ec4adf0-b479-4030-8020-9226fb54f0c4",
       "name": "getAll — getAll: narrows to the quizzes asked for",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -69,9 +69,9 @@
         "authentication": "accessToken",
         "resource": "quizAssignmentOverride",
         "operation": "getAll",
-        "courseId": "349",
+        "courseId": "845",
         "options": {
-          "quiz_ids": " 158 "
+          "quiz_ids": " 268 "
         }
       },
       "credentials": {
@@ -85,7 +85,7 @@
       "executeOnce": true
     },
     {
-      "id": "f8f5e278-ad28-4fe4-8b3d-fa4a440298c7",
+      "id": "0fc00a30-ff12-4a11-b8a6-82afbabc0ba5",
       "name": "getAll — getAll: narrows to the quizzes asked for (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -97,9 +97,9 @@
         "authentication": "accessToken",
         "resource": "quizAssignmentOverride",
         "operation": "getAll",
-        "courseId": "349",
+        "courseId": "845",
         "options": {
-          "quiz_ids": "157, 158"
+          "quiz_ids": "267, 268"
         }
       },
       "credentials": {
@@ -113,7 +113,7 @@
       "executeOnce": true
     },
     {
-      "id": "4622ff0e-81c2-426a-8e2e-2a61f4a91c5d",
+      "id": "c231e46f-f93b-426e-a0e7-12734ca1b69e",
       "name": "getAllNewQuizzes — getAllNewQuizzes: a course without New Quizzes returns no it",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -125,7 +125,7 @@
         "authentication": "accessToken",
         "resource": "quizAssignmentOverride",
         "operation": "getAllNewQuizzes",
-        "courseId": "349"
+        "courseId": "845"
       },
       "credentials": {
         "canvasApi": {

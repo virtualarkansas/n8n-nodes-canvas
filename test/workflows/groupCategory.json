@@ -2,7 +2,7 @@
   "name": "Canvas battery — groupCategory",
   "nodes": [
     {
-      "id": "5d164e93-fb44-422e-95e7-0966840151b3",
+      "id": "3ab5198c-0187-4d89-b0d2-3a736d7bd7ae",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "99c2aca4-d5b1-40c6-8d9c-e41273d1b011",
+      "id": "65db2fc3-d594-4b45-a9f3-ce6e98f1263a",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,12 +29,37 @@
       }
     },
     {
-      "id": "7f1aae9e-bb1e-482c-bbba-ad37fe84ba14",
-      "name": "create — create (course): every optional field",
+      "id": "cefb349f-2855-4194-9e7e-34be0bd495ac",
+      "name": "export — export: one item with the CSV text Canvas produces, every st",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
         460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "export",
+        "groupCategoryId": "194"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e7c50c11-8930-4694-bb34-2f6c5a0f6300",
+      "name": "create — create (course): every optional field",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
         0
       ],
       "parameters": {
@@ -64,12 +89,12 @@
       "executeOnce": true
     },
     {
-      "id": "129dfa1f-7190-4ef1-b2a0-e8f636b67324",
+      "id": "840dad69-0070-4311-87d3-90bb82d7088e",
       "name": "create — create (course): the other values of Self Signup and Auto Le",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
+        980,
         0
       ],
       "parameters": {
@@ -95,12 +120,12 @@
       "executeOnce": true
     },
     {
-      "id": "3257e8d4-b991-4042-a5b8-70ac487dd2c7",
+      "id": "f7416270-3f66-4ac4-9b67-22aaf8bf9236",
       "name": "create — create (course): the other values of Self Signup and Auto Le (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
+        1240,
         0
       ],
       "parameters": {
@@ -125,12 +150,12 @@
       "executeOnce": true
     },
     {
-      "id": "a978994f-cab9-468f-9802-87af077afe7d",
+      "id": "1029fbf9-2782-4e8b-bea5-587cf9b7d772",
       "name": "create — create (course): Create Group Count without self sign-up a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
+        1500,
         0
       ],
       "parameters": {
@@ -155,12 +180,12 @@
       "executeOnce": true
     },
     {
-      "id": "492e9418-3691-4b21-8d5c-973089e20454",
+      "id": "170d0e82-69bc-4e49-88fa-33509f2dacdc",
       "name": "create — create (account): a category in the batterys sub-account; s",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
+        1760,
         0
       ],
       "parameters": {
@@ -182,13 +207,13 @@
       "executeOnce": true
     },
     {
-      "id": "161431d5-9818-4a6c-86b1-e8be86a09542",
+      "id": "c8eb9059-288f-419e-8db1-d65c6ca7e72f",
       "name": "get — get: by ID and by SIS ID",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
-        0
+        460,
+        220
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -207,12 +232,12 @@
       "executeOnce": true
     },
     {
-      "id": "dea8381f-e38c-4559-aec7-bf557840ec76",
+      "id": "0a558789-11a2-47a7-b04f-8793a6a81b82",
       "name": "getAll — getAll (course): pages are followed and capped as configured",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
+        720,
         220
       ],
       "parameters": {
@@ -220,7 +245,7 @@
         "resource": "groupCategory",
         "operation": "getAll",
         "context": "course",
-        "courseId": "342"
+        "courseId": "780"
       },
       "credentials": {
         "canvasApi": {
@@ -233,12 +258,12 @@
       "executeOnce": true
     },
     {
-      "id": "9ab0a280-22da-494c-a9bd-b2150a9e63f0",
+      "id": "314f7c7b-4bcc-44ee-824f-b940c097f6a2",
       "name": "getAll — getAll (course): pages are followed and capped as configured (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
+        980,
         220
       ],
       "parameters": {
@@ -262,12 +287,12 @@
       "executeOnce": true
     },
     {
-      "id": "0668c8eb-30e1-4d15-97ae-2a06069c63f2",
+      "id": "54901714-1ffa-449b-aa4d-412331216b84",
       "name": "getAll — getAll (course): pages are followed and capped as configured (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
+        1240,
         220
       ],
       "parameters": {
@@ -292,12 +317,12 @@
       "executeOnce": true
     },
     {
-      "id": "eea09963-4f61-4ba9-9795-359c6785dc4a",
+      "id": "08e58bad-969f-4fff-8050-f570d9a810b1",
       "name": "getAll — getAll (course): pages are followed and capped as configured (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
+        1500,
         220
       ],
       "parameters": {
@@ -322,12 +347,12 @@
       "executeOnce": true
     },
     {
-      "id": "937d7c2a-2f48-4f37-a057-ad1f65080b28",
+      "id": "56f8a48c-0b46-40ff-922f-1db6ebaba6d6",
       "name": "getAll — getAll: Collaboration State, and the account context",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
+        1760,
         220
       ],
       "parameters": {
@@ -354,13 +379,13 @@
       "executeOnce": true
     },
     {
-      "id": "26154cf0-1a9c-420e-86a1-99fd4321a113",
+      "id": "ec6420b1-ff50-49f8-9ef2-8dce681aa28c",
       "name": "getAll — getAll: Collaboration State, and the account context (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
-        220
+        460,
+        440
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -386,12 +411,12 @@
       "executeOnce": true
     },
     {
-      "id": "1d9c1181-98da-41e4-86a4-a4e1a2c0bb63",
+      "id": "219843db-24da-4a25-bef0-0325605f147b",
       "name": "getAll — getAll: Collaboration State, and the account context (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
+        720,
         440
       ],
       "parameters": {
@@ -418,12 +443,12 @@
       "executeOnce": true
     },
     {
-      "id": "2079e5a0-30ca-42cf-ba2d-4c7113570079",
+      "id": "f5f6bd17-044a-4374-8ac2-60719b13075d",
       "name": "getAll — getAll: Collaboration State, and the account context (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
+        980,
         440
       ],
       "parameters": {
@@ -447,12 +472,12 @@
       "executeOnce": true
     },
     {
-      "id": "0017e27e-05e1-4847-b8fb-1814c984cf37",
+      "id": "c8bf534e-386e-4f3a-8698-159f15c97a6e",
       "name": "update — update: Canvas clears the settings that are not sent again",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
+        1240,
         440
       ],
       "parameters": {
@@ -479,12 +504,12 @@
       "executeOnce": true
     },
     {
-      "id": "7a782aaf-7ef8-4eaa-b23a-0abeb00f7c64",
+      "id": "629be5f1-1bc9-475d-a306-3707af3c7e23",
       "name": "update — update: Canvas clears the settings that are not sent again (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
+        1500,
         440
       ],
       "parameters": {
@@ -507,12 +532,12 @@
       "executeOnce": true
     },
     {
-      "id": "a6da1488-9ba5-4604-83ac-0c6efe84ddcb",
+      "id": "b61fa5b1-c445-4f1a-8d1a-d43654e0787a",
       "name": "update — update: Create Group Count adds groups",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
+        1760,
         440
       ],
       "parameters": {
@@ -536,32 +561,7 @@
       "executeOnce": true
     },
     {
-      "id": "6db09c6a-618b-4da7-913e-05b4c3e91d3f",
-      "name": "export — export: one item with the CSV text Canvas produces, every st",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1760,
-        440
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "groupCategory",
-        "operation": "export",
-        "groupCategoryId": "95"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "f087e86b-ce87-49dc-83cc-b231e08bc9f0",
+      "id": "29cdc594-663d-4ed7-aca8-7357936bdd04",
       "name": "listGroups — listGroups: a category with more groups than a default run r",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -573,7 +573,7 @@
         "authentication": "accessToken",
         "resource": "groupCategory",
         "operation": "listGroups",
-        "groupCategoryId": "96",
+        "groupCategoryId": "216",
         "pagination": {
           "returnAll": true
         }
@@ -589,7 +589,7 @@
       "executeOnce": true
     },
     {
-      "id": "6255a731-19eb-4048-970e-baa61959c715",
+      "id": "9a256db3-3920-4e33-a859-9495172b53ec",
       "name": "listGroups — listGroups: a category with more groups than a default run r (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -614,7 +614,7 @@
       "executeOnce": true
     },
     {
-      "id": "48088b39-304f-4358-9847-c16cc231fc47",
+      "id": "1281a13e-1458-4288-9e7e-42cf62bc08a1",
       "name": "listGroups — listGroups: a category with more groups than a default run r (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -643,7 +643,7 @@
       "executeOnce": true
     },
     {
-      "id": "0764efdc-9803-4f38-8b87-c2a0dd5caa78",
+      "id": "16d2ab01-d548-4621-8463-786992ed027b",
       "name": "listGroups — listGroups: a category with more groups than a default run r (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -668,7 +668,7 @@
       "executeOnce": true
     },
     {
-      "id": "a84e8bcc-1a96-4060-90ea-565b8d6de2f6",
+      "id": "72e64e3b-9ea3-4189-8bd8-b04a82b0f7c8",
       "name": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -680,7 +680,7 @@
         "authentication": "accessToken",
         "resource": "groupCategory",
         "operation": "listUsers",
-        "groupCategoryId": "98",
+        "groupCategoryId": "217",
         "options": {
           "unassigned": true
         },
@@ -699,7 +699,7 @@
       "executeOnce": true
     },
     {
-      "id": "ac30fb11-2b7a-479e-9827-d902ec88c91d",
+      "id": "10dd28cd-176e-4b71-8e26-f7576024bfa1",
       "name": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -711,7 +711,7 @@
         "authentication": "accessToken",
         "resource": "groupCategory",
         "operation": "listUsers",
-        "groupCategoryId": "98",
+        "groupCategoryId": "217",
         "options": {
           "unassigned": true
         }
@@ -727,7 +727,7 @@
       "executeOnce": true
     },
     {
-      "id": "de86296a-0235-4358-9602-d566fdb830e9",
+      "id": "308c9fe9-8406-4743-a564-4da88f4ba6d1",
       "name": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -739,7 +739,7 @@
         "authentication": "accessToken",
         "resource": "groupCategory",
         "operation": "listUsers",
-        "groupCategoryId": "98",
+        "groupCategoryId": "217",
         "options": {
           "unassigned": true
         },
@@ -759,7 +759,7 @@
       "executeOnce": true
     },
     {
-      "id": "6506eb92-9fe1-4c9d-9e9e-cc25e5d874e8",
+      "id": "574520b7-c9b9-4596-9964-c2a8b6b90c3d",
       "name": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -771,7 +771,7 @@
         "authentication": "accessToken",
         "resource": "groupCategory",
         "operation": "listUsers",
-        "groupCategoryId": "98",
+        "groupCategoryId": "217",
         "options": {
           "unassigned": false
         },
@@ -790,7 +790,7 @@
       "executeOnce": true
     },
     {
-      "id": "547d7a3e-2d8e-49bf-a424-9e130d30ca7b",
+      "id": "15e1f8fe-0629-41a2-aa3b-08bd268b83d4",
       "name": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -802,7 +802,7 @@
         "authentication": "accessToken",
         "resource": "groupCategory",
         "operation": "listUsers",
-        "groupCategoryId": "98",
+        "groupCategoryId": "217",
         "options": {
           "unassigned": true,
           "search_term": "Ñandú"
@@ -822,8 +822,8 @@
       "executeOnce": true
     },
     {
-      "id": "cd892406-29ff-4ac2-946d-385ca4debaf6",
-      "name": "assignUnassignedMembers — listUsers + assignUnassignedMembers (sync): unassigned stude",
+      "id": "643fcc94-b224-4699-a8ec-09e4e43f8e12",
+      "name": "import — import: rows Canvas cannot use are skipped without an error;",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
@@ -833,8 +833,35 @@
       "parameters": {
         "authentication": "accessToken",
         "resource": "groupCategory",
+        "operation": "import",
+        "groupCategoryId": "218",
+        "fileSource": "text",
+        "fileContent": "canvas_user_id;group_name\n997;Semicolon team"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "92c5bb76-0ce8-4558-9c72-6f28ccf64fc3",
+      "name": "assignUnassignedMembers — listUsers + assignUnassignedMembers (sync): unassigned stude",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
         "operation": "assignUnassignedMembers",
-        "groupCategoryId": "98",
+        "groupCategoryId": "217",
         "options": {
           "sync": true
         }
@@ -850,33 +877,8 @@
       "executeOnce": true
     },
     {
-      "id": "f9ec02e6-1495-4650-a6af-e8dd0703e1f1",
+      "id": "dcf98cba-8a2e-48cb-a421-64a40203abef",
       "name": "assignUnassignedMembers — assignUnassignedMembers (default): Canvas works in the backg",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1500,
-        880
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "groupCategory",
-        "operation": "assignUnassignedMembers",
-        "groupCategoryId": "101"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "2c7a2559-813a-4791-a216-0bdf5026f7a5",
-      "name": "import — import: rows Canvas cannot use are skipped without an error;",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
@@ -886,10 +888,8 @@
       "parameters": {
         "authentication": "accessToken",
         "resource": "groupCategory",
-        "operation": "import",
-        "groupCategoryId": "102",
-        "fileSource": "text",
-        "fileContent": "canvas_user_id;group_name\n997;Semicolon team"
+        "operation": "assignUnassignedMembers",
+        "groupCategoryId": "219"
       },
       "credentials": {
         "canvasApi": {
@@ -902,12 +902,39 @@
       "executeOnce": true
     },
     {
-      "id": "1f4920d1-bce1-4f46-b905-f4a9f0e091d4",
-      "name": "delete — delete: removes the category and its groups",
+      "id": "b1781403-fa52-480d-ae38-017a096255ce",
+      "name": "import — import: rows Canvas cannot use are skipped without an error; (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
         460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "import",
+        "groupCategoryId": "218",
+        "fileSource": "text",
+        "fileContent": "canvas_user_id,group_name\n997,\"never closed"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cf2bdcd6-9124-4796-8b98-6a4916c94563",
+      "name": "delete — delete: removes the category and its groups",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
         1100
       ],
       "parameters": {
@@ -927,34 +954,7 @@
       "executeOnce": true
     },
     {
-      "id": "7efbeb6e-41d8-4690-8a41-64baa2388f1f",
-      "name": "import — import: rows Canvas cannot use are skipped without an error; (2)",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        720,
-        1100
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "groupCategory",
-        "operation": "import",
-        "groupCategoryId": "102",
-        "fileSource": "text",
-        "fileContent": "canvas_user_id,group_name\n997,\"never closed"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "81423f5f-d7cf-47aa-9858-926a5487056b",
+      "id": "8af53c5e-3212-478a-99b8-d501397b337c",
       "name": "bulkManageDifferentiationTags — bulkManageDifferentiationTags: a new tag set with its tags i",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -966,7 +966,7 @@
         "authentication": "accessToken",
         "resource": "groupCategory",
         "operation": "bulkManageDifferentiationTags",
-        "courseId": "361",
+        "courseId": "788",
         "tagSetName": "=Reading level \"A&B\" ünï 読解 {{ $execution.id }}-6",
         "tagsToCreate": {
           "tags": [
@@ -1009,6 +1009,17 @@
       ]
     },
     "Config": {
+      "main": [
+        [
+          {
+            "node": "export — export: one item with the CSV text Canvas produces, every st",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "export — export: one item with the CSV text Canvas produces, every st": {
       "main": [
         [
           {
@@ -1199,17 +1210,6 @@
       "main": [
         [
           {
-            "node": "export — export: one item with the CSV text Canvas produces, every st",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "export — export: one item with the CSV text Canvas produces, every st": {
-      "main": [
-        [
-          {
             "node": "listGroups — listGroups: a category with more groups than a default run r",
             "type": "main",
             "index": 0
@@ -1309,6 +1309,17 @@
       "main": [
         [
           {
+            "node": "import — import: rows Canvas cannot use are skipped without an error;",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "import — import: rows Canvas cannot use are skipped without an error;": {
+      "main": [
+        [
+          {
             "node": "assignUnassignedMembers — listUsers + assignUnassignedMembers (sync): unassigned stude",
             "type": "main",
             "index": 0
@@ -1331,14 +1342,14 @@
       "main": [
         [
           {
-            "node": "import — import: rows Canvas cannot use are skipped without an error;",
+            "node": "import — import: rows Canvas cannot use are skipped without an error; (2)",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "import — import: rows Canvas cannot use are skipped without an error;": {
+    "import — import: rows Canvas cannot use are skipped without an error; (2)": {
       "main": [
         [
           {
@@ -1350,17 +1361,6 @@
       ]
     },
     "delete — delete: removes the category and its groups": {
-      "main": [
-        [
-          {
-            "node": "import — import: rows Canvas cannot use are skipped without an error; (2)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "import — import: rows Canvas cannot use are skipped without an error; (2)": {
       "main": [
         [
           {

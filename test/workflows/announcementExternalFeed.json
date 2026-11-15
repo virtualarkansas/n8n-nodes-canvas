@@ -2,7 +2,7 @@
   "name": "Canvas battery — announcementExternalFeed",
   "nodes": [
     {
-      "id": "31b9ba32-abd1-44da-8080-ff52a6328926",
+      "id": "3052d031-d07a-44ef-bb9c-0ef6d19f9fbb",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "4c25e466-e457-486d-8ace-7d8e68d72bb9",
+      "id": "b4bde393-2cbc-4ad7-a4bc-76e7f169861d",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "f636c083-e54e-49e3-9f64-0d4a73ce8404",
+      "id": "743099c5-6bb9-47d4-baae-7609f3e4380d",
       "name": "create — create: only a URL; each verbosity, one feed per input item;",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -56,7 +56,7 @@
       "executeOnce": true
     },
     {
-      "id": "51dd70d8-19ff-4299-bab1-d75e3798d374",
+      "id": "d4472a35-116c-4c52-b590-2659cf49c161",
       "name": "create — create: only a URL; each verbosity, one feed per input item; (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -83,7 +83,7 @@
       "executeOnce": true
     },
     {
-      "id": "052c6e38-ce91-4a0c-80f0-579f214f7ea0",
+      "id": "c9d7d940-6e05-4258-adf9-37dd94051d6b",
       "name": "getAll — getAll: pages through more feeds than one page holds",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -109,7 +109,7 @@
       "executeOnce": true
     },
     {
-      "id": "637a6cfc-721b-47a0-995d-4526f29e9d5c",
+      "id": "361b6364-e399-4899-92c7-e61ffb43d8be",
       "name": "getAll — getAll: pages through more feeds than one page holds (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -138,7 +138,7 @@
       "executeOnce": true
     },
     {
-      "id": "548f8ea8-98c5-4095-84f9-565f5d7927c6",
+      "id": "5c3c9d16-7b7b-48e6-9b1e-9c301aa471d5",
       "name": "getAll — getAll: pages through more feeds than one page holds (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -168,7 +168,7 @@
       "executeOnce": true
     },
     {
-      "id": "119afe75-8d3b-43ed-a703-d1d4cbede184",
+      "id": "05e2c153-1d92-49e8-b6e6-8c00901eab51",
       "name": "getAll — group context: create, list and delete as a member of the gr",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

@@ -2,7 +2,7 @@
   "name": "Canvas battery — developerKeyAccountBinding",
   "nodes": [
     {
-      "id": "4c4a9d55-2f8e-463c-a234-a3d261904e6d",
+      "id": "90a50179-2505-4ade-8969-426c548e2a82",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "5116d660-4720-4745-b072-1af5e2223d43",
+      "id": "86b55d2a-6ac9-474a-abeb-34c1633aecdf",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "d11ed6a4-8825-4b1e-b583-775f4fd16c95",
+              "id": "9327d4ea-4ce6-4243-99a4-56ff4bcc877d",
               "name": "accountId",
               "value": "1",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "2f3ecf56-bd16-4f4c-8865-69e8ba39ff55",
+      "id": "ccd6915e-3372-4e17-8ee8-42c586dc0ca4",
       "name": "set — set: switches the key on, off and back to allow for an acc",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -49,7 +49,7 @@
         "resource": "developerKeyAccountBinding",
         "operation": "set",
         "accountId": "={{ $('Config').first().json.accountId }}",
-        "developerKeyId": "10000000000087",
+        "developerKeyId": "10000000000160",
         "workflowState": "on"
       },
       "credentials": {
@@ -63,7 +63,7 @@
       "executeOnce": true
     },
     {
-      "id": "4ed95601-86cd-4cfa-984a-5b05bc2adaed",
+      "id": "d9704b44-675c-4f9b-871d-2a9df66992e4",
       "name": "set — set: switches the key on, off and back to allow for an acc (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -90,7 +90,7 @@
       "executeOnce": true
     },
     {
-      "id": "e56f3644-a29d-436c-9baf-53450df8db0a",
+      "id": "6ccfe842-1eaf-40ea-b8da-84f6e1529a95",
       "name": "set — set: switches the key on, off and back to allow for an acc (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

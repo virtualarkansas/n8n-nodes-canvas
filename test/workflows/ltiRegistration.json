@@ -2,7 +2,7 @@
   "name": "Canvas battery — ltiRegistration",
   "nodes": [
     {
-      "id": "f48cf2eb-c26e-46e9-aa8e-5970e4786c85",
+      "id": "d98bf705-e830-4f96-adf9-9cc7eacd2e3d",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "facd7676-ca6d-47c9-b5ea-a8349f6b9e19",
+      "id": "ec77bde1-86df-4ef3-a719-99a884eaab07",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,13 +25,13 @@
         "assignments": {
           "assignments": [
             {
-              "id": "045ac908-eb37-4251-8988-3500d011ba78",
+              "id": "8c10a168-d9cb-4f26-b61c-83ec83de0fba",
               "name": "accountId",
               "value": "1",
               "type": "string"
             },
             {
-              "id": "56327f29-65ec-480f-bf99-021d25574230",
+              "id": "4fc55b63-4dbb-4ff6-8e4e-8c4e96e20246",
               "name": "subAccountId",
               "value": "3",
               "type": "string"
@@ -42,7 +42,7 @@
       }
     },
     {
-      "id": "a828b626-4b73-4b16-9dbf-2197be1446a2",
+      "id": "401e45a6-82c1-42cf-9c5d-bac7b23dc8aa",
       "name": "create — create: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -55,13 +55,13 @@
         "resource": "ltiRegistration",
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountId }}",
-        "configuration": "{\"title\":\"Battery tool ltiregf44be898.lti.example.com\",\"description\":\"LTI 1.3 tool registered by the test battery\",\"target_link_uri\":\"https://ltiregf44be898.lti.example.com/launch\",\"domain\":\"ltiregf44be898.lti.example.com\",\"oidc_initiation_url\":\"https://ltiregf44be898.lti.example.com/oidc\",\"redirect_uris\":[\"https://ltiregf44be898.lti.example.com/redirect\"],\"scopes\":[\"https://purl.imsglobal.org/spec/lti-ags/scope/lineitem\",\"https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly\",\"https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly\",\"https://purl.imsglobal.org/spec/lti-ags/scope/score\",\"https://canvas.instructure.com/lti-ags/progress/scope/show\"],\"placements\":[{\"placement\":\"course_navigation\",\"enabled\":true,\"text\":\"Nav from configuration\"},{\"placement\":\"link_selection\",\"enabled\":true,\"message_type\":\"LtiDeepLinkingRequest\"}],\"launch_settings\":{},\"public_jwk_url\":\"https://ltiregf44be898.lti.example.com/jwks\"}",
+        "configuration": "{\"title\":\"Battery tool ltireg21fe220e.lti.example.com\",\"description\":\"LTI 1.3 tool registered by the test battery\",\"target_link_uri\":\"https://ltireg21fe220e.lti.example.com/launch\",\"domain\":\"ltireg21fe220e.lti.example.com\",\"oidc_initiation_url\":\"https://ltireg21fe220e.lti.example.com/oidc\",\"redirect_uris\":[\"https://ltireg21fe220e.lti.example.com/redirect\"],\"scopes\":[\"https://purl.imsglobal.org/spec/lti-ags/scope/lineitem\",\"https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly\",\"https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly\",\"https://purl.imsglobal.org/spec/lti-ags/scope/score\",\"https://canvas.instructure.com/lti-ags/progress/scope/show\"],\"placements\":[{\"placement\":\"course_navigation\",\"enabled\":true,\"text\":\"Nav from configuration\"},{\"placement\":\"link_selection\",\"enabled\":true,\"message_type\":\"LtiDeepLinkingRequest\"}],\"launch_settings\":{},\"public_jwk_url\":\"https://ltireg21fe220e.lti.example.com/jwks\"}",
         "additionalFields": {
-          "name": "=Battery Registration ltiregf44be898 Ünïcødé 登録 \"quoted\" & <b>tags</b> {{ $execution.id }}-1",
+          "name": "=Battery Registration ltireg21fe220e Ünïcødé 登録 \"quoted\" & <b>tags</b> {{ $execution.id }}-1",
           "admin_nickname": "Nickname with emoji 🧩",
           "vendor": "Battery & Sons",
           "description": "Registration <i>description</i>",
-          "unified_tool_id": "utid-ltiregf44be898",
+          "unified_tool_id": "utid-ltireg21fe220e",
           "workflow_state": "on",
           "overlay": "{\"title\": \"Overlaid title\", \"disabled_placements\": [\"course_navigation\"]}"
         }
@@ -77,7 +77,7 @@
       "executeOnce": true
     },
     {
-      "id": "0dcf6d31-e6e7-4722-a149-a83a4c44e429",
+      "id": "0b72e06b-9253-4825-97b1-e804cbbcfd7e",
       "name": "get — get: returns the registration with every include",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -113,7 +113,7 @@
       "executeOnce": true
     },
     {
-      "id": "b81fd68b-e6c7-4a82-b2e3-d2601573e3f0",
+      "id": "6b49920e-65c2-4833-8117-0a751b718976",
       "name": "get — get: returns the registration with every include (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -139,7 +139,7 @@
       "executeOnce": true
     },
     {
-      "id": "f6c4cddc-e23d-4f8f-bf74-d73b4a66ae3b",
+      "id": "66a037c0-9f3f-4355-a4ea-1ca9580639cb",
       "name": "getByClientId — getByClientId and getByUnifiedToolId find the same registrat",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -152,7 +152,7 @@
         "resource": "ltiRegistration",
         "operation": "getByClientId",
         "accountId": "={{ $('Config').first().json.accountId }}",
-        "clientId": "10000000000079"
+        "clientId": "10000000000151"
       },
       "credentials": {
         "canvasApi": {
@@ -165,7 +165,7 @@
       "executeOnce": true
     },
     {
-      "id": "9afa9cd6-3276-4e59-9c56-aec7cb037314",
+      "id": "84e29035-818c-4d4c-9ac9-0a0b54615494",
       "name": "getByUnifiedToolId — getByClientId and getByUnifiedToolId find the same registrat",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -178,7 +178,7 @@
         "resource": "ltiRegistration",
         "operation": "getByUnifiedToolId",
         "accountId": "={{ $('Config').first().json.accountId }}",
-        "unifiedToolId": "utid-ltiregf44be898"
+        "unifiedToolId": "utid-ltireg21fe220e"
       },
       "credentials": {
         "canvasApi": {
@@ -191,7 +191,7 @@
       "executeOnce": true
     },
     {
-      "id": "54120505-9902-4a19-856f-30235c3fb3f9",
+      "id": "0c3e049c-4ac9-45a4-ad6f-92060a4a2b76",
       "name": "getAll — getAll: unwraps the list, pages, searches, sorts and include",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -224,7 +224,7 @@
       "executeOnce": true
     },
     {
-      "id": "2b1c1c5e-aa7f-4ef0-a8ae-70b191adaf78",
+      "id": "88c1e53d-1ec4-4b7a-b54e-7b247b4ced8a",
       "name": "getAll — getAll: unwraps the list, pages, searches, sorts and include (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -253,7 +253,7 @@
       "executeOnce": true
     },
     {
-      "id": "d1623789-6663-4ac6-ac3f-1dfe592987a3",
+      "id": "84efbdd8-1dd7-4405-8591-e689936fe0be",
       "name": "getAll — getAll: unwraps the list, pages, searches, sorts and include (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -267,7 +267,7 @@
         "operation": "getAll",
         "accountId": "={{ $('Config').first().json.accountId }}",
         "options": {
-          "query": "ltiregf44be898",
+          "query": "ltireg21fe220e",
           "sort": "name",
           "dir": "asc",
           "include": [
@@ -291,7 +291,7 @@
       "executeOnce": true
     },
     {
-      "id": "7ab81e5b-a00c-437a-896b-f91dc1487174",
+      "id": "bdf91305-38e9-4037-b9f2-dbd44f8cf9d6",
       "name": "getAll — getAll: unwraps the list, pages, searches, sorts and include (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -305,7 +305,7 @@
         "operation": "getAll",
         "accountId": "={{ $('Config').first().json.accountId }}",
         "options": {
-          "query": "ltiregf44be898 vendor",
+          "query": "ltireg21fe220e vendor",
           "sort": "name",
           "dir": "desc"
         }
@@ -321,7 +321,7 @@
       "executeOnce": true
     },
     {
-      "id": "6396f426-e491-4d04-8494-80c853c5772d",
+      "id": "a19d9086-c5e7-4bf8-8466-283d6c7fd12b",
       "name": "getAll — getAll: unwraps the list, pages, searches, sorts and include (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -335,7 +335,7 @@
         "operation": "getAll",
         "accountId": "={{ $('Config').first().json.accountId }}",
         "options": {
-          "query": "no-such-registration-ltiregf44be898"
+          "query": "no-such-registration-ltireg21fe220e"
         }
       },
       "credentials": {
@@ -349,7 +349,7 @@
       "executeOnce": true
     },
     {
-      "id": "45cd391e-af8c-47ff-8f7a-b67844ec1a59",
+      "id": "4268c9c7-f97d-4dd9-88cb-da78ffe620fd",
       "name": "update — update: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -364,12 +364,12 @@
         "accountId": "={{ $('Config').first().json.accountId }}",
         "registrationId": "={{ $('getAll — getAll: unwraps the list, pages, searches, sorts and include (3)').first().json.id }}",
         "updateFields": {
-          "name": "=Battery Registration ltiregf44be898 Ünïcødé 登録 \"quoted\" & <b>tags</b> {{ $execution.id }}-1 (renamed)",
+          "name": "=Battery Registration ltireg21fe220e Ünïcødé 登録 \"quoted\" & <b>tags</b> {{ $execution.id }}-1 (renamed)",
           "admin_nickname": "Second nickname",
           "vendor": "Second vendor",
           "description": "Second description",
-          "comment": "Changed by the battery ltiregf44be898",
-          "configuration": "{\"title\":\"Second title\",\"description\":\"LTI 1.3 tool registered by the test battery\",\"target_link_uri\":\"https://ltiregf44be898.lti.example.com/launch\",\"domain\":\"ltiregf44be898.lti.example.com\",\"oidc_initiation_url\":\"https://ltiregf44be898.lti.example.com/oidc\",\"redirect_uris\":[\"https://ltiregf44be898.lti.example.com/redirect\"],\"scopes\":[\"https://purl.imsglobal.org/spec/lti-ags/scope/lineitem\",\"https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly\",\"https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly\",\"https://purl.imsglobal.org/spec/lti-ags/scope/score\",\"https://canvas.instructure.com/lti-ags/progress/scope/show\"],\"placements\":[{\"placement\":\"course_navigation\",\"enabled\":true,\"text\":\"Second nav\"}],\"launch_settings\":{},\"public_jwk_url\":\"https://ltiregf44be898.lti.example.com/jwks2\"}",
+          "comment": "Changed by the battery ltireg21fe220e",
+          "configuration": "{\"title\":\"Second title\",\"description\":\"LTI 1.3 tool registered by the test battery\",\"target_link_uri\":\"https://ltireg21fe220e.lti.example.com/launch\",\"domain\":\"ltireg21fe220e.lti.example.com\",\"oidc_initiation_url\":\"https://ltireg21fe220e.lti.example.com/oidc\",\"redirect_uris\":[\"https://ltireg21fe220e.lti.example.com/redirect\"],\"scopes\":[\"https://purl.imsglobal.org/spec/lti-ags/scope/lineitem\",\"https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly\",\"https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly\",\"https://purl.imsglobal.org/spec/lti-ags/scope/score\",\"https://canvas.instructure.com/lti-ags/progress/scope/show\"],\"placements\":[{\"placement\":\"course_navigation\",\"enabled\":true,\"text\":\"Second nav\"}],\"launch_settings\":{},\"public_jwk_url\":\"https://ltireg21fe220e.lti.example.com/jwks2\"}",
           "overlay": "{\"title\": \"Second overlaid title\", \"disabled_scopes\": [\"https://purl.imsglobal.org/spec/lti-ags/scope/score\"]}",
           "workflow_state": "off",
           "lock_deploying": true
@@ -386,7 +386,7 @@
       "executeOnce": true
     },
     {
-      "id": "7672ac9d-45ed-4965-ac68-02b169f770a9",
+      "id": "482aacff-3bd1-42bc-8ccf-ed3977e406ba",
       "name": "update — update: an untouched JSON field ({}) does not wipe the con",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -418,7 +418,7 @@
       "executeOnce": true
     },
     {
-      "id": "2b0cc485-ccef-419e-a51c-febd87cde6c4",
+      "id": "75b1654b-c0c5-4af6-b37f-b545dec8ffed",
       "name": "bind — bind: installs a Site Admin registration in the root account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -431,7 +431,7 @@
         "resource": "ltiRegistration",
         "operation": "bind",
         "accountId": "={{ $('Config').first().json.accountId }}",
-        "registrationId": "19",
+        "registrationId": "44",
         "workflowState": "on"
       },
       "credentials": {
@@ -445,7 +445,7 @@
       "executeOnce": true
     },
     {
-      "id": "e9156a45-90dc-4603-af24-1e453fd4bb0b",
+      "id": "884f170e-40ed-4313-bd3e-0e203d99de93",
       "name": "bind — bind: installs a Site Admin registration in the root account (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -472,7 +472,7 @@
       "executeOnce": true
     },
     {
-      "id": "9141f99d-d67a-47d9-8717-2b22fe59623b",
+      "id": "3b099c14-54a7-4206-8111-092f10df2a0b",
       "name": "update — Workflow State)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -501,7 +501,7 @@
       "executeOnce": true
     },
     {
-      "id": "875e633f-d56e-4ea2-9294-77bb194ed816",
+      "id": "54921fe1-89fa-4f1c-aea3-fc5a2da48842",
       "name": "getHistory — getHistory and getOverlayHistory: show the changes made abov",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -530,7 +530,7 @@
       "executeOnce": true
     },
     {
-      "id": "f746f205-a747-40e4-acfb-f54339899ea7",
+      "id": "18a3b31a-95c9-4d6c-be55-0579d424f18c",
       "name": "getOverlayHistory — getHistory and getOverlayHistory: show the changes made abov",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -559,7 +559,7 @@
       "executeOnce": true
     },
     {
-      "id": "677cb7ed-e6ec-41c3-ada3-62685a57d740",
+      "id": "51cc556e-0834-4f9a-b756-ed2c540e8bea",
       "name": "getOverlayHistory — getHistory and getOverlayHistory: show the changes made abov (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -588,7 +588,7 @@
       "executeOnce": true
     },
     {
-      "id": "5513252e-83e7-4a64-8df9-bb82b7be0922",
+      "id": "c24a0dec-abc4-4017-b73a-0fed871119e8",
       "name": "reset — reset: removes every customization of the overlay",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -614,7 +614,7 @@
       "executeOnce": true
     },
     {
-      "id": "b411f876-fe20-4e31-b260-b7a2d01ab2ae",
+      "id": "dc56fc9b-caa1-453e-b859-deb3a2e635cd",
       "name": "reset — reset: removes every customization of the overlay (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -640,7 +640,7 @@
       "executeOnce": true
     },
     {
-      "id": "a506091b-259c-46cf-883e-54996621d970",
+      "id": "a7a3ea50-b3d7-44a0-82e0-0f035505004e",
       "name": "getAll — errors: sub-accounts are read-only, students have no access,",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -654,7 +654,7 @@
         "operation": "getAll",
         "accountId": "={{ $('Config').first().json.subAccountId }}",
         "options": {
-          "query": "ltiregf44be898"
+          "query": "ltireg21fe220e"
         }
       },
       "credentials": {
@@ -668,7 +668,7 @@
       "executeOnce": true
     },
     {
-      "id": "f79ad88a-5aaf-45ab-a12a-afc6a8541e5a",
+      "id": "b9c97fee-99fa-4df0-9095-4dc7337fb2c1",
       "name": "delete — delete: removes the registration",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

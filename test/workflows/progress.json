@@ -2,7 +2,7 @@
   "name": "Canvas battery — progress",
   "nodes": [
     {
-      "id": "f4499919-85fd-423d-a6cb-ee7c95602fc4",
+      "id": "fe5f39ea-e537-477f-afd3-129040aa7087",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "aa61317a-859a-47a1-b722-6eafdae155b2",
+      "id": "9215f165-fb3c-49ed-9487-69d8d4ca167c",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "99e5fa03-3639-4670-ab80-de9b94bd95a5",
+      "id": "e0d499f2-8a78-4077-b3f5-697c483b34a4",
       "name": "get — create (course copy): copies everything and shifts the dates",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,7 +41,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "562"
+        "progressId": "1419"
       },
       "credentials": {
         "canvasApi": {
@@ -54,7 +54,7 @@
       "executeOnce": true
     },
     {
-      "id": "7c01347e-c0f6-42ce-af14-5c75679c8bc9",
+      "id": "48520b66-8755-406f-a6e8-a33c56fbeec3",
       "name": "get — create (course copy): Select copies only the chosen object",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -66,7 +66,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "563"
+        "progressId": "1420"
       },
       "credentials": {
         "canvasApi": {
@@ -79,7 +79,7 @@
       "executeOnce": true
     },
     {
-      "id": "440227ee-3c72-42e0-893c-c4d1280d67dc",
+      "id": "07aee2f1-f342-4c0a-ac0b-c3533a2991ce",
       "name": "get — create (course copy): module insertion, assignment group, re",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -91,7 +91,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "564"
+        "progressId": "1421"
       },
       "credentials": {
         "canvasApi": {
@@ -104,7 +104,7 @@
       "executeOnce": true
     },
     {
-      "id": "5b4d22ee-fcf9-47a2-bec1-878ff2b30f60",
+      "id": "5087a1ca-b2d8-412e-9f01-c4a020a047a1",
       "name": "get — selective import: wait for the selection, list the content, ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -116,7 +116,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "565"
+        "progressId": "1422"
       },
       "credentials": {
         "canvasApi": {
@@ -129,7 +129,7 @@
       "executeOnce": true
     },
     {
-      "id": "d314b5c2-a088-4e6a-8d8d-69f7c8c708b8",
+      "id": "f5e20a40-6c10-47e3-a812-d82d9572596e",
       "name": "get — create (Canvas cartridge): imports a finished content export",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -141,7 +141,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "566"
+        "progressId": "1423"
       },
       "credentials": {
         "canvasApi": {
@@ -154,7 +154,7 @@
       "executeOnce": true
     },
     {
-      "id": "1b4a596b-4ec3-4e2f-b3a9-fe74a044c10b",
+      "id": "1d05cabd-d776-41ba-97a2-eca327b4a842",
       "name": "get — create (ZIP file): announces an upload, and unzips the file ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -166,7 +166,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "567"
+        "progressId": "1425"
       },
       "credentials": {
         "canvasApi": {
@@ -179,7 +179,7 @@
       "executeOnce": true
     },
     {
-      "id": "353982f0-7c6c-428f-b8b9-3d352b99eee3",
+      "id": "3932378f-940b-464f-a7ed-c414d85b6c90",
       "name": "get — create (account): a cartridge import into an account, by fil",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -191,7 +191,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "570"
+        "progressId": "1433"
       },
       "credentials": {
         "canvasApi": {
@@ -204,8 +204,8 @@
       "executeOnce": true
     },
     {
-      "id": "17c70ed6-78c5-4022-bf4f-b91075a5ced8",
-      "name": "get — bulkEnroll: enrolls every user in every course as a student ",
+      "id": "41b1e38b-4dad-43de-968b-7130ed0c32f0",
+      "name": "get — update (course): a selective copy, with date shifting and pl",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
@@ -216,7 +216,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "628"
+        "progressId": "1443"
       },
       "credentials": {
         "canvasApi": {
@@ -229,8 +229,8 @@
       "executeOnce": true
     },
     {
-      "id": "fba4932d-fa16-45ac-b3fd-ee93bc9c93ad",
-      "name": "get — get: follows a background job from queued to completed",
+      "id": "264042d1-b94b-4fbc-9e70-db38f244d77c",
+      "name": "get — update, getSelectiveData (account): a cartridge from a conte",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
@@ -241,7 +241,7 @@
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "724"
+        "progressId": "1459"
       },
       "credentials": {
         "canvasApi": {
@@ -254,8 +254,8 @@
       "executeOnce": true
     },
     {
-      "id": "a902e741-9aef-414f-8742-1ade61f982ac",
-      "name": "cancel — cancel: marks the job as failed and stores the message",
+      "id": "241da75c-3803-42cf-a775-16c8ef4ec7fd",
+      "name": "get — create (course, Common Cartridge): exports the whole course;",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
@@ -265,8 +265,311 @@
       "parameters": {
         "authentication": "accessToken",
         "resource": "progress",
+        "operation": "get",
+        "progressId": "1468"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5cf70b88-adf4-4351-a798-d601263f57d7",
+      "name": "get — create (course, Common Cartridge): every Select field limits",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "1470"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bd8917d3-b081-4c18-8d66-bc4c0a493954",
+      "name": "get — create (course, QTI): exports quizzes, all of them or the se",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "1473"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "94514177-069f-40cf-be31-8eca453a9b44",
+      "name": "get — create (course, QTI): exports quizzes, all of them or the se (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "1474"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "85f9cbcf-d838-4d45-9b36-6dd92ffa77e5",
+      "name": "get — create (course, ZIP): exports files, all of them, selected f",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "1476"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f862808d-5c36-43bf-ab92-a59803e464b7",
+      "name": "get — create (course, ZIP): exports files, all of them, selected f (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "1478"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "63d72070-ea96-46d7-a26f-d0f0e2480733",
+      "name": "get — create (course, ZIP): exports files, all of them, selected f (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "1480"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5d0730d4-b796-4155-9ebf-7b1ede3ee3f7",
+      "name": "get — create (group): zips the files of a group",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "1483"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "762e5212-c71d-46dc-97b8-01d5f4c8fb11",
+      "name": "get — bulkEnroll: enrolls every user in every course as a student ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "1514"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c04ba658-c99e-490b-9275-dad396a57a29",
+      "name": "get — get: follows a background job from queued to completed",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "1612"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "832e3340-4f31-4110-82d0-f2ff5a99cf5f",
+      "name": "get — get, waitForCompletion, cancel: accept the progress_url a ba",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "http://localhost:3000/api/v1/progress/1613"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7353beb7-d9db-4a89-b0da-90cac1682d71",
+      "name": "cancel — get, waitForCompletion, cancel: accept the progress_url a ba",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
         "operation": "cancel",
-        "progressId": "725",
+        "progressId": "/api/v1/progress/1613?x=1",
+        "options": {
+          "message": "by URL"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3755d5a0-52bb-49c4-9021-2e96eca36561",
+      "name": "cancel — cancel: marks the job as failed and stores the message",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "cancel",
+        "progressId": "1614",
         "options": {
           "message": "Cancelled by the battery – \"quoted\" & <b>tags</b> 🛑"
         }
@@ -282,19 +585,19 @@
       "executeOnce": true
     },
     {
-      "id": "1c47f016-c89f-4aa1-9cf7-fcced0a0e126",
+      "id": "026bb0be-1bd0-40a1-8b1b-5d2d021fc1ba",
       "name": "cancel — cancel: without a message, on a job nothing touches any more",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
         1500,
-        220
+        660
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "cancel",
-        "progressId": "726"
+        "progressId": "1615"
       },
       "credentials": {
         "canvasApi": {
@@ -307,219 +610,19 @@
       "executeOnce": true
     },
     {
-      "id": "f2539f31-a586-438c-bcc7-fc69eef927ea",
+      "id": "17d2aa9b-dbcb-43b5-b73a-d994cc1ad21a",
       "name": "get — getLti: the progress of an LTI score upload, readable only w",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
         1760,
-        220
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "progress",
-        "operation": "get",
-        "progressId": "729"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "02dae866-de8e-418d-b59c-02e3957fb551",
-      "name": "get — create (course, Common Cartridge): exports the whole course;",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        460,
-        440
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "progress",
-        "operation": "get",
-        "progressId": "738"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "871d9663-1d7c-4b16-96f1-a50c914c76ba",
-      "name": "get — create (course, Common Cartridge): every Select field limits",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        720,
-        440
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "progress",
-        "operation": "get",
-        "progressId": "739"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "9ff5c301-a186-493a-b12a-d123d69fc5b9",
-      "name": "get — create (course, QTI): exports quizzes, all of them or the se",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        980,
-        440
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "progress",
-        "operation": "get",
-        "progressId": "740"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "4f4e358b-8bea-428a-aaf7-0297ccfaf38d",
-      "name": "get — create (course, QTI): exports quizzes, all of them or the se (2)",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1240,
-        440
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "progress",
-        "operation": "get",
-        "progressId": "741"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "bb8bde71-1d1f-4fc3-9435-b6afda058a39",
-      "name": "get — create (course, ZIP): exports files, all of them, selected f",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1500,
-        440
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "progress",
-        "operation": "get",
-        "progressId": "742"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "b82cf8ac-bf55-40f6-8952-358ec7a5b839",
-      "name": "get — create (course, ZIP): exports files, all of them, selected f (2)",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1760,
-        440
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "progress",
-        "operation": "get",
-        "progressId": "743"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "803795ff-c844-4eeb-9274-5751ae9ae4e1",
-      "name": "get — create (course, ZIP): exports files, all of them, selected f (3)",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        460,
         660
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "progress",
         "operation": "get",
-        "progressId": "744"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "c4c075e1-716d-4076-8358-69ea0fc9e39e",
-      "name": "get — create (group): zips the files of a group",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        720,
-        660
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "progress",
-        "operation": "get",
-        "progressId": "745"
+        "progressId": "1618"
       },
       "credentials": {
         "canvasApi": {
@@ -625,58 +728,25 @@
       "main": [
         [
           {
-            "node": "get — bulkEnroll: enrolls every user in every course as a student ",
+            "node": "get — update (course): a selective copy, with date shifting and pl",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "get — bulkEnroll: enrolls every user in every course as a student ": {
+    "get — update (course): a selective copy, with date shifting and pl": {
       "main": [
         [
           {
-            "node": "get — get: follows a background job from queued to completed",
+            "node": "get — update, getSelectiveData (account): a cartridge from a conte",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "get — get: follows a background job from queued to completed": {
-      "main": [
-        [
-          {
-            "node": "cancel — cancel: marks the job as failed and stores the message",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "cancel — cancel: marks the job as failed and stores the message": {
-      "main": [
-        [
-          {
-            "node": "cancel — cancel: without a message, on a job nothing touches any more",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "cancel — cancel: without a message, on a job nothing touches any more": {
-      "main": [
-        [
-          {
-            "node": "get — getLti: the progress of an LTI score upload, readable only w",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "get — getLti: the progress of an LTI score upload, readable only w": {
+    "get — update, getSelectiveData (account): a cartridge from a conte": {
       "main": [
         [
           {
@@ -758,6 +828,83 @@
         [
           {
             "node": "get — create (group): zips the files of a group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (group): zips the files of a group": {
+      "main": [
+        [
+          {
+            "node": "get — bulkEnroll: enrolls every user in every course as a student ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — bulkEnroll: enrolls every user in every course as a student ": {
+      "main": [
+        [
+          {
+            "node": "get — get: follows a background job from queued to completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: follows a background job from queued to completed": {
+      "main": [
+        [
+          {
+            "node": "get — get, waitForCompletion, cancel: accept the progress_url a ba",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get, waitForCompletion, cancel: accept the progress_url a ba": {
+      "main": [
+        [
+          {
+            "node": "cancel — get, waitForCompletion, cancel: accept the progress_url a ba",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cancel — get, waitForCompletion, cancel: accept the progress_url a ba": {
+      "main": [
+        [
+          {
+            "node": "cancel — cancel: marks the job as failed and stores the message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cancel — cancel: marks the job as failed and stores the message": {
+      "main": [
+        [
+          {
+            "node": "cancel — cancel: without a message, on a job nothing touches any more",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cancel — cancel: without a message, on a job nothing touches any more": {
+      "main": [
+        [
+          {
+            "node": "get — getLti: the progress of an LTI score upload, readable only w",
             "type": "main",
             "index": 0
           }

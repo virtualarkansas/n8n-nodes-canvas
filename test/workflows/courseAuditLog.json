@@ -2,7 +2,7 @@
   "name": "Canvas battery — courseAuditLog",
   "nodes": [
     {
-      "id": "7b8673bd-7808-4fa9-b3cd-0bee8858d3cc",
+      "id": "f0449bc2-0be5-4f2b-8626-b3874ce8a4ac",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "98569587-83de-47c4-85b5-d1f6100fd374",
+      "id": "890f0ba9-93b1-44bc-86c5-8366504b3cfd",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "baf4c2e7-04e2-4f94-ac02-2244b96d8436",
+              "id": "ebecec65-120e-4f27-a0eb-075d249aebba",
               "name": "accountId",
               "value": "1",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "e8eeae70-cf81-4567-9c34-86e9921d342f",
+      "id": "3a310dcf-cbcc-4b69-9084-ff90fdf1be7f",
       "name": "getByCourse — getByCourse: lists what happened to the course",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -48,7 +48,7 @@
         "authentication": "accessToken",
         "resource": "courseAuditLog",
         "operation": "getByCourse",
-        "courseId": "321",
+        "courseId": "717",
         "pagination": {
           "returnAll": true
         }
@@ -64,12 +64,106 @@
       "executeOnce": true
     },
     {
-      "id": "809b3161-6a8b-4d36-9012-280a86c38729",
-      "name": "getByAccount — getByAccount: pages through the events of every course in th",
+      "id": "6d251f04-5e17-4ff0-8ab2-6d59d56c9ffc",
+      "name": "getByCourse — getByCourse: Start Time and End Time narrow the events exact",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
         720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "courseAuditLog",
+        "operation": "getByCourse",
+        "courseId": "717",
+        "options": {
+          "start_time": "2026-11-15T16:38:17.000Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "31a3bca5-05ff-4e13-bb86-96997ba3ee6f",
+      "name": "getByCourse — getByCourse: Start Time and End Time narrow the events exact (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "courseAuditLog",
+        "operation": "getByCourse",
+        "courseId": "717",
+        "options": {
+          "end_time": "2026-11-15T16:38:16Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7b8e0565-4db0-4490-b37c-36ddecb3748b",
+      "name": "getByCourse — getByCourse: Start Time and End Time narrow the events exact (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "courseAuditLog",
+        "operation": "getByCourse",
+        "courseId": "717",
+        "options": {
+          "start_time": "2026-11-15T16:38:16Z",
+          "end_time": "2026-11-15T16:38:16Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "66c5d3ed-5871-4059-b533-aec1b845c6cd",
+      "name": "getByAccount — getByAccount: pages through the events of every course in th",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
         0
       ],
       "parameters": {
@@ -95,12 +189,12 @@
       "executeOnce": true
     },
     {
-      "id": "b548a0ee-a3b9-4b1f-9df4-1f7b39e2103d",
+      "id": "48bd713a-fe0c-4cde-8934-e17af4ab68e7",
       "name": "getByAccount — getByAccount: pages through the events of every course in th (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
+        1760,
         0
       ],
       "parameters": {
@@ -111,6 +205,68 @@
         "options": {
           "start_time": "2001-01-01T00:00:00Z",
           "end_time": "2001-02-01T00:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5454eb2c-957d-4c41-91cc-dacc4100f060",
+      "name": "getByCourse — every event carries its course, user and the course it was r",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "courseAuditLog",
+        "operation": "getByCourse",
+        "courseId": "732",
+        "pagination": {
+          "returnAll": true,
+          "perPage": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6ea88f0d-8f10-44ba-b2a0-1867c30cb500",
+      "name": "getByAccount — every event carries its course, user and the course it was r",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "courseAuditLog",
+        "operation": "getByAccount",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "includeLinked": false,
+        "options": {
+          "start_time": "2026-11-15T16:40:03Z"
+        },
+        "pagination": {
+          "perPage": 5,
+          "maxPages": 1
         }
       },
       "credentials": {
@@ -151,6 +307,39 @@
       "main": [
         [
           {
+            "node": "getByCourse — getByCourse: Start Time and End Time narrow the events exact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByCourse — getByCourse: Start Time and End Time narrow the events exact": {
+      "main": [
+        [
+          {
+            "node": "getByCourse — getByCourse: Start Time and End Time narrow the events exact (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByCourse — getByCourse: Start Time and End Time narrow the events exact (2)": {
+      "main": [
+        [
+          {
+            "node": "getByCourse — getByCourse: Start Time and End Time narrow the events exact (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByCourse — getByCourse: Start Time and End Time narrow the events exact (3)": {
+      "main": [
+        [
+          {
             "node": "getByAccount — getByAccount: pages through the events of every course in th",
             "type": "main",
             "index": 0
@@ -163,6 +352,28 @@
         [
           {
             "node": "getByAccount — getByAccount: pages through the events of every course in th (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByAccount — getByAccount: pages through the events of every course in th (2)": {
+      "main": [
+        [
+          {
+            "node": "getByCourse — every event carries its course, user and the course it was r",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getByCourse — every event carries its course, user and the course it was r": {
+      "main": [
+        [
+          {
+            "node": "getByAccount — every event carries its course, user and the course it was r",
             "type": "main",
             "index": 0
           }

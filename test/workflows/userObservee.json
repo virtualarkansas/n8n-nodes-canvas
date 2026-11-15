@@ -2,7 +2,7 @@
   "name": "Canvas battery — userObservee",
   "nodes": [
     {
-      "id": "0759a5f9-aa00-4a4e-a614-627ae35d01c1",
+      "id": "669cf957-cbf7-421e-bab1-ffe799ed1b96",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "1f8ef092-1ee5-4080-9a25-ec54ca6f8f3f",
+      "id": "a8f0bf5b-9475-4b62-b997-14ee2fd37b02",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "5a4b29d8-d35b-4643-a6ed-7e8b42eda2b7",
+              "id": "0ea3417a-b96e-4bf3-a030-90a81e457982",
               "name": "studentUserId",
               "value": "5",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "dfe6306e-61b4-405f-8592-c41411c3597e",
+      "id": "1f8a736f-a5fa-41a8-b613-8dd7af8edbe9",
       "name": "add — add: with a root account; adding the same observee twice is ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -48,8 +48,8 @@
         "authentication": "accessToken",
         "resource": "userObservee",
         "operation": "add",
-        "userId": "1414",
-        "observeeId": "1427",
+        "userId": "2257",
+        "observeeId": "2272",
         "additionalFields": {
           "rootAccountId": "1"
         }
@@ -65,7 +65,7 @@
       "executeOnce": true
     },
     {
-      "id": "f358e2c5-5252-49e7-aa75-f85d5232c633",
+      "id": "fc2433a7-54f3-4ee6-be56-dc8bb9e3ec7e",
       "name": "getAll — getAll: pages through the observees",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -77,7 +77,7 @@
         "authentication": "accessToken",
         "resource": "userObservee",
         "operation": "getAll",
-        "userId": "1414"
+        "userId": "2257"
       },
       "credentials": {
         "canvasApi": {
@@ -90,7 +90,7 @@
       "executeOnce": true
     },
     {
-      "id": "b900bd66-82e7-426e-940c-cd2289fa87b5",
+      "id": "b2e87dcc-bea1-43a6-b949-f0ee4b8e01e1",
       "name": "getAll — getAll: pages through the observees (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -102,7 +102,7 @@
         "authentication": "accessToken",
         "resource": "userObservee",
         "operation": "getAll",
-        "userId": "1414",
+        "userId": "2257",
         "additionalFields": {
           "include": [
             "avatar_url"
@@ -123,7 +123,7 @@
       "executeOnce": true
     },
     {
-      "id": "d8b87f43-744e-4845-a889-11b3f9ab60b7",
+      "id": "fae6388b-d716-421a-a180-8a05e86e5b2f",
       "name": "getAll — getAll: pages through the observees (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -135,7 +135,7 @@
         "authentication": "accessToken",
         "resource": "userObservee",
         "operation": "getAll",
-        "userId": "1414",
+        "userId": "2257",
         "pagination": {
           "perPage": 4,
           "maxPages": 2
@@ -152,7 +152,7 @@
       "executeOnce": true
     },
     {
-      "id": "9057f1de-3b6e-40fe-85dd-433c486c643b",
+      "id": "2d32c2a1-6849-4f08-b8f7-c1472b848b8a",
       "name": "listObservers — getAll and listObservers: the seeded observer and student se",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -185,7 +185,7 @@
       "executeOnce": true
     },
     {
-      "id": "36b34454-4c46-47b7-94be-878be355467d",
+      "id": "436668cc-4be2-4a5f-8f33-7be375b453bc",
       "name": "listObservers — getAll and listObservers: the seeded observer and student se (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -197,7 +197,7 @@
         "authentication": "accessToken",
         "resource": "userObservee",
         "operation": "listObservers",
-        "userId": "1414"
+        "userId": "2257"
       },
       "credentials": {
         "canvasApi": {
@@ -210,7 +210,7 @@
       "executeOnce": true
     },
     {
-      "id": "f8b2f025-532c-433b-94c0-776d5bc20347",
+      "id": "54735c79-5017-41ef-b45c-d918fac78d67",
       "name": "get — get and getObserver: return the linked user from either side",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -222,7 +222,7 @@
         "authentication": "accessToken",
         "resource": "userObservee",
         "operation": "get",
-        "userId": "1414",
+        "userId": "2257",
         "observeeId": "={{ $('getAll — getAll: pages through the observees (3)').first().json.id }}"
       },
       "credentials": {
@@ -236,7 +236,7 @@
       "executeOnce": true
     },
     {
-      "id": "82fe0c1e-d730-4810-ae15-13fbdb17b571",
+      "id": "e3fce846-70de-4e01-85b8-2e3a52e8e9c1",
       "name": "getObserver — get and getObserver: return the linked user from either side",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -249,7 +249,7 @@
         "resource": "userObservee",
         "operation": "getObserver",
         "userId": "={{ $('get — get and getObserver: return the linked user from either side').first().json.id }}",
-        "observerId": "1414"
+        "observerId": "2257"
       },
       "credentials": {
         "canvasApi": {
@@ -262,7 +262,7 @@
       "executeOnce": true
     },
     {
-      "id": "071555aa-516f-47cb-abda-f81b6737e3d7",
+      "id": "b69f9d78-eff9-4b79-bbe3-b0841678d33f",
       "name": "remove — remove: unlinks an observee; removing again is a 404",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -291,7 +291,7 @@
       "executeOnce": true
     },
     {
-      "id": "18320246-25df-4228-875e-62da666e6778",
+      "id": "b27cb1a2-c649-4355-8ff1-3a838669649b",
       "name": "addWithCredentials — addWithCredentials: the observees login and password create",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

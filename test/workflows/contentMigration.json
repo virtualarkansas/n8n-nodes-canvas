@@ -2,7 +2,7 @@
   "name": "Canvas battery — contentMigration",
   "nodes": [
     {
-      "id": "8fcbfe1d-6213-4216-abe0-4820874c45cf",
+      "id": "62e8bafd-c0d7-4a86-86b0-e334f1de4c50",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "26475745-55c7-4ee5-8f9a-945dfd483a48",
+      "id": "f32d0065-0c56-47e2-bd3a-1c79f27a3201",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "3bedaeba-94ba-4d63-9f4f-b079205f6bdf",
+              "id": "ddb3375b-d18f-41b2-9530-88ef2192df26",
               "name": "emptyCourseId",
               "value": "3",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "d6b7e006-9682-4a1d-b566-a61e0d225076",
+      "id": "a7e90395-a418-45d9-a758-02e75cc0ea11",
       "name": "listMigrators — listMigrators: what each context accepts",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -49,7 +49,7 @@
         "resource": "contentMigration",
         "operation": "listMigrators",
         "contextType": "course",
-        "courseId": "281"
+        "courseId": "718"
       },
       "credentials": {
         "canvasApi": {
@@ -62,7 +62,7 @@
       "executeOnce": true
     },
     {
-      "id": "5dc8b638-b5d8-4463-8ee4-d5f203b7ece8",
+      "id": "90440e1b-e48e-4964-b702-8723e10e89ce",
       "name": "listMigrators — listMigrators: what each context accepts (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -75,7 +75,7 @@
         "resource": "contentMigration",
         "operation": "listMigrators",
         "contextType": "account",
-        "accountId": "75"
+        "accountId": "207"
       },
       "credentials": {
         "canvasApi": {
@@ -88,7 +88,7 @@
       "executeOnce": true
     },
     {
-      "id": "341fbaa1-185d-404c-b7ff-be3012ff0f44",
+      "id": "afc45704-7af1-4915-ae2c-fc62ba2ea1b6",
       "name": "listMigrators — listMigrators: what each context accepts (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -101,7 +101,7 @@
         "resource": "contentMigration",
         "operation": "listMigrators",
         "contextType": "group",
-        "groupId": "232"
+        "groupId": "608"
       },
       "credentials": {
         "canvasApi": {
@@ -114,7 +114,7 @@
       "executeOnce": true
     },
     {
-      "id": "0d4a6bc8-5a9f-411c-af11-3f7ab424a8ea",
+      "id": "6b1fa4ff-dba1-438b-b2ce-14e0bc603963",
       "name": "listMigrators — listMigrators: what each context accepts (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -140,7 +140,7 @@
       "executeOnce": true
     },
     {
-      "id": "97dc6f62-a301-4083-88ef-5637e3bf579d",
+      "id": "77cbaeb3-b714-419b-9416-cdd839558463",
       "name": "create — create (course copy): copies everything and shifts the dates",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -153,9 +153,9 @@
         "resource": "contentMigration",
         "operation": "create",
         "contextType": "course",
-        "courseId": "282",
+        "courseId": "719",
         "migrationType": "course_copy_importer",
-        "sourceCourseId": "281",
+        "sourceCourseId": "718",
         "additionalFields": {
           "date_shift_options_shift_dates": true,
           "date_shift_options_old_start_date": "2030-03-01",
@@ -176,7 +176,7 @@
       "executeOnce": true
     },
     {
-      "id": "ef4027ee-ae00-45cf-a3e8-f0895a3100b7",
+      "id": "649e349e-d1b3-4b21-8653-827ad162a327",
       "name": "get — create (course copy): copies everything and shifts the dates",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -189,7 +189,7 @@
         "resource": "contentMigration",
         "operation": "get",
         "contextType": "course",
-        "courseId": "282",
+        "courseId": "719",
         "contentMigrationId": "={{ $('create — create (course copy): copies everything and shifts the dates').first().json.id }}"
       },
       "credentials": {
@@ -203,7 +203,7 @@
       "executeOnce": true
     },
     {
-      "id": "46d79c90-45b7-44af-9899-c5e366991936",
+      "id": "35698232-6c02-461b-b3f8-65097dc79e4a",
       "name": "getAssetIdMapping — getAssetIdMapping: which ID each copied object has in the de",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -215,7 +215,7 @@
         "authentication": "accessToken",
         "resource": "contentMigration",
         "operation": "getAssetIdMapping",
-        "courseId": "282",
+        "courseId": "719",
         "contentMigrationId": "={{ $('get — create (course copy): copies everything and shifts the dates').first().json.id }}"
       },
       "credentials": {
@@ -229,7 +229,7 @@
       "executeOnce": true
     },
     {
-      "id": "5d1fe063-cd85-4a09-8708-7cbb62402e9f",
+      "id": "94e64fca-6fcc-4d98-8c82-3661f1778d1a",
       "name": "create — create (course copy): module insertion, assignment group, re",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -242,15 +242,15 @@
         "resource": "contentMigration",
         "operation": "create",
         "contextType": "course",
-        "courseId": "299",
+        "courseId": "721",
         "migrationType": "course_copy_importer",
-        "sourceCourseId": "281",
+        "sourceCourseId": "718",
         "additionalFields": {
-          "select": "{\"pages\":[\"379\"],\"assignments\":[\"1166\",\"1167\"]}",
-          "insert_into_module_id": "227",
+          "select": "{\"pages\":[\"544\"],\"assignments\":[\"1824\",\"1826\"]}",
+          "insert_into_module_id": "321",
           "insert_into_module_type": "page",
           "insert_into_module_position": 1,
-          "move_to_assignment_group_id": "333",
+          "move_to_assignment_group_id": "809",
           "date_shift_options_remove_dates": true,
           "importer_skips": [
             "all_course_settings",
@@ -273,7 +273,7 @@
       "executeOnce": true
     },
     {
-      "id": "700a180e-22f2-4059-8d41-bdc490902509",
+      "id": "c94c45d9-812e-49e8-9b1e-c7de7f7c5e07",
       "name": "create — selective import: wait for the selection, list the content, ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -286,9 +286,9 @@
         "resource": "contentMigration",
         "operation": "create",
         "contextType": "course",
-        "courseId": "301",
+        "courseId": "722",
         "migrationType": "course_copy_importer",
-        "sourceCourseId": "281",
+        "sourceCourseId": "718",
         "additionalFields": {
           "selective_import": true
         }
@@ -304,7 +304,7 @@
       "executeOnce": true
     },
     {
-      "id": "cba36476-4af0-4f91-9a20-899c7776deaf",
+      "id": "1c6c38c0-6274-4b03-8120-37b1f71d348c",
       "name": "getSelectiveData — selective import: wait for the selection, list the content, ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -317,7 +317,7 @@
         "resource": "contentMigration",
         "operation": "getSelectiveData",
         "contextType": "course",
-        "courseId": "301",
+        "courseId": "722",
         "contentMigrationId": "={{ $('create — selective import: wait for the selection, list the content, ').first().json.id }}"
       },
       "credentials": {
@@ -331,7 +331,7 @@
       "executeOnce": true
     },
     {
-      "id": "ff732536-7b8c-467b-a1b0-c07ed8c5407b",
+      "id": "a07c9e8b-d5a3-4184-9549-22045acf0dd0",
       "name": "getSelectiveData — selective import: wait for the selection, list the content,  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -344,7 +344,7 @@
         "resource": "contentMigration",
         "operation": "getSelectiveData",
         "contextType": "course",
-        "courseId": "301",
+        "courseId": "722",
         "contentMigrationId": "={{ $('create — selective import: wait for the selection, list the content, ').first().json.id }}",
         "options": {
           "type": "wiki_pages"
@@ -361,7 +361,7 @@
       "executeOnce": true
     },
     {
-      "id": "ae2288f6-1cca-4064-804a-6f6ff204bb94",
+      "id": "d1679c2f-9a79-4117-9184-12b2a0a26f0a",
       "name": "get — selective import: wait for the selection, list the content, ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -374,7 +374,7 @@
         "resource": "contentMigration",
         "operation": "get",
         "contextType": "course",
-        "courseId": "301",
+        "courseId": "722",
         "contentMigrationId": "={{ $('create — selective import: wait for the selection, list the content, ').first().json.id }}"
       },
       "credentials": {
@@ -388,7 +388,7 @@
       "executeOnce": true
     },
     {
-      "id": "35398811-0b0c-4d90-b79c-ba208de2dc02",
+      "id": "b14a514e-c810-4844-b21a-ee26a85e151d",
       "name": "create — create (Canvas cartridge): imports a finished content export",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -401,10 +401,10 @@
         "resource": "contentMigration",
         "operation": "create",
         "contextType": "course",
-        "courseId": "302",
+        "courseId": "723",
         "migrationType": "canvas_cartridge_importer",
         "additionalFields": {
-          "content_export_id": "46"
+          "content_export_id": "201"
         }
       },
       "credentials": {
@@ -418,7 +418,7 @@
       "executeOnce": true
     },
     {
-      "id": "678ab338-48fc-4d61-8c7f-d7dc0756a381",
+      "id": "23f4284b-29c8-4533-98fe-4b5432496117",
       "name": "create — create (ZIP file): announces an upload, and unzips the file ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -431,10 +431,10 @@
         "resource": "contentMigration",
         "operation": "create",
         "contextType": "course",
-        "courseId": "306",
+        "courseId": "724",
         "migrationType": "zip_file_importer",
         "additionalFields": {
-          "folder_id": "894",
+          "folder_id": "1368",
           "pre_attachment_name": "battery.zip",
           "pre_attachment_size": 265
         }
@@ -450,7 +450,7 @@
       "executeOnce": true
     },
     {
-      "id": "7141425a-0277-471c-b778-98ea6c0e36e7",
+      "id": "982fe70b-40f3-4f48-92d5-7a16443753e1",
       "name": "create — create (group and user): ZIP imports into a groups and a us",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -463,10 +463,10 @@
         "resource": "contentMigration",
         "operation": "create",
         "contextType": "group",
-        "groupId": "232",
+        "groupId": "608",
         "migrationType": "zip_file_importer",
         "additionalFields": {
-          "folder_id": "897",
+          "folder_id": "1371",
           "pre_attachment_name": "group.zip",
           "pre_attachment_size": 131
         }
@@ -482,7 +482,7 @@
       "executeOnce": true
     },
     {
-      "id": "f2311965-b125-4578-b083-0f60dbe6edbb",
+      "id": "8e12ae48-23c1-4a9a-93d8-d60d5dbbb884",
       "name": "get — create (group and user): ZIP imports into a groups and a us",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -495,7 +495,7 @@
         "resource": "contentMigration",
         "operation": "get",
         "contextType": "group",
-        "groupId": "232",
+        "groupId": "608",
         "contentMigrationId": "={{ $('create — create (group and user): ZIP imports into a groups and a us').first().json.id }}"
       },
       "credentials": {
@@ -509,7 +509,7 @@
       "executeOnce": true
     },
     {
-      "id": "214ff98e-94de-4ee6-bf8e-0ca3c8bf46d3",
+      "id": "038af507-2fbb-4597-824f-bcfdbce68253",
       "name": "getAll — create (group and user): ZIP imports into a groups and a us",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -522,7 +522,7 @@
         "resource": "contentMigration",
         "operation": "getAll",
         "contextType": "group",
-        "groupId": "232"
+        "groupId": "608"
       },
       "credentials": {
         "canvasApi": {
@@ -535,7 +535,7 @@
       "executeOnce": true
     },
     {
-      "id": "686b9119-2a79-448b-bd6b-6d38ec8a4968",
+      "id": "192098dc-3d59-4131-9d30-1c8e5dd13df2",
       "name": "create — create (account): a cartridge import into an account, by fil",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -548,7 +548,7 @@
         "resource": "contentMigration",
         "operation": "create",
         "contextType": "account",
-        "accountId": "75",
+        "accountId": "207",
         "migrationType": "common_cartridge_importer",
         "additionalFields": {
           "file_url": "https://files.battery.invalid/course.imscc"
@@ -565,7 +565,7 @@
       "executeOnce": true
     },
     {
-      "id": "805d9eee-10b6-4f59-ac27-cddecc090566",
+      "id": "9f86ebd9-b0e6-406d-9bcf-574c116d873d",
       "name": "get — create (account): a cartridge import into an account, by fil",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -578,7 +578,7 @@
         "resource": "contentMigration",
         "operation": "get",
         "contextType": "account",
-        "accountId": "75",
+        "accountId": "207",
         "contentMigrationId": "={{ $('create — create (account): a cartridge import into an account, by fil').first().json.id }}"
       },
       "credentials": {
@@ -592,7 +592,7 @@
       "executeOnce": true
     },
     {
-      "id": "f51c7b3b-b006-4740-8143-c95acdef5da1",
+      "id": "c010d717-f134-442e-adfe-d1f01b958dde",
       "name": "getIssues — create (account): a cartridge import into an account, by fil",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -605,7 +605,7 @@
         "resource": "contentMigration",
         "operation": "getIssues",
         "contextType": "account",
-        "accountId": "75",
+        "accountId": "207",
         "contentMigrationId": "={{ $('get — create (account): a cartridge import into an account, by fil').first().json.id }}"
       },
       "credentials": {
@@ -619,7 +619,7 @@
       "executeOnce": true
     },
     {
-      "id": "05c0343d-4564-4103-8d8b-c650e1f78dc5",
+      "id": "272485c6-f8ff-4a51-b2c3-78748fbf7d6c",
       "name": "updateIssue — create (account): a cartridge import into an account, by fil",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -632,9 +632,9 @@
         "resource": "contentMigration",
         "operation": "updateIssue",
         "contextType": "account",
-        "accountId": "75",
+        "accountId": "207",
         "contentMigrationId": "={{ $('get — create (account): a cartridge import into an account, by fil').first().json.id }}",
-        "issueId": "6",
+        "issueId": "31",
         "issueState": "resolved"
       },
       "credentials": {
@@ -648,7 +648,7 @@
       "executeOnce": true
     },
     {
-      "id": "0285bee4-2a94-44fa-9767-0ed39eabda0e",
+      "id": "0e239a3b-7814-46fa-a4cd-87645e8a87b0",
       "name": "updateIssue — create (account): a cartridge import into an account, by fil (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -661,9 +661,9 @@
         "resource": "contentMigration",
         "operation": "updateIssue",
         "contextType": "account",
-        "accountId": "75",
+        "accountId": "207",
         "contentMigrationId": "={{ $('get — create (account): a cartridge import into an account, by fil').first().json.id }}",
-        "issueId": "6",
+        "issueId": "31",
         "issueState": "active"
       },
       "credentials": {
@@ -677,7 +677,7 @@
       "executeOnce": true
     },
     {
-      "id": "82262921-d000-4b6f-a0f6-87cff7c14758",
+      "id": "ae24a3e0-fedc-4601-9fd9-e77d1cf0e420",
       "name": "getAll — create (account): a cartridge import into an account, by fil",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -690,7 +690,7 @@
         "resource": "contentMigration",
         "operation": "getAll",
         "contextType": "account",
-        "accountId": "75"
+        "accountId": "207"
       },
       "credentials": {
         "canvasApi": {
@@ -703,8 +703,8 @@
       "executeOnce": true
     },
     {
-      "id": "d9edd1c0-ddbd-41c0-ab78-b8c2adfc73bb",
-      "name": "getAll — getAll: the migrations of a course, newest first, with pagin",
+      "id": "7490f800-5d9e-4f93-84f1-1feaf976d245",
+      "name": "getIssues — getIssue, getIssues, updateIssue: the issues of a migration,",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
@@ -714,9 +714,13 @@
       "parameters": {
         "authentication": "accessToken",
         "resource": "contentMigration",
-        "operation": "getAll",
+        "operation": "getIssues",
         "contextType": "course",
-        "courseId": "282"
+        "courseId": "725",
+        "contentMigrationId": "169",
+        "pagination": {
+          "returnAll": true
+        }
       },
       "credentials": {
         "canvasApi": {
@@ -729,8 +733,8 @@
       "executeOnce": true
     },
     {
-      "id": "82cee4c1-6e1b-486b-aa7c-be89634e12e7",
-      "name": "getAll — getAll: the migrations of a course, newest first, with pagin (2)",
+      "id": "d10f2873-f6fa-4dd3-94cb-9ecaadf8c06f",
+      "name": "updateIssue — getIssue, getIssues, updateIssue: the issues of a migration,",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
@@ -740,9 +744,377 @@
       "parameters": {
         "authentication": "accessToken",
         "resource": "contentMigration",
+        "operation": "updateIssue",
+        "contextType": "course",
+        "courseId": "725",
+        "contentMigrationId": "169",
+        "issueId": "32",
+        "issueState": "resolved"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "226fe32d-29f5-44d4-8020-b8219d71943f",
+      "name": "updateIssue — getIssue, getIssues, updateIssue: the issues of a migration, (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentMigration",
+        "operation": "updateIssue",
+        "contextType": "course",
+        "courseId": "725",
+        "contentMigrationId": "169",
+        "issueId": "32",
+        "issueState": "active"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "93748c9c-ac9c-49cb-912a-cf44f5ea8496",
+      "name": "getIssues — getIssue, getIssues, updateIssue: the issues of a migration, (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentMigration",
+        "operation": "getIssues",
+        "contextType": "group",
+        "groupId": "609",
+        "contentMigrationId": "171",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3adcb9c7-9300-4a48-81c5-065ec4229325",
+      "name": "updateIssue — getIssue, getIssues, updateIssue: the issues of a migration, (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentMigration",
+        "operation": "updateIssue",
+        "contextType": "group",
+        "groupId": "609",
+        "contentMigrationId": "171",
+        "issueId": "34",
+        "issueState": "resolved"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e89333a0-43d2-4f37-8ea0-764446b35a6e",
+      "name": "updateIssue — getIssue, getIssues, updateIssue: the issues of a migration, (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentMigration",
+        "operation": "updateIssue",
+        "contextType": "group",
+        "groupId": "609",
+        "contentMigrationId": "171",
+        "issueId": "34",
+        "issueState": "active"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "140beff4-a453-4687-b1dd-176279fe084c",
+      "name": "update — update (course): a selective copy, with date shifting and pl",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentMigration",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "727",
+        "contentMigrationId": "173",
+        "copyProperties": "copy[assignments][id_gd38b092c1845ae834f54eaeaa3701114], copy[all_wiki_pages]",
+        "updateFields": {
+          "date_shift_options_shift_dates": true,
+          "date_shift_options_old_start_date": "2030-03-01",
+          "date_shift_options_old_end_date": "2030-06-01",
+          "date_shift_options_new_start_date": "2032-03-01",
+          "date_shift_options_new_end_date": "2032-06-01",
+          "date_shift_options_day_substitutions": "{\"1\": 5}",
+          "insert_into_module_id": "323",
+          "insert_into_module_type": "assignment",
+          "insert_into_module_position": 2,
+          "move_to_assignment_group_id": "821",
+          "importer_skips": "all_course_settings",
+          "overwrite_quizzes": true,
+          "question_bank_name": "Updated bank",
+          "question_bank_id": "515151",
+          "import_blueprint_settings": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7a8dd319-4008-460e-8346-e8acec5d65c5",
+      "name": "update — update, getSelectiveData (account): a cartridge from a conte",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentMigration",
+        "operation": "update",
+        "contextType": "account",
+        "accountId": "207",
+        "contentMigrationId": "174",
+        "updateFields": {
+          "content_export_id": "201",
+          "selective_import": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a5fe5e7b-2561-4cd4-8b3d-fb32773f2f00",
+      "name": "getSelectiveData — update, getSelectiveData (account): a cartridge from a conte",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentMigration",
+        "operation": "getSelectiveData",
+        "contextType": "account",
+        "accountId": "207",
+        "contentMigrationId": "={{ $('update — update, getSelectiveData (account): a cartridge from a conte').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d6d1502b-98a4-480b-966b-ba92364ea937",
+      "name": "getSelectiveData — update, getSelectiveData (account): a cartridge from a conte (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentMigration",
+        "operation": "getSelectiveData",
+        "contextType": "account",
+        "accountId": "207",
+        "contentMigrationId": "={{ $('update — update, getSelectiveData (account): a cartridge from a conte').first().json.id }}",
+        "options": {
+          "type": "wiki_pages"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "eebaf373-74ef-41a4-96fc-8c6c741b9bf7",
+      "name": "update — update, getSelectiveData (account): a cartridge from a conte (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentMigration",
+        "operation": "update",
+        "contextType": "account",
+        "accountId": "207",
+        "contentMigrationId": "={{ $('update — update, getSelectiveData (account): a cartridge from a conte').first().json.id }}",
+        "copyProperties": "copy[all_wiki_pages]",
+        "updateFields": {
+          "date_shift_options_remove_dates": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9649a1e6-ae8a-42c2-86fb-edbb41b13840",
+      "name": "update — update (group and user): a ZIP import whose upload never arr",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentMigration",
+        "operation": "update",
+        "contextType": "group",
+        "groupId": "610",
+        "contentMigrationId": "175",
+        "updateFields": {
+          "folder_id": "1381",
+          "pre_attachment_name": "retry.zip",
+          "pre_attachment_size": 134
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4e421a54-297b-4f0d-9097-82b137d62795",
+      "name": "getAll — getAll: the migrations of a course, newest first, with pagin",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentMigration",
         "operation": "getAll",
         "contextType": "course",
-        "courseId": "282",
+        "courseId": "719"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "86c5ec55-7321-49fa-80fb-1539c077b994",
+      "name": "getAll — getAll: the migrations of a course, newest first, with pagin (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentMigration",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "719",
         "pagination": {
           "perPage": 2,
           "maxPages": 2
@@ -759,20 +1131,20 @@
       "executeOnce": true
     },
     {
-      "id": "556022d4-6f70-4771-9cdf-a1c2b02e0c17",
+      "id": "673e3e1e-d554-4f07-9987-482d39eb4688",
       "name": "getAll — getAll: the migrations of a course, newest first, with pagin (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
         720,
-        880
+        1320
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "contentMigration",
         "operation": "getAll",
         "contextType": "course",
-        "courseId": "282",
+        "courseId": "719",
         "pagination": {
           "returnAll": true,
           "perPage": 2
@@ -789,20 +1161,20 @@
       "executeOnce": true
     },
     {
-      "id": "a9358ba9-80c0-4463-ad37-c3902f22671f",
+      "id": "195122a1-6a4f-415c-a9b1-600f342b18eb",
       "name": "getIssues — getAll: the migrations of a course, newest first, with pagin",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
         980,
-        880
+        1320
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "contentMigration",
         "operation": "getIssues",
         "contextType": "course",
-        "courseId": "282",
+        "courseId": "719",
         "contentMigrationId": "={{ $('get — create (course copy): copies everything and shifts the dates').first().json.id }}"
       },
       "credentials": {
@@ -816,13 +1188,13 @@
       "executeOnce": true
     },
     {
-      "id": "5739916a-0d9e-4a0e-8d0e-2e45cf274c04",
+      "id": "3149cff6-f495-4085-ae46-cd605c14ce88",
       "name": "getAll — getAll: the migrations of a course, newest first, with pagin (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
         1240,
-        880
+        1320
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1108,6 +1480,138 @@
       ]
     },
     "getAll — create (account): a cartridge import into an account, by fil": {
+      "main": [
+        [
+          {
+            "node": "getIssues — getIssue, getIssues, updateIssue: the issues of a migration,",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getIssues — getIssue, getIssues, updateIssue: the issues of a migration,": {
+      "main": [
+        [
+          {
+            "node": "updateIssue — getIssue, getIssues, updateIssue: the issues of a migration,",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateIssue — getIssue, getIssues, updateIssue: the issues of a migration,": {
+      "main": [
+        [
+          {
+            "node": "updateIssue — getIssue, getIssues, updateIssue: the issues of a migration, (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateIssue — getIssue, getIssues, updateIssue: the issues of a migration, (2)": {
+      "main": [
+        [
+          {
+            "node": "getIssues — getIssue, getIssues, updateIssue: the issues of a migration, (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getIssues — getIssue, getIssues, updateIssue: the issues of a migration, (2)": {
+      "main": [
+        [
+          {
+            "node": "updateIssue — getIssue, getIssues, updateIssue: the issues of a migration, (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateIssue — getIssue, getIssues, updateIssue: the issues of a migration, (3)": {
+      "main": [
+        [
+          {
+            "node": "updateIssue — getIssue, getIssues, updateIssue: the issues of a migration, (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateIssue — getIssue, getIssues, updateIssue: the issues of a migration, (4)": {
+      "main": [
+        [
+          {
+            "node": "update — update (course): a selective copy, with date shifting and pl",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update (course): a selective copy, with date shifting and pl": {
+      "main": [
+        [
+          {
+            "node": "update — update, getSelectiveData (account): a cartridge from a conte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update, getSelectiveData (account): a cartridge from a conte": {
+      "main": [
+        [
+          {
+            "node": "getSelectiveData — update, getSelectiveData (account): a cartridge from a conte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSelectiveData — update, getSelectiveData (account): a cartridge from a conte": {
+      "main": [
+        [
+          {
+            "node": "getSelectiveData — update, getSelectiveData (account): a cartridge from a conte (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSelectiveData — update, getSelectiveData (account): a cartridge from a conte (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update, getSelectiveData (account): a cartridge from a conte (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update, getSelectiveData (account): a cartridge from a conte (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update (group and user): a ZIP import whose upload never arr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update (group and user): a ZIP import whose upload never arr": {
       "main": [
         [
           {

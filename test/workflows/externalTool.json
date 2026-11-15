@@ -2,7 +2,7 @@
   "name": "Canvas battery — externalTool",
   "nodes": [
     {
-      "id": "d4e18239-fe2a-4977-839a-c591466bfd48",
+      "id": "1c49ab25-995c-407a-893e-f1c174dec9b2",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "6bd39a1b-df27-4a4a-8dd6-c138046f17ab",
+      "id": "17ad46b0-22b9-4f53-ac39-694f345c83fd",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,13 +25,13 @@
         "assignments": {
           "assignments": [
             {
-              "id": "22cd94e0-5f9d-40c7-a1a9-6b6400326dd7",
+              "id": "79932580-1593-4813-a682-a69e02d0352a",
               "name": "accountId",
               "value": "1",
               "type": "string"
             },
             {
-              "id": "2c08e03b-29a9-45a1-9d22-4937b14e5086",
+              "id": "9c7ea5b8-0ee3-4d3b-a334-321e7bb05784",
               "name": "externalToolId",
               "value": "1",
               "type": "string"
@@ -42,7 +42,7 @@
       }
     },
     {
-      "id": "24803f9a-3836-4d3b-845d-959b825b2bb0",
+      "id": "4fa64fdc-119d-4031-b01b-991dcd081bac",
       "name": "create — create (course, LTI 1.1): every optional field reaches Canva",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -55,7 +55,7 @@
         "resource": "externalTool",
         "operation": "create",
         "contextType": "course",
-        "courseId": "339",
+        "courseId": "759",
         "authType": "lti11",
         "name": "=Battery Tool Ünïcødé 工具 \"quoted\" & <b>tags</b> {{ $execution.id }}-1",
         "privacyLevel": "name_only",
@@ -85,7 +85,7 @@
       "executeOnce": true
     },
     {
-      "id": "36e6c989-6f81-4631-b60d-ad0087120296",
+      "id": "4f7180eb-1e60-40f9-bba2-1cb64944e602",
       "name": "create — create (account): configuration by XML, matching by domain",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -98,7 +98,7 @@
         "resource": "externalTool",
         "operation": "create",
         "contextType": "account",
-        "accountId": "81",
+        "accountId": "212",
         "authType": "lti11",
         "name": "=Battery XML tool {{ $execution.id }}-2",
         "privacyLevel": "anonymous",
@@ -120,7 +120,7 @@
       "executeOnce": true
     },
     {
-      "id": "2cc2d06a-18d2-4dee-a59a-1411c36d4337",
+      "id": "17fcd473-dce0-4373-bd6d-39a949b47a7d",
       "name": "create — create (LTI 1.3): installs the tool of a client ID in a cour",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -133,9 +133,9 @@
         "resource": "externalTool",
         "operation": "create",
         "contextType": "course",
-        "courseId": "340",
+        "courseId": "760",
         "authType": "lti13",
-        "clientId": "10000000000062"
+        "clientId": "10000000000136"
       },
       "credentials": {
         "canvasApi": {
@@ -148,7 +148,7 @@
       "executeOnce": true
     },
     {
-      "id": "dd5b3d2b-8e41-49a1-9f5d-a279cac1cbbe",
+      "id": "4f1ec097-b907-4d2d-908f-b5c031c04112",
       "name": "create — create (LTI 1.3): installs the tool of a client ID in a cour (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -161,9 +161,9 @@
         "resource": "externalTool",
         "operation": "create",
         "contextType": "account",
-        "accountId": "81",
+        "accountId": "212",
         "authType": "lti13",
-        "clientId": "10000000000062"
+        "clientId": "10000000000136"
       },
       "credentials": {
         "canvasApi": {
@@ -176,7 +176,7 @@
       "executeOnce": true
     },
     {
-      "id": "c87d4bad-0a34-43a6-a3ea-c35d1d38d6dc",
+      "id": "e5b6efe4-8ce3-47d6-8b8f-74a42aca17a6",
       "name": "get — get: in the course and in the account context, with IDs arri",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -189,7 +189,7 @@
         "resource": "externalTool",
         "operation": "get",
         "contextType": "account",
-        "accountId": "81",
+        "accountId": "212",
         "externalToolId": "={{ $('create — create (account): configuration by XML, matching by domain').first().json.id }}"
       },
       "credentials": {
@@ -203,7 +203,7 @@
       "executeOnce": true
     },
     {
-      "id": "f79d830e-85d0-4426-9efd-8d7a09ee2b86",
+      "id": "af126712-2a0f-4bfb-b058-471bd7295263",
       "name": "get — get: in the course and in the account context, with IDs arri (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -230,7 +230,7 @@
       "executeOnce": true
     },
     {
-      "id": "14ea2796-0af1-4e31-a5e9-3b8c2e9cb62e",
+      "id": "f971a367-7ff7-458f-b745-a86e276e7389",
       "name": "getAll — getAll: filters by search term, placement, selectable and pa",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -243,7 +243,7 @@
         "resource": "externalTool",
         "operation": "getAll",
         "contextType": "course",
-        "courseId": "339"
+        "courseId": "759"
       },
       "credentials": {
         "canvasApi": {
@@ -256,7 +256,7 @@
       "executeOnce": true
     },
     {
-      "id": "02d50a33-a14e-43ce-be75-496c7d769d32",
+      "id": "1ffafcbd-5c09-4001-833b-6243005f8536",
       "name": "getAll — getAll: filters by search term, placement, selectable and pa (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -269,7 +269,7 @@
         "resource": "externalTool",
         "operation": "getAll",
         "contextType": "course",
-        "courseId": "339",
+        "courseId": "759",
         "options": {
           "include_parents": true
         },
@@ -288,7 +288,7 @@
       "executeOnce": true
     },
     {
-      "id": "89664899-710c-4a5a-9ab4-0e4685f34582",
+      "id": "dc7285d2-94f1-4311-add8-8ce6378b8fa3",
       "name": "getAll — getAll: filters by search term, placement, selectable and pa (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -301,7 +301,7 @@
         "resource": "externalTool",
         "operation": "getAll",
         "contextType": "course",
-        "courseId": "339",
+        "courseId": "759",
         "options": {
           "include_parents": true,
           "search_term": "Battery XML"
@@ -318,7 +318,7 @@
       "executeOnce": true
     },
     {
-      "id": "609e153e-d123-4613-886c-cf19ad27a96a",
+      "id": "90ec7440-381a-43d7-98d1-3e4f1d4dca73",
       "name": "getAll — getAll: filters by search term, placement, selectable and pa (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -331,7 +331,7 @@
         "resource": "externalTool",
         "operation": "getAll",
         "contextType": "course",
-        "courseId": "339",
+        "courseId": "759",
         "options": {
           "include_parents": true,
           "placement": "top_navigation"
@@ -348,7 +348,7 @@
       "executeOnce": true
     },
     {
-      "id": "def941a6-4e08-4a8a-b6ac-e23183fc3457",
+      "id": "33968c3f-b7e4-45ec-85c1-4368e558cdb2",
       "name": "getAll — getAll: filters by search term, placement, selectable and pa (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -361,7 +361,7 @@
         "resource": "externalTool",
         "operation": "getAll",
         "contextType": "course",
-        "courseId": "339",
+        "courseId": "759",
         "options": {
           "selectable": true
         }
@@ -377,7 +377,7 @@
       "executeOnce": true
     },
     {
-      "id": "ef9159fa-aaea-49d0-a357-275189344b05",
+      "id": "3288ac76-fc49-4afc-8539-8331f01787f1",
       "name": "getAll — getAll: filters by search term, placement, selectable and pa (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -390,7 +390,7 @@
         "resource": "externalTool",
         "operation": "getAll",
         "contextType": "course",
-        "courseId": "339",
+        "courseId": "759",
         "options": {
           "selectable": false,
           "include_parents": false
@@ -407,7 +407,7 @@
       "executeOnce": true
     },
     {
-      "id": "43fc5ebd-c1f9-4905-a04d-1ea252d5dabe",
+      "id": "3f6d21a9-2def-4eb8-893e-6d4e2dff9210",
       "name": "getAll — getAll: account and group contexts",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -436,7 +436,7 @@
       "executeOnce": true
     },
     {
-      "id": "9c526ecb-97a0-4399-b0d6-82bb50835906",
+      "id": "eaff3af9-b4e3-4227-a5d5-eaf75993d136",
       "name": "getAll — getAll: account and group contexts (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -449,7 +449,7 @@
         "resource": "externalTool",
         "operation": "getAll",
         "contextType": "group",
-        "groupId": "305"
+        "groupId": "677"
       },
       "credentials": {
         "canvasApi": {
@@ -462,7 +462,7 @@
       "executeOnce": true
     },
     {
-      "id": "18836dca-0109-4297-86e8-425d7198e6ff",
+      "id": "7dee57d3-5381-4408-935e-bde4307d17e7",
       "name": "getAll — getAll: account and group contexts (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -475,7 +475,7 @@
         "resource": "externalTool",
         "operation": "getAll",
         "contextType": "group",
-        "groupId": "305",
+        "groupId": "677",
         "options": {
           "include_parents": true
         },
@@ -494,7 +494,7 @@
       "executeOnce": true
     },
     {
-      "id": "b8776aac-0e5f-4248-b725-ca41d5dac38a",
+      "id": "97549a6d-6de8-4935-86c5-f7c8f8d94d5f",
       "name": "getAll — getAll: pages through more tools than one page holds",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -507,7 +507,7 @@
         "resource": "externalTool",
         "operation": "getAll",
         "contextType": "course",
-        "courseId": "341"
+        "courseId": "761"
       },
       "credentials": {
         "canvasApi": {
@@ -520,7 +520,7 @@
       "executeOnce": true
     },
     {
-      "id": "1a34e396-d653-4b7a-86fd-4732400b3b52",
+      "id": "35e1f566-e87d-4d8d-92ed-256a4050b258",
       "name": "getAll — getAll: pages through more tools than one page holds (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -533,7 +533,7 @@
         "resource": "externalTool",
         "operation": "getAll",
         "contextType": "course",
-        "courseId": "341",
+        "courseId": "761",
         "pagination": {
           "returnAll": true
         }
@@ -549,7 +549,7 @@
       "executeOnce": true
     },
     {
-      "id": "e1842a81-97f9-4306-a41f-de066d80f89a",
+      "id": "ad54d834-3b5a-443d-8d33-6aa7c16794c1",
       "name": "getAll — getAll: pages through more tools than one page holds (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -562,7 +562,7 @@
         "resource": "externalTool",
         "operation": "getAll",
         "contextType": "course",
-        "courseId": "341",
+        "courseId": "761",
         "pagination": {
           "perPage": 4,
           "maxPages": 2
@@ -579,7 +579,7 @@
       "executeOnce": true
     },
     {
-      "id": "ff7c5150-13a8-4726-8337-0283f920dea3",
+      "id": "0e72a619-47c6-4498-acaa-a639aa76ae2e",
       "name": "getAll — getAll: pages through more tools than one page holds (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -592,7 +592,7 @@
         "resource": "externalTool",
         "operation": "getAll",
         "contextType": "course",
-        "courseId": "341",
+        "courseId": "761",
         "pagination": {
           "perPage": 10,
           "maxPages": 1
@@ -609,7 +609,7 @@
       "executeOnce": true
     },
     {
-      "id": "508f20ec-b9ee-447c-bb45-448aa5a3f80b",
+      "id": "b9573b33-5c3a-4585-b424-aa7b320b618b",
       "name": "update — update: every optional field reaches Canvas, and a placement",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -622,7 +622,7 @@
         "resource": "externalTool",
         "operation": "update",
         "contextType": "course",
-        "courseId": "339",
+        "courseId": "759",
         "externalToolId": "={{ $('getAll — getAll: filters by search term, placement, selectable and pa (6)').first().json.id }}",
         "updateFields": {
           "name": "=Battery Tool Ünïcødé 工具 \"quoted\" & <b>tags</b> {{ $execution.id }}-1 (renamed)",
@@ -652,7 +652,7 @@
       "executeOnce": true
     },
     {
-      "id": "c77abdd9-f0ad-4999-b410-73d3b057bd46",
+      "id": "3bcc9404-acb4-4d7a-8c2e-1b2345f2695f",
       "name": "update — update: switching from URL to domain matching in the account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -665,7 +665,7 @@
         "resource": "externalTool",
         "operation": "update",
         "contextType": "account",
-        "accountId": "81",
+        "accountId": "212",
         "externalToolId": "={{ $('getAll — getAll: filters by search term, placement, selectable and pa (4)').first().json.id }}",
         "updateFields": {
           "domain": "domain.battery.example.com",
@@ -683,7 +683,7 @@
       "executeOnce": true
     },
     {
-      "id": "88ec7d5a-38ff-41f5-bd03-01527f892dda",
+      "id": "b92e4d90-95a9-4b99-a652-980fb37ab844",
       "name": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -696,7 +696,7 @@
         "resource": "externalTool",
         "operation": "getSessionlessLaunchUrl",
         "contextType": "course",
-        "courseId": "339",
+        "courseId": "759",
         "externalToolId": "={{ $('update — update: every optional field reaches Canvas, and a placement').first().json.id }}"
       },
       "credentials": {
@@ -710,7 +710,7 @@
       "executeOnce": true
     },
     {
-      "id": "0e2f5b50-f61d-4d01-a604-633c050317c1",
+      "id": "4f2dbdde-4d9d-4de6-a3b6-b8823a58258f",
       "name": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -723,7 +723,7 @@
         "resource": "externalTool",
         "operation": "getSessionlessLaunchUrl",
         "contextType": "course",
-        "courseId": "339",
+        "courseId": "759",
         "options": {
           "url": "https://tool2.battery.example.com/launch?from=url"
         }
@@ -739,7 +739,7 @@
       "executeOnce": true
     },
     {
-      "id": "fd158758-4f5e-4132-b5ef-fbe4e97447a7",
+      "id": "c78dc05b-3454-4ea9-8b0e-29f2452c433e",
       "name": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -752,7 +752,7 @@
         "resource": "externalTool",
         "operation": "getSessionlessLaunchUrl",
         "contextType": "course",
-        "courseId": "339",
+        "courseId": "759",
         "options": {
           "url": "https://nobody.battery.example.org/launch"
         }
@@ -768,7 +768,7 @@
       "executeOnce": true
     },
     {
-      "id": "8783a3b4-0377-4478-b188-aab17336471c",
+      "id": "6e70a35b-51d0-4dde-9d74-2ef427451cc4",
       "name": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -781,7 +781,7 @@
         "resource": "externalTool",
         "operation": "getSessionlessLaunchUrl",
         "contextType": "course",
-        "courseId": "339",
+        "courseId": "759",
         "externalToolId": "={{ $('getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac (2)').first().json.id }}",
         "options": {
           "launch_type": "user_navigation"
@@ -798,7 +798,7 @@
       "executeOnce": true
     },
     {
-      "id": "5cb7a94d-15d9-49c7-b16f-3deddde49dee",
+      "id": "de7df1f1-2bb3-410d-a184-4bd1ad80379f",
       "name": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: account context",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -811,7 +811,7 @@
         "resource": "externalTool",
         "operation": "getSessionlessLaunchUrl",
         "contextType": "account",
-        "accountId": "81",
+        "accountId": "212",
         "externalToolId": "={{ $('update — update: switching from URL to domain matching in the account').first().json.id }}"
       },
       "credentials": {
@@ -825,7 +825,7 @@
       "executeOnce": true
     },
     {
-      "id": "9a2f43e3-ed55-42a2-b62d-d763c7b6fc26",
+      "id": "ae98eb2b-94d1-4dec-a7d1-2f6b25ec7037",
       "name": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: an external tool assignment and a m",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -838,10 +838,10 @@
         "resource": "externalTool",
         "operation": "getSessionlessLaunchUrl",
         "contextType": "course",
-        "courseId": "339",
+        "courseId": "759",
         "options": {
           "launch_type": "assessment",
-          "assignment_id": "1221"
+          "assignment_id": "1884"
         }
       },
       "credentials": {
@@ -855,7 +855,7 @@
       "executeOnce": true
     },
     {
-      "id": "3e72f61c-984d-4f9f-becd-d09906e07ccb",
+      "id": "89e04943-ad16-4ec3-8cfb-7d2b9155910a",
       "name": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: an external tool assignment and a m (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -868,10 +868,10 @@
         "resource": "externalTool",
         "operation": "getSessionlessLaunchUrl",
         "contextType": "course",
-        "courseId": "339",
+        "courseId": "759",
         "options": {
           "launch_type": "module_item",
-          "module_item_id": "688"
+          "module_item_id": "1031"
         }
       },
       "credentials": {
@@ -885,7 +885,7 @@
       "executeOnce": true
     },
     {
-      "id": "47345ff0-9388-4a5a-aefa-4db2933f2134",
+      "id": "38908280-1887-4318-a6f9-a78a4203bc0e",
       "name": "getVisibleCourseNavTools — getVisibleCourseNavTools: one course, several courses",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -897,7 +897,7 @@
         "authentication": "accessToken",
         "resource": "externalTool",
         "operation": "getVisibleCourseNavTools",
-        "courseIds": "340"
+        "courseIds": "760"
       },
       "credentials": {
         "canvasApi": {
@@ -910,7 +910,7 @@
       "executeOnce": true
     },
     {
-      "id": "81a079f1-fdf9-4605-bbf7-af7a7c102057",
+      "id": "de157691-a0e5-4b7f-806a-187c7e094170",
       "name": "getVisibleCourseNavTools — getVisibleCourseNavTools: one course, several courses (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -922,7 +922,7 @@
         "authentication": "accessToken",
         "resource": "externalTool",
         "operation": "getVisibleCourseNavTools",
-        "courseIds": " 340, 339 "
+        "courseIds": " 760, 759 "
       },
       "credentials": {
         "canvasApi": {
@@ -935,7 +935,7 @@
       "executeOnce": true
     },
     {
-      "id": "595c017a-a517-44ae-a690-f57e9fe3ded7",
+      "id": "b7946f3c-4546-41db-9f0f-8e8d2949653c",
       "name": "addRceFavorite — favorites: RCE and top navigation favorites of an account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -947,7 +947,7 @@
         "authentication": "accessToken",
         "resource": "externalTool",
         "operation": "addRceFavorite",
-        "accountId": "81",
+        "accountId": "212",
         "externalToolId": "={{ $('getSessionlessLaunchUrl — getSessionlessLaunchUrl: account context').first().json.id }}"
       },
       "credentials": {
@@ -961,7 +961,7 @@
       "executeOnce": true
     },
     {
-      "id": "709106f2-84de-4ca7-9f86-42029a478096",
+      "id": "a9471099-b1df-4cd0-b953-a2cb394a0f47",
       "name": "removeRceFavorite — favorites: RCE and top navigation favorites of an account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -973,7 +973,7 @@
         "authentication": "accessToken",
         "resource": "externalTool",
         "operation": "removeRceFavorite",
-        "accountId": "81",
+        "accountId": "212",
         "externalToolId": "={{ $('getSessionlessLaunchUrl — getSessionlessLaunchUrl: account context').first().json.id }}"
       },
       "credentials": {
@@ -987,7 +987,7 @@
       "executeOnce": true
     },
     {
-      "id": "0749b2d8-2cc2-434d-9cd5-ff06b79e22ed",
+      "id": "e22bf467-3f3e-48d9-8532-f54671f0ebff",
       "name": "addTopNavFavorite — favorites: RCE and top navigation favorites of an account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -999,7 +999,7 @@
         "authentication": "accessToken",
         "resource": "externalTool",
         "operation": "addTopNavFavorite",
-        "accountId": "81",
+        "accountId": "212",
         "externalToolId": "={{ $('getSessionlessLaunchUrl — getSessionlessLaunchUrl: account context').first().json.id }}"
       },
       "credentials": {
@@ -1013,7 +1013,7 @@
       "executeOnce": true
     },
     {
-      "id": "1dc5c2e7-525f-4374-80c7-1ae9ae3e81fd",
+      "id": "66e349e2-7ebc-48cb-a125-75dbe34f4b73",
       "name": "removeTopNavFavorite — favorites: RCE and top navigation favorites of an account",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1025,7 +1025,7 @@
         "authentication": "accessToken",
         "resource": "externalTool",
         "operation": "removeTopNavFavorite",
-        "accountId": "81",
+        "accountId": "212",
         "externalToolId": "={{ $('getSessionlessLaunchUrl — getSessionlessLaunchUrl: account context').first().json.id }}"
       },
       "credentials": {
@@ -1039,7 +1039,7 @@
       "executeOnce": true
     },
     {
-      "id": "633ed2cb-1f83-4554-902e-20e26166e203",
+      "id": "3880eef4-664a-43ad-b100-b5da05f5de13",
       "name": "delete — delete: removes the tool in both contexts; a second delete i",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1052,7 +1052,7 @@
         "resource": "externalTool",
         "operation": "delete",
         "contextType": "course",
-        "courseId": "339",
+        "courseId": "759",
         "externalToolId": "={{ $('getSessionlessLaunchUrl — getSessionlessLaunchUrl: an external tool assignment and a m (2)').first().json.id }}"
       },
       "credentials": {
@@ -1066,7 +1066,7 @@
       "executeOnce": true
     },
     {
-      "id": "67ee7769-efb3-40a0-b328-512b94cedce0",
+      "id": "69983823-da7f-40f9-b667-8cc25797ace4",
       "name": "delete — delete: removes the tool in both contexts; a second delete i (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1079,7 +1079,7 @@
         "resource": "externalTool",
         "operation": "delete",
         "contextType": "account",
-        "accountId": "81",
+        "accountId": "212",
         "externalToolId": "={{ $('getSessionlessLaunchUrl — getSessionlessLaunchUrl: account context').first().json.id }}"
       },
       "credentials": {

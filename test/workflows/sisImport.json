@@ -2,7 +2,7 @@
   "name": "Canvas battery — sisImport",
   "nodes": [
     {
-      "id": "ab1d3928-6f3e-424f-a442-248e8e3ba2fc",
+      "id": "2047c22d-9b8a-49e1-9e6f-10eec59e4125",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "91152889-1675-4417-a999-b3899777e628",
+      "id": "c837212c-5bbf-402f-8e75-dca9acf85e39",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,7 +25,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "7bbd1441-dfdf-4e27-a880-f177e5af9b61",
+              "id": "56620472-6622-4132-ab10-a9cfa6959dee",
               "name": "accountRubricId",
               "value": "2",
               "type": "string"
@@ -36,7 +36,7 @@
       }
     },
     {
-      "id": "80e5c15f-417f-43c1-a1b8-41bc1d858c9b",
+      "id": "e2206dfc-f054-489d-8824-70aa2dee80b8",
       "name": "create — create: imports CSV text; unicode, quoted fields and Windows",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -50,7 +50,7 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "﻿user_id,login_id,first_name,last_name,email,status\r\nn8nbat_simwhx6wpamjk1_u1,n8nbat_simwhx6wpamjk1_u1@example.edu,Zoë,Ünïcødé 测试,n8nbat_simwhx6wpamjk1_u1@example.edu,active\r\nn8nbat_simwhx6wpamjk1_u2,n8nbat_simwhx6wpamjk1_u2@example.edu,\"Anne-Marie \"\"Annie\"\"\",\"O'Neil, Jr.\",n8nbat_simwhx6wpamjk1_u2@example.edu,active\r\nn8nbat_simwhx6wpamjk1_u3,n8nbat_simwhx6wpamjk1_u3@example.edu,محمد,الهاشمي,n8nbat_simwhx6wpamjk1_u3@example.edu,active\r\n",
+        "fileContent": "﻿user_id,login_id,first_name,last_name,email,status\r\nn8nbat_simwi1ziubbrk1_u1,n8nbat_simwi1ziubbrk1_u1@example.edu,Zoë,Ünïcødé 测试,n8nbat_simwi1ziubbrk1_u1@example.edu,active\r\nn8nbat_simwi1ziubbrk1_u2,n8nbat_simwi1ziubbrk1_u2@example.edu,\"Anne-Marie \"\"Annie\"\"\",\"O'Neil, Jr.\",n8nbat_simwi1ziubbrk1_u2@example.edu,active\r\nn8nbat_simwi1ziubbrk1_u3,n8nbat_simwi1ziubbrk1_u3@example.edu,محمد,الهاشمي,n8nbat_simwi1ziubbrk1_u3@example.edu,active\r\n",
         "additionalFields": {}
       },
       "credentials": {
@@ -64,7 +64,7 @@
       "executeOnce": true
     },
     {
-      "id": "a8ba3e44-a20e-4f6c-9543-a486822b41f3",
+      "id": "6c7b21f5-0c7a-42c9-831c-b3425a6ee45e",
       "name": "get — create: imports CSV text; unicode, quoted fields and Windows",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -90,7 +90,7 @@
       "executeOnce": true
     },
     {
-      "id": "ed6dbeee-9b29-421a-9d3c-6b8dd2655731",
+      "id": "d42a9dc7-a631-4412-819b-8a73cf03c627",
       "name": "create — create: the non-destructive options reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -104,7 +104,7 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_opt1,n8nbat_simwhx6wpamjk1_opt1@example.edu,Option,One,n8nbat_simwhx6wpamjk1_opt1@example.edu,active\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_opt1,n8nbat_simwi1ziubbrk1_opt1@example.edu,Option,One,n8nbat_simwi1ziubbrk1_opt1@example.edu,active\n",
         "additionalFields": {
           "extension": "csv",
           "import_type": "instructure_csv",
@@ -115,7 +115,7 @@
           "update_sis_id_if_login_claimed": true,
           "change_threshold": 75,
           "diff_row_count_threshold": 500,
-          "diffing_data_set_identifier": "n8nbat_simwhx6wpamjk1_series_options",
+          "diffing_data_set_identifier": "n8nbat_simwi1ziubbrk1_series_options",
           "diffing_remaster_data_set": true,
           "diffing_drop_status": "inactive",
           "diffing_user_remove_status": "suspended"
@@ -132,7 +132,7 @@
       "executeOnce": true
     },
     {
-      "id": "1df65401-196f-4cc1-8ab2-490a745b8362",
+      "id": "429ed3cd-fb90-4a12-9e8a-e7c934804dc3",
       "name": "get — create: the non-destructive options reach Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -158,7 +158,7 @@
       "executeOnce": true
     },
     {
-      "id": "fd14ee61-e520-4bb4-9ed2-dce874efb612",
+      "id": "143fc937-b316-41ae-a40b-5cce504b8433",
       "name": "create — create: the non-destructive options reach Canvas (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -172,7 +172,7 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_opt1,n8nbat_simwhx6wpamjk1_opt1@example.edu,Option,One,n8nbat_simwhx6wpamjk1_opt1@example.edu,active\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_opt1,n8nbat_simwi1ziubbrk1_opt1@example.edu,Option,One,n8nbat_simwi1ziubbrk1_opt1@example.edu,active\n",
         "additionalFields": {
           "override_sis_stickiness": false,
           "skip_deletes": false,
@@ -193,7 +193,7 @@
       "executeOnce": true
     },
     {
-      "id": "dd377ad1-b3e9-45a7-b9da-299193708be5",
+      "id": "3517d98f-7051-4132-9069-1a045615bc72",
       "name": "get — create: the non-destructive options reach Canvas (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -219,7 +219,7 @@
       "executeOnce": true
     },
     {
-      "id": "f3e8ead1-2414-41ea-8b84-c8fce6cb68c1",
+      "id": "087b50d9-d62d-4d1f-ab80-271ad64014db",
       "name": "create — create: Skip Deletes keeps a user the file marks as deleted",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -233,7 +233,7 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_u1,n8nbat_simwhx6wpamjk1_u1@example.edu,Zoë,Ünïcødé 测试,n8nbat_simwhx6wpamjk1_u1@example.edu,deleted\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_u1,n8nbat_simwi1ziubbrk1_u1@example.edu,Zoë,Ünïcødé 测试,n8nbat_simwi1ziubbrk1_u1@example.edu,deleted\n",
         "additionalFields": {
           "skip_deletes": true
         }
@@ -249,7 +249,7 @@
       "executeOnce": true
     },
     {
-      "id": "3adb4dc7-ab3a-4050-a492-98d50450277a",
+      "id": "d5e50ce8-cbc1-4561-9a4f-ad55bc478868",
       "name": "get — create: Skip Deletes keeps a user the file marks as deleted",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -275,7 +275,7 @@
       "executeOnce": true
     },
     {
-      "id": "b6201173-af14-4d4a-acad-4dfe6ee03573",
+      "id": "e38bd73b-01bd-46d9-94e9-7a71086b0ba3",
       "name": "create — create: values changed by hand are sticky unless Override SI",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -289,7 +289,7 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_u2,n8nbat_simwhx6wpamjk1_u2@example.edu,From,SIS,n8nbat_simwhx6wpamjk1_u2@example.edu,active\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_u2,n8nbat_simwi1ziubbrk1_u2@example.edu,From,SIS,n8nbat_simwi1ziubbrk1_u2@example.edu,active\n",
         "additionalFields": {}
       },
       "credentials": {
@@ -303,7 +303,7 @@
       "executeOnce": true
     },
     {
-      "id": "32d6794e-4b2c-4fcf-8d38-c93e771e7cfe",
+      "id": "dac0df68-4b9b-4296-9602-e2fcf88975aa",
       "name": "get — create: values changed by hand are sticky unless Override SI",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -329,7 +329,7 @@
       "executeOnce": true
     },
     {
-      "id": "50782486-a398-4ff6-8fa9-0836549db327",
+      "id": "ce513aad-5b99-45a0-93bc-cc4ef394ed9d",
       "name": "create — create: values changed by hand are sticky unless Override SI (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -343,7 +343,7 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_u2,n8nbat_simwhx6wpamjk1_u2@example.edu,From,SIS,n8nbat_simwhx6wpamjk1_u2@example.edu,active\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_u2,n8nbat_simwi1ziubbrk1_u2@example.edu,From,SIS,n8nbat_simwi1ziubbrk1_u2@example.edu,active\n",
         "additionalFields": {
           "override_sis_stickiness": true,
           "clear_sis_stickiness": true
@@ -360,7 +360,7 @@
       "executeOnce": true
     },
     {
-      "id": "262669ad-6f2c-49c2-868a-34da4f425c8c",
+      "id": "93798169-f470-45bd-a31e-ef713f556527",
       "name": "get — create: values changed by hand are sticky unless Override SI (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -386,7 +386,7 @@
       "executeOnce": true
     },
     {
-      "id": "8da15950-28cb-4e4b-ab10-1a0f2daafb2e",
+      "id": "0f201629-5e0e-4240-a88d-abdc90bc39b3",
       "name": "create — create: values changed by hand are sticky unless Override SI (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -400,7 +400,7 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_u2,n8nbat_simwhx6wpamjk1_u2@example.edu,Again,SIS,n8nbat_simwhx6wpamjk1_u2@example.edu,active\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_u2,n8nbat_simwi1ziubbrk1_u2@example.edu,Again,SIS,n8nbat_simwi1ziubbrk1_u2@example.edu,active\n",
         "additionalFields": {}
       },
       "credentials": {
@@ -414,7 +414,7 @@
       "executeOnce": true
     },
     {
-      "id": "45292a77-57b3-4889-a310-7f8f6750ede6",
+      "id": "c633627c-c0a2-4758-9e35-907ca0e1f42d",
       "name": "get — create: values changed by hand are sticky unless Override SI (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -440,7 +440,7 @@
       "executeOnce": true
     },
     {
-      "id": "672aaf4f-6e1e-4f1c-bd76-d417ee3f23ae",
+      "id": "0e737622-f003-4465-a23f-350bffc0dcb0",
       "name": "create — create: values changed by hand are sticky unless Override SI (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -454,7 +454,7 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_u2,n8nbat_simwhx6wpamjk1_u2@example.edu,Sticky,Import,n8nbat_simwhx6wpamjk1_u2@example.edu,active\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_u2,n8nbat_simwi1ziubbrk1_u2@example.edu,Sticky,Import,n8nbat_simwi1ziubbrk1_u2@example.edu,active\n",
         "additionalFields": {
           "override_sis_stickiness": true,
           "add_sis_stickiness": true
@@ -471,7 +471,7 @@
       "executeOnce": true
     },
     {
-      "id": "3b1a49ca-194d-4065-bb7f-fee29a5411c7",
+      "id": "078fd81b-d007-4ea7-a89e-b8017518d2b3",
       "name": "get — create: values changed by hand are sticky unless Override SI (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -497,7 +497,7 @@
       "executeOnce": true
     },
     {
-      "id": "7841cb87-3c68-4fb8-9958-f5e50008927d",
+      "id": "dc88cfdc-4967-45de-b03c-f80cb23eb354",
       "name": "create — create: values changed by hand are sticky unless Override SI (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -511,7 +511,7 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_u2,n8nbat_simwhx6wpamjk1_u2@example.edu,Ignored,Later,n8nbat_simwhx6wpamjk1_u2@example.edu,active\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_u2,n8nbat_simwi1ziubbrk1_u2@example.edu,Ignored,Later,n8nbat_simwi1ziubbrk1_u2@example.edu,active\n",
         "additionalFields": {}
       },
       "credentials": {
@@ -525,7 +525,7 @@
       "executeOnce": true
     },
     {
-      "id": "461d82bd-dd4d-4d45-b6cf-16097a3e0afd",
+      "id": "cf5805c2-9c83-479f-ba67-f831fbf9644b",
       "name": "get — create: values changed by hand are sticky unless Override SI (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -551,7 +551,7 @@
       "executeOnce": true
     },
     {
-      "id": "04f8213b-ccfb-48ef-9d1e-666bfd330dfe",
+      "id": "8936fbf5-50cf-4556-957d-1aea68275abf",
       "name": "create — create: Update SIS ID If Login Claimed moves a login that an",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -565,7 +565,7 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_claimed_new,n8nbat_simwhx6wpamjk1_claimed@example.edu,Claimed,Login,n8nbat_simwhx6wpamjk1_claimed@example.edu,active\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_claimed_new,n8nbat_simwi1ziubbrk1_claimed@example.edu,Claimed,Login,n8nbat_simwi1ziubbrk1_claimed@example.edu,active\n",
         "additionalFields": {}
       },
       "credentials": {
@@ -579,7 +579,7 @@
       "executeOnce": true
     },
     {
-      "id": "85ce74f4-b13d-4c2b-886f-f2d32bc4d8d8",
+      "id": "1fbad75c-a16d-4d40-878e-0397fef85282",
       "name": "get — create: Update SIS ID If Login Claimed moves a login that an",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -605,7 +605,7 @@
       "executeOnce": true
     },
     {
-      "id": "2990ed10-f19c-49d1-97c5-539c847d3848",
+      "id": "3e4f68a4-227c-434d-a189-bfc9a4a03949",
       "name": "create — create: Update SIS ID If Login Claimed moves a login that an (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -619,7 +619,7 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_claimed_new,n8nbat_simwhx6wpamjk1_claimed@example.edu,Claimed,Login,n8nbat_simwhx6wpamjk1_claimed@example.edu,active\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_claimed_new,n8nbat_simwi1ziubbrk1_claimed@example.edu,Claimed,Login,n8nbat_simwi1ziubbrk1_claimed@example.edu,active\n",
         "additionalFields": {
           "update_sis_id_if_login_claimed": true
         }
@@ -635,7 +635,7 @@
       "executeOnce": true
     },
     {
-      "id": "3e165dce-54ac-4779-a7b8-790559c0347d",
+      "id": "70ac262b-1496-459d-9e54-600d3960b7c9",
       "name": "get — create: Update SIS ID If Login Claimed moves a login that an (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -661,7 +661,7 @@
       "executeOnce": true
     },
     {
-      "id": "2004b475-99dc-4897-a428-4c35008fff70",
+      "id": "a35aae8e-b61b-429b-a6e6-d33fab551c29",
       "name": "create — create: diffing applies only the difference to the previous ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -675,9 +675,9 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_d1,n8nbat_simwhx6wpamjk1_d1@example.edu,Diff,One,n8nbat_simwhx6wpamjk1_d1@example.edu,active\nn8nbat_simwhx6wpamjk1_d2,n8nbat_simwhx6wpamjk1_d2@example.edu,Diff,Two,n8nbat_simwhx6wpamjk1_d2@example.edu,active\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_d1,n8nbat_simwi1ziubbrk1_d1@example.edu,Diff,One,n8nbat_simwi1ziubbrk1_d1@example.edu,active\nn8nbat_simwi1ziubbrk1_d2,n8nbat_simwi1ziubbrk1_d2@example.edu,Diff,Two,n8nbat_simwi1ziubbrk1_d2@example.edu,active\n",
         "additionalFields": {
-          "diffing_data_set_identifier": "n8nbat_simwhx6wpamjk1_series_diff"
+          "diffing_data_set_identifier": "n8nbat_simwi1ziubbrk1_series_diff"
         }
       },
       "credentials": {
@@ -691,7 +691,7 @@
       "executeOnce": true
     },
     {
-      "id": "03991aaf-ad52-4a4a-b252-e0d6cd30482a",
+      "id": "766ecd52-0cf3-4e2b-bf77-ae333f0a2fe5",
       "name": "get — create: diffing applies only the difference to the previous ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -717,7 +717,7 @@
       "executeOnce": true
     },
     {
-      "id": "d5c034ea-dda4-4122-9d84-0727bf8b5e0d",
+      "id": "731ea5a3-e754-4b7f-8ed9-d67222dc55a4",
       "name": "create — create: diffing applies only the difference to the previous  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -731,9 +731,9 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_d1,n8nbat_simwhx6wpamjk1_d1@example.edu,Diff,One,n8nbat_simwhx6wpamjk1_d1@example.edu,active\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_d1,n8nbat_simwi1ziubbrk1_d1@example.edu,Diff,One,n8nbat_simwi1ziubbrk1_d1@example.edu,active\n",
         "additionalFields": {
-          "diffing_data_set_identifier": "n8nbat_simwhx6wpamjk1_series_diff",
+          "diffing_data_set_identifier": "n8nbat_simwi1ziubbrk1_series_diff",
           "diffing_user_remove_status": "suspended"
         }
       },
@@ -748,7 +748,7 @@
       "executeOnce": true
     },
     {
-      "id": "5d426498-c13c-4381-b56b-1b86e1fd51e1",
+      "id": "340936ab-4665-402d-8dbd-c622e21b9e12",
       "name": "get — create: diffing applies only the difference to the previous  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -774,7 +774,7 @@
       "executeOnce": true
     },
     {
-      "id": "54cd149f-411c-47c8-a40f-37886f5006f8",
+      "id": "dc1bdcd6-60d9-4acc-b77b-bb599469433c",
       "name": "get — create: binary files from a previous node: a CSV, a zip and ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -787,7 +787,7 @@
         "resource": "sisImport",
         "operation": "get",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
-        "importId": "48"
+        "importId": "127"
       },
       "credentials": {
         "canvasApi": {
@@ -800,7 +800,7 @@
       "executeOnce": true
     },
     {
-      "id": "b9cd247b-d432-435f-85a3-f4d5c7ea9dd8",
+      "id": "c76fd8da-0ea6-440b-b140-d2469e9e9d27",
       "name": "get — create: binary files from a previous node: a CSV, a zip and  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -813,7 +813,7 @@
         "resource": "sisImport",
         "operation": "get",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
-        "importId": "50"
+        "importId": "126"
       },
       "credentials": {
         "canvasApi": {
@@ -826,7 +826,7 @@
       "executeOnce": true
     },
     {
-      "id": "cc0e7e65-8dc5-4e83-bdf4-a900ca79af62",
+      "id": "84479359-c70b-4d70-8bc5-932433cbde24",
       "name": "get — create: binary files from a previous node: a CSV, a zip and  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -839,7 +839,7 @@
         "resource": "sisImport",
         "operation": "get",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
-        "importId": "49"
+        "importId": "125"
       },
       "credentials": {
         "canvasApi": {
@@ -852,7 +852,7 @@
       "executeOnce": true
     },
     {
-      "id": "19e2fb9f-2a48-428e-9ab7-fff67cd79865",
+      "id": "6fd5e6d4-7a03-45ec-a7cd-ef8b15cb48e5",
       "name": "create — waitForCompletion: several imports are waited for in one run",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -866,7 +866,7 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_wait1,n8nbat_simwhx6wpamjk1_wait1@example.edu,Wait,One,n8nbat_simwhx6wpamjk1_wait1@example.edu,active\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_wait1,n8nbat_simwi1ziubbrk1_wait1@example.edu,Wait,One,n8nbat_simwi1ziubbrk1_wait1@example.edu,active\n",
         "additionalFields": {}
       },
       "credentials": {
@@ -880,7 +880,7 @@
       "executeOnce": true
     },
     {
-      "id": "6197df66-09cf-47c1-a3e1-700c52e9ad37",
+      "id": "d12f1cff-57d8-4b7d-b71c-56e2d64746a0",
       "name": "create — waitForCompletion: several imports are waited for in one run (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -908,7 +908,7 @@
       "executeOnce": true
     },
     {
-      "id": "4a0c4ca9-ebab-4210-90db-c923fd67ac7a",
+      "id": "f92a744d-429d-4f79-b989-fe4158d53844",
       "name": "get — create: a zip file as Base64, from several items",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -921,7 +921,7 @@
         "resource": "sisImport",
         "operation": "get",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
-        "importId": "54"
+        "importId": "130"
       },
       "credentials": {
         "canvasApi": {
@@ -934,7 +934,7 @@
       "executeOnce": true
     },
     {
-      "id": "1e93e8f0-3839-49a8-b4bd-6eb0eafa1b10",
+      "id": "7533de61-a992-472d-82f4-ee34ca3c6ef7",
       "name": "get — create: a zip file as Base64, from several items (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -947,7 +947,7 @@
         "resource": "sisImport",
         "operation": "get",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
-        "importId": "53"
+        "importId": "131"
       },
       "credentials": {
         "canvasApi": {
@@ -960,7 +960,7 @@
       "executeOnce": true
     },
     {
-      "id": "53e6e0a0-8204-4034-acab-4e972ef4cfc4",
+      "id": "8f64ed98-cb21-49c0-bb72-8fd8829d5976",
       "name": "get — create: a file Canvas cannot use ends as a failed import; it",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -973,7 +973,7 @@
         "resource": "sisImport",
         "operation": "get",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
-        "importId": "55"
+        "importId": "132"
       },
       "credentials": {
         "canvasApi": {
@@ -986,7 +986,7 @@
       "executeOnce": true
     },
     {
-      "id": "3de52e46-7146-4a17-9bfb-269b953ee730",
+      "id": "6c72bab1-fdea-4771-9a19-b1494ccf18d0",
       "name": "create — create: a file Canvas cannot use ends as a failed import; it",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1000,7 +1000,7 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_ok1,n8nbat_simwhx6wpamjk1_ok1@example.edu,Fine,Row,n8nbat_simwhx6wpamjk1_ok1@example.edu,active\nn8nbat_simwhx6wpamjk1_bad1,,No,Login,,active\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_ok1,n8nbat_simwi1ziubbrk1_ok1@example.edu,Fine,Row,n8nbat_simwi1ziubbrk1_ok1@example.edu,active\nn8nbat_simwi1ziubbrk1_bad1,,No,Login,,active\n",
         "additionalFields": {}
       },
       "credentials": {
@@ -1014,7 +1014,7 @@
       "executeOnce": true
     },
     {
-      "id": "1306c54d-a332-4e5b-a0f6-e79de36a1ce5",
+      "id": "94feb790-a1a5-4d04-94a3-8e2b5a80b95a",
       "name": "get — create: a file Canvas cannot use ends as a failed import; it (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1040,7 +1040,7 @@
       "executeOnce": true
     },
     {
-      "id": "6741e756-3353-4032-a874-a35314139dd3",
+      "id": "14ca7c5f-7faf-4495-b77f-2e3552a5fcba",
       "name": "getAll — getAll: one item per import, newest first, across pages",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1068,7 +1068,7 @@
       "executeOnce": true
     },
     {
-      "id": "1177b600-d608-4e83-84be-16a89038aba0",
+      "id": "157c8034-98c4-4dcb-a5e3-e686da780b99",
       "name": "getAll — getAll: one item per import, newest first, across pages (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1093,7 +1093,7 @@
       "executeOnce": true
     },
     {
-      "id": "c16f9fbe-577a-4550-aea5-624bdbc7c4c3",
+      "id": "65a7301b-6689-4f1c-8bd3-5842e08259e6",
       "name": "getAll — getAll: one item per import, newest first, across pages (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1122,7 +1122,7 @@
       "executeOnce": true
     },
     {
-      "id": "4639ce61-3d03-4e1f-aec6-7325313306ee",
+      "id": "a7a0e880-303a-48da-9d23-69483aae494a",
       "name": "getAll — getAll: filters by state and by creation time",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1156,7 +1156,7 @@
       "executeOnce": true
     },
     {
-      "id": "94631d1f-7973-4a64-adc6-fcd6eda863f0",
+      "id": "32a9b565-cbd1-47ab-9c57-344214dd7b2b",
       "name": "getAll — getAll: filters by state and by creation time (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1170,7 +1170,7 @@
         "operation": "getAll",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "options": {
-          "created_since": "2026-11-15T14:19:33Z"
+          "created_since": "2026-11-15T16:33:49Z"
         },
         "pagination": {
           "returnAll": true
@@ -1187,7 +1187,7 @@
       "executeOnce": true
     },
     {
-      "id": "7eedb237-0a61-40a4-974e-7029028796f5",
+      "id": "19a9f6fc-04d9-4208-85b6-c20c218ca36d",
       "name": "getAll — getAll: filters by state and by creation time (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1201,7 +1201,7 @@
         "operation": "getAll",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "options": {
-          "created_before": "2026-11-15T14:19:33Z"
+          "created_before": "2026-11-15T16:33:49Z"
         },
         "pagination": {
           "returnAll": true
@@ -1218,7 +1218,7 @@
       "executeOnce": true
     },
     {
-      "id": "e7fe4ac7-bc45-4a93-9a68-1ac25934fb0c",
+      "id": "25de916a-0b7e-4949-894b-0ebdd75f9c72",
       "name": "getAll — getAll: filters by state and by creation time (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1246,7 +1246,7 @@
       "executeOnce": true
     },
     {
-      "id": "7c43ce90-d394-4be7-a9b9-f51a033f4d36",
+      "id": "fc38c2a8-2abb-4192-afb7-b9451b8cace5",
       "name": "create — restoreStates: undoes the deletions of an import",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1260,7 +1260,7 @@
         "operation": "create",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
         "fileSource": "text",
-        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwhx6wpamjk1_u3,n8nbat_simwhx6wpamjk1_u3@example.edu,محمد,الهاشمي,n8nbat_simwhx6wpamjk1_u3@example.edu,deleted\n",
+        "fileContent": "user_id,login_id,first_name,last_name,email,status\nn8nbat_simwi1ziubbrk1_u3,n8nbat_simwi1ziubbrk1_u3@example.edu,محمد,الهاشمي,n8nbat_simwi1ziubbrk1_u3@example.edu,deleted\n",
         "additionalFields": {}
       },
       "credentials": {
@@ -1274,7 +1274,7 @@
       "executeOnce": true
     },
     {
-      "id": "de9b24b1-89d3-4fae-abdd-6b9a5a879e32",
+      "id": "954223b8-6666-4760-89db-ffd8d33a17dd",
       "name": "get — restoreStates: undoes the deletions of an import",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1300,7 +1300,7 @@
       "executeOnce": true
     },
     {
-      "id": "4b3359eb-c01d-4014-81e4-d724225f0705",
+      "id": "3af4e197-a41d-4d56-a1df-6f9da6cd36c2",
       "name": "restoreStates — restoreStates: undoes the deletions of an import",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1331,7 +1331,7 @@
       "executeOnce": true
     },
     {
-      "id": "bde9f386-3e91-4cc0-99cc-d2ed4290ab9b",
+      "id": "b5479a38-b29e-4a6e-9533-ae8c983dc42a",
       "name": "getCurrent — getCurrent, abort and abortAllPending: while one import runs",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1356,7 +1356,7 @@
       "executeOnce": true
     },
     {
-      "id": "702aeb7a-d67d-4a31-a038-710969018b98",
+      "id": "b31e358e-cb22-459f-b30a-11cf5ec32cee",
       "name": "abort — getCurrent, abort and abortAllPending: while one import runs",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -1369,7 +1369,7 @@
         "resource": "sisImport",
         "operation": "abort",
         "accountId": "={{ $('Config').first().json.accountRubricId }}",
-        "importId": "59"
+        "importId": "136"
       },
       "credentials": {
         "canvasApi": {
@@ -1382,7 +1382,7 @@
       "executeOnce": true
     },
     {
-      "id": "4447aae4-94be-4898-8195-dc52444a0319",
+      "id": "fefa4602-0580-4038-83bb-6a6eef77b427",
       "name": "abortAllPending — getCurrent, abort and abortAllPending: while one import runs",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

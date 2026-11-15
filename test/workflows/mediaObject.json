@@ -2,7 +2,7 @@
   "name": "Canvas battery — mediaObject",
   "nodes": [
     {
-      "id": "0fca324d-6ac5-4561-aebe-fdc7732aaadd",
+      "id": "7ee94f34-cc2d-48ca-8556-c95ac12ba2af",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "4f3ee7f7-d8a1-4065-b250-f77c0381e709",
+      "id": "967ca313-b0a9-4238-b9c7-a5f0c7f3bc11",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "94f4d87f-9d87-40af-8026-a8adc0255ffd",
+      "id": "7914bc45-d54f-4949-bfb5-220d9afef2e8",
       "name": "getAll — getAll: media objects of a course, sorted and ordered",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -66,7 +66,7 @@
       "executeOnce": true
     },
     {
-      "id": "9f6204f3-8e49-45ac-a112-17246005e40f",
+      "id": "0efb612f-ab96-4731-9099-5bbcef921b98",
       "name": "getAll — getAll: media objects of a course, sorted and ordered (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -103,7 +103,7 @@
       "executeOnce": true
     },
     {
-      "id": "838cd341-d178-45a7-a377-41401adc153a",
+      "id": "7a2cac26-698e-4949-be91-6740c09d65fd",
       "name": "getAll — getAll: media objects of a course, sorted and ordered (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -140,7 +140,7 @@
       "executeOnce": true
     },
     {
-      "id": "51451e98-84c9-4dc1-bfe6-109de867ea58",
+      "id": "1ea48914-2563-4f98-bc3d-1bcf6dc75a71",
       "name": "getAll — getAll: media objects of a course, sorted and ordered (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -178,7 +178,7 @@
       "executeOnce": true
     },
     {
-      "id": "cfedef1b-6974-4a47-897e-bdde48504eca",
+      "id": "3ca2ca43-4000-4f90-8e03-c47531921cf1",
       "name": "getAll — getAll: exclude decides whether tracks and sources are loo",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -212,7 +212,7 @@
       "executeOnce": true
     },
     {
-      "id": "6ea8416b-9ffd-4075-a932-10dd5eade668",
+      "id": "3d7a2709-b8ea-4fd7-af1d-9663e574e570",
       "name": "getAll — getAll: group and user contexts",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -247,7 +247,7 @@
       "executeOnce": true
     },
     {
-      "id": "84f4a08c-8c0d-4d7f-a4c7-ec963eca0275",
+      "id": "7a429547-9f90-4214-a62f-cb106da0ca95",
       "name": "getAll — getAll: group and user contexts (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -281,7 +281,7 @@
       "executeOnce": true
     },
     {
-      "id": "28c075b9-aeec-43b9-982b-c3d954d99073",
+      "id": "08771f49-59df-49fe-9264-01df9d505005",
       "name": "update — update: changes the title shown for the media object",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -294,7 +294,7 @@
         "resource": "mediaObject",
         "operation": "update",
         "mediaObjectId": "={{ $('getAll — getAll: media objects of a course, sorted and ordered (2)').first().json.media_id }}",
-        "title": "Umbenannt ünï 媒体 \"quoted\" & more mmwhxoc04ogm1"
+        "title": "Umbenannt ünï 媒体 \"quoted\" & more mmwi2ljfje0v1"
       },
       "credentials": {
         "canvasApi": {
@@ -307,7 +307,7 @@
       "executeOnce": true
     },
     {
-      "id": "19b8d146-df9e-4d78-be9c-5de470892e49",
+      "id": "ae1f4184-353b-4aec-bbc1-a8ea6c89c7f9",
       "name": "updateTracks — updateTracks / listTracks: replace the caption tracks and re",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -359,7 +359,7 @@
       "executeOnce": true
     },
     {
-      "id": "02544eda-ac53-4cc4-b413-ab355468fe98",
+      "id": "ca6a033c-c459-4ace-bfbc-11e7db6f4b78",
       "name": "listTracks — updateTracks / listTracks: replace the caption tracks and re",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -384,7 +384,7 @@
       "executeOnce": true
     },
     {
-      "id": "0f688980-8c57-4d85-a0c5-0cfdba2ea8a1",
+      "id": "10904bc4-2b57-4288-b031-81089aec24bf",
       "name": "listTracks — updateTracks / listTracks: replace the caption tracks and re (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -417,7 +417,7 @@
       "executeOnce": true
     },
     {
-      "id": "9024ea79-a676-4b65-8174-f22738b05a59",
+      "id": "2150ca03-4736-4d0e-84c4-4059ae6ea0ff",
       "name": "updateTracks — updateTracks / listTracks: replace the caption tracks and re (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -453,7 +453,7 @@
       "executeOnce": true
     },
     {
-      "id": "e3ef4cd0-429d-47a0-a5ad-a0fb5d129187",
+      "id": "a7035d07-bdd7-4067-be38-05c8d4ec6c44",
       "name": "listTracks — updateTracks / listTracks: replace the caption tracks and re (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -478,7 +478,7 @@
       "executeOnce": true
     },
     {
-      "id": "d19a3907-6230-4772-b969-d8abb13fc726",
+      "id": "7194de8b-40b6-46b1-bd89-a986bb478b79",
       "name": "updateTracks — updateTracks: at least one track is required; without the ri",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -512,7 +512,7 @@
       "executeOnce": true
     },
     {
-      "id": "8f22d927-2767-47fc-a701-99b81a60bd9c",
+      "id": "140a750b-350c-4ba3-90dd-cf99c6bede26",
       "name": "updateTracks — updateTracks / listTracks by attachment ID: the captions of ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -525,7 +525,7 @@
         "resource": "mediaObject",
         "operation": "updateTracks",
         "mediaBy": "attachmentId",
-        "attachmentId": "2162",
+        "attachmentId": "3392",
         "tracks": {
           "trackValues": [
             {
@@ -560,7 +560,7 @@
       "executeOnce": true
     },
     {
-      "id": "292fc6c1-aa60-45d2-829c-e5c64ab877d8",
+      "id": "ef8c5d7f-92cb-494d-aecb-29d508bbb5d7",
       "name": "updateTracks — updateTracks / listTracks by attachment ID: the captions of  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -573,7 +573,7 @@
         "resource": "mediaObject",
         "operation": "updateTracks",
         "mediaBy": "attachmentId",
-        "attachmentId": "2162",
+        "attachmentId": "3392",
         "removeAllTracks": true
       },
       "credentials": {

@@ -2,7 +2,7 @@
   "name": "Canvas battery — user",
   "nodes": [
     {
-      "id": "675abfda-7755-4d14-9e73-4724f88fa3ce",
+      "id": "51378be2-f2df-4178-8375-9792dbbdf6ff",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "1d3ff12e-29d4-40af-8422-6249f4bbf08a",
+      "id": "bdbc2981-4ad6-4503-a6a8-070f2bb88239",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -25,25 +25,25 @@
         "assignments": {
           "assignments": [
             {
-              "id": "441624d5-48c5-4fe9-93ba-4e7078a02b36",
+              "id": "0eed071b-f4c4-4e23-99f0-9bf0d39b72cc",
               "name": "studentUserId",
               "value": "5",
               "type": "string"
             },
             {
-              "id": "a9cb4d2f-1d39-4331-9ea2-e36d97260187",
+              "id": "f2f621b5-e1dc-4e27-aeb6-68c4bad9c4e9",
               "name": "accountId",
               "value": "1",
               "type": "string"
             },
             {
-              "id": "52461483-73b2-4de7-b740-95db4cd7e0c1",
+              "id": "08a165c5-4b02-4a27-8bbb-bb7d995ac065",
               "name": "teacherUserId",
               "value": "2",
               "type": "string"
             },
             {
-              "id": "6ec06631-9f9c-4d1b-b879-37f6f9151590",
+              "id": "f03abed4-8dc2-4d39-babc-f93111052ab9",
               "name": "subAccountId",
               "value": "3",
               "type": "string"
@@ -54,7 +54,7 @@
       }
     },
     {
-      "id": "38fa1a21-69bb-4889-a494-fb7a29cd2b4e",
+      "id": "77936173-a920-48a1-b9df-ba3db3b141ec",
       "name": "getMissingSubmissions — getMissingSubmissions: past-due assignments without a submis",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -66,7 +66,7 @@
         "authentication": "accessToken",
         "resource": "user",
         "operation": "getMissingSubmissions",
-        "userId": "1126",
+        "userId": "1991",
         "additionalFields": {}
       },
       "credentials": {
@@ -80,7 +80,7 @@
       "executeOnce": true
     },
     {
-      "id": "fcaf7183-b81a-43a1-8fdc-074bfe6a2a1e",
+      "id": "a718b925-1728-48ba-9b3a-49de24ecedbd",
       "name": "getMissingSubmissions — getMissingSubmissions: past-due assignments without a submis (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -92,9 +92,9 @@
         "authentication": "accessToken",
         "resource": "user",
         "operation": "getMissingSubmissions",
-        "userId": 1126,
+        "userId": 1991,
         "additionalFields": {
-          "courseIds": "269"
+          "courseIds": "692"
         }
       },
       "credentials": {
@@ -108,7 +108,7 @@
       "executeOnce": true
     },
     {
-      "id": "58da7342-a00a-47e4-aa14-729df86b56ec",
+      "id": "b0fc6518-7dbf-4b60-ad4a-3955913bcc13",
       "name": "getMissingSubmissions — getMissingSubmissions: past-due assignments without a submis (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -120,9 +120,9 @@
         "authentication": "accessToken",
         "resource": "user",
         "operation": "getMissingSubmissions",
-        "userId": "1126",
+        "userId": "1991",
         "additionalFields": {
-          "courseIds": " 270 , 269 "
+          "courseIds": " 693 , 692 "
         }
       },
       "credentials": {
@@ -136,7 +136,7 @@
       "executeOnce": true
     },
     {
-      "id": "d9570876-7540-41c1-b776-10db09726053",
+      "id": "24ff69d2-6db5-45e0-8c67-59bc65985ad9",
       "name": "getMissingSubmissions — getMissingSubmissions: past-due assignments without a submis (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -148,9 +148,9 @@
         "authentication": "accessToken",
         "resource": "user",
         "operation": "getMissingSubmissions",
-        "userId": "1126",
+        "userId": "1991",
         "additionalFields": {
-          "courseIds": "270"
+          "courseIds": "693"
         }
       },
       "credentials": {
@@ -164,7 +164,7 @@
       "executeOnce": true
     },
     {
-      "id": "61b02bda-53e6-4e30-92a5-7dc131231387",
+      "id": "0fc12d77-5b08-43fe-bda7-c9edccccfd72",
       "name": "getMissingSubmissions — getMissingSubmissions: past-due assignments without a submis (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -176,7 +176,7 @@
         "authentication": "accessToken",
         "resource": "user",
         "operation": "getMissingSubmissions",
-        "userId": "1126",
+        "userId": "1991",
         "additionalFields": {
           "filter": [
             "submittable"
@@ -194,7 +194,7 @@
       "executeOnce": true
     },
     {
-      "id": "c0c66c7d-0b43-4b90-a61d-cae9775fe3db",
+      "id": "6ae015d9-44e3-4b90-b2ef-7dad74aff8e1",
       "name": "getMissingSubmissions — getMissingSubmissions: past-due assignments without a submis (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -206,12 +206,12 @@
         "authentication": "accessToken",
         "resource": "user",
         "operation": "getMissingSubmissions",
-        "userId": "1126",
+        "userId": "1991",
         "additionalFields": {
           "filter": [
             "submittable"
           ],
-          "courseIds": "269"
+          "courseIds": "692"
         }
       },
       "credentials": {
@@ -225,7 +225,7 @@
       "executeOnce": true
     },
     {
-      "id": "a2a5e73e-6c53-4720-9664-bf870b1bbe78",
+      "id": "03d27393-6a8d-4120-b2b2-9628170ad17a",
       "name": "getMissingSubmissions — getMissingSubmissions: past-due assignments without a submis (7)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -237,7 +237,7 @@
         "authentication": "accessToken",
         "resource": "user",
         "operation": "getMissingSubmissions",
-        "userId": "1126",
+        "userId": "1991",
         "additionalFields": {
           "filter": [
             "current_grading_period"
@@ -255,7 +255,7 @@
       "executeOnce": true
     },
     {
-      "id": "5eca5565-59d4-42ee-80ef-9e003d1e454e",
+      "id": "12fe4886-d2aa-4c73-8538-32fa712115cf",
       "name": "getMissingSubmissions — getMissingSubmissions: past-due assignments without a submis (8)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -267,7 +267,7 @@
         "authentication": "accessToken",
         "resource": "user",
         "operation": "getMissingSubmissions",
-        "userId": "1126",
+        "userId": "1991",
         "additionalFields": {
           "include": [
             "course",
@@ -286,7 +286,7 @@
       "executeOnce": true
     },
     {
-      "id": "21c57cca-2e78-45e2-9bba-ef424e73fef0",
+      "id": "83cb0408-410f-4d95-83ac-1945114c0fb4",
       "name": "getMissingSubmissions — getMissingSubmissions: pages through the many missing submis",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -314,7 +314,7 @@
       "executeOnce": true
     },
     {
-      "id": "5ef663be-46c0-4370-8a5d-03e965d646ce",
+      "id": "35ce2752-658d-4417-8053-4158ea3a29e9",
       "name": "getMissingSubmissions — getMissingSubmissions: pages through the many missing submis (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -339,7 +339,7 @@
       "executeOnce": true
     },
     {
-      "id": "c949380e-e1cf-4e27-aea5-47f6a153fb71",
+      "id": "635b54d8-5e26-4aca-bb3c-adf7544ad545",
       "name": "getMissingSubmissions — getMissingSubmissions: pages through the many missing submis (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -368,7 +368,7 @@
       "executeOnce": true
     },
     {
-      "id": "079ccda7-2817-4995-81b8-e6b6f81dcdc5",
+      "id": "aa375a4d-c5c5-4de2-8e34-c9fbf3b00b6b",
       "name": "getMissingSubmissions — getMissingSubmissions: pages through the many missing submis (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -401,7 +401,7 @@
       "executeOnce": true
     },
     {
-      "id": "f914ebc7-f91c-4c3b-b6a1-6226167d2d93",
+      "id": "6b1724f9-049d-4c4f-8590-09d4967c2c5e",
       "name": "getGradedSubmissions — getGradedSubmissions: most recently graded first, with the a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -413,7 +413,7 @@
         "authentication": "accessToken",
         "resource": "user",
         "operation": "getGradedSubmissions",
-        "userId": "1126",
+        "userId": "1991",
         "additionalFields": {}
       },
       "credentials": {
@@ -427,7 +427,7 @@
       "executeOnce": true
     },
     {
-      "id": "3ddaf9e3-3efc-49ef-994f-819d64fb591c",
+      "id": "7d99325f-4533-4037-af60-c733734b5ccf",
       "name": "getGradedSubmissions — getGradedSubmissions: most recently graded first, with the a (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -457,7 +457,7 @@
       "executeOnce": true
     },
     {
-      "id": "c28cb4af-df15-4b66-b926-70a982555a96",
+      "id": "bf13a94f-b7fb-4be7-9493-21b4d5818520",
       "name": "getGradedSubmissions — getGradedSubmissions: most recently graded first, with the a (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -485,7 +485,7 @@
       "executeOnce": true
     },
     {
-      "id": "6c044eab-fe53-49a2-8793-17fa68450437",
+      "id": "398dfb9a-9003-46cc-ba9f-ece77b1c67f6",
       "name": "getGradedSubmissions — getGradedSubmissions: most recently graded first, with the a (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -513,7 +513,7 @@
       "executeOnce": true
     },
     {
-      "id": "0eefdbfe-caf8-4a1e-b4a4-435e388d1890",
+      "id": "ff144671-6a62-4968-abd9-a9212e31ef8a",
       "name": "getGradedSubmissions — getGradedSubmissions: most recently graded first, with the a (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -541,7 +541,7 @@
       "executeOnce": true
     },
     {
-      "id": "10946932-9f91-4f36-a464-65482dd8a0a7",
+      "id": "a0906505-75cd-4c5e-80e8-15942348c1ba",
       "name": "getGradedSubmissions — getGradedSubmissions: most recently graded first, with the a (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -553,7 +553,7 @@
         "authentication": "accessToken",
         "resource": "user",
         "operation": "getGradedSubmissions",
-        "userId": "1129"
+        "userId": "1994"
       },
       "credentials": {
         "canvasApi": {
@@ -566,7 +566,7 @@
       "executeOnce": true
     },
     {
-      "id": "d49d749f-6e3d-46cf-b72a-f02ac0178c56",
+      "id": "74856a93-a9b5-4c58-b7ec-4dca9d3284c1",
       "name": "getGradedSubmissions — getGradedSubmissions: pages through the hundreds of graded s",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -594,7 +594,7 @@
       "executeOnce": true
     },
     {
-      "id": "16f2684e-9899-4feb-ab77-3080977a5062",
+      "id": "b787b8ea-a34f-446e-9ad0-9a09fcef70a7",
       "name": "getGradedSubmissions — getGradedSubmissions: pages through the hundreds of graded s (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -619,7 +619,7 @@
       "executeOnce": true
     },
     {
-      "id": "10d84736-a69e-491c-b029-33c359d6416a",
+      "id": "c24ceaaf-59a0-4752-951e-89af2f526d42",
       "name": "getGradedSubmissions — getGradedSubmissions: pages through the hundreds of graded s (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -648,7 +648,7 @@
       "executeOnce": true
     },
     {
-      "id": "d7051e38-6ae8-4a14-bcd5-87573e20d060",
+      "id": "ba716296-a033-4917-9712-d96de2099870",
       "name": "getGradedSubmissions — getGradedSubmissions: pages through the hundreds of graded s (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -683,7 +683,7 @@
       "executeOnce": true
     },
     {
-      "id": "e7e7819c-9536-4a09-b68c-0b97b7cde1c5",
+      "id": "6e89ca5f-448b-4ce3-8f96-b6c594cd3c4d",
       "name": "getGradedSubmissions — only active courses / only current enrollments: a concluded ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -712,7 +712,7 @@
       "executeOnce": true
     },
     {
-      "id": "290710d4-9a22-4fd7-8b72-92f974e1dbf8",
+      "id": "4e1c44f5-a344-4ee9-abb0-f0bebf99913b",
       "name": "getGradedSubmissions — only active courses / only current enrollments: a concluded  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -740,7 +740,7 @@
       "executeOnce": true
     },
     {
-      "id": "a9476907-22de-4386-85ac-c2232fac2f19",
+      "id": "deeae381-791f-4a99-9306-269b9bdd92de",
       "name": "getPageViews — getPageViews: newest first, paged, and limited by start and ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -768,7 +768,7 @@
       "executeOnce": true
     },
     {
-      "id": "f48560fe-5c89-440f-9c5f-88658d4f3163",
+      "id": "d4f8a4cb-569d-4649-9b09-3aef09370b19",
       "name": "getPageViews — getPageViews: newest first, paged, and limited by start and  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -793,7 +793,7 @@
       "executeOnce": true
     },
     {
-      "id": "4582bc5f-624b-470a-9356-b336c9cdf7fe",
+      "id": "6af64f14-3bb7-4f74-9c5b-b67555bc38ac",
       "name": "getPageViews — getPageViews: newest first, paged, and limited by start and  (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -822,7 +822,7 @@
       "executeOnce": true
     },
     {
-      "id": "d3f21f14-48e9-41aa-9d83-173696833e80",
+      "id": "4053b954-8965-4391-b47a-a98169878ec0",
       "name": "getPageViews — getPageViews: newest first, paged, and limited by start and  (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -836,7 +836,7 @@
         "operation": "getPageViews",
         "userId": "={{ $('getGradedSubmissions — only active courses / only current enrollments: a concluded  (2)').first().json.user_id }}",
         "additionalFields": {
-          "startTime": "2026-11-15T14:13:50.000Z"
+          "startTime": "2026-11-15T16:30:52.000Z"
         },
         "pagination": {
           "returnAll": true
@@ -853,7 +853,7 @@
       "executeOnce": true
     },
     {
-      "id": "84e9626a-0d84-4422-af7d-db897cd0dafc",
+      "id": "327d9fb3-609e-4de4-be1a-072ab3c76fa2",
       "name": "getPageViews — getPageViews: newest first, paged, and limited by start and  (5)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -867,7 +867,7 @@
         "operation": "getPageViews",
         "userId": "={{ $('getGradedSubmissions — only active courses / only current enrollments: a concluded  (2)').first().json.user_id }}",
         "additionalFields": {
-          "endTime": "2026-11-15T14:13:50.000Z"
+          "endTime": "2026-11-15T16:30:52.000Z"
         },
         "pagination": {
           "returnAll": true
@@ -884,7 +884,7 @@
       "executeOnce": true
     },
     {
-      "id": "ffd5ac12-9a83-49a4-a104-decbe03d02fa",
+      "id": "b6fcce55-95e8-4658-aff8-17ed6eeb7a90",
       "name": "getPageViews — getPageViews: newest first, paged, and limited by start and  (6)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -898,8 +898,8 @@
         "operation": "getPageViews",
         "userId": "={{ $('getGradedSubmissions — only active courses / only current enrollments: a concluded  (2)').first().json.user_id }}",
         "additionalFields": {
-          "startTime": "2026-11-15T14:11:54.000Z",
-          "endTime": "2026-11-15T14:14:35.000Z"
+          "startTime": "2026-11-15T16:28:28.000Z",
+          "endTime": "2026-11-15T16:31:16.000Z"
         },
         "pagination": {
           "returnAll": true
@@ -916,7 +916,7 @@
       "executeOnce": true
     },
     {
-      "id": "d31b0422-8296-4dbe-bc72-af0e5965fdc1",
+      "id": "1f0f61f8-a556-453f-892a-c616c484215d",
       "name": "getPageViews — getPageViews: a user without page views yields nothing; impo",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -928,7 +928,7 @@
         "authentication": "accessToken",
         "resource": "user",
         "operation": "getPageViews",
-        "userId": "1129"
+        "userId": "1994"
       },
       "credentials": {
         "canvasApi": {
@@ -941,13 +941,592 @@
       "executeOnce": true
     },
     {
-      "id": "61fa8a9f-bfc4-4a7a-b90c-db3ea92a5e28",
-      "name": "create — create: every optional field reaches Canvas",
+      "id": "76d9d234-6b99-4b12-9776-9ce49c2d557b",
+      "name": "updateSettings — updateSettings / getSettings: every setting reaches Canvas, ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
         720,
         1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "updateSettings",
+        "userId": "2173",
+        "updateFields": {
+          "collapseCourseNav": true,
+          "collapseGlobalNav": false,
+          "commentLibrarySuggestionsEnabled": true,
+          "elementaryDashboardDisabled": false,
+          "hideDashcardColorOverlays": true,
+          "manualMarkAsRead": false,
+          "releaseNotesBadgeDisabled": true,
+          "widgetDashboardDarkMode": false,
+          "widgetDashboardUserPreference": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2a5193f2-d277-40ec-8193-4fedb44c852b",
+      "name": "updateSettings — updateSettings / getSettings: every setting reaches Canvas,  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "updateSettings",
+        "userId": "2173",
+        "updateFields": {
+          "collapseCourseNav": false,
+          "collapseGlobalNav": true,
+          "commentLibrarySuggestionsEnabled": false,
+          "elementaryDashboardDisabled": true,
+          "hideDashcardColorOverlays": false,
+          "manualMarkAsRead": true,
+          "releaseNotesBadgeDisabled": false,
+          "widgetDashboardDarkMode": true,
+          "widgetDashboardUserPreference": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "06a0ef12-73f3-45ef-9811-8e130dee6130",
+      "name": "getSettings — updateSettings / getSettings: every setting reaches Canvas, ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "getSettings",
+        "userId": 2173
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9ccb49b8-3f7b-4f9e-a300-b1868d07d554",
+      "name": "updateSettings — updateSettings: settings that are not added keep their value",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "updateSettings",
+        "userId": "2173",
+        "updateFields": {
+          "manualMarkAsRead": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f60b4a3d-2179-4ed9-9971-5cc5e7a9fe31",
+      "name": "updateSettings — updateSettings: settings that are not added keep their value (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "updateSettings",
+        "userId": "2173"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "01024b80-8153-43dd-8182-4c14ca0d3225",
+      "name": "getSettings — read operations take SIS IDs, also ones with characters that",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "getSettings",
+        "userId": "sis_user_id:S/SLASH:COLON;0018"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c899ca45-78a5-4def-9029-b38665b6eee5",
+      "name": "getColors — read operations take SIS IDs, also ones with characters that",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "getColors",
+        "userId": "sis_user_id:S/SLASH:COLON;0018"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b0ac4c2f-55de-4398-bc51-6ed02785fff0",
+      "name": "getDashboardPositions — read operations take SIS IDs, also ones with characters that",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "getDashboardPositions",
+        "userId": "sis_user_id:S/SLASH:COLON;0018"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ddc6429a-ac8a-47b9-bf0c-d7dafdca49d4",
+      "name": "getAvatars — read operations take SIS IDs, also ones with characters that",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "getAvatars",
+        "userId": "sis_user_id:S/SLASH:COLON;0018"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "07d5556f-e916-44d7-9339-4b8b4877e87d",
+      "name": "getColors — setColor: colors for courses, a group and a user, with and w",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "getColors",
+        "userId": "2173"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cf706794-aea9-4161-bae5-d1e87583da33",
+      "name": "setColor — getColors / getColor: return what Canvas stores; changing on",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "setColor",
+        "userId": "2173",
+        "assetString": "course_1",
+        "hexcode": "#0b874b"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "054f4310-ed0c-41d8-8123-d321197ff773",
+      "name": "getDashboardPositions — updateDashboardPositions / getDashboardPositions: positions ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "getDashboardPositions",
+        "userId": "2173"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "54827a84-7cda-4b8d-8034-f6ef3f080137",
+      "name": "updateDashboardPositions — updateDashboardPositions / getDashboardPositions: positions ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "updateDashboardPositions",
+        "userId": "2173",
+        "positions": {
+          "position": [
+            {
+              "assetString": "course_1",
+              "position": 2
+            },
+            {
+              "assetString": " course_2 ",
+              "position": 1
+            },
+            {
+              "assetString": "group_1",
+              "position": 0
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7b27955e-e8e2-483b-ad7d-113c7262dd8e",
+      "name": "setTextEditorPreference — setTextEditorPreference / setFilesUiVersion: every choice is",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "setTextEditorPreference",
+        "userId": "2175",
+        "textEditorPreference": ""
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "43242405-1681-45fb-ab1a-37aca4349122",
+      "name": "setFilesUiVersion — setTextEditorPreference / setFilesUiVersion: every choice is",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "setFilesUiVersion",
+        "userId": "2173",
+        "filesUiVersion": "v1"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e301caf5-0180-4269-bc5c-d5e9d733aa1b",
+      "name": "getAvatars — getAvatars: lists the gravatar, uploaded profile pictures an",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "getAvatars",
+        "userId": "2172"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6a916f7d-7f77-4c10-b993-59019d21847a",
+      "name": "update — getAvatars: lists the gravatar, uploaded profile pictures an",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "update",
+        "userId": "2172",
+        "updateFields": {
+          "avatarToken": "8211a2cce4f33c02955a331f401d34038b8a3613"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "84be082c-ee86-42fc-aa06-71b4cc5de44a",
+      "name": "getAvatars — getAvatars: lists the gravatar, uploaded profile pictures an (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "getAvatars",
+        "userId": "2173"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a725946a-4624-4ce8-ab75-46c9cd852fed",
+      "name": "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "expireMobileSessions",
+        "userId": "2175",
+        "additionalFields": {
+          "skipAdmins": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d67975a3-ee27-4811-b1b8-fff658e658e5",
+      "name": "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "expireMobileSessions",
+        "userId": 2173
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9daf9b05-ce40-4b16-90bd-dc8b3cc7984f",
+      "name": "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "user",
+        "operation": "expireMobileSessions",
+        "userId": "2175",
+        "additionalFields": {
+          "skipAdmins": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "926f0f76-3681-40ea-9552-c6e024e5511f",
+      "name": "create — create: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1760
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -987,13 +1566,13 @@
       "executeOnce": true
     },
     {
-      "id": "cb0c8d96-7bae-42bf-b502-a2deae09b977",
+      "id": "afc75b06-335a-45f7-a51f-e8888a4f7241",
       "name": "create — create: an unconfirmed email with Return Confirmation URL;",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
-        1100
+        1760,
+        1760
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1019,13 +1598,13 @@
       "executeOnce": true
     },
     {
-      "id": "8a51787b-9474-46f6-8ab0-6173d211a171",
+      "id": "44cb12d0-8618-4e4f-bc24-a86402f500e7",
       "name": "create — create: an unconfirmed email with Return Confirmation URL; (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
-        1100
+        460,
+        1980
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1046,13 +1625,13 @@
       "executeOnce": true
     },
     {
-      "id": "5b3fe3fc-634e-4393-adf1-7dd36f4ea087",
+      "id": "1e1b19be-fb83-498b-89b7-8e7ee6df0f31",
       "name": "create — create: Enable SIS Reactivation revives a deleted user wit",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
-        1100
+        720,
+        1980
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1079,13 +1658,13 @@
       "executeOnce": true
     },
     {
-      "id": "2310321e-36d2-4913-919b-c89417e1c620",
+      "id": "858dff1b-e2df-4735-a641-743fe709c3b4",
       "name": "get — get: includes, SIS IDs (also with characters that need URL e",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
-        1100
+        980,
+        1980
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1111,13 +1690,13 @@
       "executeOnce": true
     },
     {
-      "id": "e3f6c693-4d5e-4fd9-b123-cccb55b68919",
+      "id": "dccf0fcc-30ac-452e-a3e2-f31dcd1e3d80",
       "name": "get — get: includes, SIS IDs (also with characters that need URL e (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
-        1320
+        1240,
+        1980
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1136,13 +1715,13 @@
       "executeOnce": true
     },
     {
-      "id": "dfc332ca-770e-4c7d-872e-01809e8912ae",
+      "id": "f4839b29-4c9d-4bb0-8a92-21441fcff182",
       "name": "get — get: includes, SIS IDs (also with characters that need URL e (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
-        1320
+        1500,
+        1980
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1161,13 +1740,13 @@
       "executeOnce": true
     },
     {
-      "id": "a6e82687-c651-40fd-8747-f2ff7507634d",
+      "id": "fd293f31-bfb2-4fcd-aca5-651c90aca3b6",
       "name": "getSelf — getSelf: returns the user of the credential in use",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
-        1320
+        1760,
+        1980
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1190,13 +1769,13 @@
       "executeOnce": true
     },
     {
-      "id": "9079cba3-8c56-4a63-adb5-1353b4ad606b",
+      "id": "4276afb7-2c9d-4251-afb4-f3209fdb642c",
       "name": "getProfile — getProfile: returns the profile, also for self",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
-        1320
+        460,
+        2200
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1215,13 +1794,13 @@
       "executeOnce": true
     },
     {
-      "id": "c086ed63-9389-4b8b-a603-86fab946255b",
+      "id": "4cf878a1-70c2-4567-b721-cb7f92827500",
       "name": "getAll — getAll: returns exactly the pages Canvas serves, without gap",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
-        1320
+        720,
+        2200
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1244,13 +1823,13 @@
       "executeOnce": true
     },
     {
-      "id": "978d4980-f0cc-4449-9349-e8671ea25d6a",
+      "id": "d8d9cbb1-8dc4-4edb-843d-4100d4294a3a",
       "name": "getAll — getAll: returns exactly the pages Canvas serves, without gap (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
-        1320
+        980,
+        2200
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1277,13 +1856,13 @@
       "executeOnce": true
     },
     {
-      "id": "1028460d-2dd4-4e48-b5eb-cff010c7a756",
+      "id": "c6685dfe-7a6a-42c2-9765-de5dabf22def",
       "name": "getAll — getAll: returns exactly the pages Canvas serves, without gap (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
-        1540
+        1240,
+        2200
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1302,13 +1881,13 @@
       "executeOnce": true
     },
     {
-      "id": "1a611e56-f509-4542-b426-e65785f46a2b",
+      "id": "756ca8b7-508c-4637-8f8f-5838698dda1d",
       "name": "getAll — getAll: returns exactly the pages Canvas serves, without gap (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
-        1540
+        1500,
+        2200
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1334,13 +1913,13 @@
       "executeOnce": true
     },
     {
-      "id": "0ebbba53-8f6a-473c-a75d-c6c3d1a8bea2",
+      "id": "c0b7a4b5-5f1a-474d-a5f7-949f70500241",
       "name": "getAll — getAll: search, sort order and includes are applied",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
-        1540
+        1760,
+        2200
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1348,7 +1927,7 @@
         "operation": "getAll",
         "accountId": "={{ $('Config').first().json.accountId }}",
         "additionalFields": {
-          "searchTerm": "zqbatmwhxeylrmzp1",
+          "searchTerm": "zqbatmwi2bzu5cl31",
           "sort": "username",
           "order": "desc",
           "include": [
@@ -1375,13 +1954,13 @@
       "executeOnce": true
     },
     {
-      "id": "e2cb7f33-7933-498c-9763-f4dca68203d3",
+      "id": "bf69ec6c-d234-442c-adc5-625dfe8ef962",
       "name": "getAll — getAll: search, sort order and includes are applied (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
-        1540
+        460,
+        2420
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1403,13 +1982,13 @@
       "executeOnce": true
     },
     {
-      "id": "c45400f2-1809-463d-92bf-dc51c92329a0",
+      "id": "6c4ea247-949c-42f5-802a-7d63bb2da1ca",
       "name": "getAll — getAll: enrollment type, deleted users and sub-accounts",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
-        1540
+        720,
+        2420
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1435,13 +2014,13 @@
       "executeOnce": true
     },
     {
-      "id": "8ea550a1-cb03-427a-b549-ad87e111f554",
+      "id": "10dc8c09-1060-4212-b302-ef176663a28a",
       "name": "getAll — getAll: enrollment type, deleted users and sub-accounts (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
-        1540
+        980,
+        2420
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1449,7 +2028,7 @@
         "operation": "getAll",
         "accountId": "={{ $('Config').first().json.accountId }}",
         "additionalFields": {
-          "searchTerm": "zqbatmwhxeylrmzp1 Departed"
+          "searchTerm": "zqbatmwi2bzu5cl31 Departed"
         }
       },
       "credentials": {
@@ -1463,13 +2042,13 @@
       "executeOnce": true
     },
     {
-      "id": "7a97eb84-77ae-4d4c-a52e-a1e9cb56dea9",
+      "id": "303f06e7-9a69-4e68-8d47-b382b018b2c6",
       "name": "getAll — getAll: enrollment type, deleted users and sub-accounts (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
-        1760
+        1240,
+        2420
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1477,7 +2056,7 @@
         "operation": "getAll",
         "accountId": "={{ $('Config').first().json.subAccountId }}",
         "additionalFields": {
-          "searchTerm": "zqbatmwhxeylrmzp1"
+          "searchTerm": "zqbatmwi2bzu5cl31"
         }
       },
       "credentials": {
@@ -1491,13 +2070,13 @@
       "executeOnce": true
     },
     {
-      "id": "4fbcfb38-4df9-436e-92da-fd978687ad80",
+      "id": "06cb21fd-bcdc-4921-b46a-cea84b749d4d",
       "name": "update — update: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
-        1760
+        1500,
+        2420
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1528,13 +2107,13 @@
       "executeOnce": true
     },
     {
-      "id": "6dd25fbb-9978-4114-a55c-286c466a183d",
+      "id": "108e1b16-7bab-45f4-b41e-1f40843b9540",
       "name": "update — update: empty profile texts are cleared; an empty name or em",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
-        1760
+        1760,
+        2420
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1560,13 +2139,13 @@
       "executeOnce": true
     },
     {
-      "id": "1135a053-c56d-4f2f-8732-c2cf1541e04b",
+      "id": "8d7c24fc-19b5-41b2-8147-4dbd0c826f33",
       "name": "update — update: an avatar token from the users avatar list is accep",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
-        1760
+        460,
+        2640
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1574,7 +2153,7 @@
         "operation": "update",
         "userId": "={{ $('update — update: empty profile texts are cleared; an empty name or em').first().json.id }}",
         "updateFields": {
-          "avatarToken": "21bb033f7bdc80ec50f7e83db970754b8a23e005"
+          "avatarToken": "0f699eb866b1d805e8b11ea6edc6dff8e0868db6"
         }
       },
       "credentials": {
@@ -1588,13 +2167,13 @@
       "executeOnce": true
     },
     {
-      "id": "2378459e-57d5-4bc7-9ebc-c6ee7c2faa23",
+      "id": "3b84b8dd-bb19-4c09-9510-1c3f6d47b85d",
       "name": "update — update: with Override SIS Stickiness off, a name changed i",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
-        1760
+        720,
+        2640
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1618,13 +2197,13 @@
       "executeOnce": true
     },
     {
-      "id": "80f2a628-e1a3-4f3c-b82c-b22590acd00f",
+      "id": "cfa17e75-30f5-4135-806f-1beb721de320",
       "name": "update — update: a pronoun that is not configured on the account is i",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
-        1760
+        980,
+        2640
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1646,13 +2225,13 @@
       "executeOnce": true
     },
     {
-      "id": "ca6fbed4-30a8-4670-a5d5-8aafd27d1be3",
+      "id": "5c01005a-39c2-48b1-ab12-77b19099d401",
       "name": "update — update: Event suspends and unsuspends the logins of the us",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
-        1980
+        1240,
+        2640
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1674,13 +2253,13 @@
       "executeOnce": true
     },
     {
-      "id": "6131841d-4f9a-4cd3-8a06-a13023d9bf66",
+      "id": "39fbedc7-07ee-46f0-85a5-bde3d6b8890e",
       "name": "update — update: Event suspends and unsuspends the logins of the us (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
-        1980
+        1500,
+        2640
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1702,13 +2281,13 @@
       "executeOnce": true
     },
     {
-      "id": "a0127f95-9ac1-4b82-9711-0e22420b7523",
+      "id": "cf1dda29-2f51-4335-9719-c6a1c736c624",
       "name": "terminateSessions — terminateSessions: expires the access tokens of the user",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        980,
-        1980
+        1760,
+        2640
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1727,20 +2306,20 @@
       "executeOnce": true
     },
     {
-      "id": "16e284c2-915e-4a86-bc34-f0493d5d84ac",
+      "id": "f8e3f480-d133-4368-87e3-eef28be2298f",
       "name": "merge — merge and split: merges one user into another, then splits t",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1240,
-        1980
+        460,
+        2860
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "user",
         "operation": "merge",
-        "sourceUserId": "1326",
-        "destinationUserId": "1327"
+        "sourceUserId": "2205",
+        "destinationUserId": "2206"
       },
       "credentials": {
         "canvasApi": {
@@ -1753,13 +2332,13 @@
       "executeOnce": true
     },
     {
-      "id": "ac599ece-b2bf-4e0c-b080-8b5066f323dd",
+      "id": "46593f24-2ff4-4de7-b5db-0e99c745f406",
       "name": "split — merge and split: merges one user into another, then splits t",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1500,
-        1980
+        720,
+        2860
       ],
       "parameters": {
         "authentication": "accessToken",
@@ -1778,19 +2357,19 @@
       "executeOnce": true
     },
     {
-      "id": "c7d81200-f296-41f8-8139-d046ad4a250b",
+      "id": "557e8f53-14fe-4704-af82-a5d6a421685a",
       "name": "merge — merge: with a destination account, the destination can be gi",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        1760,
-        1980
+        980,
+        2860
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "user",
         "operation": "merge",
-        "sourceUserId": "1328",
+        "sourceUserId": "2207",
         "destinationUserId": "=sis_user_id:SIS-MERGE_{{ $execution.id }}-37",
         "destinationAccountId": "={{ $('Config').first().json.accountId }}"
       },
@@ -1805,20 +2384,20 @@
       "executeOnce": true
     },
     {
-      "id": "df43ad43-2cac-42bd-830e-a4fcf1ecd608",
+      "id": "ac4cc0c7-6170-4401-a38a-840e36034965",
       "name": "delete — delete and restore: removes the user from the root account a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        460,
-        2200
+        1240,
+        2860
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "user",
         "operation": "delete",
         "accountId": "={{ $('Config').first().json.accountId }}",
-        "userId": 1330
+        "userId": 2209
       },
       "credentials": {
         "canvasApi": {
@@ -1831,599 +2410,20 @@
       "executeOnce": true
     },
     {
-      "id": "0e46af69-f4ce-4650-8b3f-075e9a1c786f",
+      "id": "ea0de281-5601-4808-962f-77cd8d3a5923",
       "name": "restore — delete and restore: removes the user from the root account a",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
       "position": [
-        720,
-        2200
+        1500,
+        2860
       ],
       "parameters": {
         "authentication": "accessToken",
         "resource": "user",
         "operation": "restore",
         "accountId": "self",
-        "userId": "1330"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "0f533f04-d5b8-4daa-ad00-483c82aaa80d",
-      "name": "updateSettings — updateSettings / getSettings: every setting reaches Canvas, ",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        980,
-        2200
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "updateSettings",
-        "userId": "1355",
-        "updateFields": {
-          "collapseCourseNav": true,
-          "collapseGlobalNav": false,
-          "commentLibrarySuggestionsEnabled": true,
-          "elementaryDashboardDisabled": false,
-          "hideDashcardColorOverlays": true,
-          "manualMarkAsRead": false,
-          "releaseNotesBadgeDisabled": true,
-          "widgetDashboardDarkMode": false,
-          "widgetDashboardUserPreference": true
-        }
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "c9849d06-cd0d-4839-9b99-489f95de8dfa",
-      "name": "updateSettings — updateSettings / getSettings: every setting reaches Canvas,  (2)",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1240,
-        2200
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "updateSettings",
-        "userId": "1355",
-        "updateFields": {
-          "collapseCourseNav": false,
-          "collapseGlobalNav": true,
-          "commentLibrarySuggestionsEnabled": false,
-          "elementaryDashboardDisabled": true,
-          "hideDashcardColorOverlays": false,
-          "manualMarkAsRead": true,
-          "releaseNotesBadgeDisabled": false,
-          "widgetDashboardDarkMode": true,
-          "widgetDashboardUserPreference": false
-        }
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "b21b90b5-a8df-4a1c-a798-bb0a15134a59",
-      "name": "getSettings — updateSettings / getSettings: every setting reaches Canvas, ",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1500,
-        2200
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "getSettings",
-        "userId": 1355
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "17293145-903e-4cb3-ab9a-5b25b42eacde",
-      "name": "updateSettings — updateSettings: settings that are not added keep their value",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1760,
-        2200
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "updateSettings",
-        "userId": "1355",
-        "updateFields": {
-          "manualMarkAsRead": false
-        }
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "a4c9c969-7aec-488e-aa86-c2dca8f34dc2",
-      "name": "updateSettings — updateSettings: settings that are not added keep their value (2)",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        460,
-        2420
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "updateSettings",
-        "userId": "1355"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "08e28b81-e86b-42fa-abf8-9a1da6f14a73",
-      "name": "getSettings — read operations take SIS IDs, also ones with characters that",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        720,
-        2420
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "getSettings",
-        "userId": "sis_user_id:S/SLASH:COLON;0018"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "ffa76ebd-24cf-48a0-8c97-ead955606e47",
-      "name": "getColors — read operations take SIS IDs, also ones with characters that",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        980,
-        2420
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "getColors",
-        "userId": "sis_user_id:S/SLASH:COLON;0018"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "40e1c0e9-9573-485c-b51e-7785d8baebaf",
-      "name": "getDashboardPositions — read operations take SIS IDs, also ones with characters that",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1240,
-        2420
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "getDashboardPositions",
-        "userId": "sis_user_id:S/SLASH:COLON;0018"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "b01eb732-2825-4cec-a5fb-e872f0ce91e4",
-      "name": "getAvatars — read operations take SIS IDs, also ones with characters that",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1500,
-        2420
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "getAvatars",
-        "userId": "sis_user_id:S/SLASH:COLON;0018"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "854c2e10-517a-465e-963f-13a7e473b579",
-      "name": "getColors — setColor: colors for courses, a group and a user, with and w",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1760,
-        2420
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "getColors",
-        "userId": "1355"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "b7fdf431-bca2-444e-91c7-4a82e8d33537",
-      "name": "setColor — getColors / getColor: return what Canvas stores; changing on",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        460,
-        2640
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "setColor",
-        "userId": "1355",
-        "assetString": "course_1",
-        "hexcode": "#0b874b"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "9d3e2332-82f4-4d9d-bfd9-7a37ffea3ec5",
-      "name": "getDashboardPositions — updateDashboardPositions / getDashboardPositions: positions ",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        720,
-        2640
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "getDashboardPositions",
-        "userId": "1355"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "a938546c-efda-4222-9683-b39f8698efdf",
-      "name": "updateDashboardPositions — updateDashboardPositions / getDashboardPositions: positions ",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        980,
-        2640
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "updateDashboardPositions",
-        "userId": "1355",
-        "positions": {
-          "position": [
-            {
-              "assetString": "course_1",
-              "position": 2
-            },
-            {
-              "assetString": " course_2 ",
-              "position": 1
-            },
-            {
-              "assetString": "group_1",
-              "position": 0
-            }
-          ]
-        }
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "689d1e44-6062-4437-9069-a96ed0d647bc",
-      "name": "setTextEditorPreference — setTextEditorPreference / setFilesUiVersion: every choice is",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1240,
-        2640
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "setTextEditorPreference",
-        "userId": "1357",
-        "textEditorPreference": ""
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "57f6919f-0e83-4617-a6e3-0638e1d7eb97",
-      "name": "setFilesUiVersion — setTextEditorPreference / setFilesUiVersion: every choice is",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1500,
-        2640
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "setFilesUiVersion",
-        "userId": "1355",
-        "filesUiVersion": "v1"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "645ef0b9-02d1-455b-b4c4-96e43d1f7588",
-      "name": "getAvatars — getAvatars: lists the gravatar, uploaded profile pictures an",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1760,
-        2640
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "getAvatars",
-        "userId": "1351"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "cd8ca4aa-dbb5-4ba5-8711-49cbf686590e",
-      "name": "update — getAvatars: lists the gravatar, uploaded profile pictures an",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        460,
-        2860
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "update",
-        "userId": "1351",
-        "updateFields": {
-          "avatarToken": "d52c84cb659d9162bb4fb4fe68cf628aa2599814"
-        }
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "c1697006-a534-47e4-8eb9-610d3ef92984",
-      "name": "getAvatars — getAvatars: lists the gravatar, uploaded profile pictures an (2)",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        720,
-        2860
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "getAvatars",
-        "userId": "1355"
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "6267b539-730f-4485-978e-918600bb662a",
-      "name": "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        980,
-        2860
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "expireMobileSessions",
-        "userId": "1357",
-        "additionalFields": {
-          "skipAdmins": true
-        }
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "01bbe2ba-95e4-4fe3-be33-cc2ee4eea84b",
-      "name": "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only (2)",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1240,
-        2860
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "expireMobileSessions",
-        "userId": 1355
-      },
-      "credentials": {
-        "canvasApi": {
-          "id": "",
-          "name": "Canvas account"
-        }
-      },
-      "onError": "continueRegularOutput",
-      "alwaysOutputData": true,
-      "executeOnce": true
-    },
-    {
-      "id": "37cdc28f-fd9e-4248-a1d4-9a94891a9576",
-      "name": "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only (3)",
-      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
-      "typeVersion": 1,
-      "position": [
-        1500,
-        2860
-      ],
-      "parameters": {
-        "authentication": "accessToken",
-        "resource": "user",
-        "operation": "expireMobileSessions",
-        "userId": "1357",
-        "additionalFields": {
-          "skipAdmins": false
-        }
+        "userId": "2209"
       },
       "credentials": {
         "canvasApi": {
@@ -2793,6 +2793,237 @@
       "main": [
         [
           {
+            "node": "updateSettings — updateSettings / getSettings: every setting reaches Canvas, ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateSettings — updateSettings / getSettings: every setting reaches Canvas, ": {
+      "main": [
+        [
+          {
+            "node": "updateSettings — updateSettings / getSettings: every setting reaches Canvas,  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateSettings — updateSettings / getSettings: every setting reaches Canvas,  (2)": {
+      "main": [
+        [
+          {
+            "node": "getSettings — updateSettings / getSettings: every setting reaches Canvas, ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSettings — updateSettings / getSettings: every setting reaches Canvas, ": {
+      "main": [
+        [
+          {
+            "node": "updateSettings — updateSettings: settings that are not added keep their value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateSettings — updateSettings: settings that are not added keep their value": {
+      "main": [
+        [
+          {
+            "node": "updateSettings — updateSettings: settings that are not added keep their value (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateSettings — updateSettings: settings that are not added keep their value (2)": {
+      "main": [
+        [
+          {
+            "node": "getSettings — read operations take SIS IDs, also ones with characters that",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSettings — read operations take SIS IDs, also ones with characters that": {
+      "main": [
+        [
+          {
+            "node": "getColors — read operations take SIS IDs, also ones with characters that",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getColors — read operations take SIS IDs, also ones with characters that": {
+      "main": [
+        [
+          {
+            "node": "getDashboardPositions — read operations take SIS IDs, also ones with characters that",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getDashboardPositions — read operations take SIS IDs, also ones with characters that": {
+      "main": [
+        [
+          {
+            "node": "getAvatars — read operations take SIS IDs, also ones with characters that",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAvatars — read operations take SIS IDs, also ones with characters that": {
+      "main": [
+        [
+          {
+            "node": "getColors — setColor: colors for courses, a group and a user, with and w",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getColors — setColor: colors for courses, a group and a user, with and w": {
+      "main": [
+        [
+          {
+            "node": "setColor — getColors / getColor: return what Canvas stores; changing on",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setColor — getColors / getColor: return what Canvas stores; changing on": {
+      "main": [
+        [
+          {
+            "node": "getDashboardPositions — updateDashboardPositions / getDashboardPositions: positions ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getDashboardPositions — updateDashboardPositions / getDashboardPositions: positions ": {
+      "main": [
+        [
+          {
+            "node": "updateDashboardPositions — updateDashboardPositions / getDashboardPositions: positions ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateDashboardPositions — updateDashboardPositions / getDashboardPositions: positions ": {
+      "main": [
+        [
+          {
+            "node": "setTextEditorPreference — setTextEditorPreference / setFilesUiVersion: every choice is",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setTextEditorPreference — setTextEditorPreference / setFilesUiVersion: every choice is": {
+      "main": [
+        [
+          {
+            "node": "setFilesUiVersion — setTextEditorPreference / setFilesUiVersion: every choice is",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setFilesUiVersion — setTextEditorPreference / setFilesUiVersion: every choice is": {
+      "main": [
+        [
+          {
+            "node": "getAvatars — getAvatars: lists the gravatar, uploaded profile pictures an",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAvatars — getAvatars: lists the gravatar, uploaded profile pictures an": {
+      "main": [
+        [
+          {
+            "node": "update — getAvatars: lists the gravatar, uploaded profile pictures an",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — getAvatars: lists the gravatar, uploaded profile pictures an": {
+      "main": [
+        [
+          {
+            "node": "getAvatars — getAvatars: lists the gravatar, uploaded profile pictures an (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAvatars — getAvatars: lists the gravatar, uploaded profile pictures an (2)": {
+      "main": [
+        [
+          {
+            "node": "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only": {
+      "main": [
+        [
+          {
+            "node": "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only (2)": {
+      "main": [
+        [
+          {
+            "node": "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only (3)": {
+      "main": [
+        [
+          {
             "node": "create — create: every optional field reaches Canvas",
             "type": "main",
             "index": 0
@@ -3124,237 +3355,6 @@
         [
           {
             "node": "restore — delete and restore: removes the user from the root account a",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "restore — delete and restore: removes the user from the root account a": {
-      "main": [
-        [
-          {
-            "node": "updateSettings — updateSettings / getSettings: every setting reaches Canvas, ",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "updateSettings — updateSettings / getSettings: every setting reaches Canvas, ": {
-      "main": [
-        [
-          {
-            "node": "updateSettings — updateSettings / getSettings: every setting reaches Canvas,  (2)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "updateSettings — updateSettings / getSettings: every setting reaches Canvas,  (2)": {
-      "main": [
-        [
-          {
-            "node": "getSettings — updateSettings / getSettings: every setting reaches Canvas, ",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "getSettings — updateSettings / getSettings: every setting reaches Canvas, ": {
-      "main": [
-        [
-          {
-            "node": "updateSettings — updateSettings: settings that are not added keep their value",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "updateSettings — updateSettings: settings that are not added keep their value": {
-      "main": [
-        [
-          {
-            "node": "updateSettings — updateSettings: settings that are not added keep their value (2)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "updateSettings — updateSettings: settings that are not added keep their value (2)": {
-      "main": [
-        [
-          {
-            "node": "getSettings — read operations take SIS IDs, also ones with characters that",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "getSettings — read operations take SIS IDs, also ones with characters that": {
-      "main": [
-        [
-          {
-            "node": "getColors — read operations take SIS IDs, also ones with characters that",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "getColors — read operations take SIS IDs, also ones with characters that": {
-      "main": [
-        [
-          {
-            "node": "getDashboardPositions — read operations take SIS IDs, also ones with characters that",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "getDashboardPositions — read operations take SIS IDs, also ones with characters that": {
-      "main": [
-        [
-          {
-            "node": "getAvatars — read operations take SIS IDs, also ones with characters that",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "getAvatars — read operations take SIS IDs, also ones with characters that": {
-      "main": [
-        [
-          {
-            "node": "getColors — setColor: colors for courses, a group and a user, with and w",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "getColors — setColor: colors for courses, a group and a user, with and w": {
-      "main": [
-        [
-          {
-            "node": "setColor — getColors / getColor: return what Canvas stores; changing on",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "setColor — getColors / getColor: return what Canvas stores; changing on": {
-      "main": [
-        [
-          {
-            "node": "getDashboardPositions — updateDashboardPositions / getDashboardPositions: positions ",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "getDashboardPositions — updateDashboardPositions / getDashboardPositions: positions ": {
-      "main": [
-        [
-          {
-            "node": "updateDashboardPositions — updateDashboardPositions / getDashboardPositions: positions ",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "updateDashboardPositions — updateDashboardPositions / getDashboardPositions: positions ": {
-      "main": [
-        [
-          {
-            "node": "setTextEditorPreference — setTextEditorPreference / setFilesUiVersion: every choice is",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "setTextEditorPreference — setTextEditorPreference / setFilesUiVersion: every choice is": {
-      "main": [
-        [
-          {
-            "node": "setFilesUiVersion — setTextEditorPreference / setFilesUiVersion: every choice is",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "setFilesUiVersion — setTextEditorPreference / setFilesUiVersion: every choice is": {
-      "main": [
-        [
-          {
-            "node": "getAvatars — getAvatars: lists the gravatar, uploaded profile pictures an",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "getAvatars — getAvatars: lists the gravatar, uploaded profile pictures an": {
-      "main": [
-        [
-          {
-            "node": "update — getAvatars: lists the gravatar, uploaded profile pictures an",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "update — getAvatars: lists the gravatar, uploaded profile pictures an": {
-      "main": [
-        [
-          {
-            "node": "getAvatars — getAvatars: lists the gravatar, uploaded profile pictures an (2)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "getAvatars — getAvatars: lists the gravatar, uploaded profile pictures an (2)": {
-      "main": [
-        [
-          {
-            "node": "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only": {
-      "main": [
-        [
-          {
-            "node": "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only (2)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only (2)": {
-      "main": [
-        [
-          {
-            "node": "expireMobileSessions — expireMobileSessions: expires the tokens of mobile apps only (3)",
             "type": "main",
             "index": 0
           }

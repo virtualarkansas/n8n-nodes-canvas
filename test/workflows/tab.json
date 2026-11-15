@@ -2,7 +2,7 @@
   "name": "Canvas battery — tab",
   "nodes": [
     {
-      "id": "4d7c2c50-affd-4bc6-837b-aefbc3f05e2a",
+      "id": "4143521c-0abe-4299-b541-1f161d16c756",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "f6e30c24-f1b9-42b6-8b75-45661dba1b6f",
+      "id": "27073366-7bdc-4d15-8b7d-880665f5f775",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "fc038416-a4bb-4f4f-87d8-8a7c224829df",
+      "id": "9771006d-c72e-4fd6-876c-4d05f46489d1",
       "name": "getAll — getAll: lists the tabs of every context type",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,7 +42,7 @@
         "resource": "tab",
         "operation": "getAll",
         "contextType": "course",
-        "contextId": "401"
+        "contextId": "840"
       },
       "credentials": {
         "canvasApi": {
@@ -55,7 +55,7 @@
       "executeOnce": true
     },
     {
-      "id": "b22698ca-5eae-4c9e-9f42-ee9fa12d4cd5",
+      "id": "6c5db3a1-78f9-40e5-a1f4-62c14a4c7759",
       "name": "getAll — getAll: lists the tabs of every context type (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -81,7 +81,7 @@
       "executeOnce": true
     },
     {
-      "id": "a9982ab0-87ac-49f9-a5ad-731e049f2ca7",
+      "id": "8588ddbe-6f75-421c-8c1c-0e40d57db28b",
       "name": "getAll — getAll: lists the tabs of every context type (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -94,7 +94,7 @@
         "resource": "tab",
         "operation": "getAll",
         "contextType": "group",
-        "contextId": "403"
+        "contextId": "780"
       },
       "credentials": {
         "canvasApi": {
@@ -107,7 +107,7 @@
       "executeOnce": true
     },
     {
-      "id": "01f9f22d-e823-4631-8037-a341c2b58ee9",
+      "id": "2c81ebb1-ed1a-4726-8273-bc16bb41aa28",
       "name": "getAll — getAll: lists the tabs of every context type (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -133,7 +133,7 @@
       "executeOnce": true
     },
     {
-      "id": "61c3816b-dd07-4952-bb7f-52988e50e592",
+      "id": "2b05d3bf-18a4-46d6-9892-718130d84988",
       "name": "getAll — getAll: the tab list is never cut off, whatever the paginati",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -146,7 +146,7 @@
         "resource": "tab",
         "operation": "getAll",
         "contextType": "course",
-        "contextId": "401",
+        "contextId": "840",
         "pagination": {
           "returnAll": true
         }
@@ -162,7 +162,7 @@
       "executeOnce": true
     },
     {
-      "id": "2b7b6845-fdd6-429e-baee-d04adcfa2451",
+      "id": "b811d2a0-ba7c-44a5-a83c-c35eb4a94263",
       "name": "getAll — getAll: the tab list is never cut off, whatever the paginati (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -175,7 +175,7 @@
         "resource": "tab",
         "operation": "getAll",
         "contextType": "course",
-        "contextId": "401",
+        "contextId": "840",
         "pagination": {
           "perPage": 3,
           "maxPages": 1
@@ -192,7 +192,7 @@
       "executeOnce": true
     },
     {
-      "id": "843b19f6-80b0-4d58-937f-5fb9e92d1159",
+      "id": "3bd097b1-eccf-4345-b0b9-0cb0dd44f950",
       "name": "getAll — getAll: Course Subject Tabs returns the home page tabs of ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -205,7 +205,7 @@
         "resource": "tab",
         "operation": "getAll",
         "contextType": "course",
-        "contextId": "402",
+        "contextId": "841",
         "options": {
           "include": []
         }
@@ -221,7 +221,7 @@
       "executeOnce": true
     },
     {
-      "id": "e3c78ed9-a5b5-449c-8f2e-bf416015dee2",
+      "id": "8ee99718-a729-4ba1-bed8-ccd0e44e54c8",
       "name": "getAll — getAll: Course Subject Tabs returns the home page tabs of  (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -234,7 +234,7 @@
         "resource": "tab",
         "operation": "getAll",
         "contextType": "course",
-        "contextId": "402",
+        "contextId": "841",
         "options": {
           "include": [
             "course_subject_tabs"
@@ -252,7 +252,7 @@
       "executeOnce": true
     },
     {
-      "id": "ffaa4301-6155-4c44-95ba-451ae7ccb9c4",
+      "id": "469e7f12-333f-4c11-aee1-9dc030364627",
       "name": "update — update: hides a tab, then shows it again",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -264,7 +264,7 @@
         "authentication": "accessToken",
         "resource": "tab",
         "operation": "update",
-        "contextId": "401",
+        "contextId": "840",
         "tabId": "discussions",
         "updateFields": {
           "hidden": true
@@ -281,7 +281,7 @@
       "executeOnce": true
     },
     {
-      "id": "a601e046-f8c4-4219-962d-42cab56a28a7",
+      "id": "ed8a3d45-e5a7-4a4d-8c49-5fb46d7ff155",
       "name": "update — update: hides a tab, then shows it again (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -293,7 +293,7 @@
         "authentication": "accessToken",
         "resource": "tab",
         "operation": "update",
-        "contextId": "401",
+        "contextId": "840",
         "tabId": "={{ $('update — update: hides a tab, then shows it again').first().json.id }}",
         "updateFields": {
           "hidden": false
@@ -310,7 +310,7 @@
       "executeOnce": true
     },
     {
-      "id": "830f4166-a518-4189-9791-e39674333832",
+      "id": "88e529f5-7055-407d-adfd-bf54d2e64f15",
       "name": "update — update: moves a tab and hides it in one call",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -322,7 +322,7 @@
         "authentication": "accessToken",
         "resource": "tab",
         "operation": "update",
-        "contextId": "401",
+        "contextId": "840",
         "tabId": "people",
         "updateFields": {
           "position": 2,
@@ -340,7 +340,7 @@
       "executeOnce": true
     },
     {
-      "id": "1d0a011d-9630-470f-9004-74a278d45453",
+      "id": "5b2dde72-0733-47f5-86b3-ea9288a1503e",
       "name": "update — update: moves a tab and hides it in one call (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -352,7 +352,7 @@
         "authentication": "accessToken",
         "resource": "tab",
         "operation": "update",
-        "contextId": "401",
+        "contextId": "840",
         "tabId": "={{ $('update — update: moves a tab and hides it in one call').first().json.id }}",
         "updateFields": {
           "position": 18,

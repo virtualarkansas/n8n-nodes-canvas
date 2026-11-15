@@ -2,7 +2,7 @@
   "name": "Canvas battery — gradebook",
   "nodes": [
     {
-      "id": "75a3361d-7e65-4256-81df-a4481275bac5",
+      "id": "5ece9638-7b72-435f-99bc-bab7f2200ec6",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "113ef739-1f21-422d-8252-4cfb65057ff8",
+      "id": "ebb69950-8597-463b-8ccd-c98f9bd70078",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "a5745070-02c3-4ede-9714-9788c9464d08",
+      "id": "3d546ac0-cc9f-47f1-942b-d9ffc63a9aea",
       "name": "applyScoreToUngraded — applyScoreToUngraded: gives the ungraded submissions of the ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,9 +41,9 @@
         "authentication": "accessToken",
         "resource": "gradebook",
         "operation": "applyScoreToUngraded",
-        "courseId": "313",
-        "assignmentIds": " 1202 , 1203, 1205 ",
-        "studentIds": "1305,1306",
+        "courseId": "735",
+        "assignmentIds": " 1866 , 1867, 1869 ",
+        "studentIds": "2177,2178",
         "grade": "percent",
         "percent": 50
       },
@@ -58,7 +58,7 @@
       "executeOnce": true
     },
     {
-      "id": "577b256c-8b7d-475c-8929-db46a598d67f",
+      "id": "129183ea-f9f1-4915-850b-199369206c20",
       "name": "applyScoreToUngraded — applyScoreToUngraded: a fractional percent, and both options",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -70,9 +70,9 @@
         "authentication": "accessToken",
         "resource": "gradebook",
         "operation": "applyScoreToUngraded",
-        "courseId": "313",
-        "assignmentIds": "1203",
-        "studentIds": "1307",
+        "courseId": "735",
+        "assignmentIds": "1867",
+        "studentIds": "2179",
         "grade": "percent",
         "percent": 87.5,
         "options": {
@@ -91,7 +91,7 @@
       "executeOnce": true
     },
     {
-      "id": "3ce332de-6260-4be5-a1c0-8b5c6a92de26",
+      "id": "62e6d13c-d2f8-4ec8-8e4a-955632ba0dd1",
       "name": "applyScoreToUngraded — applyScoreToUngraded: Excused excuses what is still ungrad",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -103,9 +103,9 @@
         "authentication": "accessToken",
         "resource": "gradebook",
         "operation": "applyScoreToUngraded",
-        "courseId": "313",
-        "assignmentIds": "1204,1202",
-        "studentIds": "1305,1306,1307",
+        "courseId": "735",
+        "assignmentIds": "1868,1866",
+        "studentIds": "2177,2178,2179",
         "grade": "excused",
         "percent": 30
       },
@@ -120,7 +120,7 @@
       "executeOnce": true
     },
     {
-      "id": "f38a0b8f-2f79-4da0-a51a-2a858bac6001",
+      "id": "c05bcc55-7cde-4eee-91e7-1c25f492aab3",
       "name": "updateFinalGradeOverrides — updateFinalGradeOverrides: sets the final grade overrides of",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -132,15 +132,15 @@
         "authentication": "accessToken",
         "resource": "gradebook",
         "operation": "updateFinalGradeOverrides",
-        "courseId": "313",
+        "courseId": "735",
         "overrideScores": {
           "score": [
             {
-              "student_id": "1305",
+              "student_id": "2177",
               "override_score": 91.5
             },
             {
-              "student_id": " 1306 ",
+              "student_id": " 2178 ",
               "override_score": 0
             }
           ]
@@ -157,7 +157,7 @@
       "executeOnce": true
     },
     {
-      "id": "3c95a68f-92ce-4f1e-8245-a7118ef3fa1d",
+      "id": "61dc4974-cb8e-429c-96c9-7fc86d7e14a1",
       "name": "updateFinalGradeOverrides — updateFinalGradeOverrides: Remove Override brings the calc",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -169,16 +169,16 @@
         "authentication": "accessToken",
         "resource": "gradebook",
         "operation": "updateFinalGradeOverrides",
-        "courseId": "313",
+        "courseId": "735",
         "overrideScores": {
           "score": [
             {
-              "student_id": "1305",
+              "student_id": "2177",
               "override_score": 55,
               "remove": true
             },
             {
-              "student_id": "1307",
+              "student_id": "2179",
               "override_score": 100,
               "remove": false
             }
@@ -196,7 +196,7 @@
       "executeOnce": true
     },
     {
-      "id": "ba7e4e4e-3894-4f26-8184-3eeb5465b85d",
+      "id": "c3bc34e6-07a2-45f4-9b32-dd24355dd830",
       "name": "updateFinalGradeOverrides — updateFinalGradeOverrides: students who are not in the cours",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -208,7 +208,7 @@
         "authentication": "accessToken",
         "resource": "gradebook",
         "operation": "updateFinalGradeOverrides",
-        "courseId": "313",
+        "courseId": "735",
         "overrideScores": {
           "score": [
             {
@@ -220,7 +220,7 @@
               "override_score": 20
             },
             {
-              "student_id": "1306",
+              "student_id": "2178",
               "override_score": 33.3
             }
           ]

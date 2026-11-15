@@ -2,7 +2,7 @@
   "name": "Canvas battery — quiz",
   "nodes": [
     {
-      "id": "73ff55bf-508a-4913-9890-b639c950b2f8",
+      "id": "53c85760-b33c-49f1-b01f-b36fdd0b7732",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "c685925f-eb6c-4e27-8bb9-4f7985db8d4b",
+      "id": "a478b45d-cce3-440b-8542-7f7699cca505",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "1578d4f8-5c94-4396-8bd9-6497410d62f6",
+      "id": "c23f0071-6ee4-49e9-9491-468fb01c8986",
       "name": "create — create: every optional field of a graded quiz reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -46,7 +46,7 @@
         "additionalFields": {
           "access_code": "open sesame & \"more\"",
           "allowed_attempts": 3,
-          "assignment_group_id": "346",
+          "assignment_group_id": "851",
           "cant_go_back": true,
           "description": "<p>Read <strong>chapter 3</strong> first — ¿listo? 日本語</p>",
           "due_at": "2031-01-15T12:00:00Z",
@@ -77,7 +77,7 @@
       "executeOnce": true
     },
     {
-      "id": "0be5879d-7fdd-4351-bfc7-fc0fdc9fb524",
+      "id": "a5491950-f1f0-4e0d-b221-ac9ba3b7d4c2",
       "name": "create — create: answer-visibility options and survey-only options re",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -116,7 +116,7 @@
       "executeOnce": true
     },
     {
-      "id": "b35d9e1b-cbba-47dd-90a6-f2d7df7d98e7",
+      "id": "7a5f50e7-5b06-4143-91d5-8d1ef1aaa5db",
       "name": "create — create: a time limit of 0 means no time limit (Canvas itse",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -148,7 +148,7 @@
       "executeOnce": true
     },
     {
-      "id": "e7829b79-0bd8-4ee9-be27-4a037851c58f",
+      "id": "0e839c26-618c-43c6-89d9-7c63c7504366",
       "name": "create — create: Canvas silently drops options that need more than on",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -180,7 +180,7 @@
       "executeOnce": true
     },
     {
-      "id": "481335a1-1480-47c4-80ab-88a180a29770",
+      "id": "5218e581-9cd9-4d36-9710-b72fe9a84e0a",
       "name": "get — get: returns the quiz; numeric IDs from expressions and SIS ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -193,7 +193,7 @@
         "resource": "quiz",
         "operation": "get",
         "courseId": "sis_course_id:BATTERY-QUIZZES",
-        "quizId": " 141 "
+        "quizId": " 241 "
       },
       "credentials": {
         "canvasApi": {
@@ -206,7 +206,7 @@
       "executeOnce": true
     },
     {
-      "id": "fbc6037e-fd58-4f96-8abe-0a7b82d407e1",
+      "id": "5c43a1d6-88c0-4534-9a0f-ac385f16c5c9",
       "name": "update — update: every optional field reaches Canvas",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -252,7 +252,7 @@
       "executeOnce": true
     },
     {
-      "id": "77b4d390-1554-41fd-965b-3987af249b26",
+      "id": "0f6982e5-c54d-4e62-82e5-d6ff94c952df",
       "name": "update — update: the remaining fields, clearing values, and 0 = no t",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -270,7 +270,7 @@
           "access_code": "",
           "allowed_attempts": 2,
           "anonymous_submissions": true,
-          "assignment_group_id": "346",
+          "assignment_group_id": "851",
           "due_at": "",
           "hide_correct_answers_at": "2032-06-01T00:00:00Z",
           "hide_results": "",
@@ -300,7 +300,7 @@
       "executeOnce": true
     },
     {
-      "id": "ee8d7837-6eb3-46dc-af37-83dc29dab641",
+      "id": "ee5094c5-137b-4af0-9a10-53d9a0c0b810",
       "name": "getAll — getAll: pages through a course with more quizzes than one pa",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -325,7 +325,7 @@
       "executeOnce": true
     },
     {
-      "id": "95936fa6-4bd5-4ed4-b115-afc23fbef306",
+      "id": "5050654f-d393-4726-ba17-ed1bc2687bde",
       "name": "getAll — getAll: pages through a course with more quizzes than one pa (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -353,7 +353,7 @@
       "executeOnce": true
     },
     {
-      "id": "9b96fcd5-3287-48d6-9a1f-a01f1af8ce25",
+      "id": "81135548-cc5d-45fa-b1b3-5f520dba0877",
       "name": "getAll — getAll: pages through a course with more quizzes than one pa (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -382,7 +382,7 @@
       "executeOnce": true
     },
     {
-      "id": "50520cc8-d196-4676-bb38-129006fcff7b",
+      "id": "deb652df-6969-477f-bdf1-542311a0e4d9",
       "name": "getAll — getAll: search term filters by title; students only get publ",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -413,7 +413,7 @@
       "executeOnce": true
     },
     {
-      "id": "17cd5217-545e-4a4f-a721-a52c95db072c",
+      "id": "d3332167-3e2b-4637-b215-7a0a7ab1050e",
       "name": "getAll — getAll: search term filters by title; students only get publ (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -441,7 +441,7 @@
       "executeOnce": true
     },
     {
-      "id": "6f53103d-b03c-493c-8fc1-8180f234c6cb",
+      "id": "8826a332-bf40-4d4e-a6f0-238d62372f0f",
       "name": "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -469,7 +469,7 @@
       "executeOnce": true
     },
     {
-      "id": "3711f120-8aac-40fb-936d-f51145614721",
+      "id": "81b9a8f2-a9c6-4b31-8dfa-c8e813d99b28",
       "name": "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -494,7 +494,7 @@
       "executeOnce": true
     },
     {
-      "id": "8b04f5fa-1f39-4100-aba8-f203130d36dd",
+      "id": "0595ea73-9965-42b2-8433-126a52ed9d6e",
       "name": "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -525,7 +525,7 @@
       "executeOnce": true
     },
     {
-      "id": "a2e55f46-5520-4421-93a7-d3135751e9b3",
+      "id": "9742f340-80e3-476e-a6f0-641a3a48e4ae",
       "name": "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q (4)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -553,7 +553,7 @@
       "executeOnce": true
     },
     {
-      "id": "64209517-68b0-4b38-864d-eb4a5acde53e",
+      "id": "4849ef1d-1a89-4850-bb2d-5a7b10267b14",
       "name": "reorder — reorder: questions and groups take the given order",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -566,23 +566,23 @@
         "resource": "quiz",
         "operation": "reorder",
         "courseId": "119",
-        "quizId": "145",
+        "quizId": "245",
         "orderItems": {
           "items": [
             {
-              "id": 308,
+              "id": 416,
               "type": "question"
             },
             {
-              "id": "22",
+              "id": "56",
               "type": "group"
             },
             {
-              "id": " 306 ",
+              "id": " 414 ",
               "type": "question"
             },
             {
-              "id": 307,
+              "id": 415,
               "type": "question"
             }
           ]
@@ -599,7 +599,7 @@
       "executeOnce": true
     },
     {
-      "id": "08b3f75f-a7bd-4b57-81f7-79b4cd844aac",
+      "id": "c97cf98b-043e-4383-a68c-a96c5ff31950",
       "name": "validateAccessCode — validateAccessCode: tells a right code from a wrong one",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -612,7 +612,7 @@
         "resource": "quiz",
         "operation": "validateAccessCode",
         "courseId": "119",
-        "quizId": "146",
+        "quizId": "246",
         "accessCode": "p@ss \"word\" & more"
       },
       "credentials": {
@@ -626,7 +626,7 @@
       "executeOnce": true
     },
     {
-      "id": "deb9bf4e-376d-4b0c-b307-df62e5ed3dd8",
+      "id": "10dde854-a271-4b91-acd8-9d8237810cb6",
       "name": "validateAccessCode — validateAccessCode: tells a right code from a wrong one (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -639,7 +639,7 @@
         "resource": "quiz",
         "operation": "validateAccessCode",
         "courseId": "119",
-        "quizId": "146",
+        "quizId": "246",
         "accessCode": "P@SS \"WORD\" & MORE"
       },
       "credentials": {
@@ -653,7 +653,7 @@
       "executeOnce": true
     },
     {
-      "id": "3cb5dcea-5a40-4a62-be4e-f2d270982db6",
+      "id": "dad8dc94-37d0-4023-ae25-2865783f2967",
       "name": "validateAccessCode — validateAccessCode: tells a right code from a wrong one (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -680,7 +680,7 @@
       "executeOnce": true
     },
     {
-      "id": "a21d032d-fade-44c0-b03f-a56cbe60adff",
+      "id": "73921c97-5b6b-403b-b823-da09fa8fc3f6",
       "name": "getSubmissionUsers — getSubmissionUsers: all students, those who submitted and th",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -693,7 +693,7 @@
         "resource": "quiz",
         "operation": "getSubmissionUsers",
         "courseId": "119",
-        "quizId": "147",
+        "quizId": "247",
         "pagination": {
           "returnAll": true
         }
@@ -709,7 +709,7 @@
       "executeOnce": true
     },
     {
-      "id": "fa7e6ba9-0a35-4bb3-a0db-ba13910d40d0",
+      "id": "4557bf5e-6ed7-43ab-a326-a7c330cc8577",
       "name": "getSubmissionUsers — getSubmissionUsers: all students, those who submitted and th (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -722,7 +722,7 @@
         "resource": "quiz",
         "operation": "getSubmissionUsers",
         "courseId": "119",
-        "quizId": "147",
+        "quizId": "247",
         "submitted": "true"
       },
       "credentials": {
@@ -736,7 +736,7 @@
       "executeOnce": true
     },
     {
-      "id": "c05d6413-d037-4852-8482-26307eb5f64b",
+      "id": "2a271d30-304a-4a74-8af8-5034fde00dc0",
       "name": "getSubmissionUsers — getSubmissionUsers: all students, those who submitted and th (3)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -749,7 +749,7 @@
         "resource": "quiz",
         "operation": "getSubmissionUsers",
         "courseId": "119",
-        "quizId": "147",
+        "quizId": "247",
         "submitted": "false"
       },
       "credentials": {
@@ -763,7 +763,7 @@
       "executeOnce": true
     },
     {
-      "id": "b3f293c0-14d2-4972-b45a-11995f819f03",
+      "id": "5be7c9e9-0485-4bd7-80ed-f981ccda9110",
       "name": "getSubmissionUsers — getSubmissionUsers: one user per item even when paged one by",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -776,7 +776,7 @@
         "resource": "quiz",
         "operation": "getSubmissionUsers",
         "courseId": "119",
-        "quizId": "147",
+        "quizId": "247",
         "pagination": {
           "perPage": 1,
           "maxPages": 2
@@ -793,7 +793,7 @@
       "executeOnce": true
     },
     {
-      "id": "db90ed36-d461-47ee-9ea9-565b9a6ebed4",
+      "id": "cd90ef5e-5a3d-4dbe-937a-1cfc90551b7e",
       "name": "delete — delete: removes the quiz and returns it",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,

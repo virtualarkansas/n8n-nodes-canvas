@@ -2,7 +2,7 @@
   "name": "Canvas battery — outcomeImport",
   "nodes": [
     {
-      "id": "e333d663-7150-49ac-8f9a-6a150d321306",
+      "id": "d884da08-5de4-4d36-8a2f-8068f30e944d",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "7df260c7-8f6f-498d-a22f-91eae5767783",
+      "id": "dd61b47c-69ba-4d6f-b465-bae22525cf50",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "ac208fed-e80d-49b7-b4e9-07a5c936645d",
+      "id": "7494d291-96db-4219-b30a-c389d2856673",
       "name": "getStatus — getStatus: course and account context, by ID and as latest",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -42,8 +42,8 @@
         "resource": "outcomeImport",
         "operation": "getStatus",
         "context": "course",
-        "courseId": "392",
-        "importId": 7
+        "courseId": "832",
+        "importId": 17
       },
       "credentials": {
         "canvasApi": {
@@ -56,7 +56,7 @@
       "executeOnce": true
     },
     {
-      "id": "a390c20a-2774-4c4e-8ddb-dad45618285e",
+      "id": "66720104-3eb9-4abc-9c98-7582ae69eb44",
       "name": "getStatus — getStatus: course and account context, by ID and as latest (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -69,8 +69,8 @@
         "resource": "outcomeImport",
         "operation": "getStatus",
         "context": "account",
-        "accountId": "106",
-        "importId": "8"
+        "accountId": "241",
+        "importId": "18"
       },
       "credentials": {
         "canvasApi": {
@@ -83,7 +83,7 @@
       "executeOnce": true
     },
     {
-      "id": "cd8fd988-e05a-42a5-90a3-653c615d18a3",
+      "id": "7a238a50-234b-4c46-9f83-98f21ab66c00",
       "name": "getCreatedGroupIds — getCreatedGroupIds: one item per outcome group the import cr",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -96,7 +96,7 @@
         "resource": "outcomeImport",
         "operation": "getCreatedGroupIds",
         "context": "course",
-        "courseId": "392",
+        "courseId": "832",
         "importId": "={{ $('getStatus — getStatus: course and account context, by ID and as latest').first().json.id }}"
       },
       "credentials": {
@@ -110,7 +110,7 @@
       "executeOnce": true
     },
     {
-      "id": "ed288846-0445-4812-981e-17abbe85bf37",
+      "id": "bff54db6-5e09-4a1f-80cf-c148afb7b443",
       "name": "getCreatedGroupIds — getCreatedGroupIds: one item per outcome group the import cr (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -123,7 +123,7 @@
         "resource": "outcomeImport",
         "operation": "getCreatedGroupIds",
         "context": "account",
-        "accountId": 106,
+        "accountId": 241,
         "importId": "latest"
       },
       "credentials": {
@@ -137,7 +137,7 @@
       "executeOnce": true
     },
     {
-      "id": "6f4b4443-6cdd-42d2-9a51-d7b2c08bb536",
+      "id": "b13b96e4-515a-4012-a4fa-b5b6750492c5",
       "name": "getStatus — getStatus / getCreatedGroupIds: an import that failed report",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -150,8 +150,8 @@
         "resource": "outcomeImport",
         "operation": "getStatus",
         "context": "course",
-        "courseId": "392",
-        "importId": "9"
+        "courseId": "832",
+        "importId": "19"
       },
       "credentials": {
         "canvasApi": {
@@ -164,7 +164,7 @@
       "executeOnce": true
     },
     {
-      "id": "2a606b69-2447-4332-b5cb-73af5c513393",
+      "id": "385dc4bc-b630-49cf-91fa-af4fa9556f9b",
       "name": "create — create: imports outcomes and groups from CSV text, in a cour",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -177,7 +177,7 @@
         "resource": "outcomeImport",
         "operation": "create",
         "context": "course",
-        "courseId": "392",
+        "courseId": "832",
         "csvData": "=vendor_guid,object_type,title,description,display_name,calculation_method,calculation_int,workflow_state,parent_guids\nimp-{{ $execution.id }}-1-n-g1,group,\"Group, with \"\"quotes\"\" & 100% [x]=1\",<p>Group <b>description</b></p>,,,,active,\nimp-{{ $execution.id }}-1-n-g2,group,Untergruppe Ünïcode 成果,,,,,active,imp-{{ $execution.id }}-1-n-g1\nimp-{{ $execution.id }}-1-n-o1,outcome,\"Outcome 1, a=b&c=d\",<p>Description with %41 and ünïcode</p>,Friendly name,highest,,active,imp-{{ $execution.id }}-1-n-g1\nimp-{{ $execution.id }}-1-n-o2,outcome,Outcome 2,,,decaying_average,65,active,imp-{{ $execution.id }}-1-n-g2\n"
       },
       "credentials": {
@@ -191,7 +191,7 @@
       "executeOnce": true
     },
     {
-      "id": "8cd60a69-d31b-49da-aafd-2864ee06a6c7",
+      "id": "b1a1ca08-6820-4434-b4af-abac091796bf",
       "name": "create — create: imports outcomes and groups from CSV text, in a cour (2)",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -204,10 +204,10 @@
         "resource": "outcomeImport",
         "operation": "create",
         "context": "account",
-        "accountId": "106",
+        "accountId": "241",
         "csvData": "=vendor_guid,object_type,title\nimp-{{ $execution.id }}-1-into,outcome,Imported into a group\n",
         "additionalFields": {
-          "learning_outcome_group_id": 88
+          "learning_outcome_group_id": 249
         }
       },
       "credentials": {

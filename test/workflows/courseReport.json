@@ -2,7 +2,7 @@
   "name": "Canvas battery — courseReport",
   "nodes": [
     {
-      "id": "6489b4cd-6a59-4290-a069-9d16d4b002b4",
+      "id": "e4e7f284-bad1-436b-9395-62ec1fbfceeb",
       "name": "Run manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -13,7 +13,7 @@
       "parameters": {}
     },
     {
-      "id": "72a394b7-bec1-4d68-b614-50402d122be5",
+      "id": "deeca86d-21ff-4d25-906d-8a3b6db4f15d",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "08717465-c2f4-4262-89ba-8c4e2a1cebac",
+      "id": "b5e09ae0-f00d-49a5-b3a5-4f48b3a29bd1",
       "name": "getLastStatus — getLastStatus: a course without any report yields an empty r",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -41,7 +41,7 @@
         "authentication": "accessToken",
         "resource": "courseReport",
         "operation": "getLastStatus",
-        "courseId": "399",
+        "courseId": "826",
         "reportType": "course_pace_docx"
       },
       "credentials": {
@@ -55,7 +55,7 @@
       "executeOnce": true
     },
     {
-      "id": "24ff7d9a-1753-400b-9039-78f2077a087d",
+      "id": "03b6175c-bc74-4195-8ae4-a7716f962521",
       "name": "create — create: section and enrollment IDs reach Canvas and the repo",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
@@ -67,11 +67,11 @@
         "authentication": "accessToken",
         "resource": "courseReport",
         "operation": "create",
-        "courseId": "399",
+        "courseId": "826",
         "reportType": "course_pace_docx",
         "options": {
-          "section_ids": " 525 ",
-          "enrollment_ids": "4170"
+          "section_ids": " 868 ",
+          "enrollment_ids": "4953"
         }
       },
       "credentials": {
@@ -85,7 +85,7 @@
       "executeOnce": true
     },
     {
-      "id": "0e64a976-f5d0-4849-8647-8270dec79523",
+      "id": "ef5a4046-aae0-4240-9855-8a534368f67b",
       "name": "create — create: without any option the request is still accepted (Ca",
       "type": "@kyancey-va/n8n-nodes-canvas.canvas",
       "typeVersion": 1,
