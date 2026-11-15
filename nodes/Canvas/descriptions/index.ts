@@ -40,6 +40,10 @@ export {
 	courseReportFields,
 } from './CourseReportDescription';
 
+export { courseNicknameOperations, courseNicknameFields } from './CourseNicknameDescription';
+
+export { gradebookOperations, gradebookFields } from './GradebookDescription';
+
 // User resource group descriptions
 export {
 	userOperations,
