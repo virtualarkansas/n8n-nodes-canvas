@@ -38,6 +38,72 @@ function parseJsonField(value: unknown, label: string): unknown {
 	}
 }
 
+/** IDs are numbers in Canvas; anything else in a list of IDs is a mistake worth reporting. */
+function toNumericIdStrings(value: unknown, label: string): string[] {
+	return splitList(value).map((part) => {
+		if (!/^\d+$/.test(part)) {
+			throw new ApplicationError(`${label} must be a comma-separated list of numeric IDs (got "${part}")`);
+		}
+		return part;
+	});
+}
+
+/**
+ * One entry of `grade_data` (bulk grading): the grade, the rubric assessment and
+ * the comment for one student.
+ */
+function buildGradeData(entry: Fields): Fields {
+	const data: Fields = {};
+	if (entry.posted_grade !== undefined && entry.posted_grade !== '') {
+		data.posted_grade = entry.posted_grade;
+	}
+	if (entry.excuse === true) {
+		data.excuse = true;
+	}
+	const assessment = parseJsonField(entry.rubric_assessment, 'Rubric Assessment');
+	if (assessment !== undefined && assessment !== null) {
+		if (typeof assessment !== 'object' || Array.isArray(assessment)) {
+			throw new ApplicationError('Rubric Assessment must be a JSON object keyed by rubric criterion ID');
+		}
+		if (Object.keys(assessment).length > 0) {
+			data.rubric_assessment = assessment;
+		}
+	}
+
+	// A comment is text, files, a media recording, or any combination of them.
+	let hasComment = false;
+	if (entry.text_comment !== undefined && entry.text_comment !== '') {
+		data.text_comment = entry.text_comment;
+		hasComment = true;
+	}
+	const fileIds = toIdList(entry.file_ids, 'Comment File IDs');
+	if (fileIds.length > 0) {
+		data.file_ids = fileIds;
+		hasComment = true;
+	}
+	const mediaId = String(entry.media_comment_id ?? '').trim();
+	if (mediaId) {
+		data.media_comment_id = mediaId;
+		data.media_comment_type = entry.media_comment_type || 'video';
+		hasComment = true;
+	}
+	if (hasComment && entry.group_comment === true) {
+		data.group_comment = true;
+	}
+	return data;
+}
+
+/** The `upload` hint of the Upload File operations: a binary property, or a URL Canvas fetches. */
+export function buildUploadSource(getParam: GetParam): NonNullable<IRequestConfig['upload']> {
+	return getParam('uploadSource', 'binaryData') === 'url'
+		? {
+				source: 'url',
+				url: getParam('fileUrl'),
+				waitForCompletion: getParam('waitForCompletion', 'true') !== 'false',
+			}
+		: { source: 'binaryData', binaryPropertyName: getParam('binaryPropertyName', 'data') };
+}
+
 /**
  * Submissions can be addressed through the course or through one of its
  * sections (which limits lists to the students of that section).
@@ -74,6 +140,17 @@ export function handleSubmissionResource(
 			qs: getParamObject('options'),
 		};
 	}
+	if (operation === 'listGradeableStudentsMultiple') {
+		const assignmentIds = toNumericIdStrings(getParam('assignmentIds'), 'Assignment IDs');
+		if (assignmentIds.length === 0) {
+			throw new ApplicationError('At least one assignment ID is required for submission listGradeableStudentsMultiple');
+		}
+		return {
+			endpoint: `/api/v1/courses/${getParam('courseId')}/assignments/gradeable_students`,
+			method: 'GET',
+			qs: { assignment_ids: assignmentIds },
+		};
+	}
 	if (operation === 'getSummary') {
 		return {
 			endpoint: `/api/v1/courses/${getParam('courseId')}/assignments/${assignmentId}/submission_summary`,
@@ -84,11 +161,16 @@ export function handleSubmissionResource(
 
 	const basePath = getSubmissionContextBasePath(getParam);
 	const submissionsPath = `${basePath}/assignments/${assignmentId}/submissions`;
+	// One submission: that of a student, or (anonymous grading) the one with a given anonymous ID.
+	const submissionPath = (): string =>
+		getParam('submissionBy', 'userId') === 'anonymousId'
+			? `${basePath}/assignments/${assignmentId}/anonymous_submissions/${getParam('anonymousId')}`
+			: `${submissionsPath}/${getParam('userId')}`;
 
 	switch (operation) {
 		case 'get':
 			return {
-				endpoint: `${submissionsPath}/${getParam('userId')}`,
+				endpoint: submissionPath(),
 				method: 'GET',
 				qs: getParamObject('options'),
 			};
@@ -154,7 +236,7 @@ export function handleSubmissionResource(
 			}
 
 			return {
-				endpoint: `${submissionsPath}/${getParam('userId')}`,
+				endpoint: submissionPath(),
 				method: 'PUT',
 				body,
 			};
@@ -169,20 +251,7 @@ export function handleSubmissionResource(
 			}
 			const gradeData: Record<string, Fields> = {};
 			for (const entry of entries) {
-				const data: Fields = {};
-				if (entry.posted_grade !== undefined && entry.posted_grade !== '') {
-					data.posted_grade = entry.posted_grade;
-				}
-				if (entry.excuse === true) {
-					data.excuse = true;
-				}
-				if (entry.text_comment !== undefined && entry.text_comment !== '') {
-					data.text_comment = entry.text_comment;
-					if (entry.group_comment === true) {
-						data.group_comment = true;
-					}
-				}
-				gradeData[String(entry.student_id).trim()] = data;
+				gradeData[String(entry.student_id).trim()] = buildGradeData(entry);
 			}
 			return {
 				endpoint: `${submissionsPath}/update_grades`,
@@ -191,12 +260,98 @@ export function handleSubmissionResource(
 			};
 		}
 
+		case 'bulkGradeMultiple': {
+			const entries = ((getParamObject('grades').gradeValues ?? []) as Fields[]).filter(
+				(entry) => String(entry.student_id ?? '').trim() !== '' || String(entry.assignment_id ?? '').trim() !== '',
+			);
+			if (entries.length === 0) {
+				throw new ApplicationError('At least one grade entry is required for submission bulkGradeMultiple');
+			}
+			// grade_data[<assignment ID>][<student ID>]
+			const gradeData: Record<string, Record<string, Fields>> = {};
+			for (const entry of entries) {
+				const assignment = String(entry.assignment_id ?? '').trim();
+				const student = String(entry.student_id ?? '').trim();
+				if (!assignment || !student) {
+					throw new ApplicationError('Every grade entry needs an Assignment ID and a Student ID');
+				}
+				gradeData[assignment] = { ...(gradeData[assignment] ?? {}), [student]: buildGradeData(entry) };
+			}
+			return {
+				endpoint: `${basePath}/submissions/update_grades`,
+				method: 'POST',
+				body: { grade_data: gradeData },
+			};
+		}
+
 		case 'markRead': {
-			// Grade, comments and rubric each have their own read state next to the submission's.
+			// Grade, comments and rubric each have their own read state next to the submission's;
+			// document annotations and rubric assessments are flags of the student with paths of their own.
 			const item = String(getParamObject('options').item ?? '').trim();
+			if (item === 'document_annotations' || item === 'rubric_assessments') {
+				return {
+					endpoint: `${submissionsPath}/${getParam('userId')}/${item}/read`,
+					method: 'PUT',
+				};
+			}
 			return {
 				endpoint: `${submissionsPath}/${getParam('userId')}/read${item ? `/${item}` : ''}`,
 				method: 'PUT',
+			};
+		}
+
+		case 'getReadState': {
+			const item = getParam('readStateItem', 'document_annotations');
+			if (item !== 'document_annotations' && item !== 'rubric_assessments') {
+				throw new ApplicationError(`Unknown read state item: ${item}`);
+			}
+			return {
+				endpoint: `${submissionsPath}/${getParam('userId')}/${item}/read`,
+				method: 'GET',
+			};
+		}
+
+		case 'bulkMarkRead': {
+			const submissionIds = toNumericIdStrings(getParam('submissionIds'), 'Submission IDs');
+			if (submissionIds.length === 0) {
+				throw new ApplicationError('At least one submission ID is required for submission bulkMarkRead');
+			}
+			return {
+				endpoint: `${basePath}/submissions/bulk_mark_read`,
+				method: 'PUT',
+				body: { submissionIds },
+			};
+		}
+
+		case 'clearUnread':
+			return {
+				endpoint: `${basePath}/submissions/${getParam('userId')}/clear_unread`,
+				method: 'PUT',
+			};
+
+		case 'uploadFile': {
+			const upload = buildUploadSource(getParam);
+			const options = getParamObject('options');
+			const body: Fields = {};
+			if (options.name) {
+				body.name = options.name;
+			}
+			if (options.content_type) {
+				body.content_type = options.content_type;
+			}
+			if (upload.source === 'url') {
+				// Left to itself Canvas hands the fetched file in, as the user of the credential.
+				const submit = getParam('submitAssignment', 'false') === 'true';
+				body.submit_assignment = submit;
+				if (submit && options.comment) {
+					body.comment = options.comment;
+				}
+			}
+			return {
+				endpoint: `${submissionsPath}/${getParam('userId')}/files`,
+				method: 'POST',
+				body,
+				upload,
 			};
 		}
 
@@ -336,6 +491,24 @@ export function handleSubmissionCommentResource(
 				method: 'DELETE',
 			};
 
+		case 'uploadFile': {
+			// Step 1 of the upload; the file is attached to a comment with Create > File IDs.
+			const options = getParamObject('options');
+			const body: Fields = {};
+			if (options.name) {
+				body.name = options.name;
+			}
+			if (options.content_type) {
+				body.content_type = options.content_type;
+			}
+			return {
+				endpoint: `${submissionPath}/comments/files`,
+				method: 'POST',
+				body,
+				upload: buildUploadSource(getParam),
+			};
+		}
+
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for submissionComment`);
 	}
@@ -350,9 +523,19 @@ export function handlePeerReviewResource(
 	getParam: GetParam,
 	getParamObject: GetParamObject,
 ): IRequestConfig {
-	const courseId = getParam('courseId');
 	const assignmentId = getParam('assignmentId');
-	const assignmentPath = `/api/v1/courses/${courseId}/assignments/${assignmentId}`;
+
+	if (operation === 'allocate') {
+		// Only exists per course.
+		return {
+			endpoint: `/api/v1/courses/${getParam('courseId')}/assignments/${assignmentId}/allocate`,
+			method: 'POST',
+			qs: getParamObject('options'),
+		};
+	}
+
+	// Peer reviews can be addressed through the course or through one of its sections.
+	const assignmentPath = `${getSubmissionContextBasePath(getParam)}/assignments/${assignmentId}`;
 
 	switch (operation) {
 		case 'getAll': {
