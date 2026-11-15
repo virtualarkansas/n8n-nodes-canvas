@@ -1,5 +1,5 @@
-# Dependencies
-node_modules/
+# Dependencies (also when node_modules is a link, as in a git worktree that shares the main checkout's)
+node_modules
 
 # Build output
 dist/
