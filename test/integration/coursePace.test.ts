@@ -3,6 +3,7 @@ import { canvas, fx } from '../lib/canvas';
 import { runNode, runOk } from '../lib/harness';
 import type { Json } from '../lib/n8n';
 import { createPacedCourse, waitFor } from './pacing.fixture';
+import { canvasSql } from './support/gradingSandbox';
 import type { PacedCourse } from './pacing.fixture';
 
 /**
@@ -235,6 +236,37 @@ describe('coursePace', () => {
 		// The section falls back to the course pace again.
 		const fallback = await canvas().get<Json>(`/api/v1/courses/${courseId}/course_pacing/new?course_section_id=${paced.sectionId}`);
 		expect((fallback.course_pace as Json).id).not.toBe(Number(sectionPaceId));
+	});
+
+	it('create / update: "Exclude Weekends" is stored, but the selected days decide while "skip selected days" is on', async () => {
+		const flag = await canvas().get<Json>(`/api/v1/accounts/${fx('accountId')}/features/flags/course_paces_skip_selected_days`);
+		const skipSelectedDays = ['on', 'allowed_on'].includes(String(flag.state));
+		const stored = (id: string): string => canvasSql(`SELECT exclude_weekends FROM course_paces WHERE id = ${id}`);
+
+		const [created] = await runOk({
+			resource: 'coursePace',
+			operation: 'create',
+			params: {
+				courseId,
+				additionalFields: { context_type: 'Section', context_id: Number(paced.sectionId), exclude_weekends: false, selected_days_to_skip: 'sat,sun' },
+			},
+		});
+		const id = String((created.course_pace as Json).id);
+		try {
+			expect(stored(id)).toBe('f');
+			// What Canvas reports (and schedules by) comes from the selected days while the feature is on.
+			expect((await readPace(id)).exclude_weekends).toBe(skipSelectedDays);
+
+			await runOk({
+				resource: 'coursePace',
+				operation: 'update',
+				params: { courseId, coursePaceId: id, updateFields: { exclude_weekends: true, selected_days_to_skip: 'mon' } },
+			});
+			expect(stored(id)).toBe('t');
+			expect((await readPace(id)).exclude_weekends).toBe(!skipSelectedDays);
+		} finally {
+			await canvas().request('DELETE', `/api/v1/courses/${courseId}/course_pacing/${id}`);
+		}
 	});
 
 	it('errors: a course without Course Pacing answers 404; students are refused', async () => {
