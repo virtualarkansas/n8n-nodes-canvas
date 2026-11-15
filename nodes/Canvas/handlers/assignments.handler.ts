@@ -78,6 +78,32 @@ function buildOverrideFields(fields: Fields): Fields {
 	return override;
 }
 
+/**
+ * The entries of the batch override operations: a JSON array of objects, each
+ * naming its assignment (and, except for create, the override). What an entry
+ * has to contain is left to Canvas, which reports problems per entry.
+ */
+function parseOverrideBatch(value: string, example: string): Fields[] {
+	const parsed = parseJsonField(value, 'Overrides');
+	if (!Array.isArray(parsed) || parsed.length === 0) {
+		throw new ApplicationError(`Overrides must be a JSON array with at least one entry, e.g. ${example}`);
+	}
+	return parsed.map((entry: unknown, index: number) => {
+		if (entry === null || typeof entry !== 'object' || Array.isArray(entry)) {
+			throw new ApplicationError(`Overrides: entry ${index + 1} must be an object, e.g. ${example}`);
+		}
+		const override = { ...(entry as Fields) };
+		if ('student_ids' in override) {
+			override.student_ids = splitList(override.student_ids);
+		}
+		return override;
+	});
+}
+
+const OVERRIDE_REFERENCE_EXAMPLE = '[{"id": 12, "assignment_id": 34}]';
+const OVERRIDE_CREATE_EXAMPLE = '[{"assignment_id": 34, "course_section_id": 56, "due_at": "2030-01-31T23:59:00Z"}]';
+const OVERRIDE_UPDATE_EXAMPLE = '[{"id": 12, "assignment_id": 34, "due_at": "2030-01-31T23:59:00Z"}]';
+
 export function handleAssignmentResource(
 	operation: string,
 	getParam: GetParam,
@@ -87,6 +113,48 @@ export function handleAssignmentResource(
 	const assignmentId = getParam('assignmentId');
 
 	switch (operation) {
+		case 'batchGetOverrides': {
+			// Only the two IDs are sent, always both and in this order: Rails starts a new entry
+			// of `assignment_overrides[]` whenever a key repeats.
+			const requested = parseOverrideBatch(getParam('overrides'), OVERRIDE_REFERENCE_EXAMPLE).map((entry) => ({
+				id: String(entry.id ?? '').trim(),
+				assignment_id: String(entry.assignment_id ?? '').trim(),
+			}));
+			return {
+				endpoint: `/api/v1/courses/${courseId}/assignments/overrides`,
+				method: 'GET',
+				qs: { assignment_overrides: requested },
+				// Canvas answers in the order asked, with null for an override it cannot find
+				// (or that the user may not see): say which one that was instead of losing it.
+				transform: (records) =>
+					records.map((record, index) =>
+						record === null || record === undefined
+							? { ...(requested[index] ?? {}), not_found: true }
+							: record,
+					),
+			};
+		}
+
+		case 'batchCreateOverrides':
+			return {
+				endpoint: `/api/v1/courses/${courseId}/assignments/overrides`,
+				method: 'POST',
+				body: { assignment_overrides: parseOverrideBatch(getParam('overrides'), OVERRIDE_CREATE_EXAMPLE) },
+			};
+
+		case 'batchUpdateOverrides':
+			return {
+				endpoint: `/api/v1/courses/${courseId}/assignments/overrides`,
+				method: 'PUT',
+				body: { assignment_overrides: parseOverrideBatch(getParam('overrides'), OVERRIDE_UPDATE_EXAMPLE) },
+			};
+
+		case 'listGroupMembers':
+			return {
+				endpoint: `/api/v1/courses/${courseId}/assignments/${assignmentId}/users/${getParam('userId')}/group_members`,
+				method: 'GET',
+			};
+
 		case 'create':
 			return {
 				endpoint: `/api/v1/courses/${courseId}/assignments`,
@@ -184,11 +252,27 @@ export function handleAssignmentResource(
 				method: 'GET',
 			};
 
-		case 'getOverride':
+		case 'getOverride': {
+			// The override that applies to a group or a section can be asked for directly;
+			// Canvas answers with a redirect to the override.
+			const overrideBy = getParam('overrideBy', 'id');
+			if (overrideBy === 'group') {
+				return {
+					endpoint: `/api/v1/groups/${getParam('groupId')}/assignments/${assignmentId}/override`,
+					method: 'GET',
+				};
+			}
+			if (overrideBy === 'section') {
+				return {
+					endpoint: `/api/v1/sections/${getParam('courseSectionId')}/assignments/${assignmentId}/override`,
+					method: 'GET',
+				};
+			}
 			return {
 				endpoint: `/api/v1/courses/${courseId}/assignments/${assignmentId}/overrides/${getParam('overrideId')}`,
 				method: 'GET',
 			};
+		}
 
 		case 'createOverride': {
 			const target = getParam('overrideTarget', 'students');

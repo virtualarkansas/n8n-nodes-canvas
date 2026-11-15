@@ -2,15 +2,18 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { canvas, fx, unique } from '../lib/canvas';
 import { runNode, runOk } from '../lib/harness';
 import type { Json } from '../lib/n8n';
-import { BULK, ensureAssignmentsBattery, uploadDirect } from './contentBattery';
-import type { AssignmentsBattery } from './contentBattery';
+import { BULK, ensureAssignmentsBattery, ensureSubmissionsBattery, uploadDirect } from './contentBattery';
+import type { AssignmentsBattery, SubmissionsBattery } from './contentBattery';
 
 /**
  * Resource: assignment. Runs in a dedicated course holding more than 100
- * assignments in a dozen assignment groups (see contentBattery.ts).
+ * assignments in a dozen assignment groups (see contentBattery.ts). The group
+ * members of a student are read from the submissions battery course, whose
+ * group assignment has groups of several students.
  */
 describe('assignment', () => {
 	let battery: AssignmentsBattery;
+	let submissions: SubmissionsBattery;
 	let courseId = '';
 	let assignmentId = '';
 	let moderatedId = '';
@@ -26,8 +29,9 @@ describe('assignment', () => {
 
 	beforeAll(async () => {
 		battery = await ensureAssignmentsBattery();
+		submissions = await ensureSubmissionsBattery();
 		courseId = battery.courseId;
-	}, 900_000);
+	}, 1_200_000);
 
 	it('create: every general, peer review and group field reaches Canvas', async () => {
 		const sisId = unique('SIS-A').replace(/\s/g, '-');
@@ -758,6 +762,343 @@ describe('assignment', () => {
 		expect(removed.error).toHaveLength(1);
 		expect(removed.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND' });
 		expect(await canvas().getAll<Json>(`/api/v1/courses/${courseId}/assignments/${groupAssignmentId}/overrides`)).toEqual([]);
+	});
+
+	// --------------------------------------------------------- batch overrides
+
+	const overridesOf = (id: string): Promise<Json[]> =>
+		canvas().getAll<Json>(`/api/v1/courses/${courseId}/assignments/${id}/overrides`);
+	const overrideFromCanvas = (assignment: string, id: unknown): Promise<Json> =>
+		canvas().get<Json>(`/api/v1/courses/${courseId}/assignments/${assignment}/overrides/${String(id)}`);
+	/** Overrides created by the batch tests: [assignment ID, override]. */
+	const batch: Record<string, Json> = {};
+
+	it('batchCreateOverrides: overrides for students, a section and a group of several assignments in one request', async () => {
+		const a = groupAssignmentId;
+		const b = created[1];
+		const student = fx('studentUserId');
+		const student2 = fx('student2UserId');
+		const overrides = [
+			{
+				assignment_id: Number(a),
+				student_ids: [Number(student)],
+				title: 'Batch ünï "one"',
+				due_at: '2035-01-10T12:00:00Z',
+				unlock_at: '2035-01-01T12:00:00Z',
+				lock_at: '2035-01-20T12:00:00Z',
+			},
+			{ assignment_id: a, course_section_id: battery.sectionIds[1], due_at: '2035-02-10T12:00:00Z' },
+			{ assignment_id: a, group_id: Number(battery.studentGroupId), lock_at: '2035-03-10T12:00:00Z' },
+			// A comma-separated list of students works as well as a list.
+			{ assignment_id: Number(b), student_ids: `${student}, ${student2}`, title: 'Two students', unlock_at: '2035-04-01T12:00:00Z' },
+		];
+		const result = await runOk({
+			resource: 'assignment',
+			operation: 'batchCreateOverrides',
+			params: { courseId, overrides: JSON.stringify(overrides) },
+		});
+		expect(result).toHaveLength(4);
+		[batch.students, batch.section, batch.group, batch.other] = result;
+		expect(batch.students).toMatchObject({ assignment_id: Number(a), student_ids: [Number(student)], title: 'Batch ünï "one"' });
+
+		expect(await overrideFromCanvas(a, batch.students.id)).toMatchObject({
+			student_ids: [Number(student)],
+			title: 'Batch ünï "one"',
+			due_at: '2035-01-10T12:00:00Z',
+			unlock_at: '2035-01-01T12:00:00Z',
+			lock_at: '2035-01-20T12:00:00Z',
+		});
+		const section = await overrideFromCanvas(a, batch.section.id);
+		expect(section).toMatchObject({ course_section_id: Number(battery.sectionIds[1]), due_at: '2035-02-10T12:00:00Z' });
+		expect(section).not.toHaveProperty('lock_at');
+		expect(await overrideFromCanvas(a, batch.group.id)).toMatchObject({
+			group_id: Number(battery.studentGroupId),
+			lock_at: '2035-03-10T12:00:00Z',
+		});
+		const other = await overrideFromCanvas(b, batch.other.id);
+		expect(other).toMatchObject({ title: 'Two students', unlock_at: '2035-04-01T12:00:00Z' });
+		expect([...(other.student_ids as number[])].sort()).toEqual([Number(student), Number(student2)].sort());
+		expect(await overridesOf(a)).toHaveLength(3);
+		expect(await overridesOf(b)).toHaveLength(1);
+	});
+
+	it('batchCreateOverrides: when one entry is refused nothing is created, and Canvas says which entry it was', async () => {
+		const a = groupAssignmentId;
+		const b = created[1];
+		const result = await runNode({
+			resource: 'assignment',
+			operation: 'batchCreateOverrides',
+			// As a list of objects from an expression.
+			items: [
+				{
+					wanted: [
+						{ assignment_id: Number(b), course_section_id: Number(battery.sectionIds[0]), due_at: '2035-05-01T12:00:00Z' },
+						// This section already has an override on this assignment.
+						{ assignment_id: Number(a), course_section_id: Number(battery.sectionIds[1]) },
+					],
+				},
+			],
+			params: { courseId, overrides: '={{ $json.wanted }}', errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(result.success).toEqual([]);
+		expect(result.error[0]).toMatchObject({ errorCode: 400, errorType: 'VALIDATION_ERROR', resource: 'assignment', operation: 'batchCreateOverrides' });
+		// One entry per override asked for: nothing for the first, the reason for the second.
+		const errors = result.error[0].canvasErrors as unknown[];
+		expect(errors).toHaveLength(2);
+		expect(errors[0]).toBeNull();
+		expect(JSON.stringify(errors[1])).toContain('taken');
+		expect(await overridesOf(b)).toHaveLength(1);
+		expect(await overridesOf(a)).toHaveLength(3);
+	});
+
+	it('batchGetOverrides: returns the overrides in the order asked for and marks the ones Canvas does not find', async () => {
+		const a = groupAssignmentId;
+		const b = created[1];
+		const wanted = [
+			{ id: batch.other.id, assignment_id: Number(b) },
+			{ id: 999999999, assignment_id: Number(a) },
+			{ id: batch.group.id, assignment_id: a },
+			// An override of another assignment is not found either.
+			{ id: batch.section.id, assignment_id: b },
+			{ id: String(batch.students.id), assignment_id: a },
+		];
+		const query = wanted
+			.map((entry) => `assignment_overrides[][id]=${String(entry.id)}&assignment_overrides[][assignment_id]=${String(entry.assignment_id)}`)
+			.join('&');
+		const expected = await canvas().get<Array<Json | null>>(`/api/v1/courses/${courseId}/assignments/overrides?${query}`);
+		expect(expected.map((entry) => entry?.id ?? null)).toEqual([batch.other.id, null, batch.group.id, null, batch.students.id]);
+
+		const listed = await runOk({
+			resource: 'assignment',
+			operation: 'batchGetOverrides',
+			params: { courseId, overrides: JSON.stringify(wanted) },
+		});
+		expect(listed).toHaveLength(5);
+		expect(listed[0]).toEqual(expected[0]);
+		expect(listed[1]).toEqual({ id: '999999999', assignment_id: a, not_found: true });
+		expect(listed[2]).toEqual(expected[2]);
+		expect(listed[3]).toEqual({ id: String(batch.section.id), assignment_id: b, not_found: true });
+		expect(listed[4]).toEqual(expected[4]);
+
+		// From an expression, and whatever the node's pagination options say (the endpoint has no pages).
+		const viaExpression = await runOk({
+			resource: 'assignment',
+			operation: 'batchGetOverrides',
+			items: [{ wanted }],
+			params: { courseId, overrides: '={{ $json.wanted }}', pagination: { perPage: 2, maxPages: 1 } },
+		});
+		expect(viaExpression.map((entry) => String(entry.id))).toEqual(wanted.map((entry) => String(entry.id)));
+	});
+
+	it('batchUpdateOverrides: changes several overrides at once; dates that are left out are no longer overridden', async () => {
+		const a = groupAssignmentId;
+		const b = created[1];
+		const student2 = fx('student2UserId');
+		const updated = await runOk({
+			resource: 'assignment',
+			operation: 'batchUpdateOverrides',
+			params: {
+				courseId,
+				overrides: JSON.stringify([
+					{ id: batch.students.id, assignment_id: Number(a), student_ids: [Number(student2)], title: 'Batch renamed', due_at: '2035-01-12T12:00:00Z' },
+					{ id: batch.section.id, assignment_id: a, lock_at: '2035-02-20T12:00:00Z' },
+					{ id: batch.other.id, assignment_id: Number(b), unlock_at: null, due_at: '2035-04-15T12:00:00Z' },
+				]),
+			},
+		});
+		expect(updated.map((override) => override.id)).toEqual([batch.students.id, batch.section.id, batch.other.id]);
+
+		const students = await overrideFromCanvas(a, batch.students.id);
+		expect(students).toMatchObject({ title: 'Batch renamed', due_at: '2035-01-12T12:00:00Z', student_ids: [Number(student2)] });
+		expect(students).not.toHaveProperty('unlock_at');
+		expect(students).not.toHaveProperty('lock_at');
+		const section = await overrideFromCanvas(a, batch.section.id);
+		expect(section).toMatchObject({ course_section_id: Number(battery.sectionIds[1]), lock_at: '2035-02-20T12:00:00Z' });
+		expect(section).not.toHaveProperty('due_at');
+		const other = await overrideFromCanvas(b, batch.other.id);
+		// A date sent as null is overridden with "no date"; the students stay as they were.
+		expect(other).toMatchObject({ due_at: '2035-04-15T12:00:00Z', unlock_at: null, title: 'Two students' });
+		expect(other.student_ids as number[]).toHaveLength(2);
+	});
+
+	it('batchUpdateOverrides: an unknown override refuses the whole request', async () => {
+		const a = groupAssignmentId;
+		const result = await runNode({
+			resource: 'assignment',
+			operation: 'batchUpdateOverrides',
+			params: {
+				courseId,
+				overrides: JSON.stringify([
+					{ id: batch.group.id, assignment_id: Number(a), lock_at: '2036-01-01T12:00:00Z' },
+					{ id: 999999999, assignment_id: Number(a), due_at: '2036-01-01T12:00:00Z' },
+				]),
+				errorHandling: { onError: 'continueWithError' },
+			},
+		});
+		expect(result.success).toEqual([]);
+		expect(result.error[0]).toMatchObject({ errorCode: 400, errorType: 'VALIDATION_ERROR', operation: 'batchUpdateOverrides' });
+		expect(JSON.stringify(result.error[0].canvasErrors)).toContain('override not found');
+		expect((await overrideFromCanvas(a, batch.group.id)).lock_at).toBe('2035-03-10T12:00:00Z');
+	});
+
+	it('batch overrides: input that is not a list is rejected by the node; incomplete entries and students by Canvas', async () => {
+		const run = (operation: string, overrides: string, persona = 'admin'): ReturnType<typeof runNode> =>
+			runNode({
+				resource: 'assignment',
+				operation,
+				persona,
+				params: { courseId, overrides, errorHandling: { onError: 'continueWithError' } },
+			});
+
+		for (const operation of ['batchCreateOverrides', 'batchGetOverrides', 'batchUpdateOverrides']) {
+			const notJson = await run(operation, '[{ not json');
+			expect(notJson.error[0], operation).toMatchObject({ errorCode: 0, errorMessage: 'Overrides must be valid JSON', endpoint: '' });
+			const notList = await run(operation, '{"assignment_id": 1}');
+			expect(String(notList.error[0].errorMessage), operation).toContain('Overrides must be a JSON array with at least one entry');
+			const empty = await run(operation, '[]');
+			expect(String(empty.error[0].errorMessage), operation).toContain('Overrides must be a JSON array with at least one entry');
+			const notObjects = await run(operation, '[12, 13]');
+			expect(String(notObjects.error[0].errorMessage), operation).toContain('Overrides: entry 1 must be an object');
+		}
+
+		// Canvas' own checks.
+		const noAssignment = await run('batchCreateOverrides', JSON.stringify([{ course_section_id: battery.sectionIds[0] }]));
+		expect(noAssignment.error[0]).toMatchObject({ errorCode: 400, errorType: 'VALIDATION_ERROR' });
+		expect(JSON.stringify(noAssignment.error[0].canvasErrors)).toContain('must specify an assignment id');
+		const noTarget = await run('batchCreateOverrides', JSON.stringify([{ assignment_id: created[1], due_at: '2035-06-01T12:00:00Z' }]));
+		expect(noTarget.error[0]).toMatchObject({ errorCode: 400, errorType: 'VALIDATION_ERROR' });
+		const noId = await run('batchGetOverrides', JSON.stringify([{ assignment_id: created[1] }]));
+		expect(noId.success).toEqual([{ id: '', assignment_id: created[1], not_found: true }]);
+
+		const asStudent = await run(
+			'batchUpdateOverrides',
+			JSON.stringify([{ id: batch.group.id, assignment_id: groupAssignmentId, lock_at: '2036-01-01T12:00:00Z' }]),
+			'student',
+		);
+		expect(asStudent.success).toEqual([]);
+		expect(asStudent.error[0]).toMatchObject({ errorType: 'FORBIDDEN' });
+		expect([401, 403]).toContain(asStudent.error[0].errorCode);
+	});
+
+	it('getOverride: by the group or the section the override applies to', async () => {
+		const a = groupAssignmentId;
+		const [byGroup] = await runOk({
+			resource: 'assignment',
+			operation: 'getOverride',
+			params: { overrideBy: 'group', groupId: battery.studentGroupId, assignmentId: a },
+		});
+		expect(byGroup).toEqual(await overrideFromCanvas(a, batch.group.id));
+		expect(byGroup).toMatchObject({ id: batch.group.id, group_id: Number(battery.studentGroupId) });
+
+		const [bySection] = await runOk({
+			resource: 'assignment',
+			operation: 'getOverride',
+			items: [{ section: Number(battery.sectionIds[1]), assignment: Number(a) }],
+			params: { overrideBy: 'section', courseSectionId: '={{ $json.section }}', assignmentId: '={{ $json.assignment }}' },
+		});
+		expect(bySection).toEqual(await overrideFromCanvas(a, batch.section.id));
+		expect(bySection).toMatchObject({ id: batch.section.id, course_section_id: Number(battery.sectionIds[1]) });
+
+		// By ID it still works as before, also when the selector is given.
+		const [byId] = await runOk({
+			resource: 'assignment',
+			operation: 'getOverride',
+			params: { overrideBy: 'id', courseId, assignmentId: a, overrideId: String(batch.students.id) },
+		});
+		expect(byId.id).toBe(batch.students.id);
+
+		// A section without an override of its own, and an assignment of another course.
+		const none = await runNode({
+			resource: 'assignment',
+			operation: 'getOverride',
+			params: { overrideBy: 'section', courseSectionId: battery.sectionIds[0], assignmentId: a, errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(none.success).toEqual([]);
+		expect(none.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', resource: 'assignment', operation: 'getOverride' });
+		expect(String(none.error[0].endpoint)).toBe(`/api/v1/sections/${battery.sectionIds[0]}/assignments/${a}/override`);
+		const elsewhere = await runNode({
+			resource: 'assignment',
+			operation: 'getOverride',
+			params: {
+				overrideBy: 'group',
+				groupId: battery.studentGroupId,
+				assignmentId: submissions.group.assignmentId,
+				errorHandling: { onError: 'continueWithError' },
+			},
+		});
+		expect(elsewhere.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND' });
+
+		// Clean up: the remaining tests expect these assignments without overrides.
+		for (const [assignment, override] of [
+			[a, batch.students],
+			[a, batch.section],
+			[a, batch.group],
+			[created[1], batch.other],
+		] as Array<[string, Json]>) {
+			await canvas().delete(`/api/v1/courses/${courseId}/assignments/${assignment}/overrides/${String(override.id)}`);
+		}
+	});
+
+	// -------------------------------------------------------- listGroupMembers
+
+	it('listGroupMembers: the students who share a group assignment with a student', async () => {
+		const course = submissions.courseId;
+		const [first, second] = submissions.group.groups;
+		const path = (assignment: string, user: string): string =>
+			`/api/v1/courses/${course}/assignments/${assignment}/users/${user}/group_members`;
+
+		const members = await runOk({
+			resource: 'assignment',
+			operation: 'listGroupMembers',
+			params: { courseId: course, assignmentId: submissions.group.assignmentId, userId: first.memberIds[1] },
+		});
+		expect(members).toEqual(await canvas().get<Json[]>(path(submissions.group.assignmentId, first.memberIds[1])));
+		// Canvas returns the IDs as text.
+		expect(members.map((m) => m.id).sort()).toEqual([...first.memberIds].sort());
+		expect(members[0].name).toBeTypeOf('string');
+
+		// Several students in one run, IDs as numbers; a student may ask for classmates.
+		const result = await runNode({
+			resource: 'assignment',
+			operation: 'listGroupMembers',
+			persona: 'student',
+			items: [{ user: Number(second.memberIds[0]) }, { user: Number(fx('studentUserId')) }, { user: 999999999 }],
+			params: {
+				courseId: course,
+				assignmentId: submissions.group.assignmentId,
+				userId: '={{ $json.user }}',
+				errorHandling: { onError: 'continueWithError' },
+			},
+		});
+		expect(result.failure, JSON.stringify(result.failure)).toBeUndefined();
+		const paired = (index: number): unknown[] =>
+			result.rawSuccess.filter((item) => (item.pairedItem as Json).item === index).map((item) => item.json.id);
+		expect(paired(0).sort()).toEqual([...second.memberIds].sort());
+		// The student persona is in none of the groups: alone.
+		expect(paired(1)).toEqual([fx('studentUserId')]);
+		expect(result.error).toHaveLength(1);
+		expect(result.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', resource: 'assignment', operation: 'listGroupMembers' });
+
+		// An assignment that is not a group assignment: the student alone.
+		const alone = await runOk({
+			resource: 'assignment',
+			operation: 'listGroupMembers',
+			params: { courseId: course, assignmentId: submissions.bulkAssignmentId, userId: first.memberIds[0] },
+		});
+		expect(alone.map((m) => m.id)).toEqual([first.memberIds[0]]);
+
+		// The student is looked up by numeric ID only.
+		const bySisId = await runNode({
+			resource: 'assignment',
+			operation: 'listGroupMembers',
+			params: {
+				courseId: course,
+				assignmentId: submissions.group.assignmentId,
+				userId: 'sis_user_id:W5682-S-031',
+				errorHandling: { onError: 'continueWithError' },
+			},
+		});
+		expect(bySisId.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND' });
 	});
 
 	it('bulkUpdateDates: changes base and override dates of several assignments in one job', async () => {
