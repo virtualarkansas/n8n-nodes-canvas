@@ -143,7 +143,7 @@ Seed.step("enroll.plan") do
   Seed.set_ref("courses:enroll_chunks", ids.each_slice(16).to_a)
 end
 
-Seed.ref("courses:enroll_chunks").each_with_index do |chunk, idx|
+(Seed.ref?("courses:enroll_chunks") ? Seed.ref("courses:enroll_chunks") : []).each_with_index do |chunk, idx|
   Seed.step("enroll.catalog.#{idx}") do
     e = Seed::Enroll
     rng = Seed.rng("enroll.catalog.#{idx}")
@@ -195,6 +195,48 @@ Seed.ref("courses:enroll_chunks").each_with_index do |chunk, idx|
     end
     Seed.log "  chunk #{idx}: #{chunk.size} courses, ~#{total} enrollments"
   end
+end
+
+# The teacher persona teaches well over one API page of courses (published and unpublished).
+Seed.step("enroll.teacher_persona") do
+  teacher = Seed.user(:teacher)
+  have = teacher.enrollments.where(type: "TeacherEnrollment").where.not(workflow_state: "deleted").distinct.pluck(:course_id)
+  catalog = Course.where(id: Seed.ref("courses:catalog")).where.not(id: have + Seed.ref("courses:to_delete")).order(:id).to_a
+  unpublished = catalog.reject(&:available?).first(7)
+  published = catalog.select(&:available?).each_slice(3).map(&:first).first(12)
+  (unpublished + published).each { |course| Seed::Enroll.add(course, teacher, :teacher) }
+  Seed::Enroll.add(Seed.course(:date_restricted_future), teacher, :teacher)
+  Seed::Enroll.add(Seed.course(:public), teacher, :teacher)
+  count = teacher.enrollments.where(type: "TeacherEnrollment").where.not(workflow_state: "deleted").distinct.count(:course_id)
+  Seed.fixture(:teacherCourseCount, count)
+  Seed.log "  teacher persona now teaches #{count} courses"
+end
+
+# SIS import #1 must be finished before anything touches the large course.
+Seed.step("enroll.sis_import_1_done", tx: false) do
+  id = Seed.ref("sis_import:1")
+  batch = Seed.wait_for("SIS import #{id}", timeout: 900, interval: 3) do
+    b = SisBatch.find(id)
+    b if %w[imported imported_with_messages failed failed_with_messages aborted].include?(b.workflow_state)
+  end
+  raise "SIS import #{id} ended #{batch.workflow_state}" unless batch.workflow_state.start_with?("imported")
+
+  large = Course.where(root_account_id: Seed.root.id, sis_source_id: "FRSH-100-ALL").first!
+  large.offer! unless large.available?
+  sections = large.course_sections.active.order(:id).pluck(:id)
+  cohort = Pseudonym.active.where(account_id: Seed.root.id).where("sis_user_id LIKE 'SIS-STU-%'").order(:sis_user_id).pluck(:user_id)
+  ActiveRecord::Base.transaction do
+    Seed.set_ref("course:large", large.id)
+    Seed.set_ref("users:sis_cohort", cohort)
+  end
+  Seed.fixture(:largeCourseId, large.id)
+  Seed.fixture(:largeCourseSisId, "FRSH-100-ALL")
+  Seed.fixture(:largeCourseSectionIds, sections)
+  Seed.fixture(:largeCourseStudentCount, large.student_enrollments.where(workflow_state: "active").distinct.count(:user_id))
+  Seed.fixture(:sisManagedCourseId, Course.where(sis_source_id: "SIS-HEALTH-9").pick(:id))
+  Seed.fixture(:sisUserId, cohort.first)
+  Seed.fixture(:sisUserSisId, "SIS-STU-0001")
+  Seed.log "  large course #{large.id}: #{large.student_enrollments.where(workflow_state: "active").count} active student enrollments in #{sections.size} sections"
 end
 
 Seed.step("enroll.observers") do

@@ -14,11 +14,19 @@ require File.join(dir, "lib.rb")
 Seed.setup!
 Seed.log "Canvas battery seed starting (#{Rails.env}, root account #{Seed.root.id} '#{Seed.root.name}')"
 
-Dir[File.join(dir, "[0-9][0-9]_*.rb")].sort.each do |file|
-  load file
-end
+emit = lambda do
+  next if ENV["SEED_NO_FIXTURES"]
 
-unless ENV["SEED_NO_FIXTURES"]
   Seed.load_state
   puts "FIXTURES_JSON=#{{ tokens: Seed.tokens, fixtures: Seed.fx }.to_json}"
+end
+
+begin
+  Dir[File.join(dir, "[0-9][0-9]_*.rb")].sort.each do |file|
+    load file
+    emit.call # run.sh merges this into test/.state.json after every phase
+  end
+  Seed.log "seed complete"
+ensure
+  emit.call
 end

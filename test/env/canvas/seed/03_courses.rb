@@ -237,10 +237,10 @@ Seed.step("courses.sis_import_1", tx: false) do
   users << ["SIS-TCH-0002", "", "sis.teacher.two", "Ïmpörted", "Tëacher Twö", "Ïmpörted Tëacher Twö", "Twö, Ïmpörted Tëacher", "", "sis.teacher.two@example.edu", "active"]
 
   courses = [%w[course_id short_name long_name account_id term_id status start_date end_date course_format blueprint_course_id]]
-  courses << ["FRSH-100-ALL", "FRSH-100", "Freshman Seminar (all sections, very large)", "SCH-RHS", cur.sis_source_id, "active", "", "", "on_campus", ""]
-  courses << ["SIS-HEALTH-9", "HLTH-9", "Health 9 (SIS-managed)", "SCH-RHS", cur.sis_source_id, "active", "", "", "", ""]
-  courses << ["SIS-PE-9", "PE-9", "Physical Education 9 (SIS-managed)", "SCH-RHS", cur.sis_source_id, "active", cur.start_at.iso8601, cur.end_at.iso8601, "", ""]
-  courses << ["SIS-DRIVER-ED", "DRV-ED", "Driver Education (SIS, unpublished)", "SCH-DOA", "TERM-ONGOING", "unpublished", "", "", "online", ""]
+  courses << ["FRSH-100-ALL", "FRSH-100", "Freshman Seminar (all sections, very large)", "SCH-RHS", cur.sis_source_id, "published", "", "", "on_campus", ""]
+  courses << ["SIS-HEALTH-9", "HLTH-9", "Health 9 (SIS-managed)", "SCH-RHS", cur.sis_source_id, "published", "", "", "", ""]
+  courses << ["SIS-PE-9", "PE-9", "Physical Education 9 (SIS-managed)", "SCH-RHS", cur.sis_source_id, "published", cur.start_at.iso8601, cur.end_at.iso8601, "", ""]
+  courses << ["SIS-DRIVER-ED", "DRV-ED", "Driver Education (SIS, unpublished)", "SCH-DOA", "TERM-ONGOING", "active", "", "", "online", ""] # SIS "active" = unpublished
 
   sections = [%w[section_id course_id name status start_date end_date]]
   6.times { |i| sections << ["FRSH-100-S#{i + 1}", "FRSH-100-ALL", "Seminar Group #{i + 1}#{" (Honors)" if i == 5}", "active", "", ""] }

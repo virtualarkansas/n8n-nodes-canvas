@@ -62,6 +62,52 @@ function logOp(record: Omit<OpRecord, 'at'>): void {
 	appendFileSync(OPS_LOG, JSON.stringify({ ...record, at: new Date().toISOString() }) + '\n');
 }
 
+/** Name of the running vitest test, when the harness is used from a test. */
+function currentTest(): { file?: string; name?: string } {
+	try {
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		const state = (require('vitest') as typeof import('vitest')).expect.getState();
+		return { file: state.testPath, name: state.currentTestName };
+	} catch {
+		return {};
+	}
+}
+
+/**
+ * Successful runs are recorded with their parameters so importable example
+ * workflows can be generated from exactly what the battery executed
+ * (see test/tools/export-workflows.ts).
+ */
+const RUNS_LOG = resolve(RESULTS_DIR, 'runs.jsonl');
+
+function logRun(opts: RunNodeOptions, outcome: OpRecord['outcome'], success: Json[]): void {
+	const ids: Json[] = success.slice(0, 3).map((item) => {
+		const picked: Json = {};
+		for (const [key, value] of Object.entries(item)) {
+			if ((typeof value === 'string' || typeof value === 'number') && /(^|_)(id|url|uuid|key)$/i.test(key)) {
+				picked[key] = value;
+			}
+		}
+		return picked;
+	});
+	mkdirSync(RESULTS_DIR, { recursive: true });
+	appendFileSync(
+		RUNS_LOG,
+		JSON.stringify({
+			...currentTest(),
+			resource: opts.resource,
+			operation: opts.operation,
+			persona: opts.persona ?? 'admin',
+			params: opts.params ?? {},
+			items: opts.items,
+			outcome,
+			outputCount: success.length,
+			outputIds: ids,
+			at: new Date().toISOString(),
+		}) + '\n',
+	);
+}
+
 /**
  * Declare that an operation is not executed against the local Canvas, and why
  * (for example: it is served by a hosted Instructure service). It still has to
@@ -154,18 +200,16 @@ export async function runNode(opts: RunNodeOptions): Promise<RunNodeResult> {
 		const run = execution.nodes[NODE_NAME]?.[0];
 		const nodeError = run?.error ?? execution.error;
 		const debugMode = (opts.params as Json | undefined)?.debugMode === true;
-		logOp({
-			resource: opts.resource,
-			operation: opts.operation,
-			outcome:
-				execution.status !== 'success'
-					? 'failed'
-					: debugMode
-						? 'debug'
-						: (run?.outputs[1]?.length ?? 0) > 0
-							? 'error-output'
-							: 'success',
-		});
+		const outcome: OpRecord['outcome'] =
+			execution.status !== 'success'
+				? 'failed'
+				: debugMode
+					? 'debug'
+					: (run?.outputs[1]?.length ?? 0) > 0
+						? 'error-output'
+						: 'success';
+		logOp({ resource: opts.resource, operation: opts.operation, outcome });
+		logRun(opts, outcome, run?.outputs[0] ?? []);
 		return {
 			ok: execution.status === 'success',
 			success: run?.outputs[0] ?? [],
