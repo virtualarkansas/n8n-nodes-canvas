@@ -52,13 +52,16 @@ export interface IRequestConfig {
 	/**
 	 * After the GET, download the file the record points to and attach it to the output
 	 * item as binary data. `urlField` names the record's field that holds the download URL
-	 * (`url` of a file); the file name and type come from the record when the fields are given.
+	 * (`url` of a file, `attachment.url` of a report); the file name and type come from the
+	 * record when the fields are given. With `optional`, a record without a URL (a report
+	 * that failed) is output without a file instead of failing the item.
 	 */
 	download?: {
 		urlField: string;
 		binaryPropertyName: string;
 		fileNameField?: string;
 		contentTypeField?: string;
+		optional?: boolean;
 	};
 	/**
 	 * Repeat the GET until the record says the background job is over (or the time is up):

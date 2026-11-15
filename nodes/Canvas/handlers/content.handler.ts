@@ -1,5 +1,14 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { downloadIfAsked, pollUntil, stateIn } from './shared';
+
+/** Where a content export keeps its generated file. An export that is not finished has none. */
+const EXPORT_FILE = {
+	urlField: 'attachment.url',
+	fileNameField: 'attachment.filename',
+	contentTypeField: 'attachment.content-type',
+	optional: true,
+};
 
 // ============================================
 // Helpers
@@ -110,6 +119,15 @@ export function handleContentExportResource(
 			return {
 				method: 'GET',
 				endpoint: `${getContentExportBasePath(getParam)}/content_exports/${getParam('contentExportId')}`,
+				download: downloadIfAsked(getParam, EXPORT_FILE),
+			};
+
+		case 'waitForCompletion':
+			return {
+				method: 'GET',
+				endpoint: `${getContentExportBasePath(getParam)}/content_exports/${getParam('contentExportId')}`,
+				poll: pollUntil(getParam, stateIn('workflow_state', ['exported', 'failed'])),
+				download: downloadIfAsked(getParam, EXPORT_FILE),
 			};
 
 		case 'getAll':

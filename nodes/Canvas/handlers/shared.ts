@@ -24,3 +24,17 @@ export function pollUntil(
 export function stateIn(field: string, states: string[]): (record: IDataObject) => boolean {
 	return (record) => states.includes(String(record?.[field] ?? ''));
 }
+
+/**
+ * The `download` hint for operations that offer "Download File" (see `downloadFields`
+ * in descriptions/shared.ts): undefined unless the user switched it on.
+ */
+export function downloadIfAsked(
+	getParam: GetParam,
+	fields: { urlField: string; fileNameField?: string; contentTypeField?: string; optional?: boolean },
+): IRequestConfig['download'] {
+	if (getParam('downloadFile', 'false') !== 'true') {
+		return undefined;
+	}
+	return { ...fields, binaryPropertyName: getParam('binaryPropertyName', 'data') || 'data' };
+}

@@ -1,4 +1,5 @@
 import type { INodeProperties } from 'n8n-workflow';
+import { downloadFields, waitFields } from './shared';
 
 /** One "Select ..." field per object type Canvas can export selectively. */
 function selectField(displayName: string, type: string, what: string, exportTypes: string): INodeProperties {
@@ -51,6 +52,13 @@ export const contentExportOperations: INodeProperties[] = [
 					'List what a course contains, by type, to pick the objects for a selective export or course copy',
 				action: 'Get the selectable content of a course',
 			},
+			{
+				name: 'Wait for Completion',
+				value: 'waitForCompletion',
+				description:
+					'Check the export again and again until Canvas has finished it (or it has failed), then output it with its file',
+				action: 'Wait for a content export to complete',
+			},
 		],
 		default: 'getAll',
 	},
@@ -69,7 +77,7 @@ export const contentExportFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['contentExport'],
-				operation: ['create', 'get', 'getAll'],
+				operation: ['create', 'get', 'getAll', 'waitForCompletion'],
 			},
 		},
 		options: [
@@ -98,7 +106,7 @@ export const contentExportFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['contentExport'],
-				operation: ['create', 'get', 'getAll'],
+				operation: ['create', 'get', 'getAll', 'waitForCompletion'],
 				contextType: ['course'],
 			},
 		},
@@ -127,7 +135,7 @@ export const contentExportFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['contentExport'],
-				operation: ['create', 'get', 'getAll'],
+				operation: ['create', 'get', 'getAll', 'waitForCompletion'],
 				contextType: ['group'],
 			},
 		},
@@ -142,7 +150,7 @@ export const contentExportFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['contentExport'],
-				operation: ['create', 'get', 'getAll'],
+				operation: ['create', 'get', 'getAll', 'waitForCompletion'],
 				contextType: ['user'],
 			},
 		},
@@ -161,7 +169,7 @@ export const contentExportFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['contentExport'],
-				operation: ['get'],
+				operation: ['get', 'waitForCompletion'],
 			},
 		},
 		description: 'The ID of the content export',
@@ -320,4 +328,6 @@ export const contentExportFields: INodeProperties[] = [
 			},
 		],
 	},
+	...waitFields('contentExport'),
+	...downloadFields('contentExport', ['get', 'waitForCompletion'], 'the file of a finished export (a Common Cartridge, QTI or zip file)'),
 ];

@@ -1,6 +1,14 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { pollUntil, stateIn } from './shared';
+import { downloadIfAsked, pollUntil, stateIn } from './shared';
+
+/** Where a report keeps its generated file. A report that is not complete has none. */
+const REPORT_FILE = {
+	urlField: 'attachment.url',
+	fileNameField: 'attachment.filename',
+	contentTypeField: 'attachment.content-type',
+	optional: true,
+};
 
 // ============================================
 // Shared helpers
@@ -303,6 +311,7 @@ export function buildAccountReportRequest(
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/reports/${reportType}/${reportId}`,
+				download: downloadIfAsked(getParam, REPORT_FILE),
 			};
 
 		case 'waitForCompletion':
@@ -310,6 +319,7 @@ export function buildAccountReportRequest(
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/reports/${reportType}/${reportId}`,
 				poll: pollUntil(getParam, stateIn('status', ['complete', 'error', 'aborted', 'deleted'])),
+				download: downloadIfAsked(getParam, REPORT_FILE),
 			};
 
 		case 'getAll':

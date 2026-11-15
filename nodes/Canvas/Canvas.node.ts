@@ -570,17 +570,23 @@ async function downloadTo(
 	itemIndex: number,
 	record: IDataObject,
 	download: NonNullable<IRequestConfig['download']>,
-): Promise<OutputItem> {
-	const url = record?.[download.urlField];
+): Promise<OutputItem | IDataObject> {
+	// Fields may be nested: "attachment.url".
+	const field = (path?: string): unknown =>
+		path?.split('.').reduce<unknown>((value, key) => (value as IDataObject | undefined)?.[key], record);
+	const url = field(download.urlField);
 	if (typeof url !== 'string' || url === '') {
+		if (download.optional) {
+			return record;
+		}
 		throw new NodeOperationError(context.getNode(), 'Canvas did not provide a download URL for this file', {
 			itemIndex,
 			description: `The record has no "${download.urlField}". Locked or hidden files, and files the user of the credential may not download, come without one.`,
 		});
 	}
 	const file = await canvasDownload.call(context, url);
-	const fileName = download.fileNameField ? (record[download.fileNameField] as string | undefined) : undefined;
-	const recordType = download.contentTypeField ? (record[download.contentTypeField] as string | undefined) : undefined;
+	const fileName = field(download.fileNameField) as string | undefined;
+	const recordType = field(download.contentTypeField) as string | undefined;
 	const binary = await context.helpers.prepareBinaryData(file.data, fileName || undefined, recordType || file.contentType);
 	return new OutputItem({
 		json: record,
@@ -724,7 +730,10 @@ async function processItem(
 			}
 
 			if (request.method === 'GET' && request.poll) {
-				return waitUntilFinished(context, itemIndex, request, qsData, rateLimit);
+				const finished = await waitUntilFinished(context, itemIndex, request, qsData, rateLimit);
+				return request.download
+					? downloadTo(context, itemIndex, finished as IDataObject, request.download)
+					: finished;
 			}
 
 			if (request.method === 'GET') {

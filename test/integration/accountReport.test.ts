@@ -1,6 +1,7 @@
 import { inflateRawSync } from 'node:zlib';
 import { afterAll, describe, expect, it } from 'vitest';
 import { canvas, fx } from '../lib/canvas';
+import { digestOf } from '../lib/harness';
 import { ids, runNode, runOk } from './support/adminGroup';
 import type { Json } from '../lib/n8n';
 import { loadState } from '../lib/state';
@@ -501,6 +502,40 @@ describe('accountReport', () => {
 			params: { accountId: root, reportType: 'provisioning_csv', reportId: id, pollInterval: 30 },
 		});
 		expect(Date.now() - startedAt).toBeLessThan(15_000);
+
+		// Download File: the report's zip arrives as binary data, byte for byte what Canvas serves.
+		const expected = await download(String((direct.attachment as Json).url));
+		for (const operation of ['waitForCompletion', 'get']) {
+			const withFile = await runNode({
+				resource: 'accountReport',
+				operation,
+				params: { accountId: root, reportType: 'provisioning_csv', reportId: id, downloadFile: true, binaryPropertyName: 'report' },
+				digestBinary: 'report',
+			});
+			expect(withFile.error, operation).toEqual([]);
+			expect(withFile.success[0], operation).toMatchObject({ id: Number(id), status: 'complete' });
+			expect(withFile.digests, operation).toEqual([
+				{ ...digestOf(expected), fileName: (direct.attachment as Json).filename, mimeType: (direct.attachment as Json)['content-type'] },
+			]);
+		}
+		expect(Object.keys(unzip(expected)).sort()).toEqual(['courses.csv', 'users.csv']);
+
+		// A report without a file (aborted before it ran) comes back without one instead of failing.
+		const aborted = await canvas().post<Json>(`/api/v1/accounts/${root}/reports/provisioning_csv`, {
+			parameters: { users: true, groups: true, group_memberships: true, skip_message: true },
+		});
+		const abortedId = remember(root, aborted);
+		await canvas().request('PUT', `/api/v1/accounts/${root}/reports/provisioning_csv/${abortedId}/abort`);
+		const noFile = await runNode({
+			resource: 'accountReport',
+			operation: 'waitForCompletion',
+			params: { accountId: root, reportType: 'provisioning_csv', reportId: abortedId, downloadFile: true, pollInterval: 2 },
+			digestBinary: 'data',
+		});
+		expect(noFile.error).toEqual([]);
+		if (noFile.success[0].status === 'aborted') {
+			expect(noFile.digests).toEqual([null]);
+		}
 	});
 
 	// --------------------------------------------------------------------- get

@@ -1,0 +1,15 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"noEmit": true,
+		"declaration": false,
+		"sourceMap": false,
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"target": "es2022",
+		"lib": ["es2023", "dom"],
+		"types": ["node"],
+		"noUnusedLocals": false
+	},
+	"include": ["test/**/*.ts", "vitest.config.ts", "vitest.integration.config.ts"]
+}

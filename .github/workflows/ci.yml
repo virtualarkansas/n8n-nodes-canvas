@@ -31,6 +31,10 @@ jobs:
       - name: Build
         run: npm run build
 
+      # The node and credentials, and the test code (which the test runner does not type-check).
+      - name: Type check
+        run: npm run typecheck
+
       # Unit tests need no Canvas or n8n instance: request layer, trigger parsing and
       # the audit of every operation against the Canvas route table.
       - name: Unit tests

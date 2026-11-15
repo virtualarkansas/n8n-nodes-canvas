@@ -30,6 +30,7 @@ npm run dev               # Launch n8n with hot-reload
 npm run build             # Compile TypeScript
 npm run lint              # Check code style (n8n community node rules)
 npm run lint:fix          # Auto-fix style issues
+npm run typecheck         # Type-check node, credentials and tests
 npm test                  # Unit tests (no Canvas or n8n needed), incl. route audit
 npm run test:integration  # Battery against local Canvas + n8n (see test/README.md)
 npx tsx test/tools/describe.ts <resource> [operation]   # What an operation offers and sends
@@ -43,7 +44,7 @@ npx tsx test/tools/export-workflows.ts                  # Regenerate test/workfl
 ```
 
 ### Releasing
-Releases are automated via GitHub Actions: update the version in `package.json`, commit, tag `vX.Y.Z`, push the tag. The release workflow builds, publishes to npm and creates a GitHub release. `ci.yml` runs lint, build and unit tests on pushes to `main` and on pull requests.
+Releases are automated via GitHub Actions: update the version in `package.json`, commit, tag `vX.Y.Z`, push the tag. The release workflow builds, publishes to npm and creates a GitHub release. `ci.yml` runs lint, build, type check and unit tests on pushes to `main` and on pull requests.
 
 ## Architecture
 

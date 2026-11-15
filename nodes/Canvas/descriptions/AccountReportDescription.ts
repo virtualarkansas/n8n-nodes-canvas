@@ -1,5 +1,5 @@
 import type { INodeProperties } from 'n8n-workflow';
-import { waitFields } from './shared';
+import { downloadFields, waitFields } from './shared';
 
 export const accountReportOperations: INodeProperties[] = [
 	{
@@ -400,4 +400,5 @@ export const accountReportFields: INodeProperties[] = [
 		],
 	},
 	...waitFields('accountReport'),
+	...downloadFields('accountReport', ['get', 'waitForCompletion'], 'the file of a complete report (CSV, or a zip of several CSVs)'),
 ];

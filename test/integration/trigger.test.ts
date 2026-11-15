@@ -225,7 +225,7 @@ describe('Canvas Trigger: compressed bodies', () => {
 		const res = await fetch(url, {
 			method: 'POST',
 			headers: { 'content-type': 'application/json', 'content-encoding': 'gzip', connection: 'close' },
-			body: compressed,
+			body: new Uint8Array(compressed),
 		}).catch(() => undefined);
 		return res?.status ?? 0;
 	};

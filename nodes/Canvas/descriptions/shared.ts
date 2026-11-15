@@ -28,3 +28,29 @@ export function waitFields(resource: string, operation = 'waitForCompletion'): I
 		},
 	];
 }
+
+/**
+ * "Download File" and the binary field to put it in, for operations whose record points
+ * to a file. The handler turns them into a `download` hint (`downloadIfAsked`).
+ */
+export function downloadFields(resource: string, operations: string[], what: string): INodeProperties[] {
+	return [
+		{
+			displayName: 'Download File',
+			name: 'downloadFile',
+			type: 'boolean',
+			default: false,
+			displayOptions: { show: { resource: [resource], operation: operations } },
+			description: `Whether to download ${what} and attach it to the output item as binary data, ready for the next node (Extract From File, Write Files, an upload ...)`,
+		},
+		{
+			displayName: 'Put Output File in Field',
+			name: 'binaryPropertyName',
+			type: 'string',
+			default: 'data',
+			required: true,
+			displayOptions: { show: { resource: [resource], operation: operations, downloadFile: [true] } },
+			hint: 'The name of the output binary field to put the file in',
+		},
+	];
+}

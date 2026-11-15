@@ -37,7 +37,7 @@ interface FakeResponse {
 	/** HTTP status Canvas answers with (default 200). */
 	status?: number;
 	body?: unknown;
-	headers?: Record<string, string>;
+	headers?: Record<string, string | undefined>;
 	/** Fail without any HTTP response (network error). */
 	throw?: unknown;
 }

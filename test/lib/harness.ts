@@ -14,6 +14,8 @@ export interface RunNodeOptions {
 	items?: Json[];
 	/** Input items that carry a binary property (file uploads, imports); used instead of `items`. */
 	binary?: BinaryInput[];
+	/** Name of a binary property of the Success items to fingerprint (see `digests` in the result). */
+	digestBinary?: string;
 	/** Which seeded persona's credential to use. Default: admin. */
 	persona?: string;
 	/** 'accessToken' (default), 'oAuth2' or 'ltiAdvantage'; follows the type of `credential` when that is given. */
@@ -73,6 +75,44 @@ for (let index = 0; index < items.length; index++) {
 return out;
 `;
 
+/** Size and fingerprint of a file, comparable with `digestOf(buffer)`. */
+export interface BinaryDigest {
+	length: number;
+	hash: number;
+	fileName?: string;
+	mimeType?: string;
+}
+
+/** FNV-1a over the bytes: enough to tell whether two files are the same, and computable in a Code node. */
+export function digestOf(buffer: Buffer): Pick<BinaryDigest, 'length' | 'hash'> {
+	let hash = 0x811c9dc5;
+	for (const byte of buffer) {
+		hash ^= byte;
+		hash = Math.imul(hash, 0x01000193) >>> 0;
+	}
+	return { length: buffer.length, hash };
+}
+
+/** Code node that fingerprints a binary property of every item it receives (null when the item has none). */
+const digestCode = (property: string): string => `
+const out = [];
+for (let index = 0; index < items.length; index++) {
+	const meta = items[index].binary?.[${JSON.stringify(property)}];
+	if (!meta) {
+		out.push({ json: { digest: null }, pairedItem: { item: index } });
+		continue;
+	}
+	const buffer = await this.helpers.getBinaryDataBuffer(index, ${JSON.stringify(property)});
+	let hash = 0x811c9dc5;
+	for (const byte of buffer) {
+		hash ^= byte;
+		hash = Math.imul(hash, 0x01000193) >>> 0;
+	}
+	out.push({ json: { digest: { length: buffer.length, hash, fileName: meta.fileName, mimeType: meta.mimeType } }, pairedItem: { item: index } });
+}
+return out;
+`;
+
 export interface RunNodeResult {
 	/** True when the whole execution finished without a workflow error. */
 	ok: boolean;
@@ -82,6 +122,8 @@ export interface RunNodeResult {
 	error: Json[];
 	/** Items on the Debug output (json), when debug mode is on. */
 	debug: Json[];
+	/** With `digestBinary`: one entry per Success item, null where the item carries no such file. */
+	digests?: Array<BinaryDigest | null>;
 	/** Raw success items including pairedItem. */
 	rawSuccess: Array<{ json: Json; pairedItem?: unknown; binary?: Json }>;
 	/** Node/workflow level failure, when the node threw. */
@@ -91,6 +133,7 @@ export interface RunNodeResult {
 }
 
 const NODE_NAME = 'Canvas';
+const DIGEST_NODE = 'Digest';
 
 /**
  * Every node execution is logged so the coverage report can show, per operation,
@@ -216,7 +259,16 @@ export function wrapInWebhookWorkflow(
 	node: N8nNode,
 	label: string,
 	withBinary = false,
+	digestBinary?: string,
 ): { workflow: N8nWorkflow; path: string } {
+	const digest: N8nNode = {
+		id: randomUUID(),
+		name: DIGEST_NODE,
+		type: 'n8n-nodes-base.code',
+		typeVersion: 2,
+		position: [660, 0],
+		parameters: { mode: 'runOnceForAllItems', language: 'javaScript', jsCode: digestCode(digestBinary ?? 'data') },
+	};
 	const path = `canvas-battery-${randomUUID()}`;
 	const toBinary: N8nNode = {
 		id: randomUUID(),
@@ -249,11 +301,14 @@ export function wrapInWebhookWorkflow(
 			},
 			...(withBinary ? [toBinary] : []),
 			node,
+			...(digestBinary ? [digest] : []),
 		],
 		connections: {
 			Webhook: { main: [[{ node: 'Items', type: 'main', index: 0 }]] },
 			Items: { main: [[{ node: withBinary ? toBinary.name : node.name, type: 'main', index: 0 }]] },
 			...(withBinary ? { [toBinary.name]: { main: [[{ node: node.name, type: 'main', index: 0 }]] } } : {}),
+			// Only the Success output feeds the fingerprint node.
+			...(digestBinary ? { [node.name]: { main: [[{ node: digest.name, type: 'main', index: 0 }]] } } : {}),
 		},
 	};
 	return { workflow, path };
@@ -300,7 +355,12 @@ export async function runNode(opts: RunNodeOptions): Promise<RunNodeResult> {
 async function runNodeOnce(opts: RunNodeOptions): Promise<RunNodeResult> {
 	const api = n8n();
 	const node = canvasNode(opts);
-	const { workflow, path } = wrapInWebhookWorkflow(node, `${opts.resource}.${opts.operation}`, opts.binary !== undefined);
+	const { workflow, path } = wrapInWebhookWorkflow(
+		node,
+		`${opts.resource}.${opts.operation}`,
+		opts.binary !== undefined,
+		opts.digestBinary,
+	);
 	const workflowId = await api.createWorkflow(workflow);
 	try {
 		await api.activate(workflowId);
@@ -335,6 +395,13 @@ async function runNodeOnce(opts: RunNodeOptions): Promise<RunNodeResult> {
 			success: run?.outputs[0] ?? [],
 			error: run?.outputs[1] ?? [],
 			debug: run?.outputs[2] ?? [],
+			...(opts.digestBinary
+				? {
+						digests: (execution.nodes[DIGEST_NODE]?.[0]?.outputs[0] ?? []).map(
+							(item) => (item.digest ?? null) as BinaryDigest | null,
+						),
+					}
+				: {}),
 			rawSuccess: run?.rawOutputs[0] ?? [],
 			failure: nodeError
 				? {
