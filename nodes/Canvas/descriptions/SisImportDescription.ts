@@ -100,6 +100,53 @@ export const sisImportFields: INodeProperties[] = [
 	//         sisImport: create
 	// ----------------------------------
 	{
+		displayName: 'File Source',
+		name: 'fileSource',
+		type: 'options',
+		options: [
+			{
+				name: 'Binary File',
+				value: 'binaryData',
+				description: 'A CSV, XML or zip file from a previous node (Convert to File, Read/Write Files, HTTP Request, SFTP ...)',
+			},
+			{
+				name: 'Text',
+				value: 'text',
+				description: 'The CSV (or XML) text itself, typed in or from an expression',
+			},
+			{
+				name: 'Base64 Text',
+				value: 'base64',
+				description: 'The file as a Base64 string, e.g. a zip file held in a JSON field',
+			},
+		],
+		default: 'binaryData',
+		displayOptions: {
+			show: {
+				resource: ['sisImport'],
+				operation: ['create'],
+			},
+		},
+		description: 'Where the import file comes from',
+	},
+	{
+		displayName: 'Input Binary Field',
+		name: 'binaryPropertyName',
+		type: 'string',
+		required: true,
+		default: 'data',
+		displayOptions: {
+			show: {
+				resource: ['sisImport'],
+				operation: ['create'],
+				fileSource: ['binaryData'],
+			},
+		},
+		hint: 'The name of the input binary field containing the file to be imported',
+		description:
+			'One SIS CSV file including its header row (Canvas recognises the kind of file by its columns), an XML file, or a zip file with several CSV files. The kind of file is taken from its name or type unless Extension is set.',
+	},
+	{
 		displayName: 'File Content',
 		name: 'fileContent',
 		type: 'string',
@@ -113,35 +160,11 @@ export const sisImportFields: INodeProperties[] = [
 			show: {
 				resource: ['sisImport'],
 				operation: ['create'],
+				fileSource: ['text', 'base64'],
 			},
 		},
 		description:
 			'The import file: the text of one SIS CSV file including its header row (Canvas recognises the kind of file by its columns), or the Base64 content of a zip file with several CSV files',
-	},
-	{
-		displayName: 'File Content Encoding',
-		name: 'fileEncoding',
-		type: 'options',
-		options: [
-			{
-				name: 'Base64',
-				value: 'base64',
-				description: 'File Content is a Base64 string, e.g. a zip file converted with the Extract From File node',
-			},
-			{
-				name: 'Text',
-				value: 'text',
-				description: 'File Content is the CSV (or XML) text itself',
-			},
-		],
-		default: 'text',
-		displayOptions: {
-			show: {
-				resource: ['sisImport'],
-				operation: ['create'],
-			},
-		},
-		description: 'How File Content is encoded',
 	},
 	{
 		displayName: 'Additional Fields',
@@ -265,7 +288,7 @@ export const sisImportFields: INodeProperties[] = [
 				],
 				default: 'csv',
 				description:
-					'The kind of file in File Content. Defaults to CSV for text and ZIP for Base64 content.',
+					'The kind of file. By default taken from the name or type of a binary file; CSV for text and ZIP for Base64 text.',
 			},
 			{
 				displayName: 'Import Type',

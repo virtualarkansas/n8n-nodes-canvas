@@ -83,10 +83,22 @@ export const sisIntegrationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['sisIntegration'],
-				operation: ['getAssignments', 'disablePostToSis'],
+				operation: ['getAssignments'],
+				context: ['course'],
 			},
-			hide: {
-				context: ['account'],
+		},
+		description: 'The ID of the course',
+	},
+	{
+		displayName: 'Course ID',
+		name: 'courseId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['sisIntegration'],
+				operation: ['disablePostToSis'],
 			},
 		},
 		description: 'The ID of the course',

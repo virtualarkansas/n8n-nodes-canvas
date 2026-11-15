@@ -48,27 +48,43 @@ const SIS_IMPORT_VALUE_OPTIONS = [
 
 /**
  * The import file itself is the request body (Canvas reads everything else
- * from the query string). The shared request code passes a body that is not a
- * plain object on unchanged, which is what lets text and decoded Base64
- * content through.
+ * from the query string): CSV/XML text as it is, Base64 text decoded to bytes.
  */
-function sisImportFile(content: string, encoding: string): Record<string, unknown> {
+function sisImportFile(content: string, source: string): string | Buffer {
 	if (content.trim() === '') {
 		throw new ApplicationError(
 			'File Content is empty. Enter the CSV text to import (with its header row), or the Base64 content of a zip file.',
 		);
 	}
-	if (encoding === 'base64') {
+	if (source === 'base64') {
 		const compact = content.replace(/\s/g, '');
 		if (!/^[A-Za-z0-9+/_-]+={0,2}$/.test(compact)) {
 			throw new ApplicationError(
-				'File Content is not valid Base64. Choose "Text" as the encoding to send CSV text as it is.',
+				'File Content is not valid Base64. Choose "Text" as the File Source to send CSV text as it is.',
 			);
 		}
-		return Buffer.from(compact, 'base64') as unknown as Record<string, unknown>;
+		return Buffer.from(compact, 'base64');
 	}
 	// Canvas reads the files as UTF-8 and tolerates a byte order mark and Windows line ends.
-	return content as unknown as Record<string, unknown>;
+	return content;
+}
+
+const SIS_CONTENT_TYPES: Record<string, string> = {
+	csv: 'text/csv',
+	xml: 'text/xml',
+	zip: 'application/zip',
+};
+
+/** csv, xml or zip, from the name or type of a binary file. */
+function sisFileExtension(file: { fileName?: string; mimeType?: string; fileExtension?: string }): string {
+	const hint = `${file.fileExtension ?? ''} ${(file.fileName ?? '').split('.').pop() ?? ''} ${file.mimeType ?? ''}`.toLowerCase();
+	if (/zip/.test(hint)) {
+		return 'zip';
+	}
+	if (/xml/.test(hint)) {
+		return 'xml';
+	}
+	return 'csv';
 }
 
 export function buildSisImportRequest(
@@ -81,16 +97,9 @@ export function buildSisImportRequest(
 	switch (operation) {
 		case 'create': {
 			const additionalFields = getParamObject('additionalFields');
-			const encoding = getParam('fileEncoding', 'text');
-			const body = sisImportFile(getParam('fileContent'), encoding);
-			const qs: Record<string, unknown> = {
-				// Without it Canvas guesses from the content type and treats the file as a zip.
-				extension: isBlank(additionalFields.extension)
-					? encoding === 'base64'
-						? 'zip'
-						: 'csv'
-					: additionalFields.extension,
-			};
+			const source = getParam('fileSource', 'binaryData');
+			const chosenExtension = isBlank(additionalFields.extension) ? '' : String(additionalFields.extension);
+			const qs: Record<string, unknown> = {};
 
 			for (const key of SIS_IMPORT_BOOLEAN_OPTIONS) {
 				if (additionalFields[key] !== undefined && additionalFields[key] !== '') {
@@ -113,11 +122,31 @@ export function buildSisImportRequest(
 				}
 			}
 
+			const endpoint = `/api/v1/accounts/${accountId}/sis_imports`;
+			if (source === 'binaryData') {
+				return {
+					method: 'POST',
+					endpoint,
+					qs,
+					binaryBody: {
+						propertyName: getParam('binaryPropertyName', 'data'),
+						// Without `extension` Canvas guesses from the content type and treats the file as a zip.
+						prepare: (file) => {
+							const extension = chosenExtension || sisFileExtension(file);
+							return { qs: { extension }, contentType: SIS_CONTENT_TYPES[extension] };
+						},
+					},
+				};
+			}
+
+			const extension = chosenExtension || (source === 'base64' ? 'zip' : 'csv');
+			qs.extension = extension;
 			return {
 				method: 'POST',
-				endpoint: `/api/v1/accounts/${accountId}/sis_imports`,
+				endpoint,
 				qs,
-				body,
+				body: sisImportFile(getParam('fileContent'), source),
+				contentType: SIS_CONTENT_TYPES[extension] ?? 'application/octet-stream',
 			};
 		}
 

@@ -96,7 +96,7 @@ describe('sisImport', () => {
 		const [created] = await runOk({
 			resource: 'sisImport',
 			operation: 'create',
-			params: { accountId: account, fileContent, additionalFields, ...extra },
+			params: { accountId: account, fileSource: 'text', fileContent, additionalFields, ...extra },
 		});
 		importsCreated.push(String(created.id));
 		return created;
@@ -257,7 +257,7 @@ describe('sisImport', () => {
 			const result = await runNode({
 				resource: 'sisImport',
 				operation: 'create',
-				params: { debugMode: true, accountId: account, fileContent: usersCsv(), additionalFields },
+				params: { debugMode: true, accountId: account, fileSource: 'text', fileContent: usersCsv(), additionalFields },
 			});
 			expect(result.success).toEqual([]);
 			expect(result.debug).toHaveLength(1);
@@ -382,7 +382,7 @@ describe('sisImport', () => {
 			resource: 'sisImport',
 			operation: 'create',
 			items: [{ file: archive.toString('base64') }, { file: zip({ 'users.csv': usersCsv(userRow('z3', 'Zip', 'Three')) }).toString('base64') }],
-			params: { accountId: account, fileEncoding: 'base64', fileContent: '={{ $json.file }}' },
+			params: { accountId: account, fileSource: 'base64', fileContent: '={{ $json.file }}' },
 		});
 		expect(result).toHaveLength(2);
 		for (const created of result) importsCreated.push(String(created.id));
@@ -424,7 +424,7 @@ describe('sisImport', () => {
 			resource: 'sisImport',
 			operation: 'create',
 			items: [{ csv: '   ' }],
-			params: { accountId: account, fileContent: '={{ $json.csv }}', errorHandling: { onError: 'continueWithError' } },
+			params: { accountId: account, fileSource: 'text', fileContent: '={{ $json.csv }}', errorHandling: { onError: 'continueWithError' } },
 		});
 		expect(empty.success).toEqual([]);
 		expect(failureText(empty)).toMatch(/File Content is empty/);
@@ -434,7 +434,7 @@ describe('sisImport', () => {
 			operation: 'create',
 			params: {
 				accountId: account,
-				fileEncoding: 'base64',
+				fileSource: 'base64',
 				fileContent: usersCsv(userRow('never', 'Never', 'Imported')),
 				errorHandling: { onError: 'continueWithError' },
 			},
@@ -447,6 +447,7 @@ describe('sisImport', () => {
 			operation: 'create',
 			params: {
 				accountId: fx('subAccountId'),
+				fileSource: 'text',
 				fileContent: usersCsv(userRow('never', 'Never', 'Imported')),
 				errorHandling: { onError: 'continueWithError' },
 			},
@@ -460,6 +461,7 @@ describe('sisImport', () => {
 			persona: 'teacher',
 			params: {
 				accountId: fx('accountId'),
+				fileSource: 'text',
 				fileContent: usersCsv(userRow('never', 'Never', 'Imported')),
 				errorHandling: { onError: 'continueWithError' },
 			},

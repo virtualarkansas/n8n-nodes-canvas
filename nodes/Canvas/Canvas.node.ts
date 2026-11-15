@@ -364,9 +364,20 @@ export class Canvas implements INodeType {
 					continue;
 				}
 				const request = built.data as IRequestConfig;
-				const { endpoint, method, body } = request;
+				const { endpoint, method } = request;
+				let body = request.body;
+				let contentType = request.contentType;
 				// Show the query exactly as a real run sends it: every GET carries per_page.
 				let qs = request.qs;
+				if (request.binaryBody) {
+					// The body is a file of the input item; describe it instead of printing it.
+					const { propertyName, prepare } = request.binaryBody;
+					const file = items[i].binary?.[propertyName];
+					const derived = file ? (prepare?.(file) ?? {}) : {};
+					qs = { ...(qs ?? {}), ...(derived.qs ?? {}) };
+					contentType = derived.contentType ?? contentType ?? file?.mimeType ?? 'application/octet-stream';
+					body = `@<binary property "${propertyName}"${file?.fileName ? `: ${file.fileName}` : file ? '' : ', missing on this item'}>`;
+				}
 				if (method === 'GET') {
 					const perPage =
 						request.fetchAllPages || request.mergePagedArray
@@ -374,7 +385,7 @@ export class Canvas implements INodeType {
 							: resolvePerPage(resolvePagination(this, i, pagination));
 					qs = { per_page: perPage, ...(request.qs ?? {}) };
 				}
-				const curl = buildCurlCommand(method, canvasBaseUrl, endpoint, qs, body, authType, request.contentType);
+				const curl = buildCurlCommand(method, canvasBaseUrl, endpoint, qs, body, authType, contentType);
 
 				const debugJson: IDataObject = {
 					resource,
@@ -382,7 +393,7 @@ export class Canvas implements INodeType {
 					method,
 					url: buildCanvasUrl(canvasBaseUrl, endpoint, qs),
 					queryString: qs || {},
-					body: body || {},
+					body: Buffer.isBuffer(body) ? `<${body.length} bytes>` : body || {},
 					curl,
 				};
 
@@ -515,7 +526,7 @@ async function processItem(
 		async () => {
 			const request = buildRequest(context, resource, operation, itemIndex);
 			endpoint = request.endpoint;
-			const bodyData = request.body as IDataObject | IDataObject[] | string | undefined;
+			const bodyData = request.body as IDataObject | IDataObject[] | string | Buffer | undefined;
 			const qsData = request.qs as IDataObject | undefined;
 
 			// Special case: File Upload (three-step process)
@@ -613,14 +624,27 @@ async function processItem(
 				return request.transform ? request.transform(records) : records;
 			}
 
+			let writeBody: IDataObject | IDataObject[] | string | Buffer | undefined = bodyData;
+			let writeQuery = qsData;
+			let contentType = request.contentType;
+			if (request.binaryBody) {
+				// The request body is a file from the input item (import files).
+				const { propertyName, prepare } = request.binaryBody;
+				const file = context.helpers.assertBinaryData(itemIndex, propertyName);
+				writeBody = await context.helpers.getBinaryDataBuffer(itemIndex, propertyName);
+				const derived = prepare?.(file) ?? {};
+				writeQuery = { ...(qsData ?? {}), ...((derived.qs ?? {}) as IDataObject) };
+				contentType = derived.contentType ?? contentType ?? file.mimeType ?? 'application/octet-stream';
+			}
+
 			const response = await canvasApiRequest.call(
 				context,
 				request.method,
 				request.endpoint,
-				bodyData,
-				qsData,
+				writeBody,
+				writeQuery,
 				rateLimit,
-				request.contentType,
+				contentType,
 			);
 			if (request.checkResponse) {
 				request.checkResponse(response.data as IDataObject);
@@ -719,7 +743,11 @@ function buildRequest(
 			return defaultValue;
 		}
 		if (Array.isArray(value)) {
-			return value.map((entry) => String(entry)).join(',');
+			// A list of records (from an expression into a JSON field) stays JSON;
+			// a list of plain values becomes "a,b,c".
+			return value.some((entry) => entry !== null && typeof entry === 'object')
+				? JSON.stringify(value)
+				: value.map((entry) => String(entry)).join(',');
 		}
 		if (typeof value === 'object') {
 			return JSON.stringify(value);

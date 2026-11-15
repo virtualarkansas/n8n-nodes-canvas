@@ -9,7 +9,7 @@ export interface IRequestConfig {
 	endpoint: string;
 	method: IHttpRequestMethods;
 	/** A JSON body (object or array), or raw text (e.g. CSV) sent as it is with `contentType`. */
-	body?: Record<string, unknown> | unknown[] | string;
+	body?: Record<string, unknown> | unknown[] | string | Buffer;
 	/** Content type of a raw text body. Defaults to text/plain. */
 	contentType?: string;
 	qs?: Record<string, unknown>;
@@ -29,6 +29,17 @@ export interface IRequestConfig {
 	 * options say. For endpoints whose pages are not meaningful on their own, such as
 	 * summaries that Canvas computes from a paginated list of underlying records.
 	 */
+	/**
+	 * Send the content of this binary property of the input item as the request body
+	 * (import files). `prepare` can derive query parameters and the content type from the file.
+	 */
+	binaryBody?: {
+		propertyName: string;
+		prepare?: (file: { fileName?: string; mimeType?: string; fileExtension?: string }) => {
+			qs?: Record<string, unknown>;
+			contentType?: string;
+		};
+	};
 	fetchAllPages?: boolean;
 	/**
 	 * The endpoint answers with its complete list whatever page is asked for, while
@@ -167,6 +178,8 @@ export interface ICanvasErrorOutput {
 	canvasErrorCode?: string;
 	/** The `errors` payload exactly as Canvas returned it */
 	canvasErrors?: unknown;
+	/** Canvas' response body when it is a record rather than an error list. */
+	responseBody?: unknown;
 	originalItem: IDataObject;
 	resource: string;
 	operation: string;

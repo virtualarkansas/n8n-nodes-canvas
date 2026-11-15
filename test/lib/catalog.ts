@@ -212,7 +212,11 @@ export function buildRequestFor(
 	const getParam = (name: string, defaultValue = ''): string => {
 		const value = params[name];
 		if (value === undefined || value === null || value === '') return defaultValue;
-		if (Array.isArray(value)) return value.map(String).join(',');
+		if (Array.isArray(value)) {
+			return value.some((entry) => entry !== null && typeof entry === 'object')
+				? JSON.stringify(value)
+				: value.map(String).join(',');
+		}
 		if (typeof value === 'object') return JSON.stringify(value);
 		return String(value);
 	};

@@ -624,6 +624,13 @@ export function createErrorOutput(
 	}
 	if (details.errors !== undefined) {
 		output.canvasErrors = details.errors;
+	} else {
+		// Some refusals carry a record instead of an error list, e.g. the report that
+		// is already running (409): hand it on so a workflow can use it.
+		const body = getErrorResponseBody(error);
+		if (body && typeof body === 'object') {
+			output.responseBody = body;
+		}
 	}
 	return output;
 }
@@ -794,7 +801,7 @@ export async function canvasApiRequest(
 	this: CanvasContext,
 	method: IHttpRequestMethods,
 	endpoint: string,
-	body?: IDataObject | IDataObject[] | string,
+	body?: IDataObject | IDataObject[] | string | Buffer,
 	query?: IDataObject,
 	rateLimitOptions: IRateLimitOptions = DEFAULT_RATE_LIMIT_OPTIONS,
 	contentType?: string,
@@ -821,12 +828,15 @@ export async function canvasApiRequest(
 		// A write must never be replayed as a GET against wherever a redirect points.
 		requestOptions.disableFollowRedirect = true;
 	}
-	const rawBody = typeof body === 'string';
+	const rawBody = typeof body === 'string' || Buffer.isBuffer(body);
 	if (rawBody) {
-		// Raw text (CSV uploads): send it untouched and parse the JSON answer ourselves.
+		// Raw text or bytes (import files): send them untouched and parse the JSON answer ourselves.
 		requestOptions.body = body;
 		requestOptions.json = false;
-		requestOptions.headers = { 'Content-Type': contentType || 'text/plain', Accept: 'application/json' };
+		requestOptions.headers = {
+			'Content-Type': contentType || (typeof body === 'string' ? 'text/plain' : 'application/octet-stream'),
+			Accept: 'application/json',
+		};
 	} else if (body !== undefined && method !== 'GET' && (Array.isArray(body) || Object.keys(body).length > 0)) {
 		requestOptions.body = body;
 	}
@@ -1147,7 +1157,7 @@ export function buildCurlCommand(
 	baseUrl: string,
 	endpoint: string,
 	qs?: Record<string, unknown>,
-	body?: Record<string, unknown> | unknown[] | string,
+	body?: Record<string, unknown> | unknown[] | string | Buffer,
 	authType?: string,
 	contentType?: string,
 ): string {
@@ -1160,7 +1170,11 @@ export function buildCurlCommand(
 		`-H 'Authorization: Bearer ${tokenLabel}'`,
 	];
 
-	if (typeof body === 'string') {
+	if (Buffer.isBuffer(body)) {
+		// Bytes cannot be shown on a command line: point curl at a file instead.
+		parts.push(`-H ${shellQuote(`Content-Type: ${contentType || 'application/octet-stream'}`)}`);
+		parts.push(`--data-binary ${shellQuote(`@<file with the ${body.length} bytes sent>`)}`);
+	} else if (typeof body === 'string') {
 		parts.push(`-H ${shellQuote(`Content-Type: ${contentType || 'text/plain'}`)}`);
 		parts.push(`--data-binary ${shellQuote(body)}`);
 	} else if (body && method !== 'GET' && (Array.isArray(body) || Object.keys(body).length > 0)) {
