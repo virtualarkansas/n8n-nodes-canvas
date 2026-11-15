@@ -56,12 +56,14 @@ export function saveState(state: TestState): void {
 }
 
 export function updateState(mutate: (state: TestState) => void): TestState {
-	const state: TestState = existsSync(STATE_PATH)
-		? loadState()
-		: {
-				n8n: { url: 'http://localhost:5678', apiKey: '', credentials: {} },
-				canvas: { url: 'http://localhost:3000', tokens: {}, fixtures: {} },
-			};
+	// The seed and the n8n bootstrap each write their own part, in either order: whichever
+	// runs first leaves a file without the other's section.
+	const stored: Partial<TestState> = existsSync(STATE_PATH) ? loadState() : {};
+	const state: TestState = {
+		...stored,
+		n8n: { url: 'http://localhost:5678', apiKey: '', credentials: {}, ...stored.n8n },
+		canvas: { url: 'http://localhost:3000', tokens: {}, fixtures: {}, ...stored.canvas },
+	};
 	mutate(state);
 	saveState(state);
 	return state;

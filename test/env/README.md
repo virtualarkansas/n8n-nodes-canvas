@@ -5,8 +5,9 @@ your machine. Nothing here touches a production Canvas. Everything in the enviro
 (`example.com`, `example.edu`); the passwords and keys in these files are for this throwaway
 instance only.
 
-Needs: Docker, Node.js 22, about 25 GB of disk and 8 GB of memory. First set-up takes about an hour,
-most of it unattended.
+Needs: Docker, Node.js 22, about 25 GB of disk and 8 GB of memory. First set-up takes about an hour
+and a half on a four-core machine, most of it unattended. The steps below were last followed from
+nothing (empty database, new n8n user folder) for release 0.2.0.
 
 ## 1. Canvas
 
@@ -41,7 +42,7 @@ test/env/canvas/seed/run.sh
 Loads a large, deliberately messy data set (hundreds of users, about a hundred courses, tens of
 thousands of submissions; see `canvas/seed/README.md`) and writes the persona tokens and the IDs of
 the seeded records to `test/.state.json` (git-ignored). The script can be re-run: finished steps are
-skipped. A full run takes roughly 25 minutes.
+skipped. A full run takes about 45 minutes on a four-core machine.
 
 ## 3. n8n
 

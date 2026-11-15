@@ -11,9 +11,9 @@ test/env/canvas/seed/run.sh --summary   # only print record counts / DB size / d
 SEED_ONLY=quizzes test/env/canvas/seed/run.sh   # run a subset of steps (prefix or glob of the step name)
 ```
 
-A full run on an empty instance takes roughly 25 minutes (the step timings of the run that
-built the current instance add up to 22 minutes of step time plus job draining; two of the
-three stages overlap). Do not run the battery while the seed is running: each step is one
+A full run on an empty instance takes about 45 minutes on a four-core machine: 15 minutes for
+phases 01-05, 28 for the main course (the other courses load next to it in 10) and 2 for the
+last stage. Do not run the battery while the seed is running: each step is one
 database transaction and holds row locks (for example on the persona users) until it
 commits, so API calls touching the same rows wait.
 
