@@ -541,17 +541,23 @@ async function processItem(
 			// Every GET goes through the paginating request: Canvas tells us through the
 			// Link header whether there is more, so no list endpoint is cut off at one page.
 			if (request.method === 'GET') {
+				const pagination: IPaginationOptions = request.fetchAllPages
+					? { enabled: true, perPage: CANVAS_MAX_PER_PAGE, maxPages: 0 }
+					: resolvePagination(context, itemIndex, nodePagination);
 				const response = await canvasApiRequestAllItems.call(
 					context,
 					request.method,
 					request.endpoint,
 					bodyData,
 					qsData,
-					resolvePagination(context, itemIndex, nodePagination),
+					pagination,
 					rateLimit,
 					request.dataKey,
 				);
-				return response.isList ? response.items : response.items[0];
+				if (!response.isList) {
+					return response.items[0];
+				}
+				return request.transform ? request.transform(response.items) : response.items;
 			}
 
 			const response = await canvasApiRequest.call(
@@ -655,7 +661,20 @@ function buildRequest(
 		});
 	}
 
-	const request = handler(operation, getParam, getParamObject);
+	let request: IRequestConfig;
+	try {
+		request = handler(operation, getParam, getParamObject);
+	} catch (error) {
+		// Handlers reject unusable input (missing entries, invalid JSON, ...) with plain errors;
+		// report them as a problem with this item's parameters.
+		if ((error as Error)?.name === 'NodeOperationError') {
+			throw error;
+		}
+		throw new NodeOperationError(context.getNode(), (error as Error)?.message ?? String(error), {
+			itemIndex,
+			description: `Check the parameters of ${resource}/${operation}`,
+		});
+	}
 
 	// A required ID that resolved to nothing leaves an empty path segment
 	// (e.g. /api/v1/courses//assignments), which Canvas answers with a misleading 404.

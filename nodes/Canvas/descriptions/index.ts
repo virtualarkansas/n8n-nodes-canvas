@@ -479,3 +479,19 @@ export {
 	pollOperations,
 	pollFields,
 } from './PollDescription';
+
+// Audit log resource group descriptions
+export {
+	gradebookHistoryOperations,
+	gradebookHistoryFields,
+} from './GradebookHistoryDescription';
+
+export {
+	gradeChangeLogOperations,
+	gradeChangeLogFields,
+} from './GradeChangeLogDescription';
+
+export {
+	courseAuditLogOperations,
+	courseAuditLogFields,
+} from './CourseAuditLogDescription';

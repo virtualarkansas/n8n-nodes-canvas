@@ -16,6 +16,17 @@ export interface IRequestConfig {
 	 * The node unwraps it so every record becomes its own item.
 	 */
 	dataKey?: string;
+	/**
+	 * Always read every page (100 records at a time), whatever the node's Pagination
+	 * options say. For endpoints whose pages are not meaningful on their own, such as
+	 * summaries that Canvas computes from a paginated list of underlying records.
+	 */
+	fetchAllPages?: boolean;
+	/**
+	 * Reshape the complete list before it becomes items, e.g. to merge entries
+	 * that Canvas split across pages.
+	 */
+	transform?: (records: IDataObject[]) => IDataObject[];
 }
 
 /**
