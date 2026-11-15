@@ -4,7 +4,9 @@
 #   CANVAS_SRC   checkout of instructure/canvas-lms, branch `prod` (required for `build`)
 #   EXTRA_CA_DIR optional directory containing `ca.crt` to trust during the image build
 #
-# Usage: up.sh build | start | stop | token | trim-logs | status
+#   CANVAS_WEB_WORKERS  web server processes (default 3; each needs about 1.5 GB)
+#
+# Usage: up.sh build | start | stop | restart-web | token | trim-logs | status
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 IMAGE="${CANVAS_IMAGE:-canvas-lms-n8n-test:prod}"
@@ -35,9 +37,20 @@ start)
 			bash -c 'bundle exec rake db:create && bundle exec rake db:initial_setup'
 	fi
 	docker rm -f canvas-web canvas-jobs >/dev/null 2>&1 || true
-	docker run -d --name canvas-web "${RUN_ARGS[@]}" "$IMAGE" bundle exec rails server -b 127.0.0.1 -p 3000
+	# Canvas' config/puma.rb allows one thread, so one process serves one request at a time.
+	# Several worker processes let parallel test files (and the node's batches) make progress.
+	docker run -d --name canvas-web "${RUN_ARGS[@]}" "$IMAGE" \
+		bundle exec puma -C config/puma.rb -b tcp://127.0.0.1:3000 -w "${CANVAS_WEB_WORKERS:-3}"
 	docker run -d --name canvas-jobs "${RUN_ARGS[@]}" "$IMAGE" bundle exec script/delayed_job run
 	echo "waiting for Canvas on http://localhost:3000 ..."
+	until [ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 http://localhost:3000/api/v1/accounts)" = "401" ]; do sleep 3; done
+	echo "Canvas is up."
+	;;
+restart-web)
+	# Only the web server: database, Redis and the job runner keep running.
+	docker rm -f canvas-web >/dev/null 2>&1 || true
+	docker run -d --name canvas-web "${RUN_ARGS[@]}" "$IMAGE" \
+		bundle exec puma -C config/puma.rb -b tcp://127.0.0.1:3000 -w "${CANVAS_WEB_WORKERS:-3}"
 	until [ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 http://localhost:3000/api/v1/accounts)" = "401" ]; do sleep 3; done
 	echo "Canvas is up."
 	;;
