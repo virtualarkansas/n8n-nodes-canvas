@@ -27,13 +27,14 @@ export const accountCalendarOperations: INodeProperties[] = [
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many account calendars',
+				description: 'Get the visible account calendars available to the current user',
 				action: 'Get many account calendars',
 			},
 			{
 				name: 'Get Many for Account',
 				value: 'getAllForAccount',
-				description: 'Get all calendars for an account and its sub-accounts',
+				description:
+					'Get the calendars of an account and its first level of sub-accounts, including hidden ones',
 				action: 'Get many calendars for account',
 			},
 			{
@@ -119,12 +120,12 @@ export const accountCalendarFields: INodeProperties[] = [
 				name: 'filter',
 				type: 'options',
 				options: [
-					{ name: 'All', value: '' },
 					{ name: 'Hidden', value: 'hidden' },
 					{ name: 'Visible', value: 'visible' },
 				],
-				default: '',
-				description: 'Filter calendars by visibility',
+				default: 'visible',
+				description:
+					'Only return calendars that are visible or hidden. With a filter, all descendant accounts are searched instead of only the first level of sub-accounts.',
 			},
 			{
 				displayName: 'Search Term',
@@ -184,6 +185,7 @@ export const accountCalendarFields: INodeProperties[] = [
 				operation: ['updateMany'],
 			},
 		},
-		description: 'JSON array of calendar objects to update. Each object should have "ID", "visible", and/or "auto_subscribe" properties.',
+		description:
+			'JSON array of calendars to update, in the format of the default value. Each object needs the account ID (this account or one of its sub-accounts) and "visible" and/or "auto_subscribe". A list built by a previous node must be turned into text with JSON.stringify() in the expression.',
 	},
 ];

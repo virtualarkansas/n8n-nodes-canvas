@@ -61,7 +61,6 @@ export const apiTokenScopeFields: INodeProperties[] = [
 		default: 50,
 		typeOptions: {
 			minValue: 1,
-			maxValue: 100,
 		},
 		displayOptions: {
 			show: {
@@ -93,7 +92,8 @@ export const apiTokenScopeFields: INodeProperties[] = [
 					{ name: 'Resource Name', value: 'resource_name' },
 				],
 				default: 'resource_name',
-				description: 'Group the results by the specified attribute',
+				description:
+					'Group the scopes by API resource. The result is then a single item with one property per resource instead of one item per scope.',
 			},
 		],
 	},

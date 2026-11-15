@@ -15,7 +15,8 @@ export const accessTokenOperations: INodeProperties[] = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create a new access token',
+				description:
+					'Create a new access token. A token created for another user is pending until that user activates it in Canvas.',
 				action: 'Create an access token',
 			},
 			{
@@ -33,7 +34,7 @@ export const accessTokenOperations: INodeProperties[] = [
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many access tokens',
+				description: 'Get the manually generated access tokens of a user',
 				action: 'Get many access tokens',
 			},
 			{
@@ -63,7 +64,8 @@ export const accessTokenFields: INodeProperties[] = [
 				operation: ['create', 'delete', 'get', 'getAll', 'update'],
 			},
 		},
-		description: 'The ID of the user',
+		description:
+			'The ID of the user who owns the token. Use "self" for the user of the credential; managing other users\' tokens needs the access token permissions on the root account.',
 	},
 	/* eslint-disable n8n-nodes-base/node-param-type-options-password-missing */
 	{
@@ -78,7 +80,8 @@ export const accessTokenFields: INodeProperties[] = [
 				operation: ['delete', 'get', 'update'],
 			},
 		},
-		description: 'The ID of the access token (or token_hint value)',
+		description:
+			'The ID of the access token, or its hint (the first characters of the token, as shown in "visible_token" without the dots)',
 	},
 	/* eslint-enable n8n-nodes-base/node-param-type-options-password-missing */
 
@@ -117,14 +120,15 @@ export const accessTokenFields: INodeProperties[] = [
 				name: 'expires_at',
 				type: 'dateTime',
 				default: '',
-				description: 'The expiration date/time of the token in ISO 8601 format',
+				description: 'When the token expires. Without it the token never expires.',
 			},
 			{
 				displayName: 'Scopes',
 				name: 'scopes',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of scopes to associate with the token',
+				description:
+					'Comma-separated list of scopes that limit what the token may call, each exactly as listed in the "scope" property of the API Token Scope resource',
 			},
 		],
 	},
@@ -150,7 +154,7 @@ export const accessTokenFields: INodeProperties[] = [
 				name: 'expires_at',
 				type: 'dateTime',
 				default: '',
-				description: 'The expiration date/time of the token in ISO 8601 format',
+				description: 'When the token expires. Without it the token never expires.',
 			},
 			{
 				displayName: 'Purpose',
@@ -164,14 +168,16 @@ export const accessTokenFields: INodeProperties[] = [
 				name: 'regenerate',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to regenerate the actual token value',
+				description:
+					'Whether to replace the token value with a new one (returned once in "visible_token"). An expired token also needs a new Expires At.',
 			},
 			{
 				displayName: 'Scopes',
 				name: 'scopes',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of scopes to associate with the token',
+				description:
+					'Comma-separated list of scopes that limit what the token may call, each exactly as listed in the "scope" property of the API Token Scope resource',
 			},
 		],
 	},
@@ -199,7 +205,6 @@ export const accessTokenFields: INodeProperties[] = [
 		default: 50,
 		typeOptions: {
 			minValue: 1,
-			maxValue: 100,
 		},
 		displayOptions: {
 			show: {

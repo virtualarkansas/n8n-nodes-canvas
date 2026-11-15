@@ -30,6 +30,12 @@ export const adminOperations: INodeProperties[] = [
 				description: 'Get many account admins',
 				action: 'Get many admins',
 			},
+			{
+				name: 'Get My Admin Roles',
+				value: 'getSelfRoles',
+				description: 'List the admin roles the current user holds in an account',
+				action: 'Get my admin roles',
+			},
 		],
 		default: 'getAll',
 	},
@@ -48,7 +54,7 @@ export const adminFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['admin'],
-				operation: ['create', 'delete', 'getAll'],
+				operation: ['create', 'delete', 'getAll', 'getSelfRoles'],
 			},
 		},
 		description: 'The ID of the account',
@@ -122,7 +128,6 @@ export const adminFields: INodeProperties[] = [
 		displayName: 'Role ID',
 		name: 'roleId',
 		type: 'string',
-		required: true,
 		default: '',
 		displayOptions: {
 			show: {
@@ -130,7 +135,8 @@ export const adminFields: INodeProperties[] = [
 				operation: ['delete'],
 			},
 		},
-		description: 'The ID of the admin role to remove',
+		description:
+			'The ID of the admin role to remove from the user. Leave empty to remove the built-in Account Admin role.',
 	},
 
 	// ----------------------------------

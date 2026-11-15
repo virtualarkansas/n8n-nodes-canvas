@@ -21,13 +21,13 @@ export const sisImportOperations: INodeProperties[] = [
 			{
 				name: 'Abort All Pending',
 				value: 'abortAllPending',
-				description: 'Abort all pending SIS imports',
+				description: 'Abort every SIS import of the account that has not started yet',
 				action: 'Abort all pending SIS imports',
 			},
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Import SIS data from a CSV or ZIP file',
+				description: 'Import SIS data from CSV text or a zip file',
 				action: 'Create a SIS import',
 			},
 			{
@@ -39,7 +39,7 @@ export const sisImportOperations: INodeProperties[] = [
 			{
 				name: 'Get Current',
 				value: 'getCurrent',
-				description: 'Get the currently processing SIS import',
+				description: 'Get the SIS imports that are being processed right now',
 				action: 'Get current SIS import',
 			},
 			{
@@ -51,7 +51,8 @@ export const sisImportOperations: INodeProperties[] = [
 			{
 				name: 'Restore States',
 				value: 'restoreStates',
-				description: 'Restore workflow states from a SIS import',
+				description:
+					'Undo the state changes of a SIS import (for example deletions). Returns a progress object.',
 				action: 'Restore states from a SIS import',
 			},
 		],
@@ -74,7 +75,7 @@ export const sisImportFields: INodeProperties[] = [
 				resource: ['sisImport'],
 			},
 		},
-		description: 'The ID of the account',
+		description: 'The ID of the root account. SIS imports only exist on root accounts.',
 	},
 
 	// ----------------------------------
@@ -99,18 +100,48 @@ export const sisImportFields: INodeProperties[] = [
 	//         sisImport: create
 	// ----------------------------------
 	{
-		displayName: 'Input Data Field Name',
-		name: 'binaryPropertyName',
+		displayName: 'File Content',
+		name: 'fileContent',
 		type: 'string',
+		typeOptions: {
+			rows: 6,
+		},
 		required: true,
-		default: 'data',
+		default: '',
+		placeholder: 'user_id,login_id,first_name,last_name,email,status',
 		displayOptions: {
 			show: {
 				resource: ['sisImport'],
 				operation: ['create'],
 			},
 		},
-		description: 'The name of the incoming field containing the binary file data (CSV or ZIP) to import',
+		description:
+			'The import file: the text of one SIS CSV file including its header row (Canvas recognises the kind of file by its columns), or the Base64 content of a zip file with several CSV files',
+	},
+	{
+		displayName: 'File Content Encoding',
+		name: 'fileEncoding',
+		type: 'options',
+		options: [
+			{
+				name: 'Base64',
+				value: 'base64',
+				description: 'File Content is a Base64 string, e.g. a zip file converted with the Extract From File node',
+			},
+			{
+				name: 'Text',
+				value: 'text',
+				description: 'File Content is the CSV (or XML) text itself',
+			},
+		],
+		default: 'text',
+		displayOptions: {
+			show: {
+				resource: ['sisImport'],
+				operation: ['create'],
+			},
+		},
+		description: 'How File Content is encoded',
 	},
 	{
 		displayName: 'Additional Fields',
@@ -130,14 +161,16 @@ export const sisImportFields: INodeProperties[] = [
 				name: 'add_sis_stickiness',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to process changes as UI changes (requires Override SIS Stickiness)',
+				description:
+					'Whether the imported values count as changed by hand, so later imports leave them alone (requires Override SIS Stickiness)',
 			},
 			{
 				displayName: 'Batch Mode',
 				name: 'batch_mode',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to enable batch mode which deletes data not included in the import',
+				description:
+					'Whether to enable batch mode, which DELETES everything in the batch mode term that was created by SIS and is not in this import. Requires Batch Mode Term ID.',
 			},
 			{
 				displayName: 'Batch Mode Enrollment Drop Status',
@@ -163,28 +196,32 @@ export const sisImportFields: INodeProperties[] = [
 				name: 'change_threshold',
 				type: 'number',
 				default: 0,
-				description: 'Abort the import if the number of deletions exceeds this percentage (0-100)',
+				description:
+					'A percentage (1-100). In batch mode nothing is deleted when more than this share of the records would be removed; with diffing no diff is made when the file changed by more than this share. 0 means no threshold.',
 			},
 			{
 				displayName: 'Clear SIS Stickiness',
 				name: 'clear_sis_stickiness',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to clear stickiness from fields (requires Override SIS Stickiness)',
+				description:
+					'Whether to make the imported fields ordinary again, so later imports may change them (requires Override SIS Stickiness)',
 			},
 			{
 				displayName: 'Diff Row Count Threshold',
 				name: 'diff_row_count_threshold',
 				type: 'number',
 				default: 0,
-				description: 'Abort diffing if the row count exceeds this threshold',
+				description:
+					'With diffing: do not apply the diff when it would have more rows than this (the import is then flagged as "diffing threshold exceeded"). 0 means no threshold.',
 			},
 			{
 				displayName: 'Diffing Data Set Identifier',
 				name: 'diffing_data_set_identifier',
 				type: 'string',
 				default: '',
-				description: 'Compare against a previous import set; incompatible with batch mode',
+				description:
+					'A name for a series of imports. Canvas compares this import with the previous one of the same series and only applies the difference; records missing from the new file are removed. Cannot be combined with batch mode.',
 			},
 			{
 				displayName: 'Diffing Drop Status',
@@ -203,7 +240,8 @@ export const sisImportFields: INodeProperties[] = [
 				name: 'diffing_remaster_data_set',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to include this import in the dataset without performing diffing',
+				description:
+					'Whether to apply this import in full and make it the new baseline of its series instead of diffing it',
 			},
 			{
 				displayName: 'Diffing User Remove Status',
@@ -226,7 +264,8 @@ export const sisImportFields: INodeProperties[] = [
 					{ name: 'ZIP', value: 'zip' },
 				],
 				default: 'csv',
-				description: 'The file extension of the import file',
+				description:
+					'The kind of file in File Content. Defaults to CSV for text and ZIP for Base64 content.',
 			},
 			{
 				displayName: 'Import Type',
@@ -240,28 +279,32 @@ export const sisImportFields: INodeProperties[] = [
 				name: 'multi_term_batch_mode',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to run batch mode across all terms in the file (requires Change Threshold)',
+				description:
+					'Whether to run batch mode for every term in the terms file of the import: everything in those terms that is not in the import is DELETED. Requires Batch Mode and Change Threshold.',
 			},
 			{
 				displayName: 'Override SIS Stickiness',
 				name: 'override_sis_stickiness',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to override UI changes and sticky fields',
+				description:
+					'Whether the import may overwrite values that were changed by hand in Canvas ("sticky" fields), which it otherwise leaves alone',
 			},
 			{
 				displayName: 'Skip Deletes',
 				name: 'skip_deletes',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to skip all deletions during the import',
+				description:
+					'Whether to ignore rows that would delete something (status "deleted", and the removals of batch mode and diffing)',
 			},
 			{
 				displayName: 'Update SIS ID If Login Claimed',
 				name: 'update_sis_id_if_login_claimed',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to override non-matching SIS ID if a login is found',
+				description:
+					'Whether a user whose login already exists under another (or no) SIS ID gets the SIS ID of the file, instead of the row being refused',
 			},
 		],
 	},
@@ -341,7 +384,7 @@ export const sisImportFields: INodeProperties[] = [
 				name: 'batch_mode',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to restore only batch-deleted items',
+				description: 'Whether to restore only the items that the batch mode of the import deleted',
 			},
 			{
 				displayName: 'Unconclude Only',
