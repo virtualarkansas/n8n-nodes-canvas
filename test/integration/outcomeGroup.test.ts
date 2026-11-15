@@ -27,7 +27,7 @@ describe('outcomeGroup', () => {
 	let targetGroupId = '';
 	let accountGroupId = '';
 	let globalGroupId = '';
-	let outcomeIds: number[] = [];
+	const outcomeIds: number[] = [];
 	const title = unique('Gröup "quoted" & <b>tags</b> 成果 🎯');
 
 	const group = (id: string): Promise<Json> => canvas().get<Json>(`/api/v1/courses/${courseId}/outcome_groups/${id}`);
