@@ -283,6 +283,36 @@ export async function commsSandbox(): Promise<Sandbox> {
 	return cached;
 }
 
+/**
+ * Two extra sections of the sandbox course (for section-specific event times and
+ * section-limited appointment groups). Found by name, created on first use.
+ */
+export async function sandboxSections(sandbox: Sandbox): Promise<string[]> {
+	return withLock(async () => {
+		const existing = await canvas().getAll<Json>(`/api/v1/courses/${sandbox.courseId}/sections`);
+		const ids: string[] = [];
+		for (const name of ['Sandbox Section B', 'Sandbox Section C']) {
+			let section = existing.find((s) => s.name === name);
+			section ??= await canvas().post<Json>(`/api/v1/courses/${sandbox.courseId}/sections`, {
+				course_section: { name },
+			});
+			ids.push(String(section.id));
+		}
+		return ids;
+	});
+}
+
+/** A sub-account that belongs to the battery alone, for account-level records. */
+export async function sandboxSubAccount(): Promise<string> {
+	return withLock(async () => {
+		const name = 'Battery sandbox sub-account (calendar, groups)';
+		const existing = await canvas().getAll<Json>(`/api/v1/accounts/${fx('accountId')}/sub_accounts`);
+		let account = existing.find((a) => a.name === name);
+		account ??= await canvas().post<Json>(`/api/v1/accounts/${fx('accountId')}/sub_accounts`, { account: { name } });
+		return String(account.id);
+	});
+}
+
 /** Canvas client acting as one of the sandbox users that have a token. */
 export function clientFor(user: SandboxUser): CanvasClient {
 	if (!user.persona) throw new Error(`Sandbox user ${user.name} has no token`);

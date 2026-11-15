@@ -15,7 +15,7 @@ export const blackoutDateOperations: INodeProperties[] = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create a blackout date',
+				description: 'Create a blackout date (days that do not count in course pacing)',
 				action: 'Create a blackout date',
 			},
 			{
@@ -33,8 +33,14 @@ export const blackoutDateOperations: INodeProperties[] = [
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many blackout dates',
+				description: 'Get the blackout dates of a course or account',
 				action: 'Get many blackout dates',
+			},
+			{
+				name: 'Replace All',
+				value: 'replaceAll',
+				description: 'Make the blackout dates of a course match a list: entries with an ID are updated, entries without are created, all others are deleted',
+				action: 'Replace all blackout dates of a course',
 			},
 			{
 				name: 'Update',
@@ -46,6 +52,8 @@ export const blackoutDateOperations: INodeProperties[] = [
 		default: 'getAll',
 	},
 ];
+
+const singleContextOperations = ['create', 'get', 'getAll', 'update', 'delete'];
 
 export const blackoutDateFields: INodeProperties[] = [
 	// ----------------------------------
@@ -64,10 +72,10 @@ export const blackoutDateFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['blackoutDate'],
-				operation: ['create', 'get', 'getAll', 'update', 'delete'],
+				operation: singleContextOperations,
 			},
 		},
-		description: 'Whether this blackout date is for a course or account',
+		description: 'Whether the blackout date belongs to a course or to an account (account-level blackout dates are a Canvas feature option)',
 	},
 	{
 		displayName: 'Account ID',
@@ -78,7 +86,7 @@ export const blackoutDateFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['blackoutDate'],
-				operation: ['create', 'get', 'getAll', 'update', 'delete'],
+				operation: singleContextOperations,
 				contextType: ['account'],
 			},
 		},
@@ -93,8 +101,22 @@ export const blackoutDateFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['blackoutDate'],
-				operation: ['create', 'get', 'getAll', 'update', 'delete'],
+				operation: singleContextOperations,
 				contextType: ['course'],
+			},
+		},
+		description: 'The ID of the course',
+	},
+	{
+		displayName: 'Course ID',
+		name: 'courseId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['blackoutDate'],
+				operation: ['replaceAll'],
 			},
 		},
 		description: 'The ID of the course',
@@ -133,7 +155,7 @@ export const blackoutDateFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'The title of the blackout date event',
+		description: 'The title of the blackout date, e.g. "Spring Break"',
 	},
 	{
 		displayName: 'Start Date',
@@ -147,7 +169,7 @@ export const blackoutDateFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'The start date of the blackout period',
+		description: 'The first day of the blackout period. Only the date is used; a time of day is ignored.',
 	},
 	{
 		displayName: 'End Date',
@@ -161,7 +183,7 @@ export const blackoutDateFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'The end date of the blackout period',
+		description: 'The last day of the blackout period (the same as the start date for a single day). Only the date is used.',
 	},
 
 	// ----------------------------------
@@ -185,21 +207,79 @@ export const blackoutDateFields: INodeProperties[] = [
 				name: 'end_date',
 				type: 'dateTime',
 				default: '',
-				description: 'The end date of the blackout period',
+				description: 'The last day of the blackout period. Only the date is used.',
 			},
 			{
 				displayName: 'Event Title',
 				name: 'event_title',
 				type: 'string',
 				default: '',
-				description: 'The title of the blackout date event',
+				description: 'The title of the blackout date',
 			},
 			{
 				displayName: 'Start Date',
 				name: 'start_date',
 				type: 'dateTime',
 				default: '',
-				description: 'The start date of the blackout period',
+				description: 'The first day of the blackout period. Only the date is used.',
+			},
+		],
+	},
+
+	// ----------------------------------
+	//         blackoutDate: replaceAll
+	// ----------------------------------
+	{
+		displayName: 'Blackout Dates',
+		name: 'blackoutDates',
+		type: 'fixedCollection',
+		typeOptions: {
+			multipleValues: true,
+		},
+		required: true,
+		placeholder: 'Add Blackout Date',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['blackoutDate'],
+				operation: ['replaceAll'],
+			},
+		},
+		description: 'The complete list of blackout dates the course should have afterwards. Blackout dates of the course that are not listed (by ID) are deleted.',
+		options: [
+			{
+				name: 'dates',
+				displayName: 'Blackout Date',
+				values: [
+					{
+						displayName: 'Blackout Date ID',
+						name: 'id',
+						type: 'string',
+						default: '',
+						description: 'ID of an existing blackout date to keep and update. Leave empty to create a new one.',
+					},
+					{
+						displayName: 'Event Title',
+						name: 'event_title',
+						type: 'string',
+						default: '',
+						description: 'The title of the blackout date',
+					},
+					{
+						displayName: 'Start Date',
+						name: 'start_date',
+						type: 'dateTime',
+						default: '',
+						description: 'The first day of the blackout period. Only the date is used.',
+					},
+					{
+						displayName: 'End Date',
+						name: 'end_date',
+						type: 'dateTime',
+						default: '',
+						description: 'The last day of the blackout period. Only the date is used.',
+					},
+				],
 			},
 		],
 	},
