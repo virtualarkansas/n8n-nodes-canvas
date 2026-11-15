@@ -207,6 +207,16 @@ import {
 	buildWhatIfGradeRequest,
 } from './learning.handler';
 
+// Quiz extras group
+import {
+	buildCourseQuizExtensionRequest,
+	buildQuizAssignmentOverrideRequest,
+	buildQuizIpFilterRequest,
+	buildQuizSubmissionEventRequest,
+	buildQuizSubmissionQuestionRequest,
+	buildQuizSubmissionUserRequest,
+} from './quizExtras.handler';
+
 /**
  * Maps every Canvas resource name to its handler function.
  * Each handler takes (operation, getParam, getParamObject) and returns IRequestConfig.
@@ -366,4 +376,12 @@ export const resourceHandlers: Record<string, ResourceHandler> = {
 	learningObjectDate: buildLearningObjectDateRequest,
 	liveAssessment: buildLiveAssessmentRequest,
 	whatIfGrade: buildWhatIfGradeRequest,
+
+	// Quiz extras group
+	courseQuizExtension: buildCourseQuizExtensionRequest,
+	quizAssignmentOverride: buildQuizAssignmentOverrideRequest,
+	quizIpFilter: buildQuizIpFilterRequest,
+	quizSubmissionEvent: buildQuizSubmissionEventRequest,
+	quizSubmissionQuestion: buildQuizSubmissionQuestionRequest,
+	quizSubmissionUser: buildQuizSubmissionUserRequest,
 };

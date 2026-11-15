@@ -1,0 +1,371 @@
+import { execFileSync } from 'node:child_process';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { canvas, createUserWithToken, fx, unique } from '../lib/canvas';
+import type { TestUser } from '../lib/canvas';
+import { createCredential, runNode, runOk } from '../lib/harness';
+import type { Json } from '../lib/n8n';
+
+/**
+ * Resources: quizSubmissionUser, quizSubmissionEvent, courseQuizExtension,
+ * quizAssignmentOverride, quizIpFilter, quizSubmissionQuestion.
+ * A course with a classic quiz is created; one test student takes it through the node.
+ */
+let accountId = '';
+let courseId = '';
+let quizId = '';
+let secondQuizId = '';
+let sectionId = '';
+const questionIds: string[] = [];
+let taker: TestUser;
+let takerCredential: { id: string; name: string; type: string };
+const otherStudents: string[] = [];
+
+beforeAll(async () => {
+	const c = canvas();
+	// A sub-account of our own so IP filters can be defined without touching the root account.
+	const account = await c.post<Json>(`/api/v1/accounts/${fx('accountId')}/sub_accounts`, { account: { name: unique('Quiz extras') } });
+	accountId = String(account.id);
+	// Account IP filters can only be defined in Canvas' web UI, not through the REST API.
+	execFileSync(
+		'docker',
+		[
+			'exec',
+			'canvas-web',
+			'bundle',
+			'exec',
+			'rails',
+			'runner',
+			`a = Account.find(${Number(accountId)}); a.ip_filters = { "Testing Center" => "192.168.217.1/24", "Library — \\"west\\" wing" => "10.0.0.0/8" }; a.save!`,
+		],
+		{ encoding: 'utf8' },
+	);
+
+	const course = await c.post<Json>(`/api/v1/accounts/${accountId}/courses`, { course: { name: unique('Quiz extras course') }, offer: true });
+	courseId = String(course.id);
+	await c.put(`/api/v1/courses/${courseId}/features/flags/quiz_log_auditing`, { state: 'on' });
+	sectionId = String((await c.post<Json>(`/api/v1/courses/${courseId}/sections`, { course_section: { name: 'Evening section' } })).id);
+
+	taker = await createUserWithToken('Quiz Taker');
+	takerCredential = await createCredential(taker.token, 'quiz taker');
+	await c.post(`/api/v1/courses/${courseId}/enrollments`, { enrollment: { user_id: taker.id, type: 'StudentEnrollment', enrollment_state: 'active' } });
+	for (let i = 0; i < 13; i++) {
+		const user = await c.post<Json>(`/api/v1/accounts/${fx('accountId')}/users`, {
+			user: { name: unique(`Quiz bystander ${i}`) },
+			pseudonym: { unique_id: `${unique('quizx').replace(/\s/g, '.')}@example.edu` },
+		});
+		otherStudents.push(String(user.id));
+		await c.post(`/api/v1/courses/${courseId}/enrollments`, {
+			enrollment: { user_id: user.id, type: 'StudentEnrollment', enrollment_state: 'active', ...(i < 4 ? { course_section_id: sectionId } : {}) },
+		});
+	}
+
+	const quiz = await c.post<Json>(`/api/v1/courses/${courseId}/quizzes`, {
+		quiz: { title: unique('Extras quiz'), quiz_type: 'assignment', allowed_attempts: 1, time_limit: 30, due_at: '2031-03-01T23:59:00Z' },
+	});
+	quizId = String(quiz.id);
+	const questions = [
+		{ question_name: 'Essay', question_type: 'essay_question', question_text: 'Say hello', points_possible: 5 },
+		{ question_name: 'Number', question_type: 'numerical_question', question_text: '6 x 7', points_possible: 5, answers: [{ numerical_answer_type: 'exact_answer', answer_exact: 42, answer_weight: 100 }] },
+		{
+			question_name: 'Choice',
+			question_type: 'multiple_choice_question',
+			question_text: 'Pick B',
+			points_possible: 5,
+			answers: [
+				{ answer_text: 'A', answer_weight: 0 },
+				{ answer_text: 'B', answer_weight: 100 },
+			],
+		},
+	];
+	for (const question of questions) {
+		questionIds.push(String((await c.post<Json>(`/api/v1/courses/${courseId}/quizzes/${quizId}/questions`, { question })).id));
+	}
+	await c.put(`/api/v1/courses/${courseId}/quizzes/${quizId}`, { quiz: { published: true } });
+
+	const second = await c.post<Json>(`/api/v1/courses/${courseId}/quizzes`, {
+		quiz: { title: unique('Second quiz'), quiz_type: 'assignment', published: true, due_at: '2031-04-01T23:59:00Z' },
+	});
+	secondQuizId = String(second.id);
+	await c.post(`/api/v1/courses/${courseId}/quizzes/${secondQuizId}/assignment_overrides`.replace(`/quizzes/${secondQuizId}/assignment_overrides`, `/assignments/${String(second.assignment_id)}/overrides`), {
+		assignment_override: { course_section_id: Number(sectionId), due_at: '2031-04-20T23:59:00Z' },
+	});
+});
+
+describe('quizIpFilter', () => {
+	it('getAll: lists the filters defined on the account, one item each', async () => {
+		const filters = await runOk({ resource: 'quizIpFilter', operation: 'getAll', params: { courseId, quizId } });
+		const expected = (await canvas().get<Json>(`/api/v1/courses/${courseId}/quizzes/${quizId}/ip_filters`)).quiz_ip_filters as Json[];
+		expect(filters).toEqual(expected);
+		expect(filters.map((f) => f.name).sort()).toEqual(['Library — "west" wing', 'Testing Center']);
+		expect(filters.find((f) => f.name === 'Testing Center')).toMatchObject({ filter: '192.168.217.1/24' });
+	});
+
+	it('errors: students may not read them', async () => {
+		const result = await runNode({
+			resource: 'quizIpFilter',
+			operation: 'getAll',
+			credential: takerCredential,
+			params: { courseId, quizId, errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(result.success).toEqual([]);
+		expect([401, 403]).toContain(result.error[0].errorCode);
+	});
+});
+
+describe('quizAssignmentOverride', () => {
+	it('getAll: returns the dates of every classic quiz, one item per quiz', async () => {
+		const expected = (await canvas().get<Json>(`/api/v1/courses/${courseId}/quizzes/assignment_overrides?per_page=100`)).quiz_assignment_overrides as Json[];
+		const sets = await runOk({ resource: 'quizAssignmentOverride', operation: 'getAll', params: { courseId, pagination: { returnAll: true } } });
+		expect(sets.map((s) => String(s.quiz_id)).sort()).toEqual([quizId, secondQuizId].sort());
+		expect(sets).toEqual(expected);
+		const second = sets.find((s) => String(s.quiz_id) === secondQuizId)!;
+		const dues = (second.all_dates as Json[]).map((d) => d.due_at).sort();
+		expect(dues).toEqual(['2031-04-01T23:59:00Z', '2031-04-20T23:59:00Z']);
+	});
+
+	it('getAll: narrows to the quizzes asked for', async () => {
+		const one = await runOk({ resource: 'quizAssignmentOverride', operation: 'getAll', params: { courseId, options: { quiz_ids: ` ${secondQuizId} ` } } });
+		expect(one.map((s) => String(s.quiz_id))).toEqual([secondQuizId]);
+		const both = await runOk({ resource: 'quizAssignmentOverride', operation: 'getAll', params: { courseId, options: { quiz_ids: `${quizId}, ${secondQuizId}` } } });
+		expect(both).toHaveLength(2);
+	});
+
+	it('getAllNewQuizzes: a course without New Quizzes returns no items', async () => {
+		const sets = await runOk({ resource: 'quizAssignmentOverride', operation: 'getAllNewQuizzes', params: { courseId } });
+		expect(sets).toEqual([]);
+	});
+
+	it('as a student: the dates are the ones that apply to that student', async () => {
+		const sets = await runOk({ resource: 'quizAssignmentOverride', operation: 'getAll', credential: takerCredential, params: { courseId } });
+		const second = sets.find((s) => String(s.quiz_id) === secondQuizId)!;
+		// The taker is not in the evening section, so only the default date applies.
+		expect((second.due_dates as Json[]).map((d) => d.due_at)).toEqual(['2031-04-01T23:59:00Z']);
+	});
+});
+
+describe('courseQuizExtension', () => {
+	it('set: gives several students extra time and attempts on every quiz of the course', async () => {
+		const result = await runOk({
+			resource: 'courseQuizExtension',
+			operation: 'set',
+			params: {
+				courseId,
+				extensions: {
+					extension: [
+						{ user_id: taker.id, extra_time: 15, extra_attempts: 2, manually_unlocked: true },
+						{ user_id: otherStudents[0], extra_time: 90 },
+					],
+				},
+			},
+		});
+		// Canvas answers with one extension per student and quiz of the course.
+		expect(result).toHaveLength(4);
+		expect(new Set(result.map((e) => String(e.quiz_id)))).toEqual(new Set([quizId, secondQuizId]));
+		for (const extension of result.filter((e) => String(e.user_id) === taker.id)) {
+			expect(extension).toMatchObject({ extra_time: 15, extra_attempts: 2, manually_unlocked: true });
+		}
+		for (const extension of result.filter((e) => String(e.user_id) === otherStudents[0])) {
+			expect(extension).toMatchObject({ extra_time: 90 });
+		}
+		// The quiz-level view agrees.
+		const submission = (await canvas().get<Json>(`/api/v1/courses/${courseId}/quizzes/${quizId}/submissions?per_page=100`)).quiz_submissions as Json[];
+		expect(submission.find((q) => String(q.user_id) === taker.id)).toMatchObject({ extra_time: 15, extra_attempts: 2, manually_unlocked: true });
+	});
+
+	it('errors: unusable input is rejected before anything is sent, and Canvas limits are reported', async () => {
+		const eh = { errorHandling: { onError: 'continueWithError' } };
+		const none = await runNode({ resource: 'courseQuizExtension', operation: 'set', params: { courseId, extensions: {}, ...eh } });
+		expect(none.error[0]).toMatchObject({ errorType: 'INVALID_PARAMETERS' });
+
+		const both = await runNode({
+			resource: 'courseQuizExtension',
+			operation: 'set',
+			params: { courseId, extensions: { extension: [{ user_id: taker.id, extend_from_now: 10, extend_from_end_at: 10 }] }, ...eh },
+		});
+		expect(both.error[0]).toMatchObject({ errorType: 'INVALID_PARAMETERS' });
+		expect(String(both.error[0].errorMessage)).toMatch(/not both/i);
+
+		const unknownUser = await runNode({
+			resource: 'courseQuizExtension',
+			operation: 'set',
+			params: { courseId, extensions: { extension: [{ user_id: '99999999', extra_time: 10 }] }, ...eh },
+		});
+		expect(unknownUser.success).toEqual([]);
+		expect([400, 403, 404]).toContain(unknownUser.error[0].errorCode);
+
+		const asStudent = await runNode({
+			resource: 'courseQuizExtension',
+			operation: 'set',
+			credential: takerCredential,
+			params: { courseId, extensions: { extension: [{ user_id: taker.id, extra_attempts: 5 }] }, ...eh },
+		});
+		expect(asStudent.success).toEqual([]);
+		expect([401, 403]).toContain(asStudent.error[0].errorCode);
+	});
+});
+
+describe('quiz attempt: quizSubmissionQuestion, quizSubmissionEvent, quizSubmissionUser', () => {
+	let quizSubmissionId = '';
+	let validationToken = '';
+	let attempt = 0;
+
+	it('quizSubmissionUser.getAll: before anyone starts, nobody has submitted', async () => {
+		const all = await runOk({ resource: 'quizSubmissionUser', operation: 'getAll', params: { courseId, quizId, pagination: { returnAll: true } } });
+		expect(all).toHaveLength(14);
+		expect(new Set(all.map((u) => u.id)).size).toBe(14);
+
+		const submitted = await runOk({ resource: 'quizSubmissionUser', operation: 'getAll', params: { courseId, quizId, options: { submitted: true } } });
+		expect(submitted).toEqual([]);
+
+		const unsubmitted = await runOk({ resource: 'quizSubmissionUser', operation: 'getAll', params: { courseId, quizId, options: { submitted: false }, pagination: { returnAll: true } } });
+		expect(unsubmitted).toHaveLength(14);
+
+		// Default paging stops at one page of ten times five pages; a small page size is honoured.
+		const paged = await runOk({ resource: 'quizSubmissionUser', operation: 'getAll', params: { courseId, quizId, pagination: { perPage: 4, maxPages: 2 } } });
+		expect(paged).toHaveLength(8);
+	});
+
+	it('the student starts an attempt (through Canvas) and reads its questions through the node', async () => {
+		const started = await taker.client.post<Json>(`/api/v1/courses/${courseId}/quizzes/${quizId}/submissions`);
+		const submission = (started.quiz_submissions as Json[])[0];
+		quizSubmissionId = String(submission.id);
+		validationToken = String(submission.validation_token);
+		attempt = Number(submission.attempt);
+
+		const questions = await runOk({
+			resource: 'quizSubmissionQuestion',
+			operation: 'getAll',
+			credential: takerCredential,
+			params: { quizSubmissionId, options: { include: ['quiz_question'] } },
+		});
+		expect(questions.map((q) => String(q.id)).sort()).toEqual([...questionIds].sort());
+		expect(questions.every((q) => q.flagged === false)).toBe(true);
+	});
+
+	it('quizSubmissionQuestion.answer: answers several question types at once', async () => {
+		const choice = await canvas().get<Json>(`/api/v1/courses/${courseId}/quizzes/${quizId}/questions/${questionIds[2]}`);
+		const correct = (choice.answers as Json[]).find((a) => a.text === 'B')!;
+		const answered = await runOk({
+			resource: 'quizSubmissionQuestion',
+			operation: 'answer',
+			credential: takerCredential,
+			params: {
+				quizSubmissionId,
+				attempt,
+				validationToken,
+				answers: JSON.stringify([
+					{ question_id: Number(questionIds[0]), answer: 'Hello — with ünïcode & "quotes"' },
+					{ id: Number(questionIds[1]), answer: 42 },
+					{ question_id: questionIds[2], answer: correct.id },
+				]),
+			},
+		});
+		expect(answered).toHaveLength(3);
+		expect(String(answered.find((q) => String(q.id) === questionIds[0])!.answer)).toContain('ünïcode');
+		expect(Number(answered.find((q) => String(q.id) === questionIds[1])!.answer)).toBe(42);
+	});
+
+	it('quizSubmissionQuestion.flag and unflag: mark a question for review', async () => {
+		const [flagged] = await runOk({
+			resource: 'quizSubmissionQuestion',
+			operation: 'flag',
+			credential: takerCredential,
+			params: { quizSubmissionId, questionId: questionIds[1], attempt, validationToken },
+		});
+		expect(flagged).toMatchObject({ flagged: true });
+		const [unflagged] = await runOk({
+			resource: 'quizSubmissionQuestion',
+			operation: 'unflag',
+			credential: takerCredential,
+			params: { quizSubmissionId, questionId: questionIds[1], attempt, validationToken },
+		});
+		expect(unflagged).toMatchObject({ flagged: false });
+	});
+
+	it('quizSubmissionQuestion: a wrong validation token and malformed answers are refused', async () => {
+		const eh = { errorHandling: { onError: 'continueWithError' } };
+		const wrongToken = await runNode({
+			resource: 'quizSubmissionQuestion',
+			operation: 'answer',
+			credential: takerCredential,
+			params: { quizSubmissionId, attempt, validationToken: 'not-the-token', answers: `[{"question_id": ${questionIds[0]}, "answer": "x"}]`, ...eh },
+		});
+		expect(wrongToken.success).toEqual([]);
+		expect([400, 403]).toContain(wrongToken.error[0].errorCode);
+
+		for (const answers of ['{oops', '[]', '[{"answer": "no question"}]']) {
+			const bad = await runNode({
+				resource: 'quizSubmissionQuestion',
+				operation: 'answer',
+				credential: takerCredential,
+				params: { quizSubmissionId, attempt, validationToken, answers, ...eh },
+			});
+			expect(bad.error[0], answers).toMatchObject({ errorType: 'INVALID_PARAMETERS' });
+		}
+	});
+
+	it('the student completes the attempt; quizSubmissionUser now tells submitted from unsubmitted', async () => {
+		await taker.client.post(`/api/v1/courses/${courseId}/quizzes/${quizId}/submissions/${quizSubmissionId}/complete`, { attempt, validation_token: validationToken });
+
+		const submitted = await runOk({
+			resource: 'quizSubmissionUser',
+			operation: 'getAll',
+			params: { courseId, quizId, options: { submitted: true, include: ['quiz_submissions'] } },
+		});
+		expect(submitted.map((u) => String(u.id))).toEqual([taker.id]);
+
+		const unsubmitted = await runOk({
+			resource: 'quizSubmissionUser',
+			operation: 'getAll',
+			params: { courseId, quizId, options: { submitted: false }, pagination: { returnAll: true } },
+		});
+		expect(unsubmitted.map((u) => String(u.id)).sort()).toEqual([...otherStudents].sort());
+	});
+
+	it('quizSubmissionEvent.getAll: the teacher reads what was captured during the attempt', async () => {
+		const expected = (await canvas().get<Json>(`/api/v1/courses/${courseId}/quizzes/${quizId}/submissions/${quizSubmissionId}/events?per_page=100`)).quiz_submission_events as Json[];
+		const events = await runOk({
+			resource: 'quizSubmissionEvent',
+			operation: 'getAll',
+			params: { courseId, quizId, quizSubmissionId, options: { attempt }, pagination: { returnAll: true } },
+		});
+		expect(events.map((e) => e.id)).toEqual(expected.map((e) => e.id));
+		expect(events.length).toBeGreaterThan(0);
+		expect(events.map((e) => e.event_type)).toContain('question_answered');
+		expect(events.some((e) => 'quiz_submission_events' in e)).toBe(false);
+	});
+
+	it('quizSubmissionEvent.getAll: a student may not read the log', async () => {
+		const result = await runNode({
+			resource: 'quizSubmissionEvent',
+			operation: 'getAll',
+			credential: takerCredential,
+			params: { courseId, quizId, quizSubmissionId, errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(result.success).toEqual([]);
+		expect([401, 403]).toContain(result.error[0].errorCode);
+	});
+
+	it('quizSubmissionUser.message: messages the students who have not submitted', async () => {
+		const subject = unique('Quiz reminder');
+		const [result] = await runOk({
+			resource: 'quizSubmissionUser',
+			operation: 'message',
+			params: { courseId, quizId, recipients: 'unsubmitted', body: 'Please take the quiz — it closes soon.', additionalFields: { subject } },
+		});
+		expect(result).toBeTypeOf('object');
+
+		// One of the bystanders received it; the student who submitted did not.
+		// Canvas sends it from a background job, so give the job queue time.
+		let conversation: Json | undefined;
+		for (let attempt = 0; attempt < 60 && !conversation; attempt++) {
+			const sent = await canvas().getAll<Json>('/api/v1/conversations?scope=sent');
+			conversation = sent.find((c) => c.subject === subject);
+			if (!conversation) await new Promise((resolve) => setTimeout(resolve, 2000));
+		}
+		expect(conversation, 'the message should be among the sender\'s sent conversations').toBeDefined();
+		const audience = ((conversation as Json).audience as number[]).map(String);
+		expect(audience).not.toContain(taker.id);
+		expect(audience.some((id) => otherStudents.includes(id))).toBe(true);
+	});
+});

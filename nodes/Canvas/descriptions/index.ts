@@ -538,3 +538,34 @@ export {
 	whatIfGradeOperations,
 	whatIfGradeFields,
 } from './WhatIfGradeDescription';
+
+// Quiz extras resource group descriptions
+export {
+	courseQuizExtensionOperations,
+	courseQuizExtensionFields,
+} from './CourseQuizExtensionDescription';
+
+export {
+	quizAssignmentOverrideOperations,
+	quizAssignmentOverrideFields,
+} from './QuizAssignmentOverrideDescription';
+
+export {
+	quizIpFilterOperations,
+	quizIpFilterFields,
+} from './QuizIpFilterDescription';
+
+export {
+	quizSubmissionEventOperations,
+	quizSubmissionEventFields,
+} from './QuizSubmissionEventDescription';
+
+export {
+	quizSubmissionQuestionOperations,
+	quizSubmissionQuestionFields,
+} from './QuizSubmissionQuestionDescription';
+
+export {
+	quizSubmissionUserOperations,
+	quizSubmissionUserFields,
+} from './QuizSubmissionUserDescription';

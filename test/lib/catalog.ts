@@ -74,6 +74,8 @@ export function sampleValue(field: INodeProperties, variant: 'minimal' | 'full')
 		case 'boolean':
 			return true;
 		case 'number':
+			// Mutually exclusive with extend_from_now; a sample must not set both.
+			if (name === 'extend_from_end_at') return 0;
 			return 7;
 		case 'dateTime':
 			return '2026-01-15T12:00:00Z';
