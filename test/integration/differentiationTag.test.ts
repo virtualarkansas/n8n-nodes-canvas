@@ -385,7 +385,7 @@ describe('differentiation tags', { timeout: 600_000 }, () => {
 		expect(tagged.every((row) => row.tag_name !== '')).toBe(true);
 	});
 
-	it('exportDifferentiationTags [needs shared change]: the CSV is also attached as a binary file', async () => {
+	it('exportDifferentiationTags: the CSV is also attached as a binary file', async () => {
 		const chain = await runChain([
 			canvasInChain({ resource: 'groupCategory', operation: 'exportDifferentiationTags', params: { courseId } }),
 			extractFromCsv('data', SKIP_SHORT_ROWS),

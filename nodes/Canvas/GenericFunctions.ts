@@ -681,6 +681,9 @@ export function createErrorOutput(
 
 const LTI_CREDENTIAL = 'canvasLtiAdvantageApi';
 
+/** How many redirects of a read are followed before giving up. */
+const MAX_REDIRECTS = 5;
+
 function getCredentialType(context: CanvasContext): string {
 	const authType = context.getNodeParameter('authentication', 0) as string;
 	if (authType === 'oAuth2') {
@@ -873,11 +876,11 @@ export async function canvasApiRequest(
 		// The node reads the status itself: n8n drops plain-text error bodies, and Canvas'
 		// throttle answer ("403 Forbidden (Rate Limit Exceeded)") is exactly that.
 		ignoreHttpStatusErrors: true,
+		// Redirects are handled here. A write must never be replayed against wherever a
+		// redirect points; a read is followed, but n8n would put the Authorization header
+		// back on every hop, also when Canvas redirects to another host (a CDN, file storage).
+		disableFollowRedirect: true,
 	};
-	if (method !== 'GET') {
-		// A write must never be replayed as a GET against wherever a redirect points.
-		requestOptions.disableFollowRedirect = true;
-	}
 	// n8n drops an empty array body, but for Canvas "[]" means "replace the list with nothing".
 	if (Array.isArray(body) && body.length === 0) {
 		body = '[]';
@@ -897,18 +900,22 @@ export async function canvasApiRequest(
 	}
 
 	const state = getRateLimitState(this);
+	const canvasHost = new URL(canvasUrl).host;
 	let refreshTried = false;
+	let redirects = 0;
+	// Set once a redirect has led away from Canvas: from then on no credential is sent.
+	let elsewhere: string | undefined;
 
-	for (let attempt = 0; ; attempt++) {
-		await ensureRateLimit(this, rateLimitOptions);
+	for (let attempt = 0; ; ) {
+		if (!elsewhere) {
+			await ensureRateLimit(this, rateLimitOptions);
+		}
 
 		let response: { statusCode?: number; headers?: IDataObject; body?: unknown };
 		try {
-			response = await this.helpers.httpRequestWithAuthentication.call(
-				this,
-				credentialType,
-				requestOptions,
-			);
+			response = elsewhere
+				? await this.helpers.httpRequest(requestOptions)
+				: await this.helpers.httpRequestWithAuthentication.call(this, credentialType, requestOptions);
 		} catch (error) {
 			// No HTTP response at all: DNS failure, refused connection, timeout.
 			const failure = extractHttpStatus(error) === undefined ? tagError(error as Error, 'NETWORK_ERROR') : error;
@@ -918,7 +925,7 @@ export async function canvasApiRequest(
 		// OAuth2 and LTI Advantage: n8n only renews an expired token when the request fails
 		// with 401, so repeat it once the way n8n expects.
 		const renewable = credentialType === 'canvasOAuth2Api' || credentialType === LTI_CREDENTIAL;
-		if (Number(response.statusCode) === 401 && renewable && !refreshTried) {
+		if (Number(response.statusCode) === 401 && renewable && !refreshTried && !elsewhere) {
 			refreshTried = true;
 			try {
 				response = await this.helpers.httpRequestWithAuthentication.call(this, credentialType, {
@@ -934,8 +941,19 @@ export async function canvasApiRequest(
 		const status = Number(response.statusCode ?? 200);
 		const headers = (response.headers ?? {}) as IDataObject;
 		const rateLimitStatus = parseRateLimitHeaders(headers);
-		if (headers['x-rate-limit-remaining'] !== undefined) {
+		if (!elsewhere && headers['x-rate-limit-remaining'] !== undefined) {
 			state.remaining = rateLimitStatus.remaining;
+		}
+
+		// A read that Canvas redirects: follow it, with the credential only while it stays on Canvas.
+		if (method === 'GET' && status >= 300 && status < 400 && typeof headers.location === 'string' && redirects < MAX_REDIRECTS) {
+			redirects++;
+			const target = new URL(headers.location, requestOptions.url);
+			requestOptions.url = target.toString();
+			if (target.host !== canvasHost) {
+				elsewhere = target.host;
+			}
+			continue;
 		}
 
 		let data = response.body;
@@ -958,7 +976,7 @@ export async function canvasApiRequest(
 			};
 		}
 
-		const throttled = isThrottleResponse(status, data, headers);
+		const throttled = !elsewhere && isThrottleResponse(status, data, headers);
 		if (throttled) {
 			state.remaining = 0;
 			// Only throttling is retried here; other failures go to the error handling mode.
@@ -966,11 +984,15 @@ export async function canvasApiRequest(
 				await sleep(
 					calculateBackoff(attempt, rateLimitOptions.baseDelayMs, rateLimitOptions.maxDelayMs),
 				);
+				attempt++;
 				continue;
 			}
 		}
 
 		const failure = buildResponseError(this, status, data, headers, throttled);
+		if (elsewhere) {
+			failure.description = `Canvas redirected the request to ${elsewhere}, which answered HTTP ${status}. The credential is only sent to the Canvas URL; if ${elsewhere} is your Canvas, use it as the Canvas URL of the credential.`;
+		}
 		throw method === 'GET' ? failure : markWrite(failure);
 	}
 }

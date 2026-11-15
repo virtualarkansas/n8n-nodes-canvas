@@ -357,6 +357,7 @@ export function buildGroupCategoryRequest(
 				method: 'GET',
 				endpoint: `/api/v1/group_categories/${groupCategoryId}/export`,
 				singlePage: true,
+				responseFile: { fileName: `group_category_${groupCategoryId}.csv`, mimeType: 'text/csv' },
 			};
 
 		case 'import':
@@ -371,6 +372,7 @@ export function buildGroupCategoryRequest(
 				method: 'GET',
 				endpoint: `/api/v1/courses/${getParam('courseId')}/group_categories/export_tags`,
 				singlePage: true,
+				responseFile: { fileName: `differentiation_tags_course_${getParam('courseId')}.csv`, mimeType: 'text/csv' },
 			};
 
 		case 'importDifferentiationTags':

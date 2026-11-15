@@ -184,7 +184,7 @@ describe('groupCategory: export and import (CSV)', { timeout: 600_000 }, () => {
 		);
 	});
 
-	it('export [needs shared change]: the CSV is also attached as a binary file, ready for Extract From File', async () => {
+	it('export: the CSV is also attached as a binary file, ready for Extract From File', async () => {
 		const chain = await runChain([
 			canvasInChain({ resource: 'groupCategory', operation: 'export', params: { groupCategoryId: categoryId } }),
 			extractFromCsv('data'),

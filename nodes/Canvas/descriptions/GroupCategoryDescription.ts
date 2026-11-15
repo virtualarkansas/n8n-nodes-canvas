@@ -39,13 +39,13 @@ export const groupCategoryOperations: INodeProperties[] = [
 			{
 				name: 'Export',
 				value: 'export',
-				description: 'Export the students of the course with the group each one is in, as CSV in the format Import accepts. The node outputs the CSV text in the field "value".',
+				description: 'Export the students of the course with the group each one is in, as CSV in the format Import accepts. The node outputs the CSV text in the field "value" and attaches the file as binary data (field "data"), ready for Extract From File.',
 				action: 'Export a group category',
 			},
 			{
 				name: 'Export Differentiation Tags',
 				value: 'exportDifferentiationTags',
-				description: 'Export the students of a course with their differentiation tags, as CSV in the format Import Differentiation Tags accepts. The rows of students without a tag are shorter than the header row. The node outputs the CSV text in the field "value".',
+				description: 'Export the students of a course with their differentiation tags, as CSV in the format Import Differentiation Tags accepts. The rows of students without a tag are shorter than the header row. The node outputs the CSV text in the field "value" and attaches the file as binary data (field "data"), ready for Extract From File.',
 				action: 'Export differentiation tags',
 			},
 			{

@@ -66,7 +66,7 @@ describe('rubric: CSV import', { timeout: 600_000 }, () => {
 		expect(asStudent).toEqual([{ value: expected }]);
 	});
 
-	it('getImportTemplate [needs shared change]: the template is also attached as a binary file', async () => {
+	it('getImportTemplate: the template is also attached as a binary file', async () => {
 		const result = await runNode({ resource: 'rubric', operation: 'getImportTemplate' });
 		expect(result.rawSuccess[0].json.value).toContain('Rubric Name');
 		expect(result.rawSuccess[0].binary?.data).toMatchObject({ mimeType: 'text/csv', fileExtension: 'csv' });

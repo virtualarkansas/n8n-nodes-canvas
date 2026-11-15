@@ -755,10 +755,26 @@ async function processItem(
 				);
 				if (!response.isList) {
 					const record = unwrapRecord(response.items[0], request.dataKey);
+					if (request.checkResponse) {
+						request.checkResponse((record ?? {}) as IDataObject);
+					}
 					if (request.download) {
 						return downloadTo(context, itemIndex, record as IDataObject, request.download);
 					}
-					return record;
+					if (request.responseFile && typeof record === 'string') {
+						// A file delivered as text: keep the text and attach the file.
+						const { fileName, mimeType, binaryPropertyName } = request.responseFile;
+						const binary = await context.helpers.prepareBinaryData(Buffer.from(record, 'utf8'), fileName, mimeType);
+						return new OutputItem({
+							json: { value: record },
+							binary: { [binaryPropertyName ?? 'data']: binary },
+							pairedItem: { item: itemIndex },
+						});
+					}
+					// One record that is better read as several items (a nested summary).
+					return request.transform && record && typeof record === 'object'
+						? request.transform([record as IDataObject])
+						: record;
 				}
 				let records = response.items;
 				if (request.itemKey) {

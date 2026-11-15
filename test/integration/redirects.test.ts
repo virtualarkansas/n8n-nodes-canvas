@@ -62,7 +62,7 @@ describe('GET redirects', () => {
 		expect(followed?.headers.authorization).toBe(`Bearer ${TOKEN}`);
 	});
 
-	it('[needs shared change] a redirect to another host is followed without the token', async () => {
+	it('a redirect to another host is followed without the token', async () => {
 		canvasStub.reset((request) => {
 			if (request.path === '/api/v1/brand_variables') {
 				return { status: 302, headers: { location: `${otherUrl}/dist/brandable_css/default/variables-abc123.json` }, body: '' };

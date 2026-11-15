@@ -64,6 +64,11 @@ export interface IRequestConfig {
 		optional?: boolean;
 	};
 	/**
+	 * The answer is a file as text (a CSV export): besides `{ value: text }`, attach it to
+	 * the output item as binary data under this name and type, ready for n8n's file nodes.
+	 */
+	responseFile?: { fileName: string; mimeType: string; binaryPropertyName?: string };
+	/**
 	 * Repeat the GET until the record says the background job is over (or the time is up):
 	 * "Wait for Completion" operations for progress objects, SIS imports, reports ...
 	 */

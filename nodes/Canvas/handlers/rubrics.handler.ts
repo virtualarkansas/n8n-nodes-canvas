@@ -363,6 +363,7 @@ export function handleRubricResource(
 				method: 'GET',
 				endpoint: '/api/v1/rubrics/upload_template',
 				singlePage: true,
+				responseFile: { fileName: 'import_rubric_template.csv', mimeType: 'text/csv' },
 			};
 
 		default:

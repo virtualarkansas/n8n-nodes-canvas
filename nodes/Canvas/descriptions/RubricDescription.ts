@@ -78,7 +78,7 @@ export const rubricOperations: INodeProperties[] = [
 			{
 				name: 'Get Import Template',
 				value: 'getImportTemplate',
-				description: 'Get the CSV template Canvas offers for rubric imports: the header row and two example rows. The node outputs the CSV text in the field "value".',
+				description: 'Get the CSV template Canvas offers for rubric imports: the header row and two example rows. The node outputs the CSV text in the field "value" and attaches the file as binary data (field "data").',
 				action: 'Get the rubric import template',
 			},
 			{

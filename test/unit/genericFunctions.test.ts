@@ -62,23 +62,29 @@ function apiError(status: number, data: unknown, message = `Request failed with 
 
 function fakeContext(responder: (options: IDataObject, callIndex: number) => FakeResponse, continueOnFail = false) {
 	const calls: IDataObject[] = [];
+	const answer = (authenticated: boolean) =>
+		async function (...args: unknown[]) {
+			// A copy: the request layer reuses and rewrites its options object (redirects).
+			const options: IDataObject = { ...((authenticated ? args[1] : args[0]) as IDataObject), authenticated };
+			calls.push(options);
+			const response = responder(options, calls.length - 1);
+			if (response.throw) throw response.throw;
+			const status = response.status ?? 200;
+			// Like n8n: a non-2xx answer is only returned when the caller asked to see it.
+			if (status >= 400 && options.ignoreHttpStatusErrors !== true) {
+				throw apiError(status, typeof response.body === 'string' ? undefined : response.body);
+			}
+			return { body: response.body, headers: response.headers ?? {}, statusCode: status };
+		};
 	const context = {
 		getNodeParameter: (name: string) => (name === 'authentication' ? 'accessToken' : undefined),
 		getCredentials: async () => ({ canvasUrl: 'https://canvas.test/', accessToken: 't' }),
 		getNode: () => ({ name: 'Canvas', type: 'canvas', typeVersion: 1, position: [0, 0], parameters: {}, id: '1' }),
 		continueOnFail: () => continueOnFail,
 		helpers: {
-			httpRequestWithAuthentication: vi.fn(async function (_cred: string, options: IDataObject) {
-				calls.push(options);
-				const response = responder(options, calls.length - 1);
-				if (response.throw) throw response.throw;
-				const status = response.status ?? 200;
-				// Like n8n: a non-2xx answer is only returned when the caller asked to see it.
-				if (status >= 400 && options.ignoreHttpStatusErrors !== true) {
-					throw apiError(status, typeof response.body === 'string' ? undefined : response.body);
-				}
-				return { body: response.body, headers: response.headers ?? {}, statusCode: status };
-			}),
+			httpRequestWithAuthentication: vi.fn(answer(true)),
+			// Without credentials: only used for redirect targets on other hosts.
+			httpRequest: vi.fn(answer(false)),
 		},
 	};
 	return { context: context as unknown as IExecuteFunctions, calls };
@@ -451,9 +457,53 @@ describe('canvasApiRequest', () => {
 		expect(calls[0].disableFollowRedirect).toBe(true);
 		expect((error as Error).message).toMatch(/redirect \(HTTP 302\) to https:\/\/canvas\.test\/accounts\/1\/terms/);
 
-		const get = fakeContext(() => ({ body: {} }));
-		await canvasApiRequest.call(get.context, 'GET', '/api/v1/x', undefined, undefined, NO_RATE_LIMIT);
-		expect(get.calls[0].disableFollowRedirect).toBeUndefined();
+	});
+
+	it('follows the redirect of a read itself: signed in while it stays on Canvas, without the credential elsewhere', async () => {
+		// Within Canvas (e.g. the root outcome group).
+		const within = fakeContext((_o, index) =>
+			index === 0
+				? { status: 302, headers: { location: '/api/v1/courses/1/outcome_groups/7?x=1' } }
+				: { body: { id: 7 }, headers: { 'x-rate-limit-remaining': '512' } },
+		);
+		const group = await canvasApiRequest.call(within.context, 'GET', '/api/v1/courses/1/root_outcome_group', undefined, undefined, NO_RATE_LIMIT);
+		expect(group.data).toEqual({ id: 7 });
+		expect(within.calls.map((c) => [c.authenticated, c.url, c.disableFollowRedirect])).toEqual([
+			[true, 'https://canvas.test/api/v1/courses/1/root_outcome_group', true],
+			[true, 'https://canvas.test/api/v1/courses/1/outcome_groups/7?x=1', true],
+		]);
+
+		// To another host (brand variables on a CDN, a file in storage), and on from there.
+		const away = fakeContext((_o, index) =>
+			[
+				{ status: 302, headers: { location: 'https://cdn.example.net/variables.json' } },
+				{ status: 301, headers: { location: 'https://canvas.test/back-again.json' } },
+				{ body: { 'ic-brand-primary': '#0374B5' }, headers: { 'x-rate-limit-remaining': '1' } },
+			][index],
+		);
+		const variables = await canvasApiRequest.call(away.context, 'GET', '/api/v1/brand_variables', undefined, undefined, NO_RATE_LIMIT);
+		expect(variables.data).toEqual({ 'ic-brand-primary': '#0374B5' });
+		// Once the chain has left Canvas, the credential stays behind, even if it leads back.
+		expect(away.calls.map((c) => [c.authenticated, c.url])).toEqual([
+			[true, 'https://canvas.test/api/v1/brand_variables'],
+			[false, 'https://cdn.example.net/variables.json'],
+			[false, 'https://canvas.test/back-again.json'],
+		]);
+	});
+
+	it('a redirect chain ends, and a refusal from the other host says where the request went', async () => {
+		const loop = fakeContext(() => ({ status: 302, headers: { location: '/api/v1/again' } }));
+		const looped = await canvasApiRequest.call(loop.context, 'GET', '/api/v1/again', undefined, undefined, NO_RATE_LIMIT).catch((e: unknown) => e);
+		expect((looped as Error).message).toMatch(/redirect \(HTTP 302\)/);
+		expect(loop.calls).toHaveLength(6);
+
+		const refused = fakeContext((_o, index) =>
+			index === 0 ? { status: 302, headers: { location: 'https://school.example.org/api/v1/courses' } } : { status: 401, body: { errors: [{ message: 'user authorization required' }] } },
+		);
+		const error = (await canvasApiRequest.call(refused.context, 'GET', '/api/v1/courses', undefined, undefined, NO_RATE_LIMIT).catch((e: unknown) => e)) as Error & { description?: string };
+		expect(error.message).toBe('user authorization required');
+		expect(error.description).toContain('redirected the request to school.example.org');
+		expect(refused.calls[1].authenticated).toBe(false);
 	});
 
 	it('labels a failure without any HTTP response as a network error and lets Retry Then Error retry it', async () => {
