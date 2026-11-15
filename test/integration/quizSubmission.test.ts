@@ -8,6 +8,7 @@ import {
 	createQuiz,
 	deleteQuiz,
 	ESSAY,
+	FIXTURE_TIMEOUT,
 	MULTIPLE_CHOICE,
 	quizCourse,
 	startAttempt,
@@ -31,6 +32,7 @@ describe('quizSubmission', () => {
 	let essayQuestion: Json = {};
 	let attempt: Json = {};
 	let submissionId = '';
+	let marathon = { courseId: '', quizId: '', takers: [] as string[] };
 
 	const base = (): string => `/api/v1/courses/${courseId}/quizzes/${quizId}`;
 	const readSubmission = async (id: string): Promise<Json> =>
@@ -52,7 +54,9 @@ describe('quizSubmission', () => {
 		quizId = quiz.id;
 		assignmentId = String(quiz.quiz.assignment_id);
 		[choiceQuestion, essayQuestion] = quiz.questions;
-	});
+		// The quiz many students have taken (list fixture, see support/quizzes.ts).
+		marathon = await submissionMarathon();
+	}, FIXTURE_TIMEOUT);
 
 	it('start: a wrong or missing access code is refused', async () => {
 		for (const options of [{ access_code: 'not the code' }, {}]) {
@@ -509,7 +513,6 @@ describe('quizSubmission', () => {
 	});
 
 	it('getAll: pages through more quiz submissions than one page holds', async () => {
-		const marathon = await submissionMarathon();
 		const path = `/api/v1/courses/${marathon.courseId}/quizzes/${marathon.quizId}/submissions`;
 		const expected = await canvas().getAll<Json>(path, 'quiz_submissions');
 		expect(expected.length).toBeGreaterThanOrEqual(23);

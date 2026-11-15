@@ -5,6 +5,7 @@ import type { Json } from '../lib/n8n';
 import {
 	createQuiz,
 	deleteQuiz,
+	FIXTURE_TIMEOUT,
 	MULTIPLE_CHOICE,
 	QUIZ_LIST_SIZE,
 	quizCourse,
@@ -34,7 +35,7 @@ describe('quiz', () => {
 			name: unique('Quiz group'),
 		});
 		assignmentGroupId = String(group.id);
-	});
+	}, FIXTURE_TIMEOUT);
 
 	it('create: every optional field of a graded quiz reaches Canvas', async () => {
 		const [created] = await runOk({

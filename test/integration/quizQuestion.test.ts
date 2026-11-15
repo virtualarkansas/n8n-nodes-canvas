@@ -2,7 +2,16 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { canvas, CanvasClient, unique } from '../lib/canvas';
 import { runNode, runOk } from './support/run';
 import type { Json } from '../lib/n8n';
-import { createQuiz, deleteQuiz, ESSAY, MULTIPLE_CHOICE, quizCourse, quizListCourse, takeQuiz } from './support/quizzes';
+import {
+	createQuiz,
+	deleteQuiz,
+	ESSAY,
+	FIXTURE_TIMEOUT,
+	MULTIPLE_CHOICE,
+	quizCourse,
+	quizListCourse,
+	takeQuiz,
+} from './support/quizzes';
 
 const MARATHON_TITLE = 'Question marathon (list fixture)';
 const MARATHON_SIZE = 63;
@@ -59,7 +68,7 @@ describe('quizQuestion', () => {
 				},
 			});
 		}
-	});
+	}, FIXTURE_TIMEOUT);
 
 	it('create: every optional field reaches Canvas (answers typed as JSON text)', async () => {
 		const name = unique('Prime numbers "quoted" & <b>bold</b> ñ 素数');

@@ -2,7 +2,15 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { canvas, unique } from '../lib/canvas';
 import type { Json } from '../lib/n8n';
 import { runNode, runOk } from './support/run';
-import { createQuiz, deleteQuiz, MULTIPLE_CHOICE, quizCourse, submissionMarathon, takeQuiz } from './support/quizzes';
+import {
+	createQuiz,
+	deleteQuiz,
+	FIXTURE_TIMEOUT,
+	MULTIPLE_CHOICE,
+	quizCourse,
+	submissionMarathon,
+	takeQuiz,
+} from './support/quizzes';
 
 /**
  * Resource: quizStatistics (aggregate statistics of a classic quiz). The
@@ -38,7 +46,7 @@ describe('quizStatistics', () => {
 			(await canvas().post<Json>(`/api/v1/courses/${courseId}/sections`, { course_section: { name } }));
 		emptySectionId = String(empty.id);
 		defaultSectionId = String((sections.find((s) => s.name !== name) as Json).id);
-	});
+	}, FIXTURE_TIMEOUT);
 
 	it('get: returns the statistics record itself, with question and submission statistics', async () => {
 		const expected = await readStats();

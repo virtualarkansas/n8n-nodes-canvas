@@ -10,6 +10,12 @@ import type { Json } from '../../lib/n8n';
  * (and removes) its own quizzes inside them.
  */
 
+/**
+ * Building the list fixtures for the first time takes a few hundred requests; on later
+ * runs they are only looked up. Used as the timeout of the hooks that need them.
+ */
+export const FIXTURE_TIMEOUT = 900_000;
+
 export const QUIZ_COURSE_SIS_ID = 'BATTERY-QUIZZES';
 export const QUIZ_LIST_COURSE_SIS_ID = 'BATTERY-QUIZ-LIST';
 /** Number of quizzes kept in the list course for pagination tests. */
