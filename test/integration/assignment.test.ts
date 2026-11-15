@@ -746,13 +746,15 @@ describe('assignment', () => {
 		});
 		expect(twice.error[0]).toMatchObject({ errorCode: 400, errorType: 'VALIDATION_ERROR', operation: 'createOverride' });
 
+		const [first] = await runOk({ resource: 'assignment', operation: 'deleteOverride', params: { ...base, overrideId: String(students.id) } });
+		expect(first.id).toBe(students.id);
 		const removed = await runNode({
 			resource: 'assignment',
 			operation: 'deleteOverride',
-			items: [{ id: students.id }, { id: section.id }, { id: group.id }, { id: 999999999 }],
+			items: [{ id: section.id }, { id: group.id }, { id: 999999999 }],
 			params: { ...base, overrideId: '={{ $json.id }}', errorHandling: { onError: 'continueWithError' } },
 		});
-		expect(ids(removed.success)).toEqual([students.id, section.id, group.id]);
+		expect(ids(removed.success)).toEqual([section.id, group.id]);
 		expect(removed.error).toHaveLength(1);
 		expect(removed.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND' });
 		expect(await canvas().getAll<Json>(`/api/v1/courses/${courseId}/assignments/${groupAssignmentId}/overrides`)).toEqual([]);

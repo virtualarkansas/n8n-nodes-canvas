@@ -252,8 +252,15 @@ describe('submissionComment', () => {
 	});
 
 	it('delete: removes comments, reporting the ones that are already gone', async () => {
-		const mine = (await commentsFromCanvas(student)).map((c) => String(c.id));
-		expect(mine.length).toBeGreaterThanOrEqual(2);
+		const all = (await commentsFromCanvas(student)).map((c) => String(c.id));
+		expect(all.length).toBeGreaterThanOrEqual(2);
+		const [first] = await runOk({
+			resource: 'submissionComment',
+			operation: 'delete',
+			params: { courseId, assignmentId, userId: student, commentId: all[all.length - 1] },
+		});
+		expect(String(first.id)).toBe(all[all.length - 1]);
+		const mine = all.slice(0, -1);
 		const result = await runNode({
 			resource: 'submissionComment',
 			operation: 'delete',
