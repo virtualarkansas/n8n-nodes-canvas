@@ -730,6 +730,18 @@ function extractList(data: unknown, dataKey?: string): IDataObject[] | undefined
 }
 
 /**
+ * The per_page value a list request is sent with: the configured page size,
+ * never more than Canvas allows and never more than the item limit.
+ */
+export function resolvePerPage(paginationOptions: IPaginationOptions): number {
+	let perPage = Math.min(Math.max(1, paginationOptions.perPage), CANVAS_MAX_PER_PAGE);
+	if (paginationOptions.limit !== undefined && paginationOptions.limit > 0) {
+		perPage = Math.min(perPage, paginationOptions.limit);
+	}
+	return perPage;
+}
+
+/**
  * Make a Canvas API request and follow pagination to collect the items.
  *
  * Works for any GET: when the response is not a list (a single record) it is
@@ -749,13 +761,9 @@ export async function canvasApiRequestAllItems(
 		paginationOptions.limit !== undefined && paginationOptions.limit > 0
 			? paginationOptions.limit
 			: undefined;
-	let perPage = Math.min(Math.max(1, paginationOptions.perPage), CANVAS_MAX_PER_PAGE);
-	if (limit !== undefined) {
-		perPage = Math.min(perPage, limit);
-	}
 
 	// A per_page set explicitly on the operation wins over the node-level option.
-	const paginatedQuery: IDataObject = { per_page: perPage, ...(query ?? {}) };
+	const paginatedQuery: IDataObject = { per_page: resolvePerPage(paginationOptions), ...(query ?? {}) };
 
 	let response = await canvasApiRequest.call(
 		this,

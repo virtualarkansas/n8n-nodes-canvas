@@ -14,6 +14,7 @@ import {
 	canvasFileUpload,
 	canvasFileUploadFromUrl,
 	executeWithErrorHandling,
+	resolvePerPage,
 	buildCurlCommand,
 	buildCanvasUrl,
 	getCanvasUrl,
@@ -301,35 +302,6 @@ export class Canvas implements INodeType {
 		const operation = this.getNodeParameter('operation', 0) as string;
 		const debugMode = this.getNodeParameter('debugMode', 0, false) as boolean;
 
-		if (debugMode) {
-			const canvasBaseUrl = await getCanvasUrl.call(this);
-			const authType = this.getNodeParameter('authentication', 0) as string;
-			const debugItems: INodeExecutionData[] = [];
-
-			for (let i = 0; i < items.length; i++) {
-				const { endpoint, method, body, qs } = buildRequest(this, resource, operation, i);
-				const curl = buildCurlCommand(method, canvasBaseUrl, endpoint, qs, body, authType);
-
-				const debugJson: IDataObject = {
-					resource,
-					operation,
-					method,
-					url: buildCanvasUrl(canvasBaseUrl, endpoint, qs),
-					queryString: qs || {},
-					body: body || {},
-					curl,
-				};
-
-				if (resource === 'file' && operation === 'upload') {
-					debugJson._note = 'This is Step 1 of 3. Steps 2 (multipart upload) and 3 (confirmation) are handled automatically at runtime.';
-				}
-
-				debugItems.push({ json: debugJson, pairedItem: { item: i } });
-			}
-
-			return [[], [], debugItems];
-		}
-
 		// Get options
 		const errorHandlingRaw = this.getNodeParameter('errorHandling', 0, {}) as IDataObject;
 		const errorHandling: IErrorHandlingOptions = {
@@ -365,6 +337,45 @@ export class Canvas implements INodeType {
 			batchSize: toNumber(batchRaw.batchSize, 10, 1),
 			batchDelay: toNumber(batchRaw.batchDelay, 1000, 0),
 		};
+
+		if (debugMode) {
+			const canvasBaseUrl = await getCanvasUrl.call(this);
+			const authType = this.getNodeParameter('authentication', 0) as string;
+			const debugItems: INodeExecutionData[] = [];
+
+			for (let i = 0; i < items.length; i++) {
+				const request = buildRequest(this, resource, operation, i);
+				const { endpoint, method, body } = request;
+				// Show the query exactly as a real run sends it: every GET carries per_page.
+				let qs = request.qs;
+				if (method === 'GET') {
+					const perPage =
+						request.fetchAllPages || request.mergePagedArray
+							? CANVAS_MAX_PER_PAGE
+							: resolvePerPage(resolvePagination(this, i, pagination));
+					qs = { per_page: perPage, ...(request.qs ?? {}) };
+				}
+				const curl = buildCurlCommand(method, canvasBaseUrl, endpoint, qs, body, authType);
+
+				const debugJson: IDataObject = {
+					resource,
+					operation,
+					method,
+					url: buildCanvasUrl(canvasBaseUrl, endpoint, qs),
+					queryString: qs || {},
+					body: body || {},
+					curl,
+				};
+
+				if (resource === 'file' && operation === 'upload') {
+					debugJson._note = 'This is Step 1 of 3. Steps 2 (multipart upload) and 3 (confirmation) are handled automatically at runtime.';
+				}
+
+				debugItems.push({ json: debugJson, pairedItem: { item: i } });
+			}
+
+			return [[], [], debugItems];
+		}
 
 		const collect = (result: IProcessResult): void => {
 			if (result.success) {
