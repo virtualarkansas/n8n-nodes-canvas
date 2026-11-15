@@ -78,37 +78,101 @@ export const folderFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['folder'],
-				operation: ['getAll', 'create', 'getByPath'],
+				operation: ['create'],
 			},
 		},
 		options: [
 			{
 				name: 'Account',
 				value: 'account',
-				description: 'Folders in an account',
+				description: 'A folder in the files of an account',
 			},
 			{
 				name: 'Course',
 				value: 'course',
-				description: 'Folders in a course',
+				description: 'A folder in the files of a course',
 			},
 			{
 				name: 'Folder',
 				value: 'folder',
-				description: 'Subfolders in a folder',
+				description: 'A sub-folder of a specific folder',
 			},
 			{
 				name: 'Group',
 				value: 'group',
-				description: 'Folders in a group',
+				description: 'A folder in the files of a group',
 			},
 			{
 				name: 'User',
 				value: 'user',
-				description: 'Folders for a user',
+				description: 'A folder in the personal files of a user',
 			},
 		],
-		description: 'The context to list folders from',
+		description: 'Where to create the folder. Without a parent folder (see Additional Fields) Canvas puts it into the "unfiled" folder of the course, group, user or account.',
+	},
+	{
+		displayName: 'Context Type',
+		name: 'contextType',
+		type: 'options',
+		required: true,
+		default: 'course',
+		displayOptions: {
+			show: {
+				resource: ['folder'],
+				operation: ['getAll'],
+			},
+		},
+		options: [
+			{
+				name: 'Course',
+				value: 'course',
+				description: 'Every folder of a course, at any depth',
+			},
+			{
+				name: 'Folder',
+				value: 'folder',
+				description: 'The direct sub-folders of a folder',
+			},
+			{
+				name: 'Group',
+				value: 'group',
+				description: 'Every folder of a group, at any depth',
+			},
+			{
+				name: 'User',
+				value: 'user',
+				description: 'Every folder of the personal files of a user, at any depth',
+			},
+		],
+		description: 'Which folders to list',
+	},
+	{
+		displayName: 'Context Type',
+		name: 'contextType',
+		type: 'options',
+		required: true,
+		default: 'course',
+		displayOptions: {
+			show: {
+				resource: ['folder'],
+				operation: ['getByPath'],
+			},
+		},
+		options: [
+			{
+				name: 'Course',
+				value: 'course',
+			},
+			{
+				name: 'Group',
+				value: 'group',
+			},
+			{
+				name: 'User',
+				value: 'user',
+			},
+		],
+		description: 'Whose files the path refers to',
 	},
 	{
 		displayName: 'Account ID',
@@ -153,7 +217,7 @@ export const folderFields: INodeProperties[] = [
 				contextType: ['user'],
 			},
 		},
-		description: 'The ID of the user (use "self" for current user)',
+		description: 'The ID of the user (use "self" for the user of the credential)',
 	},
 	{
 		displayName: 'Group ID',
@@ -193,7 +257,6 @@ export const folderFields: INodeProperties[] = [
 		displayName: 'Folder Path',
 		name: 'folderPath',
 		type: 'string',
-		required: true,
 		default: '',
 		displayOptions: {
 			show: {
@@ -201,7 +264,7 @@ export const folderFields: INodeProperties[] = [
 				operation: ['getByPath'],
 			},
 		},
-		description: 'The full path of the folder (e.g., "course files/assignments/homework")',
+		description: 'The path of the folder below the root folder, e.g. "assignments/homework" (the root folder itself, "course files", is not part of the path). Leave empty for the root folder. Returns every folder along the path, root first.',
 	},
 
 	// ----------------------------------
@@ -237,7 +300,7 @@ export const folderFields: INodeProperties[] = [
 				operation: ['copy'],
 			},
 		},
-		description: 'The ID of the destination folder',
+		description: 'The ID of the folder that receives the copy (in the same or another course, group or user)',
 	},
 	{
 		displayName: 'Source Folder ID',
@@ -251,7 +314,7 @@ export const folderFields: INodeProperties[] = [
 				operation: ['copy'],
 			},
 		},
-		description: 'The ID of the source folder to copy',
+		description: 'The ID of the folder to copy, with everything in it',
 	},
 
 	// ----------------------------------
@@ -310,14 +373,14 @@ export const folderFields: INodeProperties[] = [
 				name: 'parent_folder_id',
 				type: 'string',
 				default: '',
-				description: 'The ID of the parent folder (overrides context)',
+				description: 'The ID of the parent folder within the chosen course, group, user or account. Cannot be combined with Parent Folder Path or with the Folder context.',
 			},
 			{
 				displayName: 'Parent Folder Path',
 				name: 'parent_folder_path',
 				type: 'string',
 				default: '',
-				description: 'The path of the parent folder (e.g., "course files/assignments")',
+				description: 'The path of the parent folder below the root folder (e.g. "assignments/week 1"). Missing folders are created. Cannot be combined with Parent Folder ID or with the Folder context.',
 			},
 			{
 				displayName: 'Position',
@@ -385,7 +448,7 @@ export const folderFields: INodeProperties[] = [
 				name: 'parent_folder_id',
 				type: 'string',
 				default: '',
-				description: 'The ID of the parent folder to move this folder to',
+				description: 'The ID of the folder to move this folder into (within the same course, group or user)',
 			},
 			{
 				displayName: 'Position',
@@ -425,7 +488,7 @@ export const folderFields: INodeProperties[] = [
 				name: 'force',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to delete the folder even if it is not empty',
+				description: 'Whether to delete the folder even if it is not empty (its files and sub-folders are deleted too)',
 			},
 		],
 	},
@@ -451,14 +514,14 @@ export const folderFields: INodeProperties[] = [
 				name: 'content_types',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of content types to include (e.g., "image/png,application/pdf")',
+				description: 'Comma-separated list of content types to include. Full types ("application/pdf") or just the first part ("image") are accepted.',
 			},
 			{
 				displayName: 'Exclude Content Types',
 				name: 'exclude_content_types',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of content types to exclude',
+				description: 'Comma-separated list of content types to leave out. Full types ("application/pdf") or just the first part ("image") are accepted.',
 			},
 			{
 				displayName: 'Include',
