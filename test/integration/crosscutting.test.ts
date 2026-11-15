@@ -934,6 +934,19 @@ describe('cross-cutting', () => {
 			expect(stopped.failure?.description).toContain('Check these parameters: courseId.');
 			expect((stopped.failure?.raw.context as Json).itemIndex).toBe(1);
 
+			// "." and ".." would move the request to another path: refused before anything is sent.
+			stub.reset();
+			const relative = await viaStub({
+				resource: 'course',
+				operation: 'delete',
+				items: [{ id: '..' }, { id: '.' }, { id: '../accounts/1' }],
+				params: { courseId: '={{ $json.id }}', errorHandling: { onError: 'continueWithError' } },
+			});
+			expect(relative.error.map((e) => e.errorType)).toEqual(['INVALID_PARAMETERS', 'INVALID_PARAMETERS']);
+			expect(String(relative.error[0].errorMessage)).toContain('not a valid ID');
+			// A value with a slash is one (encoded) path segment, so it cannot leave its place either.
+			expect(stub.calls.map((c) => `${c.method} ${c.url}`)).toEqual(['DELETE /api/v1/courses/..%2Faccounts%2F1?event=delete']);
+
 			// Nothing was sent for the empty items: no request ever goes to a path with an empty segment.
 			stub.reset();
 			await viaStub({

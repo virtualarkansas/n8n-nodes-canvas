@@ -845,6 +845,15 @@ function buildRequest(
 
 	request.endpoint = encodePathValues(request.endpoint, pathValues);
 
+	// "." and ".." as an ID would let an input value move the request to another path.
+	if (/(^|\/)\.{1,2}(\/|$)/.test(request.endpoint.split('?')[0]) && !/^https?:\/\//i.test(request.endpoint)) {
+		throw new NodeOperationError(
+			context.getNode(),
+			`A parameter of ${resource}/${operation} is "." or "..", which is not a valid ID`,
+			{ itemIndex, description: `The request path "${request.endpoint.split('?')[0]}" must not contain relative segments.` },
+		);
+	}
+
 	// A required ID that resolved to nothing leaves an empty path segment
 	// (e.g. /api/v1/courses//assignments), which Canvas answers with a misleading 404.
 	const path = request.endpoint.split('?')[0];
