@@ -71,7 +71,8 @@ export const communicationChannelFields: INodeProperties[] = [
 			{
 				name: 'Push',
 				value: 'push',
-				description: 'Push notification channel',
+				description:
+					'Push notification channel. Only works with an access token of a developer key that has Amazon SNS configured; Canvas refuses it otherwise.',
 			},
 			{
 				name: 'SMS',
@@ -100,7 +101,8 @@ export const communicationChannelFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'The address for the communication channel (email address or phone number)',
+		description:
+			'The address for the communication channel (email address or phone number). Canvas ignores it for push channels. An address the user already has is refused.',
 	},
 
 	// ----------------------------------
@@ -192,7 +194,7 @@ export const communicationChannelFields: INodeProperties[] = [
 				deleteBy: ['typeAndAddress'],
 			},
 		},
-		description: 'The address of the communication channel to delete',
+		description: 'The address of the communication channel to delete, exactly as stored in Canvas',
 	},
 
 	// ----------------------------------
@@ -216,7 +218,8 @@ export const communicationChannelFields: INodeProperties[] = [
 				name: 'skipConfirmation',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to skip the confirmation process (admin only). Auto-validates the channel.',
+				description:
+					'Whether to mark the channel as confirmed right away instead of sending a confirmation message (admins only; ignored for other users)',
 			},
 			{
 				displayName: 'Token',
