@@ -18,7 +18,7 @@ export class CanvasOAuth2Api implements ICredentialType {
 			type: 'string',
 			default: '',
 			placeholder: 'https://yourschool.instructure.com',
-			description: 'The base URL of your Canvas instance (without trailing slash)',
+			description: 'The address of your Canvas instance, e.g. https://yourschool.instructure.com',
 			required: true,
 		},
 		{
@@ -31,22 +31,24 @@ export class CanvasOAuth2Api implements ICredentialType {
 			displayName: 'Authorization URL',
 			name: 'authUrl',
 			type: 'hidden',
-			default: '={{$self["canvasUrl"]}}/login/oauth2/auth',
+			default: '={{String($self["canvasUrl"] ?? "").trim().replace(/\\/+$/, "")}}/login/oauth2/auth',
 			required: true,
 		},
 		{
 			displayName: 'Access Token URL',
 			name: 'accessTokenUrl',
 			type: 'hidden',
-			default: '={{$self["canvasUrl"]}}/login/oauth2/token',
+			default: '={{String($self["canvasUrl"] ?? "").trim().replace(/\\/+$/, "")}}/login/oauth2/token',
 			required: true,
 		},
 		{
 			displayName: 'Scope',
 			name: 'scope',
-			type: 'hidden',
-			default: 'url:GET|POST|PUT|DELETE',
-			description: 'Canvas uses URL-based scopes for API access',
+			type: 'string',
+			default: '',
+			placeholder: 'url:GET|/api/v1/courses url:GET|/api/v1/users/:user_id/profile',
+			description:
+				'Leave empty unless the Canvas developer key enforces scopes. If it does, list every scope the key allows that you need, separated by spaces, in the form url:METHOD|/api/v1/path (shown on the developer key in Canvas).',
 		},
 		{
 			displayName: 'Auth URI Query Parameters',

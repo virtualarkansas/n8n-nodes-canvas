@@ -22,7 +22,7 @@ export class CanvasApi implements ICredentialType {
 			type: 'string',
 			default: '',
 			placeholder: 'https://yourschool.instructure.com',
-			description: 'The base URL of your Canvas instance (without trailing slash)',
+			description: 'The address of your Canvas instance, e.g. https://yourschool.instructure.com',
 			required: true,
 		},
 		{
@@ -47,7 +47,8 @@ export class CanvasApi implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: '={{$credentials?.canvasUrl}}/api/v1',
+			// Tolerate surrounding whitespace and a trailing slash, like the node does.
+			baseURL: '={{String($credentials?.canvasUrl ?? "").trim().replace(/\\/+$/, "")}}/api/v1',
 			url: '/users/self',
 			method: 'GET',
 		},

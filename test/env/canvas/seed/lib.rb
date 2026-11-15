@@ -19,7 +19,7 @@ require "stringio"
 
 module Seed
   RNG_SEED = 20_261_115
-  TABLE = "n8n_seed_steps"
+  TABLE = "public.n8n_seed_steps" # Canvas (switchman) runs with an empty search_path
   BASE_URL = ENV.fetch("SEED_CANVAS_URL", "http://localhost:3000")
   PASSWORD = "BatteryPass123!"
 
@@ -88,6 +88,12 @@ module Seed
       only.empty? || only.any? { |pat| name == pat || name.start_with?("#{pat}.") || File.fnmatch(pat, name) }
     end
 
+    # SEED_FORCE=step.name re-runs a finished step (only sensible for idempotent steps)
+    def force?(name)
+      @force ||= ENV["SEED_FORCE"].to_s.split(",").map(&:strip).reject(&:empty?)
+      @force.include?(name)
+    end
+
     def done?(name)
       @done[name]
     end
@@ -95,17 +101,19 @@ module Seed
     def step(name, tx: true)
       return unless selected?(name)
 
-      if @done[name]
+      if @done[name] && !force?(name)
         log "skip  #{name} (already done)"
         return
       end
       log "start #{name}"
       @cur = { "fixtures" => {}, "tokens" => {}, "refs" => {} }
       t = Time.now
-      body = lambda do
+      body = lambda do |*|
         yield
         conn.execute(ActiveRecord::Base.sanitize_sql_array(
-                       ["INSERT INTO #{TABLE} (name, data, seconds) VALUES (?, ?, ?)", name, @cur.to_json, Time.now - t]
+                       ["INSERT INTO #{TABLE} (name, data, seconds) VALUES (?, ?, ?) " \
+                        "ON CONFLICT (name) DO UPDATE SET data = EXCLUDED.data, seconds = EXCLUDED.seconds, finished_at = now()",
+                        name, @cur.to_json, Time.now - t]
                      ))
       end
       begin
@@ -270,12 +278,10 @@ module Seed
 
     # ---- attachments ------------------------------------------------------------------
     def upload(context:, name:, content:, content_type: "text/plain", folder: nil, user: nil, **attrs)
-      io = StringIO.new(content.dup.force_encoding("BINARY"))
-      data = Canvas::UploadedFile.new(io, content_type, name) rescue nil # rubocop:disable Style/RescueModifier
-      att = Attachment.new(context:, display_name: name, filename: name, content_type:, **attrs)
+      att = Attachment.new(context:, display_name: name, **attrs)
       att.folder = folder if folder
       att.user = user if user
-      att.uploaded_data = data || uploaded_io(content, content_type, name)
+      att.uploaded_data = uploaded_io(content, content_type, name)
       att.save!
       att
     end

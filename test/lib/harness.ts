@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto';
+import { appendFileSync, mkdirSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { CANVAS_NODE_TYPE, N8nClient } from './n8n';
 import type { ExecutionResult, Json, N8nNode, N8nWorkflow } from './n8n';
 import { loadState } from './state';
@@ -38,6 +40,36 @@ export interface RunNodeResult {
 }
 
 const NODE_NAME = 'Canvas';
+
+/**
+ * Every node execution is logged so the coverage report can show, per operation,
+ * whether the battery really ran it against Canvas and how it ended.
+ */
+const RESULTS_DIR = resolve(__dirname, '..', '.results');
+const OPS_LOG = resolve(RESULTS_DIR, 'ops.jsonl');
+
+export interface OpRecord {
+	resource: string;
+	operation: string;
+	outcome: 'success' | 'error-output' | 'failed' | 'debug' | 'skipped';
+	/** Why an operation cannot be exercised on the local instance (outcome = skipped). */
+	reason?: string;
+	at: string;
+}
+
+function logOp(record: Omit<OpRecord, 'at'>): void {
+	mkdirSync(RESULTS_DIR, { recursive: true });
+	appendFileSync(OPS_LOG, JSON.stringify({ ...record, at: new Date().toISOString() }) + '\n');
+}
+
+/**
+ * Declare that an operation is not executed against the local Canvas, and why
+ * (for example: it is served by a hosted Instructure service). It still has to
+ * pass the route audit in the unit tests.
+ */
+export function skipOp(resource: string, operation: string, reason: string): void {
+	logOp({ resource, operation, outcome: 'skipped', reason });
+}
 
 let client: N8nClient | undefined;
 export function n8n(): N8nClient {
@@ -121,6 +153,19 @@ export async function runNode(opts: RunNodeOptions): Promise<RunNodeResult> {
 		const execution = await api.lastExecution(workflowId);
 		const run = execution.nodes[NODE_NAME]?.[0];
 		const nodeError = run?.error ?? execution.error;
+		const debugMode = (opts.params as Json | undefined)?.debugMode === true;
+		logOp({
+			resource: opts.resource,
+			operation: opts.operation,
+			outcome:
+				execution.status !== 'success'
+					? 'failed'
+					: debugMode
+						? 'debug'
+						: (run?.outputs[1]?.length ?? 0) > 0
+							? 'error-output'
+							: 'success',
+		});
 		return {
 			ok: execution.status === 'success',
 			success: run?.outputs[0] ?? [],
