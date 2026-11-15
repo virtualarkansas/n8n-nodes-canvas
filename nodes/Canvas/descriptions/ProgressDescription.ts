@@ -16,7 +16,7 @@ export const progressOperations: INodeProperties[] = [
 				name: 'Cancel',
 				value: 'cancel',
 				description:
-					'Cancel an asynchronous job. Canvas marks it as failed; an optional message tells a cancellation from a real failure.',
+					'Cancel an asynchronous job. Canvas marks its progress as failed (an optional message tells a cancellation from a real failure); a job that is already running is not interrupted and may still finish.',
 				action: 'Cancel a progress',
 			},
 			{

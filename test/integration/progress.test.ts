@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { canvas, fx, unique } from '../lib/canvas';
+import { eventually } from './content.helper';
 import { runNode, runOk } from '../lib/harness';
 import type { Json } from '../lib/n8n';
 import {
@@ -89,18 +90,39 @@ describe('progress', () => {
 			params: { progressId, options: { message } },
 		});
 		expect(cancelled).toMatchObject({ id: Number(progressId), workflow_state: 'failed', message });
+		// Canvas only marks the record. A job that had already started is not interrupted and
+		// reports its own state when it finishes, so the mark may or may not still be there.
 		const actual = await canvas().get<Json>(`/api/v1/progress/${progressId}`);
-		expect(actual).toMatchObject({ workflow_state: 'failed', message });
+		expect(['failed', 'running', 'completed']).toContain(actual.workflow_state);
+		if (actual.workflow_state === 'failed') {
+			expect(actual.message).toBe(message);
+		}
 	});
 
-	it('cancel: without a message', async () => {
+	it('cancel: without a message, on a job nothing touches any more', async () => {
 		const progressId = await startExport();
+		await eventually(
+			async () => (await canvas().get<Json>(`/api/v1/progress/${progressId}`)).workflow_state === 'completed',
+			'the export to finish',
+			150_000,
+		);
 		const [cancelled] = await runOk({ resource: 'progress', operation: 'cancel', params: { progressId } });
 		expect(cancelled).toMatchObject({ id: Number(progressId), workflow_state: 'failed', message: null });
 		expect(await canvas().get<Json>(`/api/v1/progress/${progressId}`)).toMatchObject({
 			workflow_state: 'failed',
 			message: null,
 		});
+
+		// The message is stored exactly as given.
+		const message = 'Second thoughts';
+		const [again] = await runOk({
+			resource: 'progress',
+			operation: 'cancel',
+			items: [{ id: Number(progressId), why: message }],
+			params: { progressId: '={{ $json.id }}', options: { message: '={{ $json.why }}' } },
+		});
+		expect(again).toMatchObject({ workflow_state: 'failed', message });
+		expect((await canvas().get<Json>(`/api/v1/progress/${progressId}`)).message).toBe(message);
 	});
 
 	it('errors: unknown IDs are 404; other people\'s jobs are off limits', async () => {

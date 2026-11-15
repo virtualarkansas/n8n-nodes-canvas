@@ -214,18 +214,23 @@ describe('ltiRegistration', () => {
 			});
 			created.push(String(extra.id));
 		}
+		// Other test files register tools in the root account at the same time, so the complete
+		// list is compared through this file's own registrations (found by their marker).
+		const own = (list: Json[]): unknown[] =>
+			list.filter((r) => JSON.stringify(r).includes(marker)).map((r) => r.id).sort();
 		const expected = await canvas().getAll<Json>(base, 'data');
-		expect(expected.length).toBeGreaterThanOrEqual(5);
+		expect(own(expected)).toHaveLength(5);
 
 		const all = await runOk({
 			resource: 'ltiRegistration',
 			operation: 'getAll',
-			params: { accountId, pagination: { returnAll: true } },
+			params: { accountId, options: { include: ['configuration'] }, pagination: { returnAll: true } },
 		});
 		// Every registration is its own item (not one item holding { total, data }).
-		expect(all.map((r) => r.id).sort()).toEqual(expected.map((r) => r.id).sort());
+		expect(own(all)).toEqual(own(expected));
 		expect(all.every((r) => r.account_binding !== undefined)).toBe(true);
 		expect(all[0].total).toBeUndefined();
+		expect(new Set(all.map((r) => r.id)).size).toBe(all.length);
 
 		const twoPages = await runOk({
 			resource: 'ltiRegistration',
