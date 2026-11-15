@@ -67,13 +67,14 @@ corrected. Where that changed what you see in the node:
 | Account Notification | Update: **Message** is a required field (Canvas rejects an update without it) | Fill in Message |
 | Authentication Provider | Type `twitter` and the settings `scopes`, `skip_internal_lookup`, `user_info_endpoint` removed (Canvas knows `scope` and `userinfo_endpoint`); Update SSO Settings sends the settings where Canvas reads them | Re-select the settings |
 | Calendar Event | Get Many: `includes` replaced by `include` (the name Canvas reads) | Saved values still work |
-| Content Migration | Default migration type is Course Copy; `workflow_state` removed from Update | Choose the type explicitly |
+| Content Migration | Default migration type is Course Copy; `workflow_state` removed from Update; Get Selective Data: Group and User contexts removed (Canvas cannot list the content of their ZIP imports) | Choose the type explicitly |
 | Content Share | Create, Add Users, Update and Delete no longer take a User ID (Canvas only has these routes for the calling user) | Nothing |
 | Account Calendar, Assignment | The JSON fields of Update Many, Bulk Update Dates, Batch Create Overrides and Batch Update Overrides are empty by default (the sample moved to the placeholder; the Update Many sample named account 1) | Fill in the list |
 | Course | **Copy: Only and Except now take effect.** 0.1.0 and earlier builds sent them where Canvas does not read them, so every copy was a complete copy; the value Assignment Groups is gone (groups come with their assignments). Create/Update: Allow Student Assignment Edits removed (Canvas ignores it; use Default Page Editing Roles). List Students uses the current roster endpoint: every student once (the old endpoint repeated a student per enrollment), without the test student unless included, and its options now take effect. Sort and include values Canvas cannot serve were removed | Check Copy workflows that set Only or Except: they now copy less. Check workflows that counted or de-duplicated students |
 | Course Pace | Create: `start_date` removed | Nothing |
 | Course Report | Only the report type Canvas offers per course remains (Course Pace) | Use Account Report for provisioning, grade export and the other account reports |
 | Custom Gradebook Column | Operation **Get** removed (Canvas has no such route) | Use Get Many |
+| Discussion Topic | Update: Is Announcement removed (on an update Canvas only uses it to look the topic up among announcements, so a discussion sent with it was "not found") | Nothing |
 | Enrollment | Create: `sisEnrollmentId` removed (not an API parameter) | Nothing |
 | External Tool | Group context removed (no such routes) | Use a course or account |
 | File | Get Quota: Folder context removed; Initiate Upload takes **File Name** (it never read the binary field); Get: option `replacement_chain_context_type` removed | Fill in File Name |
@@ -89,7 +90,7 @@ corrected. Where that changed what you see in the node:
 | New Quiz Item | Scoring algorithm `PartialCredit` removed (it does not exist); the documented algorithms are offered | Re-select |
 | Notification Preference | Get Many: Return All / Limit removed (the list is not paginated); outputs unwrapped | Nothing |
 | Outcome | Update: `add_defaults` removed | Nothing |
-| Outcome Group | Context `global` removed from Get Many | Nothing |
+| Outcome Group | Context `global` removed from Get Many; Unlink Outcome: Global context removed (Canvas deletes the link and then answers 500) | Nothing |
 | Outcome Import | `import_type` removed (Canvas accepts one type) | Nothing |
 | Outcome Result | `include` removed from Get Many and Get Rollups (the sideloaded records are lost when the list is unwrapped) | Read the related records with their own operations |
 | Page | A **Context** (course or group) is chosen first; Summary Only moved from List Revisions to the new Get Revision | Saved workflows default to Course |
@@ -168,6 +169,10 @@ corrected. Where that changed what you see in the node:
 - **Trigger:** optional secret token, signed payloads (verified against Instructure's key set),
   an optional check that events belong to your own Canvas (**Root Account UUID**), compressed
   bodies, Caliper deliveries, all current Live Events.
+- **Audit logs** (Authentications Log, Grade Change Log, Course Audit Log): every event carries
+  the records it refers to under `linked` (user, login, course, assignment ...), also for deleted
+  logins. Switch **Include Linked Records** off for the bare events.
+- **Progress** operations accept the `progress_url` Canvas hands out in place of the ID.
 - **Course administration:** Create and Update take the sub-account, storage quota and template
   flag; Update can move a course to another sub-account, make it a blueprint (with its lock
   settings) and override SIS stickiness.
@@ -194,6 +199,8 @@ corrected. Where that changed what you see in the node:
   prerequisites and completion requirements, calendar event series, group category limits,
   notification preferences for other users, developer key inheritance.
 - Descriptions and defaults that did not match Canvas' behaviour.
+- Assignment: an Annotatable Attachment ID without the Student Annotation submission type is
+  refused (Canvas ignored it silently).
 - Unusable input from expressions is refused with a message that names the field (a text where
   the rows of a collection are expected, an object in a list of IDs) instead of failing with an
   internal error or sending `[object Object]`; JSON fields accept surrounding whitespace and treat
