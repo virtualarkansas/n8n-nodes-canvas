@@ -31,6 +31,18 @@ export const fileOperations: INodeProperties[] = [
 				action: 'Get a file',
 			},
 			{
+				name: 'Get by Migration ID',
+				value: 'getByMigrationId',
+				description: 'Find the file of a course that a course copy or import created from a file reference (migration ID)',
+				action: 'Get a file by migration ID',
+			},
+			{
+				name: 'Get Icon Metadata',
+				value: 'getIconMetadata',
+				description: 'Get the settings an Icon Maker icon was built with, as stored inside the icon file',
+				action: 'Get the metadata of an icon maker icon',
+			},
+			{
 				name: 'Get Many',
 				value: 'getAll',
 				description: 'Get many files',
@@ -65,6 +77,12 @@ export const fileOperations: INodeProperties[] = [
 				value: 'removeUsageRights',
 				description: 'Remove copyright and license information from files',
 				action: 'Remove usage rights from files',
+			},
+			{
+				name: 'Reset Verifier',
+				value: 'resetVerifier',
+				description: 'Invalidate every link to the file that carries its "verifier" code by giving the file a new one. Users may do this for their own files; for the files of a course or group it takes the rights to manage files and to act as other users. Deprecated by Instructure together with verifier links.',
+				action: 'Reset the link verifier of a file',
 			},
 			{
 				name: 'Set Usage Rights',
@@ -158,6 +176,42 @@ export const fileFields: INodeProperties[] = [
 		description: 'Whether the files belong to a course, a group or a user',
 	},
 	{
+		displayName: 'Context Type',
+		name: 'contextType',
+		type: 'options',
+		required: true,
+		default: 'none',
+		displayOptions: {
+			show: {
+				resource: ['file'],
+				operation: ['get'],
+			},
+		},
+		options: [
+			{
+				name: 'Any (File ID Only)',
+				value: 'none',
+				description: 'Find the file wherever it is',
+			},
+			{
+				name: 'Course',
+				value: 'course',
+				description: 'Only find the file when it belongs to this course',
+			},
+			{
+				name: 'Group',
+				value: 'group',
+				description: 'Only find the file when it belongs to this group',
+			},
+			{
+				name: 'User',
+				value: 'user',
+				description: 'Only find the file when it is among the personal files of this user',
+			},
+		],
+		description: 'Whether to look for the file by its ID alone or within one course, group or user, where a file from elsewhere is reported as not found',
+	},
+	{
 		displayName: 'Course ID',
 		name: 'courseId',
 		type: 'string',
@@ -167,6 +221,7 @@ export const fileFields: INodeProperties[] = [
 			show: {
 				resource: ['file'],
 				operation: [
+					'get',
 					'getAll',
 					'getQuota',
 					'upload',
@@ -190,6 +245,7 @@ export const fileFields: INodeProperties[] = [
 			show: {
 				resource: ['file'],
 				operation: [
+					'get',
 					'getAll',
 					'getQuota',
 					'upload',
@@ -213,6 +269,7 @@ export const fileFields: INodeProperties[] = [
 			show: {
 				resource: ['file'],
 				operation: [
+					'get',
 					'getAll',
 					'getQuota',
 					'upload',
@@ -225,6 +282,34 @@ export const fileFields: INodeProperties[] = [
 			},
 		},
 		description: 'The ID of the group',
+	},
+	{
+		displayName: 'Course ID',
+		name: 'courseId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['file'],
+				operation: ['getByMigrationId'],
+			},
+		},
+		description: 'The ID of the course the file was copied or imported into',
+	},
+	{
+		displayName: 'Migration ID',
+		name: 'migrationId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['file'],
+				operation: ['getByMigrationId'],
+			},
+		},
+		description: 'The file reference used by course copies and imports, e.g. "g83febd708806a010f5a41482de7d06d6" (as found in Content Migration > Get Asset ID Mapping, or in the manifest of a course export)',
 	},
 	{
 		displayName: 'Folder ID',
@@ -254,7 +339,7 @@ export const fileFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['file'],
-				operation: ['get', 'update', 'delete', 'copy', 'getPublicUrl'],
+				operation: ['get', 'update', 'delete', 'copy', 'getPublicUrl', 'getIconMetadata', 'resetVerifier'],
 			},
 		},
 		description: 'The ID of the file',

@@ -111,6 +111,32 @@ export const mediaObjectFields: INodeProperties[] = [
 	//         mediaObject: update
 	// ----------------------------------
 	{
+		displayName: 'Identify Media By',
+		name: 'mediaBy',
+		type: 'options',
+		required: true,
+		default: 'mediaObjectId',
+		displayOptions: {
+			show: {
+				resource: ['mediaObject'],
+				operation: ['update', 'listTracks', 'updateTracks'],
+			},
+		},
+		options: [
+			{
+				name: 'Attachment ID',
+				value: 'attachmentId',
+				description: 'The file that holds the media. What the user of the credential may do then follows from their rights on that file.',
+			},
+			{
+				name: 'Media Object ID',
+				value: 'mediaObjectId',
+				description: 'The media ID of the media object. Renaming it this way is reserved to the user who uploaded it.',
+			},
+		],
+		description: 'Whether to address the media object by its media ID or through the file (attachment) that holds it',
+	},
+	{
 		displayName: 'Media Object ID',
 		name: 'mediaObjectId',
 		type: 'string',
@@ -120,9 +146,25 @@ export const mediaObjectFields: INodeProperties[] = [
 			show: {
 				resource: ['mediaObject'],
 				operation: ['update', 'listTracks', 'updateTracks'],
+				mediaBy: ['mediaObjectId'],
 			},
 		},
 		description: 'The media ID of the media object (the "media_id" of the object, e.g. "m-2pbqZk3RCGMNFs"), not its numeric ID',
+	},
+	{
+		displayName: 'Attachment ID',
+		name: 'attachmentId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['mediaObject'],
+				operation: ['update', 'listTracks', 'updateTracks'],
+				mediaBy: ['attachmentId'],
+			},
+		},
+		description: 'The ID of the media file (the "ID" of the file in Files, or "attachment_id" of a media object)',
 	},
 
 	// ----------------------------------

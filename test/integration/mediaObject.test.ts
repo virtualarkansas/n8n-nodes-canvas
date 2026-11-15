@@ -19,12 +19,17 @@ describe('mediaObject', () => {
 	const courseMedia = [`m-${run}a`, `m-${run}b`, `m-${run}c`];
 	const groupMedia = `m-${run}g`;
 	const userMedia = `m-${run}u`;
+	/** A recording the student2 persona made in the course. */
+	const studentMedia = `m-${run}s`;
 	const attachmentIds: string[] = [];
+	/** The file (attachment) that holds each media object. */
+	const attachmentOf: Record<string, string> = {};
 	const srt = (text: string): string => `1\n00:00:00,000 --> 00:00:02,500\n${text}\n`;
 
 	const register = async (client: CanvasClient, mediaId: string, contextCode: string, title: string, type = 'video'): Promise<void> => {
 		const created = await client.post<Json>('/api/v1/media_objects', { id: mediaId, type, context_code: contextCode, title });
-		attachmentIds.push(String((created.media_object as Json).attachment_id));
+		attachmentOf[mediaId] = String((created.media_object as Json).attachment_id);
+		attachmentIds.push(attachmentOf[mediaId]);
 	};
 	const listFromCanvas = (path: string, query = ''): Promise<Json[]> =>
 		canvas().getAll<Json>(`${path}?exclude[]=sources&exclude[]=tracks${query}`);
@@ -282,5 +287,112 @@ describe('mediaObject', () => {
 		});
 		expect(removed.every((t) => !('locale' in t))).toBe(true);
 		expect(await canvas().get<Json[]>(`/api/v1/media_objects/${courseMedia[2]}/media_tracks`)).toEqual([]);
+	});
+
+	// ------------------------------------------------- by attachment (file) ID
+
+	it('update by attachment ID: the rights on the file decide, not who uploaded the media', async () => {
+		await register(new CanvasClient('student2'), studentMedia, `course_${courseId}`, `Student recording ${run}`);
+
+		// A recording a student made in the course: by media ID only that student may rename it ...
+		const byMediaId = await runNode({
+			resource: 'mediaObject',
+			operation: 'update',
+			params: { mediaBy: 'mediaObjectId', mediaObjectId: studentMedia, title: 'Renamed by somebody else', errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(byMediaId.success).toEqual([]);
+		expect(byMediaId.error[0]).toMatchObject({ errorType: 'FORBIDDEN' });
+
+		// ... through its file, whoever manages the files of the course can.
+		const title = `Über die Datei umbenannt ünï ${run}`;
+		const [updated] = await runOk({
+			resource: 'mediaObject',
+			operation: 'update',
+			items: [{ attachment: Number(attachmentOf[studentMedia]) }],
+			params: { mediaBy: 'attachmentId', attachmentId: '={{ $json.attachment }}', title },
+		});
+		expect(updated).toMatchObject({ media_id: studentMedia, title });
+		const listed = await listFromCanvas(`/api/v1/courses/${courseId}/media_objects`);
+		expect(listed.find((m) => m.media_id === studentMedia)!.title).toBe(title);
+
+		// A classmate has no such rights on the file.
+		const classmate = await runNode({
+			resource: 'mediaObject',
+			operation: 'update',
+			persona: 'student',
+			params: { mediaBy: 'attachmentId', attachmentId: attachmentOf[studentMedia], title: 'Hijacked', errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(classmate.success).toEqual([]);
+		expect(classmate.error[0]).toMatchObject({ errorType: 'FORBIDDEN', resource: 'mediaObject', operation: 'update' });
+
+		const missing = await runNode({
+			resource: 'mediaObject',
+			operation: 'update',
+			params: { mediaBy: 'attachmentId', attachmentId: '999999999', title: 'x', errorHandling: { onError: 'continueWithError' } },
+		});
+		// As with media IDs, Canvas does not tell an unknown file from one the user may not touch.
+		expect(missing.success).toEqual([]);
+		expect([401, 403, 404]).toContain(missing.error[0].errorCode);
+		expect(String(missing.error[0].endpoint)).toBe('/api/v1/media_attachments/999999999');
+		expect((await listFromCanvas(`/api/v1/courses/${courseId}/media_objects`)).find((m) => m.media_id === studentMedia)!.title).toBe(title);
+	});
+
+	it('updateTracks / listTracks by attachment ID: the captions of the media file', async () => {
+		const attachmentId = attachmentOf[courseMedia[1]];
+		const tracksFromCanvas = (): Promise<Json[]> =>
+			canvas().get<Json[]>(`/api/v1/media_attachments/${attachmentId}/media_tracks?include[]=content`);
+
+		const set = await runOk({
+			resource: 'mediaObject',
+			operation: 'updateTracks',
+			params: {
+				mediaBy: 'attachmentId',
+				attachmentId,
+				tracks: {
+					trackValues: [
+						{ locale: 'en', content: srt('By attachment'), kind: 'captions' },
+						{ locale: 'de', content: srt('Über die Datei'), kind: 'subtitles' },
+					],
+				},
+				options: { include: ['content', 'created_at', 'updated_at', 'webvtt_content'] },
+			},
+		});
+		expect(set.map((t) => t.locale).sort()).toEqual(['de', 'en']);
+		expect(String(set.find((t) => t.locale === 'de')!.content)).toBe(srt('Über die Datei'));
+		expect(set[0]).toHaveProperty('created_at');
+		expect(set[0]).toHaveProperty('updated_at');
+		expect(String(set[0].webvtt_content)).toContain('WEBVTT');
+		const stored = await tracksFromCanvas();
+		expect(stored.map((t) => t.locale).sort()).toEqual(['de', 'en']);
+		expect(stored.find((t) => t.locale === 'en')).toMatchObject({ kind: 'captions', content: srt('By attachment') });
+
+		const listed = await runOk({
+			resource: 'mediaObject',
+			operation: 'listTracks',
+			items: [{ attachment: Number(attachmentId) }],
+			params: { mediaBy: 'attachmentId', attachmentId: '={{ $json.attachment }}', options: { include: ['content'] } },
+		});
+		expect(listed.map((t) => t.id).sort()).toEqual(stored.map((t) => t.id).sort());
+		expect(listed.find((t) => t.locale === 'de')!.content).toBe(srt('Über die Datei'));
+		// The same captions are what the media object itself shows.
+		const byMediaId = await runOk({ resource: 'mediaObject', operation: 'listTracks', params: { mediaObjectId: courseMedia[1] } });
+		expect(byMediaId.map((t) => t.id).sort()).toEqual(stored.map((t) => t.id).sort());
+
+		const removed = await runOk({
+			resource: 'mediaObject',
+			operation: 'updateTracks',
+			params: { mediaBy: 'attachmentId', attachmentId, removeAllTracks: true },
+		});
+		expect(removed.every((t) => !('locale' in t))).toBe(true);
+		expect(await tracksFromCanvas()).toEqual([]);
+
+		const missing = await runNode({
+			resource: 'mediaObject',
+			operation: 'listTracks',
+			params: { mediaBy: 'attachmentId', attachmentId: '999999999', errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(missing.success).toEqual([]);
+		expect([401, 403, 404]).toContain(missing.error[0].errorCode);
+		expect(missing.error[0]).toMatchObject({ resource: 'mediaObject', operation: 'listTracks' });
 	});
 });

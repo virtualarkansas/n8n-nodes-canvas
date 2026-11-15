@@ -23,6 +23,8 @@ describe('file', () => {
 	const workFolderName = unique('uploads').replace(/\s/g, '-');
 	/** Files outside the work folder (user and group files) to delete afterwards. */
 	const strays: string[] = [];
+	/** Courses the tests create (course copies) to delete afterwards. */
+	const courses: string[] = [];
 
 	let server: Server;
 	let serverUrl = '';
@@ -81,6 +83,7 @@ describe('file', () => {
 		server?.close();
 		if (workFolderId) await canvas().request('DELETE', `/api/v1/folders/${workFolderId}?force=true`);
 		for (const id of strays) await canvas().request('DELETE', `/api/v1/files/${id}`);
+		for (const id of courses) await canvas().request('DELETE', `/api/v1/courses/${id}?event=delete`);
 	});
 
 	// ------------------------------------------------------------ upload: binary
@@ -495,6 +498,227 @@ describe('file', () => {
 		const [plain] = await runOk({ resource: 'file', operation: 'get', params: { fileId: String(bulk.id) } });
 		expect(plain).not.toHaveProperty('user');
 		expect(plain).not.toHaveProperty('usage_rights');
+	});
+
+	it('get: within a course, a group or a user the file is only found where it belongs', async () => {
+		const [courseFile] = await canvas().get<Json[]>(`/api/v1/folders/${battery.bulkFilesId}/files?per_page=1`);
+		const content = Buffer.from(`context get ${unique('c')}\n`);
+		const groupFile = await uploadDirect(canvas(), `/api/v1/groups/${battery.groupId}/files`, `${unique('in-group').replace(/\s/g, '-')}.txt`, content, 'text/plain');
+		const userFile = await uploadDirect(
+			new CanvasClient('student2'),
+			'/api/v1/users/self/files',
+			`${unique('in-user').replace(/\s/g, '-')}.txt`,
+			content,
+			'text/plain',
+		);
+		strays.push(String(groupFile.id), String(userFile.id));
+		const get = (params: Json, persona = 'admin'): ReturnType<typeof runNode> =>
+			runNode({ resource: 'file', operation: 'get', persona, params: { ...params, errorHandling: { onError: 'continueWithError' } } });
+		const found = async (params: Json, persona?: string): Promise<Json> => {
+			const result = await get(params, persona);
+			expect(result.error, JSON.stringify(result.error)).toEqual([]);
+			return result.success[0];
+		};
+		const notFound = async (params: Json, persona?: string): Promise<void> => {
+			const result = await get(params, persona);
+			expect(result.success, JSON.stringify(params)).toEqual([]);
+			expect(result.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', resource: 'file', operation: 'get' });
+		};
+
+		// Course: by ID and by SIS ID, with the options of Get.
+		const inCourse = await found({ contextType: 'course', courseId, fileId: String(courseFile.id), options: { include: ['user'] } });
+		expect(inCourse).toMatchObject({ id: courseFile.id, display_name: courseFile.display_name });
+		expect(inCourse.user).toMatchObject({ id: Number(fx('adminUserId')) });
+		expect((await found({ contextType: 'course', courseId: 'sis_course_id:W5682-D', fileId: String(courseFile.id) })).id).toBe(courseFile.id);
+		await notFound({ contextType: 'group', groupId: battery.groupId, fileId: String(courseFile.id) });
+		await notFound({ contextType: 'user', userId: fx('student2UserId'), fileId: String(courseFile.id) });
+
+		// Group.
+		expect((await found({ contextType: 'group', groupId: battery.groupId, fileId: String(groupFile.id) })).id).toBe(groupFile.id);
+		await notFound({ contextType: 'course', courseId, fileId: String(groupFile.id) });
+
+		// User: "self" for the owner, the user ID for an administrator.
+		const own = await found({ contextType: 'user', userId: 'self', fileId: String(userFile.id) }, 'student2');
+		expect(own).toMatchObject({ id: userFile.id, display_name: userFile.display_name });
+		expect((await found({ contextType: 'user', userId: fx('student2UserId'), fileId: String(userFile.id) })).id).toBe(userFile.id);
+		await notFound({ contextType: 'user', userId: fx('studentUserId'), fileId: String(userFile.id) });
+		await notFound({ contextType: 'course', courseId, fileId: String(userFile.id) });
+
+		// Without a context ("Any") all three are found, several in one run.
+		const anywhere = await runNode({
+			resource: 'file',
+			operation: 'get',
+			items: [{ id: courseFile.id }, { id: groupFile.id }, { id: userFile.id }],
+			params: { contextType: 'none', fileId: '={{ $json.id }}' },
+		});
+		expect(anywhere.failure, JSON.stringify(anywhere.failure)).toBeUndefined();
+		expect(anywhere.success.map((f) => f.id)).toEqual([courseFile.id, groupFile.id, userFile.id]);
+	});
+
+	it('getByMigrationId: finds the copy a course copy made of a file', async () => {
+		const source = await canvas().post<Json>(`/api/v1/accounts/${fx('accountId')}/courses`, { course: { name: unique('File ref source') } });
+		const target = await canvas().post<Json>(`/api/v1/accounts/${fx('accountId')}/courses`, { course: { name: unique('File ref target') } });
+		courses.push(String(source.id), String(target.id));
+		const content = Buffer.from(`copied by a course copy ${unique('ref')}\n`);
+		const original = await uploadDirect(canvas(), `/api/v1/courses/${String(source.id)}/files`, 'copied ünï.txt', content, 'text/plain');
+
+		const migration = await canvas().post<Json>(`/api/v1/courses/${String(target.id)}/content_migrations`, {
+			migration_type: 'course_copy_importer',
+			settings: { source_course_id: String(source.id) },
+		});
+		let state = '';
+		for (let i = 0; i < 120 && state !== 'completed' && state !== 'failed'; i++) {
+			await new Promise((r) => setTimeout(r, 1000));
+			state = String(
+				(await canvas().get<Json>(`/api/v1/courses/${String(target.id)}/content_migrations/${String(migration.id)}`)).workflow_state,
+			);
+		}
+		expect(state).toBe('completed');
+
+		// The mapping of the migration names the file reference next to the IDs.
+		const mapping = await canvas().get<Json>(
+			`/api/v1/courses/${String(target.id)}/content_migrations/${String(migration.id)}/asset_id_mapping`,
+		);
+		const files = mapping.files as Json;
+		const migrationId = Object.keys(files).find((key) => !/^\d+$/.test(key))!;
+		expect(migrationId).toMatch(/^[gi][0-9a-f]{32}$/);
+		const copyId = Number(files[String(original.id)]);
+
+		const [file] = await runOk({
+			resource: 'file',
+			operation: 'getByMigrationId',
+			items: [{ course: Number(target.id), ref: migrationId }],
+			params: { courseId: '={{ $json.course }}', migrationId: '={{ $json.ref }}' },
+		});
+		expect(file).toMatchObject({ id: copyId, display_name: 'copied ünï.txt', size: content.length });
+		expect(file.id).not.toBe(original.id);
+		expect((await downloadFile(file)).equals(content)).toBe(true);
+
+		const run = (course: unknown, ref: string, persona = 'admin'): ReturnType<typeof runNode> =>
+			runNode({
+				resource: 'file',
+				operation: 'getByMigrationId',
+				persona,
+				params: { courseId: String(course), migrationId: ref, errorHandling: { onError: 'continueWithError' } },
+			});
+		// The reference only exists in the course that received the copy.
+		const inSource = await run(source.id, migrationId);
+		expect(inSource.success).toEqual([]);
+		expect(inSource.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', resource: 'file', operation: 'getByMigrationId' });
+		const unknown = await run(target.id, 'g00000000000000000000000000000000');
+		expect(unknown.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND' });
+		const asStudent = await run(target.id, migrationId, 'student');
+		expect(asStudent.success).toEqual([]);
+		expect([401, 403, 404]).toContain(asStudent.error[0].errorCode);
+	});
+
+	it('getIconMetadata: returns the settings stored inside an Icon Maker icon', async () => {
+		const settings = {
+			type: 'image/svg+xml-icon-maker-icons',
+			alt: 'Ein Symbol ünï',
+			shape: 'square',
+			size: 'small',
+			color: '#FFFFFF',
+			outlineColor: '#65499D',
+			text: 'Hello "quoted" & more',
+			textSize: 'x-large',
+			x: '50%',
+			width: 108,
+		};
+		const escape = (text: string): string => text.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+		const svg = (metadata?: string): Buffer =>
+			Buffer.from(
+				`<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108">${metadata === undefined ? '' : `<metadata>${escape(metadata)}</metadata>`}<rect width="108" height="108" fill="#65499D"/></svg>`,
+			);
+		// Canvas files an upload as an Icon Maker icon when the upload says so.
+		const iconUpload = (name: string, content: Buffer): Promise<Json> =>
+			uploadDirect(canvas(), `/api/v1/folders/${workFolderId}/files`, name, content, 'image/svg+xml', { category: 'icon_maker_icons' });
+		const icon = await iconUpload('icon ünï.svg', svg(JSON.stringify(settings)));
+		const bare = await iconUpload('icon-without-settings.svg', svg());
+		const plain = await uploadDirect(canvas(), `/api/v1/folders/${workFolderId}/files`, 'not-an-icon.svg', svg(JSON.stringify(settings)), 'image/svg+xml');
+
+		const [metadata] = await runOk({ resource: 'file', operation: 'getIconMetadata', items: [{ id: icon.id }], params: { fileId: '={{ $json.id }}' } });
+		expect(metadata).toEqual({ name: 'icon ünï.svg', ...settings });
+		expect(metadata).toEqual((await canvas().request('GET', `/api/v1/files/${String(icon.id)}/icon_metadata`)).data);
+
+		const result = await runNode({
+			resource: 'file',
+			operation: 'getIconMetadata',
+			items: [{ id: bare.id }, { id: plain.id }, { id: 999999999 }],
+			params: { fileId: '={{ $json.id }}', errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(result.failure, JSON.stringify(result.failure)).toBeUndefined();
+		// An icon that carries no settings is answered without content.
+		expect(result.success).toEqual([{ success: true }]);
+		expect(result.rawSuccess.map((item) => item.pairedItem)).toEqual([{ item: 0 }]);
+		expect(result.error).toHaveLength(2);
+		expect(result.error[0]).toMatchObject({
+			errorCode: 400,
+			errorType: 'VALIDATION_ERROR',
+			errorMessage: 'The requested attachment does not support viewing metadata.',
+			operation: 'getIconMetadata',
+		});
+		expect(result.error[1]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND' });
+
+		const asStudent = await runNode({
+			resource: 'file',
+			operation: 'getIconMetadata',
+			persona: 'sbxStudent1',
+			params: { fileId: String(icon.id), errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(asStudent.success).toEqual([]);
+		expect([401, 403]).toContain(asStudent.error[0].errorCode);
+	});
+
+	it('resetVerifier: gives the file a new verifier, so links carrying the old one stop working', async () => {
+		const student2 = new CanvasClient('student2');
+		const content = Buffer.from(`verifier ${unique('v')}\n`);
+		const file = await uploadDirect(student2, '/api/v1/users/self/files', `${unique('verifier').replace(/\s/g, '-')}.txt`, content, 'text/plain');
+		strays.push(String(file.id));
+		// (Canvas shows the verifier of a file to its owner only.)
+		const uuid = async (): Promise<string> => String((await student2.get<Json>(`/api/v1/files/${String(file.id)}`)).uuid);
+		const withVerifier = (verifier: string): Promise<Response> =>
+			fetch(`${canvas().url}/files/${String(file.id)}/download?verifier=${verifier}`, { redirect: 'manual' });
+		const before = await uuid();
+		expect(before).toMatch(/^\w{20,}$/);
+		const open = await withVerifier(before);
+		expect(open.status).toBe(200);
+		expect(Buffer.from(await open.arrayBuffer()).equals(content)).toBe(true);
+
+		const [reset] = await runOk({
+			resource: 'file',
+			operation: 'resetVerifier',
+			items: [{ id: file.id }],
+			params: { fileId: '={{ $json.id }}' },
+		});
+		expect(reset).toMatchObject({ id: file.id, display_name: file.display_name, size: content.length });
+
+		const after = await uuid();
+		expect(after).not.toBe(before);
+		// The old link asks for a login now, the new one downloads.
+		expect((await withVerifier(before)).status).toBe(302);
+		const reopened = await withVerifier(after);
+		expect(reopened.status).toBe(200);
+		expect(Buffer.from(await reopened.arrayBuffer()).equals(content)).toBe(true);
+
+		// The owner may do this for their own file ...
+		const [own] = await runOk({ resource: 'file', operation: 'resetVerifier', persona: 'student2', params: { fileId: String(file.id) } });
+		expect(own.id).toBe(file.id);
+		expect(await uuid()).not.toBe(after);
+
+		// ... but not for the files of a course, and nobody for a file that does not exist.
+		const [courseFile] = await canvas().get<Json[]>(`/api/v1/folders/${battery.bulkFilesId}/files?per_page=1`);
+		const result = await runNode({
+			resource: 'file',
+			operation: 'resetVerifier',
+			persona: 'student2',
+			items: [{ id: courseFile.id }, { id: 999999999 }],
+			params: { fileId: '={{ $json.id }}', errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(result.success).toEqual([]);
+		expect(result.error[0]).toMatchObject({ errorType: 'FORBIDDEN', resource: 'file', operation: 'resetVerifier' });
+		expect([401, 403]).toContain(result.error[0].errorCode);
+		expect(result.error[1]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND' });
 	});
 
 	it('get: "replacement chain course ID" finds the file that replaced an overwritten one', async () => {
