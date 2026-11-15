@@ -661,7 +661,7 @@ describe('quizSubmission', () => {
 		return JSON.stringify(((submission.submission_history as Json[]) ?? []).map((version) => version.submission_data));
 	};
 
-	it('uploadFile [needs shared change]: a student uploads files for the running attempt and answers a file upload question with one', async () => {
+	it('uploadFile: a student uploads files for the running attempt and answers a file upload question with one', async () => {
 		const quiz = await createQuiz(courseId, { title: unique('File upload quiz') }, [FILE_UPLOAD]);
 		try {
 			const running = await startAttempt(courseId, quiz.id, 'student2');
@@ -711,7 +711,7 @@ describe('quizSubmission', () => {
 		}
 	});
 
-	it('uploadFile [needs shared change]: from a URL, for the running attempt', async () => {
+	it('uploadFile: from a URL, for the running attempt', async () => {
 		const server = await startFileServer();
 		const quiz = await createQuiz(courseId, { title: unique('File upload quiz by URL') }, [FILE_UPLOAD]);
 		try {

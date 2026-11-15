@@ -1424,6 +1424,18 @@ function parseJsonBody(body: unknown): IDataObject | undefined {
 }
 
 /**
+ * The answer to step 1 of an upload. Quiz submission files wrap it:
+ * `{ "attachments": [ { "upload_url": ..., "upload_params": ... } ] }`.
+ */
+function unwrapUploadTicket(data: IDataObject | undefined): IDataObject {
+	const wrapped = data?.attachments;
+	if (Array.isArray(wrapped) && wrapped.length > 0 && wrapped[0] !== null && typeof wrapped[0] === 'object') {
+		return wrapped[0] as IDataObject;
+	}
+	return data ?? {};
+}
+
+/**
  * Perform the complete Canvas three-step file upload (binary data).
  *
  * Step 1: POST to Canvas API endpoint to notify and get upload token
@@ -1448,7 +1460,7 @@ export async function canvasFileUpload(
 		rateLimitOptions,
 	);
 
-	const step1Data = step1Response.data as IDataObject;
+	const step1Data = unwrapUploadTicket(step1Response.data as IDataObject);
 	const uploadUrl = step1Data?.upload_url as string | undefined;
 	const uploadParams = (step1Data?.upload_params ?? {}) as IDataObject;
 
@@ -1559,7 +1571,7 @@ export async function canvasFileUploadFromUrl(
 		rateLimitOptions,
 	);
 
-	const responseData = step1Response.data as IDataObject;
+	const responseData = unwrapUploadTicket(step1Response.data as IDataObject);
 	const uploadUrl = responseData?.upload_url as string | undefined;
 	const uploadParams = responseData?.upload_params as IDataObject | undefined;
 	let progress = responseData?.progress as IDataObject | undefined;
