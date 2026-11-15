@@ -8,7 +8,7 @@ the workflows create, change and delete records).
 Each step continues on error, so one failing step does not stop the tour. Steps can fail where they
 refer to a record the battery prepared outside the workflow.
 
-Last verification (`npx tsx test/tools/verify-workflows.ts`): 94 workflows imported and run on n8n; 1803 of 1803 steps executed, 1147 without an error.
+Last verification (`npx tsx test/tools/verify-workflows.ts`): 94 workflows imported and run on n8n; 1801 of 1801 steps executed, 1143 without an error.
 
 | Workflow | Run | Steps | Executed | Succeeded |
 |---|---|---:|---:|---:|
@@ -21,11 +21,11 @@ Last verification (`npx tsx test/tools/verify-workflows.ts`): 94 workflows impor
 | announcement | success | 17 | 17 | 11 |
 | announcementExternalFeed | success | 6 | 6 | 6 |
 | apiRequest | success | 10 | 10 | 10 |
-| apiTokenScope | success | 4 | 4 | 4 |
+| apiTokenScope | success | 3 | 3 | 3 |
 | assignment | success | 58 | 58 | 34 |
 | assignmentExtension | success | 3 | 3 | 0 |
 | assignmentGroup | success | 17 | 17 | 13 |
-| authenticationProvider | success | 34 | 34 | 31 |
+| authenticationProvider | success | 33 | 33 | 30 |
 | authenticationsLog | success | 15 | 15 | 15 |
 | blackoutDate | success | 5 | 5 | 5 |
 | blueprintCourse | success | 28 | 28 | 19 |
@@ -78,7 +78,7 @@ Last verification (`npx tsx test/tools/verify-workflows.ts`): 94 workflows impor
 | outcomeImport | success | 7 | 7 | 0 |
 | outcomeResult | success | 30 | 30 | 0 |
 | page | success | 38 | 38 | 34 |
-| peerReview | success | 14 | 14 | 12 |
+| peerReview | success | 14 | 14 | 11 |
 | proficiencyRating | success | 3 | 3 | 0 |
 | progress | success | 24 | 24 | 24 |
 | questionBank | success | 11 | 11 | 11 |
@@ -96,7 +96,7 @@ Last verification (`npx tsx test/tools/verify-workflows.ts`): 94 workflows impor
 | rubric | success | 38 | 38 | 2 |
 | search | success | 18 | 18 | 12 |
 | section | success | 24 | 24 | 7 |
-| sisImport | success | 49 | 49 | 48 |
+| sisImport | success | 49 | 49 | 47 |
 | sisImportError | success | 9 | 9 | 9 |
 | sisIntegration | success | 9 | 9 | 0 |
 | submission | success | 67 | 67 | 67 |
