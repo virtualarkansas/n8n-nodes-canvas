@@ -214,6 +214,7 @@ import {
 	buildQuizSubmissionEventRequest,
 	buildQuizSubmissionQuestionRequest,
 } from './quizExtras.handler';
+import { buildQuestionBankRequest } from './questionBanks.handler';
 
 // Generic requests group
 import {
@@ -386,6 +387,7 @@ export const resourceHandlers: Record<string, ResourceHandler> = {
 	quizIpFilter: buildQuizIpFilterRequest,
 	quizSubmissionEvent: buildQuizSubmissionEventRequest,
 	quizSubmissionQuestion: buildQuizSubmissionQuestionRequest,
+	questionBank: buildQuestionBankRequest,
 
 	// Generic requests group
 	apiRequest: buildApiRequestRequest,

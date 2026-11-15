@@ -100,6 +100,7 @@ export const canvasResources: ICanvasResource[] = [
 	{ name: 'Poll Submission', value: 'pollSubmission', operations: descriptions.pollSubmissionOperations, fields: descriptions.pollSubmissionFields },
 	{ name: 'Proficiency Rating', value: 'proficiencyRating', operations: descriptions.proficiencyRatingOperations, fields: descriptions.proficiencyRatingFields },
 	{ name: 'Progress', value: 'progress', operations: descriptions.progressOperations, fields: descriptions.progressFields },
+	{ name: 'Question Bank', value: 'questionBank', operations: descriptions.questionBankOperations, fields: descriptions.questionBankFields },
 	{ name: 'Quiz', value: 'quiz', operations: descriptions.quizOperations, fields: descriptions.quizFields },
 	{ name: 'Quiz Assignment Override', value: 'quizAssignmentOverride', operations: descriptions.quizAssignmentOverrideOperations, fields: descriptions.quizAssignmentOverrideFields },
 	{ name: 'Quiz Extension', value: 'quizExtension', operations: descriptions.quizExtensionOperations, fields: descriptions.quizExtensionFields },
