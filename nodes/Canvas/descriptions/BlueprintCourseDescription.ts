@@ -15,49 +15,52 @@ export const blueprintCourseOperations: INodeProperties[] = [
 			{
 				name: 'Begin Migration',
 				value: 'beginMigration',
-				description: 'Begin a migration to sync blueprint changes',
+				description:
+					'Start a sync that pushes the changes of a blueprint course to its associated courses. It runs in the background: check it with Get Migration. Only one sync can run at a time.',
 				action: 'Begin a blueprint migration',
 			},
 			{
 				name: 'Get Associated Courses',
 				value: 'getAssociatedCourses',
-				description: 'Get courses associated with a blueprint',
+				description: 'Get the courses that receive updates from a blueprint course',
 				action: 'Get associated courses',
 			},
 			{
 				name: 'Get Import Details',
 				value: 'getImportDetails',
-				description: 'Get details about a blueprint import',
+				description:
+					'Get the changes one sync brought into an associated course, including the items skipped because they were changed locally',
 				action: 'Get blueprint import details',
 			},
 			{
 				name: 'Get Many Imports',
 				value: 'getAllImports',
-				description: 'Get many blueprint imports for a subscription',
+				description: 'Get the syncs an associated course has received from its blueprint, newest first',
 				action: 'Get many blueprint imports',
 			},
 			{
 				name: 'Get Many Migrations',
 				value: 'getAllMigrations',
-				description: 'Get many blueprint migrations',
+				description: 'Get the syncs a blueprint course has pushed, newest first',
 				action: 'Get many blueprint migrations',
 			},
 			{
 				name: 'Get Migration',
 				value: 'getMigration',
-				description: 'Get a blueprint migration status',
+				description:
+					'Get one sync of a blueprint course. Its "workflow_state" goes from "queued" over "exporting" and "imports_queued" to "completed".',
 				action: 'Get a blueprint migration',
 			},
 			{
 				name: 'Get Migration Details',
 				value: 'getMigrationDetails',
-				description: 'Get details about a blueprint migration',
+				description: 'Get the changes one sync of a blueprint course pushed to its associated courses',
 				action: 'Get blueprint migration details',
 			},
 			{
 				name: 'Get Subscriptions',
 				value: 'getSubscriptions',
-				description: 'Get blueprint subscriptions for a course',
+				description: 'Get the blueprint an associated course is subscribed to',
 				action: 'Get blueprint subscriptions',
 			},
 			{
@@ -69,25 +72,28 @@ export const blueprintCourseOperations: INodeProperties[] = [
 			{
 				name: 'Get Unsynced Changes',
 				value: 'getUnsyncedChanges',
-				description: 'Get unsynced changes for a blueprint',
+				description:
+					'Get the changes made in a blueprint course since its last sync (what the next sync will push)',
 				action: 'Get unsynced blueprint changes',
 			},
 			{
 				name: 'Set Restrictions',
 				value: 'setRestrictions',
-				description: 'Set or remove restrictions on blueprint content',
+				description:
+					'Lock or unlock one object of a blueprint course so that its copies in associated courses can no longer be edited',
 				action: 'Set blueprint restrictions',
 			},
 			{
 				name: 'Show Import',
 				value: 'showImport',
-				description: 'Show a blueprint import status',
+				description: 'Get one sync an associated course has received from its blueprint',
 				action: 'Show a blueprint import',
 			},
 			{
 				name: 'Update Associations',
 				value: 'updateAssociations',
-				description: 'Update associated courses for a blueprint',
+				description:
+					'Add courses to or remove courses from a blueprint course. Start a sync afterwards to fill newly added courses.',
 				action: 'Update blueprint associations',
 			},
 		],
@@ -171,7 +177,8 @@ export const blueprintCourseFields: INodeProperties[] = [
 				operation: ['getAllImports', 'getImportDetails', 'showImport'],
 			},
 		},
-		description: 'The ID of the blueprint subscription (use "default" for the active subscription)',
+		description:
+			'The ID of the blueprint subscription of the associated course (use "default" for its active subscription)',
 	},
 
 	// ----------------------------------
@@ -189,7 +196,8 @@ export const blueprintCourseFields: INodeProperties[] = [
 				operation: ['getImportDetails', 'getMigration', 'getMigrationDetails', 'showImport'],
 			},
 		},
-		description: 'The ID of the blueprint migration',
+		description:
+			'The ID of the sync. For a blueprint course: the ID from Begin Migration / Get Many Migrations. For an associated course: the ID from Get Many Imports (a different number for the same sync).',
 	},
 
 	// ----------------------------------
@@ -213,35 +221,37 @@ export const blueprintCourseFields: INodeProperties[] = [
 				name: 'comment',
 				type: 'string',
 				default: '',
-				description: 'A comment to add to the migration',
+				description: 'A comment to include in the sync history',
 			},
 			{
 				displayName: 'Copy Settings',
 				name: 'copy_settings',
 				type: 'boolean',
 				default: true,
-				description: 'Whether to copy course settings as part of the migration',
+				description:
+					'Whether to copy the course settings to the associated courses as well (Canvas does this by default for newly associated courses)',
 			},
 			{
 				displayName: 'Publish After Initial Sync',
 				name: 'publish_after_initial_sync',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to publish associated courses after their initial sync',
+				description: 'Whether to publish newly associated courses once their first sync has completed',
 			},
 			{
 				displayName: 'Send Item Notifications',
 				name: 'send_item_notifications',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to send notifications about new content items',
+				description:
+					'Whether teachers and students get the usual notifications for items the sync creates. Needs the Blueprint Item Notifications feature; without it the option is ignored.',
 			},
 			{
 				displayName: 'Send Notification',
 				name: 'send_notification',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to send a notification about the migration',
+				description: 'Whether to notify the token\'s user when the sync has completed',
 			},
 		],
 	},
@@ -260,7 +270,8 @@ export const blueprintCourseFields: INodeProperties[] = [
 				operation: ['updateAssociations'],
 			},
 		},
-		description: 'Comma-separated list of course IDs to associate with the blueprint',
+		description:
+			'Comma-separated IDs of the courses to associate. They must belong to the account of the blueprint course (or a sub-account), must not be blueprints and must not be associated with another blueprint.',
 	},
 	{
 		displayName: 'Course IDs to Remove',
@@ -273,7 +284,8 @@ export const blueprintCourseFields: INodeProperties[] = [
 				operation: ['updateAssociations'],
 			},
 		},
-		description: 'Comma-separated list of course IDs to remove from the blueprint association',
+		description:
+			'Comma-separated IDs of the courses to remove from the blueprint. Not possible while a sync is running.',
 	},
 
 	// ----------------------------------
@@ -299,6 +311,10 @@ export const blueprintCourseFields: INodeProperties[] = [
 			{
 				name: 'Attachment',
 				value: 'attachment',
+			},
+			{
+				name: 'Course Pace',
+				value: 'course_pace',
 			},
 			{
 				name: 'Discussion Topic',
@@ -349,7 +365,8 @@ export const blueprintCourseFields: INodeProperties[] = [
 				operation: ['setRestrictions'],
 			},
 		},
-		description: 'Whether to apply restrictions to the content',
+		description:
+			'Whether the object is locked. Without Restriction Options the lock settings of the blueprint course apply.',
 	},
 	{
 		displayName: 'Restriction Options',
@@ -392,6 +409,20 @@ export const blueprintCourseFields: INodeProperties[] = [
 				type: 'boolean',
 				default: false,
 				description: 'Whether to lock the points value',
+			},
+			{
+				displayName: 'Settings',
+				name: 'settings',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to lock the settings of the object',
+			},
+			{
+				displayName: 'State',
+				name: 'state',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to lock the published state',
 			},
 		],
 	},

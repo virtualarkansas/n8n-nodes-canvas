@@ -1,5 +1,13 @@
 import type { INodeProperties } from 'n8n-workflow';
 
+/**
+ * Line items belong to the LTI Advantage Assignment and Grade Services
+ * (`/api/lti/courses/:course_id/line_items`). Canvas only accepts an LTI
+ * Advantage access token there, never a user's API or OAuth2 token.
+ */
+const LTI_TOKEN_NOTE =
+	'Needs an LTI Advantage access token (client-credentials grant of an LTI 1.3 developer key with the AGS line item scope); a personal Canvas API token is rejected with 401';
+
 export const lineItemOperations: INodeProperties[] = [
 	{
 		displayName: 'Operation',
@@ -15,31 +23,31 @@ export const lineItemOperations: INodeProperties[] = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create a line item',
+				description: `Create a line item (gradebook column) for an LTI 1.3 tool. ${LTI_TOKEN_NOTE}.`,
 				action: 'Create a line item',
 			},
 			{
 				name: 'Delete',
 				value: 'delete',
-				description: 'Delete a line item',
+				description: `Delete a line item. ${LTI_TOKEN_NOTE}.`,
 				action: 'Delete a line item',
 			},
 			{
 				name: 'Get',
 				value: 'get',
-				description: 'Get a single line item',
+				description: `Get a single line item. ${LTI_TOKEN_NOTE}.`,
 				action: 'Get a line item',
 			},
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many line items',
+				description: `Get the line items the tool of the access token owns in a course. ${LTI_TOKEN_NOTE}.`,
 				action: 'Get many line items',
 			},
 			{
 				name: 'Update',
 				value: 'update',
-				description: 'Update a line item',
+				description: `Update a line item. ${LTI_TOKEN_NOTE}.`,
 				action: 'Update a line item',
 			},
 		],
@@ -52,6 +60,18 @@ export const lineItemFields: INodeProperties[] = [
 	//         lineItem: shared
 	// ----------------------------------
 	{
+		displayName:
+			'Line items are part of the LTI Advantage services. Canvas only accepts an LTI Advantage access token for them: the credential\'s Access Token must hold a token obtained with the client-credentials grant of an LTI 1.3 developer key (valid for one hour), and the tool must be installed in the course. A personal API token or OAuth2 login is answered with 401 "Invalid access token format".',
+		name: 'lineItemNotice',
+		type: 'notice',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['lineItem'],
+			},
+		},
+	},
+	{
 		displayName: 'Course ID',
 		name: 'courseId',
 		type: 'string',
@@ -63,7 +83,7 @@ export const lineItemFields: INodeProperties[] = [
 				operation: ['create', 'delete', 'get', 'getAll', 'update'],
 			},
 		},
-		description: 'The ID of the course',
+		description: 'The numeric ID of the course (SIS IDs are not accepted by the LTI services)',
 	},
 	{
 		displayName: 'Line Item ID',
@@ -77,7 +97,8 @@ export const lineItemFields: INodeProperties[] = [
 				operation: ['delete', 'get', 'update'],
 			},
 		},
-		description: 'The ID of the line item',
+		description:
+			'The numeric ID of the line item, or the "ID" Canvas returns for it (the line item URL ending in /line_items/&lt;number&gt;)',
 	},
 
 	// ----------------------------------
@@ -95,7 +116,8 @@ export const lineItemFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'The label for the line item',
+		description:
+			'The label for the line item. Without a Resource Link ID it is also the name of the assignment Canvas creates for the line item.',
 	},
 	{
 		displayName: 'Score Maximum',
@@ -112,7 +134,7 @@ export const lineItemFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'The maximum score for the line item',
+		description: 'The maximum score for the line item (the points possible of its assignment)',
 	},
 	{
 		displayName: 'Additional Fields',
@@ -132,42 +154,59 @@ export const lineItemFields: INodeProperties[] = [
 				name: 'endDateTime',
 				type: 'dateTime',
 				default: '',
-				description: 'The submission deadline in ISO 8601 format',
+				description:
+					'When the line item stops receiving submissions (the due date of its assignment)',
 			},
 			{
 				displayName: 'Resource ID',
 				name: 'resourceId',
 				type: 'string',
 				default: '',
-				description: 'Tool provider specified identifier for the resource',
+				description:
+					'A tool-specified ID for the line item. Several line items may share one resource ID.',
 			},
 			{
 				displayName: 'Resource Link ID',
 				name: 'resourceLinkId',
 				type: 'string',
 				default: '',
-				description: 'The ID of the associated LTI assignment',
+				description:
+					'The LTI resource link ID (the "lti_context_id" of an external tool assignment of this tool) to attach the line item to. Without it Canvas creates a new assignment.',
 			},
 			{
 				displayName: 'Start Date Time',
 				name: 'startDateTime',
 				type: 'dateTime',
 				default: '',
-				description: 'The availability date in ISO 8601 format',
+				description: 'When the line item becomes available (the unlock date of its assignment)',
+			},
+			{
+				displayName: 'Submission External Tool URL',
+				name: 'submissionExternalToolUrl',
+				type: 'string',
+				default: '',
+				description:
+					'The launch URL of the assignment when Submission Type is "External Tool". Must match the tool of the access token.',
 			},
 			{
 				displayName: 'Submission Type',
 				name: 'submissionType',
-				type: 'json',
-				default: '{}',
-				description: 'Submission type configuration (Canvas extension)',
+				type: 'options',
+				options: [
+					{ name: 'External Tool', value: 'external_tool' },
+					{ name: 'None', value: 'none' },
+				],
+				default: 'none',
+				description:
+					'Canvas extension: the submission type of the assignment created for the line item',
 			},
 			{
 				displayName: 'Tag',
 				name: 'tag',
 				type: 'string',
 				default: '',
-				description: 'A tag for qualifying the line item',
+				description:
+					'A value to qualify the line item beyond its IDs. Line items can be filtered by tag in Get Many.',
 			},
 		],
 	},
@@ -193,21 +232,22 @@ export const lineItemFields: INodeProperties[] = [
 				name: 'endDateTime',
 				type: 'dateTime',
 				default: '',
-				description: 'The submission deadline in ISO 8601 format',
+				description:
+					'When the line item stops receiving submissions (the due date of its assignment)',
 			},
 			{
 				displayName: 'Label',
 				name: 'label',
 				type: 'string',
 				default: '',
-				description: 'The label for the line item',
+				description: 'The label for the line item (also renames its assignment)',
 			},
 			{
 				displayName: 'Resource ID',
 				name: 'resourceId',
 				type: 'string',
 				default: '',
-				description: 'Tool provider specified identifier for the resource',
+				description: 'A tool-specified ID for the line item',
 			},
 			{
 				displayName: 'Score Maximum',
@@ -224,14 +264,14 @@ export const lineItemFields: INodeProperties[] = [
 				name: 'startDateTime',
 				type: 'dateTime',
 				default: '',
-				description: 'The availability date in ISO 8601 format',
+				description: 'When the line item becomes available (the unlock date of its assignment)',
 			},
 			{
 				displayName: 'Tag',
 				name: 'tag',
 				type: 'string',
 				default: '',
-				description: 'A tag for qualifying the line item',
+				description: 'A value to qualify the line item beyond its IDs',
 			},
 		],
 	},
@@ -239,36 +279,6 @@ export const lineItemFields: INodeProperties[] = [
 	// ----------------------------------
 	//         lineItem: getAll
 	// ----------------------------------
-	{
-		displayName: 'Return All',
-		name: 'returnAll',
-		type: 'boolean',
-		default: false,
-		displayOptions: {
-			show: {
-				resource: ['lineItem'],
-				operation: ['getAll'],
-			},
-		},
-		description: 'Whether to return all results or only up to a given limit',
-	},
-	{
-		displayName: 'Limit',
-		name: 'limit',
-		type: 'number',
-		default: 50,
-		typeOptions: {
-			minValue: 1,
-		},
-		displayOptions: {
-			show: {
-				resource: ['lineItem'],
-				operation: ['getAll'],
-				returnAll: [false],
-			},
-		},
-		description: 'Max number of results to return',
-	},
 	{
 		displayName: 'Options',
 		name: 'options',
@@ -287,28 +297,28 @@ export const lineItemFields: INodeProperties[] = [
 				name: 'include',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to include the launch URL extension in the response',
+				description: 'Whether to include the launch URL of each line item in the response',
 			},
 			{
 				displayName: 'Resource ID',
 				name: 'resource_id',
 				type: 'string',
 				default: '',
-				description: 'Filter by resource ID',
+				description: 'Return only line items with this resource ID',
 			},
 			{
 				displayName: 'Resource Link ID',
 				name: 'resource_link_id',
 				type: 'string',
 				default: '',
-				description: 'Filter by resource link ID',
+				description: 'Return only line items attached to this LTI resource link ID',
 			},
 			{
 				displayName: 'Tag',
 				name: 'tag',
 				type: 'string',
 				default: '',
-				description: 'Filter by tag',
+				description: 'Return only line items with this tag',
 			},
 		],
 	},
@@ -334,7 +344,7 @@ export const lineItemFields: INodeProperties[] = [
 				name: 'include',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to include the launch URL extension in the response',
+				description: 'Whether to include the launch URL of the line item in the response',
 			},
 		],
 	},

@@ -15,19 +15,22 @@ export const progressOperations: INodeProperties[] = [
 			{
 				name: 'Cancel',
 				value: 'cancel',
-				description: 'Cancel an asynchronous job',
+				description:
+					'Cancel an asynchronous job. Canvas marks its progress as failed (an optional message tells a cancellation from a real failure); a job that is already running is not interrupted and may still finish.',
 				action: 'Cancel a progress',
 			},
 			{
 				name: 'Get',
 				value: 'get',
-				description: 'Get completion and status information about an async job',
+				description:
+					'Get completion and status of an asynchronous job (content migration or export, SIS import, bulk update, ...)',
 				action: 'Get a progress',
 			},
 			{
 				name: 'Get LTI',
 				value: 'getLti',
-				description: 'Get progress information for an LTI job in a course context',
+				description:
+					'Get the progress of an LTI Assignment and Grade Services job (a score with file uploads). Needs an LTI Advantage access token of the tool that started it; a personal Canvas API token is rejected with 401.',
 				action: 'Get LTI progress',
 			},
 		],
@@ -51,7 +54,8 @@ export const progressFields: INodeProperties[] = [
 				operation: ['get', 'cancel'],
 			},
 		},
-		description: 'The ID of the progress object',
+		description:
+			'The ID of the progress object. Canvas returns it (or a "progress_url" ending in it) from operations that run in the background.',
 	},
 
 	// ----------------------------------
@@ -69,7 +73,7 @@ export const progressFields: INodeProperties[] = [
 				operation: ['getLti'],
 			},
 		},
-		description: 'The ID of the course',
+		description: 'The numeric ID of the course the tool is installed in',
 	},
 	{
 		displayName: 'Progress ID',

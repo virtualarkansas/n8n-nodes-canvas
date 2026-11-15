@@ -15,7 +15,8 @@ export const smartSearchOperations: INodeProperties[] = [
 			{
 				name: 'Search',
 				value: 'search',
-				description: 'Find course content using AI-powered meaning-based search',
+				description:
+					'Find course content by meaning (embeddings). Needs the Smart Search feature of Instructure-hosted Canvas; an instance without it answers 403.',
 				action: 'Search course content',
 			},
 		],
@@ -53,7 +54,7 @@ export const smartSearchFields: INodeProperties[] = [
 				operation: ['search'],
 			},
 		},
-		description: 'The search query term for meaning-based search',
+		description: 'What to look for, in natural language',
 	},
 	{
 		displayName: 'Options',
