@@ -21,6 +21,20 @@ export const enrollmentOperations: INodeProperties[] = [
 		},
 		options: [
 			{
+				name: 'Accept Invitation',
+				value: 'acceptInvitation',
+				description:
+					'Accept a course invitation. Only the invited user can do this: the enrollment must belong to the user of the credential.',
+				action: 'Accept a course invitation',
+			},
+			{
+				name: 'Bulk Enroll',
+				value: 'bulkEnroll',
+				description:
+					'Enroll several users in several courses in a background job. The users are invited (observers are enrolled as active right away). Returns a Progress object; the Progress resource can poll it.',
+				action: 'Enroll several users in several courses',
+			},
+			{
 				name: 'Conclude',
 				value: 'conclude',
 				description: 'Conclude an enrollment',
@@ -61,6 +75,13 @@ export const enrollmentOperations: INodeProperties[] = [
 				value: 'reactivate',
 				description: 'Reactivate an inactive enrollment',
 				action: 'Reactivate an enrollment',
+			},
+			{
+				name: 'Reject Invitation',
+				value: 'rejectInvitation',
+				description:
+					'Reject a course invitation. Only the invited user can do this: the enrollment must belong to the user of the credential.',
+				action: 'Reject a course invitation',
 			},
 			{
 				name: 'Set Last Attended',
@@ -262,7 +283,7 @@ export const enrollmentFields: INodeProperties[] = [
 	},
 
 	// ----------------------------------
-	//         enrollment: conclude/deactivate/delete/reactivate
+	//         enrollment: conclude/deactivate/delete/reactivate, accept/reject invitation
 	// ----------------------------------
 	{
 		displayName: 'Course ID',
@@ -273,7 +294,7 @@ export const enrollmentFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['enrollment'],
-				operation: ['conclude', 'deactivate', 'delete', 'reactivate'],
+				operation: ['acceptInvitation', 'conclude', 'deactivate', 'delete', 'reactivate', 'rejectInvitation'],
 			},
 		},
 		description: 'The ID of the course',
@@ -287,10 +308,100 @@ export const enrollmentFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['enrollment'],
-				operation: ['conclude', 'deactivate', 'delete', 'get', 'reactivate'],
+				operation: [
+					'acceptInvitation',
+					'conclude',
+					'deactivate',
+					'delete',
+					'get',
+					'reactivate',
+					'rejectInvitation',
+				],
 			},
 		},
 		description: 'The ID of the enrollment',
+	},
+
+	// ----------------------------------
+	//         enrollment: bulkEnroll
+	// ----------------------------------
+	{
+		displayName: 'Account ID',
+		name: 'accountId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['enrollment'],
+				operation: ['bulkEnroll'],
+			},
+		},
+		description:
+			'The ID of the account the background job runs in ("self" selects the root account of the Canvas URL). Canvas looks SIS IDs of users and courses up in this account: they are only found when it is the root account, otherwise such entries are skipped without an error.',
+	},
+	{
+		displayName: 'User IDs',
+		name: 'userIds',
+		type: 'string',
+		required: true,
+		default: '',
+		placeholder: '101,102,sis_user_id:ABC',
+		displayOptions: {
+			show: {
+				resource: ['enrollment'],
+				operation: ['bulkEnroll'],
+			},
+		},
+		description:
+			'Comma-separated list of the users to enroll. Every user is enrolled in every course; users times courses must not exceed 500. Users Canvas does not find are skipped without an error.',
+	},
+	{
+		displayName: 'Course IDs',
+		name: 'courseIds',
+		type: 'string',
+		required: true,
+		default: '',
+		placeholder: '11,12,sis_course_id:XYZ',
+		displayOptions: {
+			show: {
+				resource: ['enrollment'],
+				operation: ['bulkEnroll'],
+			},
+		},
+		description:
+			'Comma-separated list of the courses to enroll the users in. The current user must be allowed to enroll users in each of them.',
+	},
+	{
+		displayName: 'Additional Fields',
+		name: 'additionalFields',
+		type: 'collection',
+		placeholder: 'Add Field',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['enrollment'],
+				operation: ['bulkEnroll'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Enrollment Type',
+				name: 'enrollmentType',
+				type: 'options',
+				options: enrollmentTypeOptions,
+				default: 'StudentEnrollment',
+				description:
+					'The type of the enrollments (Canvas default: student, or the base type of "Role ID"). With a "Role ID" it must be the base type of that role.',
+			},
+			{
+				displayName: 'Role ID',
+				name: 'roleId',
+				type: 'string',
+				default: '',
+				description: 'The ID of a custom course role to give the enrollments',
+			},
+		],
 	},
 
 	// ----------------------------------

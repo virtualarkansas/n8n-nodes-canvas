@@ -245,6 +245,12 @@ export function buildAccountRequest(
 				endpoint: `/api/v1/accounts/${accountId}/terms_of_service`,
 			};
 
+		case 'getManuallyCreatedCoursesAccount':
+			return {
+				method: 'GET',
+				endpoint: '/api/v1/manually_created_courses_account',
+			};
+
 		case 'restoreUser':
 			return {
 				method: 'PUT',

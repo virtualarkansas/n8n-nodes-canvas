@@ -126,6 +126,30 @@ export function buildEnrollmentRequest(
 			return { method: 'DELETE', endpoint: enrollmentPath(), qs: { task: 'delete' } };
 		case 'reactivate':
 			return { method: 'PUT', endpoint: `${enrollmentPath()}/reactivate` };
+		case 'acceptInvitation':
+			return { method: 'POST', endpoint: `${enrollmentPath()}/accept` };
+		case 'rejectInvitation':
+			return { method: 'POST', endpoint: `${enrollmentPath()}/reject` };
+		case 'bulkEnroll': {
+			const userIds = toList(getParam('userIds'));
+			const courseIds = toList(getParam('courseIds'));
+			// Canvas answers a request without users or courses with a server error.
+			if (userIds.length === 0 || courseIds.length === 0) {
+				throw new ApplicationError('Enter at least one user ID and at least one course ID');
+			}
+			return {
+				method: 'POST',
+				endpoint: `/api/v1/accounts/${getParam('accountId')}/bulk_enrollment`,
+				body: {
+					user_ids: userIds,
+					course_ids: courseIds,
+					...mapFields(getParamObject('additionalFields'), {
+						enrollmentType: 'enrollment_type',
+						roleId: 'enrollment_role_id',
+					}),
+				},
+			};
+		}
 		case 'setLastAttended':
 			return {
 				method: 'PUT',

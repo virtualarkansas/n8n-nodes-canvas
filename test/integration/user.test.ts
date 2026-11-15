@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { canvas, fx, unique } from '../lib/canvas';
 import { runNode, runOk } from '../lib/harness';
 import type { Json } from '../lib/n8n';
+import { settled } from './support/adminGroup';
 
 /**
  * Resource: user. Everything destructive happens on users created by this file;
@@ -273,10 +274,15 @@ describe('user', () => {
 		expect(small).toHaveLength(21);
 
 		// Without an explicit sort the list still never exceeds the page budget or repeats a user.
-		const unsorted = await runOk({ resource: 'user', operation: 'getAll', params: { accountId: account } });
-		expect(unsorted.length).toBeLessThanOrEqual(50);
-		expect(unsorted.length).toBeGreaterThan(40);
-		expect(new Set(unsorted.map((u) => u.id)).size).toBe(unsorted.length);
+		// (Canvas then orders by name and pages by number: a user another test file creates or
+		// deletes while the five pages are read shifts the later ones. A defect of the node would
+		// repeat a user every time; that does not.)
+		await settled(async () => {
+			const unsorted = await runOk({ resource: 'user', operation: 'getAll', params: { accountId: account } });
+			expect(unsorted.length).toBeLessThanOrEqual(50);
+			expect(unsorted.length).toBeGreaterThan(40);
+			expect(new Set(unsorted.map((u) => u.id)).size).toBe(unsorted.length);
+		});
 
 		const all = await runOk({
 			resource: 'user',
