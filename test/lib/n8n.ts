@@ -58,14 +58,25 @@ export class N8nClient {
 	}
 
 	async api<T = Json>(method: string, path: string, body?: unknown): Promise<T> {
-		const res = await fetch(`${this.url}/api/v1${path}`, {
-			method,
-			headers: {
-				'X-N8N-API-KEY': this.apiKey,
-				...(body === undefined ? {} : { 'content-type': 'application/json' }),
-			},
-			body: body === undefined ? undefined : JSON.stringify(body),
-		});
+		const send = (): Promise<Response> =>
+			fetch(`${this.url}/api/v1${path}`, {
+				method,
+				headers: {
+					'X-N8N-API-KEY': this.apiKey,
+					...(body === undefined ? {} : { 'content-type': 'application/json' }),
+				},
+				body: body === undefined ? undefined : JSON.stringify(body),
+			});
+		// n8n closes idle keep-alive connections; a request that happens to reuse one at that
+		// moment fails before it is sent ("other side closed"). Send it again on a new connection.
+		let res: Response;
+		try {
+			res = await send();
+		} catch (error) {
+			if (!(error instanceof TypeError)) throw error;
+			await new Promise((resolve) => setTimeout(resolve, 250));
+			res = await send();
+		}
 		const text = await res.text();
 		if (!res.ok) {
 			throw new Error(`n8n API ${method} ${path} -> ${res.status}: ${text.slice(0, 500)}`);

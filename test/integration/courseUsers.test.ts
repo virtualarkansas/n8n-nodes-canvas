@@ -246,16 +246,20 @@ describe('course: users', () => {
 		});
 		expect(ids(byLogin)).toEqual([Number(fx('studentUserId'))]);
 
-		// A search term that is a number finds the user with that ID. Canvas wants two characters:
-		// the seeded personas have one-digit IDs on a new database, so a user with a longer one is used.
+		// A search term that is a number finds the user with that ID, next to everybody who has the
+		// digits in a name, login or SIS ID. Canvas wants two characters: the seeded personas have
+		// one-digit IDs on a new database, so a user with a longer one is used.
 		const roster = await canvas().getAll<Json>(`/api/v1/courses/${main}/users?enrollment_type[]=student`);
 		const longId = roster.map((u) => Number(u.id)).find((id) => id >= 10)!;
 		const byId = await runOk({
 			resource: 'course',
 			operation: 'listUsers',
-			params: { courseId: main, options: { search_term: String(longId) } },
+			params: { courseId: main, options: { search_term: String(longId) }, pagination: { returnAll: true } },
 		});
-		expect(ids(byId)).toEqual([longId]);
+		expect(ids(byId)).toContain(longId);
+		expect(ids(byId).sort()).toEqual(
+			ids(await canvas().getAll<Json>(`/api/v1/courses/${main}/users?search_term=${longId}`)).sort(),
+		);
 
 		const tooShort = await runNode({
 			resource: 'course',
