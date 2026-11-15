@@ -16,6 +16,8 @@ export interface RunNodeOptions {
 	persona?: string;
 	/** 'accessToken' (default) or 'oAuth2'. */
 	authentication?: 'accessToken' | 'oAuth2';
+	/** Use this n8n credential instead of the persona's (for credentials a test creates itself). */
+	credential?: { id: string; name: string; type: string };
 	/** Node-level settings from the n8n node settings tab. */
 	nodeSettings?: Pick<N8nNode, 'onError' | 'continueOnFail' | 'retryOnFail' | 'alwaysOutputData'>;
 	/** Keep the workflow in n8n after the run (for debugging in the editor). */
@@ -128,7 +130,7 @@ export function canvasNode(opts: RunNodeOptions, name = NODE_NAME, position: [nu
 	const authentication = opts.authentication ?? 'accessToken';
 	const persona = opts.persona ?? 'admin';
 	const credKey = authentication === 'oAuth2' ? `${persona}OAuth2` : persona;
-	const cred = state.n8n.credentials[credKey];
+	const cred = opts.credential ?? state.n8n.credentials[credKey];
 	if (!cred) {
 		throw new Error(`No n8n credential for persona "${credKey}" in test state`);
 	}

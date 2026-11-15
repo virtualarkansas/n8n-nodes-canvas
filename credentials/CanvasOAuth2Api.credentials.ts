@@ -42,13 +42,22 @@ export class CanvasOAuth2Api implements ICredentialType {
 			required: true,
 		},
 		{
-			displayName: 'Scope',
-			name: 'scope',
+			displayName: 'Scopes',
+			name: 'scopes',
 			type: 'string',
+			typeOptions: { rows: 3 },
 			default: '',
 			placeholder: 'url:GET|/api/v1/courses url:GET|/api/v1/users/:user_id/profile',
 			description:
-				'Leave empty unless the Canvas developer key enforces scopes. If it does, list every scope the key allows that you need, separated by spaces, in the form url:METHOD|/api/v1/path (shown on the developer key in Canvas).',
+				'Leave empty unless the Canvas developer key enforces scopes. If it does, list the scopes you need (each must be enabled on the key), separated by spaces or new lines, in the form url:METHOD|/api/v1/path as shown on the developer key in Canvas.',
+		},
+		{
+			// n8n ignores a user-entered "scope" on OAuth2 credentials and always uses this
+			// field's default, so the default is computed from the visible Scopes field.
+			displayName: 'Scope',
+			name: 'scope',
+			type: 'hidden',
+			default: '={{String($self["scopes"] ?? "").split(/[\\s,]+/).filter(Boolean).join(" ")}}',
 		},
 		{
 			displayName: 'Auth URI Query Parameters',
