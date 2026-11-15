@@ -248,6 +248,57 @@ describe('gradeChangeLog', () => {
 		for (const item of bare) expect(item).toEqual(expected.get(String(item.id))!.event);
 	});
 
+	it('time range: Start Time and End Time narrow every lookup exactly as Canvas does', async () => {
+		const window = async (path: string): Promise<{ start: string; end: string; expected: string[]; total: number }> => {
+			const all = await canvas().getAll<Json>(path, 'events');
+			// Newest first: from the second-oldest to the second-newest event.
+			const end = String(all[1].created_at);
+			const start = String(all[all.length - 2].created_at);
+			const sep = path.includes('?') ? '&' : '?';
+			const expected = await canvas().getAll<Json>(
+				`${path}${sep}start_time=${encodeURIComponent(start)}&end_time=${encodeURIComponent(end)}`,
+				'events',
+			);
+			return { start, end, expected: ids(expected), total: all.length };
+		};
+		const cases: Array<[string, Json, string]> = [
+			['getByAssignment', { assignmentId }, `/api/v1/audit/grade_change/assignments/${assignmentId}`],
+			['getByStudent', { studentId: students[0] }, `/api/v1/audit/grade_change/students/${students[0]}`],
+			['getByCourse', { courseId }, `/api/v1/audit/grade_change/courses/${courseId}`],
+		];
+		for (const [operation, subject, path] of cases) {
+			const { start, end, expected, total } = await window(path);
+			const events = await runOk({
+				resource: 'gradeChangeLog',
+				operation,
+				params: { ...subject, options: { start_time: start, end_time: end }, pagination: { returnAll: true } },
+			});
+			expect(ids(events), operation).toEqual(expected);
+			expect(events.length, operation).toBeLessThanOrEqual(total);
+		}
+
+		// The grader's log only up to an end time (the grader keeps grading in other files).
+		const course = await canvas().getAll<Json>(`/api/v1/audit/grade_change/courses/${courseId}`, 'events');
+		const end = String(course[0].created_at);
+		const byGrader = await runOk({
+			resource: 'gradeChangeLog',
+			operation: 'getByGrader',
+			params: { graderId, options: { start_time: `${today}T00:00:00Z`, end_time: end }, pagination: { returnAll: true } },
+		});
+		expect(byGrader.every((e) => Date.parse(String(e.created_at)) <= Date.parse(end))).toBe(true);
+		expect(ids(byGrader)).toEqual(
+			ids(await canvas().getAll<Json>(`/api/v1/audit/grade_change/graders/${graderId}?start_time=${today}T00:00:00Z&end_time=${encodeURIComponent(end)}`, 'events')),
+		);
+
+		const { start, end: queryEnd, expected } = await window(`/api/v1/audit/grade_change?course_id=${courseId}&assignment_id=${assignmentId}`);
+		const queried = await runOk({
+			resource: 'gradeChangeLog',
+			operation: 'query',
+			params: { filters: { course_id: courseId, assignment_id: assignmentId, start_time: start, end_time: queryEnd }, pagination: { returnAll: true } },
+		});
+		expect(ids(queried)).toEqual(expected);
+	});
+
 	it('time range: an end time in the past returns nothing', async () => {
 		const events = await runOk({
 			resource: 'gradeChangeLog',
@@ -303,6 +354,21 @@ describe('courseAuditLog', () => {
 		expect(types).toContain('updated');
 		const updated = events.find((e) => e.event_type === 'updated' && (e.event_data as Json).course_code);
 		expect(updated, 'the course_code change should be logged').toBeDefined();
+	});
+
+	it('getByCourse: Start Time and End Time narrow the events exactly as Canvas does', async () => {
+		const path = `/api/v1/audit/course/courses/${courseId}`;
+		const all = await canvas().getAll<Json>(path, 'events');
+		expect(all.length).toBeGreaterThanOrEqual(2);
+		const start = String(all[all.length - 1].created_at);
+		const end = String(all[0].created_at);
+		const later = new Date(Date.parse(start) + 1000).toISOString();
+		for (const options of [{ start_time: later }, { end_time: start }, { start_time: start, end_time: end }]) {
+			const query = Object.entries(options).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+			const expected = await canvas().getAll<Json>(`${path}?${query}`, 'events');
+			const events = await runOk({ resource: 'courseAuditLog', operation: 'getByCourse', params: { courseId, options, pagination: { returnAll: true } } });
+			expect(events.map((e) => e.id).sort(), query).toEqual(expected.map((e) => e.id).sort());
+		}
 	});
 
 	it('getByAccount: pages through the events of every course in the account, within a time range', async () => {
