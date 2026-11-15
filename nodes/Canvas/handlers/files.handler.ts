@@ -195,8 +195,8 @@ export function handleFileResource(
 		case 'initiateUpload':
 		case 'upload': {
 			// Builds the Step 1 request config (notify Canvas, get upload URL).
-			// For 'upload': processItem() in Canvas.node.ts orchestrates all three steps and
-			// fills in name, size and content type from the binary data.
+			// For 'upload': the `upload` hint makes the node run all three steps and fill in
+			// name, size and content type from the binary data.
 			// For 'initiateUpload': returns the Step 1 response directly; what Canvas should
 			// know about the file has to be given in the parameters.
 			const basePath = getFileContextBasePath(getParam);
@@ -223,11 +223,22 @@ export function handleFileResource(
 				body.on_duplicate = options.on_duplicate;
 			}
 
-			return {
+			const request: IRequestConfig = {
 				method: 'POST',
 				endpoint: `${basePath}/files`,
 				body,
 			};
+			if (operation === 'upload') {
+				request.upload =
+					getParam('uploadSource', 'binaryData') === 'url'
+						? {
+								source: 'url',
+								url: getParam('fileUrl'),
+								waitForCompletion: getParam('waitForCompletion', 'true') !== 'false',
+							}
+						: { source: 'binaryData', binaryPropertyName: getParam('binaryPropertyName', 'data') };
+			}
+			return request;
 		}
 
 		default:
@@ -395,6 +406,14 @@ export function handleMediaObjectResource(
 			};
 
 		case 'updateTracks': {
+			if (getParam('removeAllTracks', 'false') === 'true') {
+				return {
+					method: 'PUT',
+					endpoint: `/api/v1/media_objects/${getParam('mediaObjectId')}/media_tracks`,
+					// The complete list of tracks to keep: none.
+					body: [],
+				};
+			}
 			const tracks = ((getParamObject('tracks').trackValues ?? []) as Fields[])
 				.filter((track) => String(track.locale ?? '').trim() !== '')
 				.map((track) => {
@@ -409,7 +428,9 @@ export function handleMediaObjectResource(
 					return entry;
 				});
 			if (tracks.length === 0) {
-				throw new ApplicationError('At least one track is required for mediaObject updateTracks');
+				throw new ApplicationError(
+					'At least one track is required for mediaObject updateTracks. To delete every track, turn on Remove All Tracks.',
+				);
 			}
 			return {
 				method: 'PUT',

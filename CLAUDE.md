@@ -15,6 +15,7 @@ The list of resources and operations is not maintained by hand anywhere: `npx ts
 ### Key Files
 - `credentials/CanvasApi.credentials.ts` - API token auth
 - `credentials/CanvasOAuth2Api.credentials.ts` - OAuth2 auth (scopes are computed from the visible "Scopes" field; n8n ignores a user-entered `scope`)
+- `credentials/CanvasLtiAdvantageApi.credentials.ts` - LTI 1.3 tool auth for `/api/lti` services (client-credentials grant; n8n renews the token on 401)
 - `nodes/Canvas/Canvas.node.ts` - Main node: options, execute loop, item/pagination/error plumbing
 - `nodes/Canvas/resources.ts` - Registry of every resource (label, value, operations, fields)
 - `nodes/Canvas/GenericFunctions.ts` - Requests, rate limiting, pagination, errors, query serialization, uploads
@@ -56,6 +57,10 @@ Handlers are pure: they only build `{ method, endpoint, qs, body }` plus optiona
 - `dataKey` - the response wraps its records (`{ "quiz_submissions": [...] }`); unwrap into items (applies to reads and writes)
 - `fetchAllPages` + `transform` - always read every page and reshape the full list (summaries Canvas splits across pages)
 - `mergePagedArray` - a single record with a paginated embedded array (e.g. date details with overrides)
+- `singlePage` - the endpoint answers with its complete list while still announcing pages
+- `itemKey` - every entry of a list is wrapped (`[{ "course": {...} }]`)
+- `upload` - the request is step 1 of Canvas' three-step file upload (binary property or URL); the node runs the rest
+- `binaryBody` - send a binary property of the input item as the request body (import files); a string or Buffer `body` with `contentType` is sent as it is
 - `thenGet` - after a write, output the result of this GET instead (writes whose own response is empty or stale)
 
 `getParam` returns strings (numbers and arrays are coerced, IDs trimmed); `getParamObject` returns a copy of a collection. Throw a plain error from a handler for unusable input; it reaches the user as `INVALID_PARAMETERS`.
@@ -97,7 +102,7 @@ Handlers are pure: they only build `{ method, endpoint, qs, body }` plus optiona
 - IDs can be SIS IDs: `sis_course_id:...`, `sis_user_id:...`.
 - Rate limits are quota based (`X-Request-Cost`, `X-Rate-Limit-Remaining`); parallel requests are charged up front.
 - Some list endpoints use page numbers, some bookmarks; some "summaries" repeat an entry on every page; some writes answer 204 or with stale data. When Canvas refuses something unexpectedly, read its own log before changing the node.
-- New Quizzes (`/api/quiz/v1`), the Analytics plugin and LTI Advantage services are not part of open-source Canvas; they are verified against Instructure's docs (see `test/fixtures/extra-routes.json`).
+- New Quizzes (`/api/quiz/v1`) and the Analytics plugin are not part of open-source Canvas; they are verified against Instructure's docs (see `test/fixtures/extra-routes.json`). LTI Advantage services (`/api/lti`) are tested locally with a tool the battery registers.
 
 ## Testing
 

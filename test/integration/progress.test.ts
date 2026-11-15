@@ -4,7 +4,7 @@ import { eventually } from './content.helper';
 import { runNode, runOk } from '../lib/harness';
 import type { Json } from '../lib/n8n';
 import {
-	createTokenPersona,
+	createLtiPersona,
 	deleteLtiTool,
 	deployLtiTool,
 	ltiAdvantageToken,
@@ -163,7 +163,7 @@ describe('progress', () => {
 		tool = await registerLtiTool('progress');
 		await deployLtiTool(tool, courseId);
 		const token = await ltiAdvantageToken(tool);
-		removePersona = await createTokenPersona(persona, token);
+		removePersona = await createLtiPersona(persona, tool);
 		const student = await canvas().post<Json>(`/api/v1/accounts/${fx('accountId')}/users`, {
 			user: { name: unique('Progress battery student'), skip_registration: true },
 			pseudonym: { unique_id: `${unique('progress').replace(/\s/g, '-')}@example.edu`, send_confirmation: false },

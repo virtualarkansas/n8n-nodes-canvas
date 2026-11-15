@@ -212,9 +212,9 @@ endpoints Instructure does not document and data only the Canvas web interface s
   `/graphiql` on your instance). Canvas runs one operation per request and reports errors in a
   successful response; the node turns those into failed items unless you ask for partial data.
 
-Some resources call services that only exist on hosted Canvas (New Quizzes, the Analytics plugin,
-LTI Advantage services). They are checked against Instructure's documentation rather than against
-a running instance; `test/COVERAGE.md` marks them.
+Some resources call services that only exist on hosted Canvas (New Quizzes, the Analytics plugin).
+They are checked against Instructure's documentation rather than against a running instance;
+`test/COVERAGE.md` marks them.
 
 **Outputs.** The node has a **Success** and an **Error** output (plus **Debug** when Debug Mode is on):
 
@@ -284,6 +284,22 @@ token of an account admin.
      them on the key (`url:GET|/api/v1/courses`), separated by spaces or new lines
 
 Canvas access tokens obtained this way expire after an hour; n8n refreshes them automatically.
+
+### LTI Advantage
+
+Canvas opens its LTI Advantage services (`/api/lti/...`: line items, scores, results, names and
+roles) only to an LTI 1.3 tool, never to a user's token. To use the **Line Item** resource,
+**Progress → Get LTI**, or `/api/lti` paths in **Custom API Request**:
+
+1. In Canvas, create an LTI developer key (Admin → Developer Keys → + LTI Key) with a public JWK of
+   a key pair you generate, enable the scopes you need, switch the key on and install the tool in the
+   course or account (by client ID).
+2. In n8n, create a **Canvas LTI Advantage API** credential with the Canvas URL, the key's client ID,
+   the private key (PEM or JWK) and the scopes.
+3. In the node, set **Authentication** to **LTI Advantage**.
+
+The node obtains the access token itself (it is valid for one hour) and fetches a new one when
+Canvas no longer accepts it.
 
 ## Options
 

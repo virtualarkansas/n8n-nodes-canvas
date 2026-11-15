@@ -6,7 +6,7 @@ import type { INodeProperties } from 'n8n-workflow';
  * Advantage access token there, never a user's API or OAuth2 token.
  */
 const LTI_TOKEN_NOTE =
-	'Needs an LTI Advantage access token (client-credentials grant of an LTI 1.3 developer key with the AGS line item scope); a personal Canvas API token is rejected with 401';
+	'Needs Authentication > LTI Advantage (the key of an LTI 1.3 developer key with the AGS line item scope); a personal Canvas API token is rejected with 401';
 
 export const lineItemOperations: INodeProperties[] = [
 	{
@@ -61,7 +61,7 @@ export const lineItemFields: INodeProperties[] = [
 	// ----------------------------------
 	{
 		displayName:
-			'Line items are part of the LTI Advantage services. Canvas only accepts an LTI Advantage access token for them: the credential\'s Access Token must hold a token obtained with the client-credentials grant of an LTI 1.3 developer key (valid for one hour), and the tool must be installed in the course. A personal API token or OAuth2 login is answered with 401 "Invalid access token format".',
+			'Line items are part of the LTI Advantage services, which Canvas only opens to an LTI 1.3 tool. Choose Authentication > LTI Advantage and a Canvas LTI Advantage API credential (client ID and private key of the tool\'s developer key); the tool must be installed in the course. A personal API token or OAuth2 login is answered with 401 "Invalid access token format".',
 		name: 'lineItemNotice',
 		type: 'notice',
 		default: '',

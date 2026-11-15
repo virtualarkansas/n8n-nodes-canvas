@@ -838,6 +838,11 @@ export async function canvasApiRequest(
 		// A write must never be replayed as a GET against wherever a redirect points.
 		requestOptions.disableFollowRedirect = true;
 	}
+	// n8n drops an empty array body, but for Canvas "[]" means "replace the list with nothing".
+	if (Array.isArray(body) && body.length === 0) {
+		body = '[]';
+		contentType = 'application/json';
+	}
 	const rawBody = typeof body === 'string' || Buffer.isBuffer(body);
 	if (rawBody) {
 		// Raw text or bytes (import files): send them untouched and parse the JSON answer ourselves.
@@ -1359,7 +1364,7 @@ export async function canvasFileUpload(
 	step1Endpoint: string,
 	step1Body: IDataObject,
 	itemIndex: number,
-	binaryPropertyName: string,
+	file: { data: Buffer; fileName?: string; mimeType?: string },
 	rateLimitOptions: IRateLimitOptions = DEFAULT_RATE_LIMIT_OPTIONS,
 ): Promise<IDataObject> {
 	// --- Step 1: Notify Canvas ---
@@ -1388,14 +1393,11 @@ export async function canvasFileUpload(
 	}
 
 	// --- Step 2: Multipart upload to upload_url (no Canvas token: the URL is pre-signed) ---
-	const binaryData = this.helpers.assertBinaryData(itemIndex, binaryPropertyName);
-	const binaryDataBuffer = await this.helpers.getBinaryDataBuffer(itemIndex, binaryPropertyName);
-
 	const multipart = buildMultipartBody(uploadParams, {
 		fieldName: (step1Data.file_param as string) || 'file',
-		fileName: (step1Body.name as string) || binaryData.fileName || 'file',
-		contentType: binaryData.mimeType || 'application/octet-stream',
-		data: binaryDataBuffer,
+		fileName: (step1Body.name as string) || file.fileName || 'file',
+		contentType: file.mimeType || 'application/octet-stream',
+		data: file.data,
 	});
 
 	const step2Options: IHttpRequestOptions = {

@@ -436,7 +436,7 @@ export class Canvas implements INodeType {
 					curl,
 				};
 
-				if (resource === 'file' && operation === 'upload') {
+				if (request.upload) {
 					debugJson._note = 'This is Step 1 of 3. Steps 2 (multipart upload) and 3 (confirmation) are handled automatically at runtime.';
 				}
 
@@ -576,16 +576,21 @@ async function processItem(
 			const bodyData = request.body as IDataObject | IDataObject[] | string | Buffer | undefined;
 			const qsData = request.qs as IDataObject | undefined;
 
-			// Special case: File Upload (three-step process)
-			if (resource === 'file' && operation === 'upload') {
-				const uploadSource = context.getNodeParameter('uploadSource', itemIndex, 'binaryData') as string;
+			// Canvas' three-step file upload: the request is step 1, the node runs the rest.
+			if (request.upload) {
+				const step1Body = { ...((bodyData as IDataObject | undefined) || {}) } as IDataObject;
 
-				if (uploadSource === 'binaryData') {
-					const binaryPropertyName = context.getNodeParameter('binaryPropertyName', itemIndex, 'data') as string;
+				if (request.upload.source === 'binaryData') {
+					const { binaryPropertyName } = request.upload;
 					const binaryData = context.helpers.assertBinaryData(itemIndex, binaryPropertyName);
 					const binaryBuffer = await context.helpers.getBinaryDataBuffer(itemIndex, binaryPropertyName);
+					if (binaryBuffer.length === 0) {
+						throw new NodeOperationError(context.getNode(), 'The file to upload is empty', {
+							itemIndex,
+							description: `The binary property "${binaryPropertyName}" holds no data. Canvas does not accept empty files.`,
+						});
+					}
 
-					const step1Body = { ...((bodyData as IDataObject | undefined) || {}) } as IDataObject;
 					if (!step1Body.name) {
 						step1Body.name = binaryData.fileName || 'unnamed_file';
 					}
@@ -599,15 +604,16 @@ async function processItem(
 						request.endpoint,
 						step1Body,
 						itemIndex,
-						binaryPropertyName,
+						{
+							data: binaryBuffer,
+							fileName: binaryData.fileName,
+							mimeType: binaryData.mimeType,
+						},
 						rateLimit,
 					);
 				}
 
-				const fileUrl = context.getNodeParameter('fileUrl', itemIndex) as string;
-				const waitForCompletion = context.getNodeParameter('waitForCompletion', itemIndex, true) as boolean;
-
-				const step1Body = { ...((bodyData as IDataObject | undefined) || {}) } as IDataObject;
+				const fileUrl = request.upload.url;
 				if (!step1Body.name) {
 					try {
 						const urlPath = new URL(fileUrl).pathname;
@@ -622,7 +628,7 @@ async function processItem(
 					request.endpoint,
 					step1Body,
 					fileUrl,
-					waitForCompletion,
+					request.upload.waitForCompletion,
 					rateLimit,
 				);
 			}

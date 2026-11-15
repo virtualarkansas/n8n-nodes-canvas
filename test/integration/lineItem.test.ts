@@ -1,14 +1,17 @@
+import { generateKeyPairSync } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { canvas, fx, unique } from '../lib/canvas';
 import { runNode, runOk } from '../lib/harness';
 import type { Json } from '../lib/n8n';
 import {
+	createLtiPersona,
 	createTokenPersona,
 	deleteLtiTool,
 	deployLtiTool,
 	ltiAdvantageToken,
 	ltiRequest,
 	registerLtiTool,
+	storeSessionToken,
 } from './lti-advantage.helper';
 import type { LtiTool } from './lti-advantage.helper';
 
@@ -18,9 +21,9 @@ import type { LtiTool } from './lti-advantage.helper';
  * Canvas serves line items under /api/lti and only to an LTI 1.3 tool that
  * authenticates with an LTI Advantage access token; a user's API token is
  * refused. To exercise the operations for real, the battery acts as such a
- * tool: it registers one, installs it in its own course, obtains a token with
- * the client-credentials grant and stores that token as the Access Token of an
- * n8n "Canvas API" credential (persona `ltiLineItem`).
+ * tool: it registers one, installs it in its own course and stores its key in
+ * an n8n "Canvas LTI Advantage API" credential (persona `ltiLineItem`), with
+ * which the node obtains the token itself.
  */
 describe('lineItem', () => {
 	const persona = 'ltiLineItem';
@@ -44,14 +47,68 @@ describe('lineItem', () => {
 		courseId = String(course.id);
 		tool = await registerLtiTool('lineitem');
 		await deployLtiTool(tool, courseId);
+		// For the battery's own checks; the node gets its token through the credential.
 		token = await ltiAdvantageToken(tool);
-		removePersona = await createTokenPersona(persona, token);
+		removePersona = await createLtiPersona(persona, tool);
 	});
 
 	afterAll(async () => {
 		await removePersona?.();
 		if (courseId) await canvas().request('DELETE', `/api/v1/courses/${courseId}?event=delete`);
 		await deleteLtiTool(tool);
+	});
+
+	it('credential: a stale token is renewed, a token pasted into a Canvas API credential works too', async () => {
+		const removeStale = await createLtiPersona('ltiStaleToken', tool as LtiTool);
+		const removePasted = await createTokenPersona('ltiPastedToken', token);
+		try {
+			// As after an hour: the stored token is no longer accepted. Canvas answers 401, n8n fetches a new one.
+			await storeSessionToken('ltiStaleToken', tool as LtiTool, 'no-longer-valid');
+			for (const credential of ['ltiStaleToken', 'ltiPastedToken']) {
+				const result = await runNode({ resource: 'lineItem', operation: 'getAll', persona: credential, params: { courseId } });
+				expect(result.failure, credential).toBeUndefined();
+				expect(result.error, credential).toEqual([]);
+			}
+			// The same credential reaches any /api/lti path through Custom API Request.
+			const custom = await runNode({
+				resource: 'apiRequest',
+				operation: 'request',
+				persona,
+				params: { method: 'GET', path: `/api/lti/courses/${courseId}/line_items` },
+			});
+			expect(custom.failure).toBeUndefined();
+			expect(custom.error).toEqual([]);
+		} finally {
+			await removeStale();
+			await removePasted();
+		}
+	});
+
+	it('credential: a key Canvas does not know and a scope the developer key lacks are refused with Canvas\' reason', async () => {
+		const { privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
+		const cases: Array<[string, Json]> = [
+			['ltiWrongKey', { privateKey: privateKey.export({ type: 'pkcs8', format: 'pem' }) as string }],
+			['ltiWrongScope', { scopes: 'https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly' }],
+			['ltiNoKey', { privateKey: 'not a key' }],
+		];
+		for (const [credential, overrides] of cases) {
+			const remove = await createLtiPersona(credential, tool as LtiTool, overrides);
+			try {
+				const result = await runNode({
+					resource: 'lineItem',
+					operation: 'getAll',
+					persona: credential,
+					params: { courseId, errorHandling: { onError: 'continueWithError' } },
+				});
+				expect(result.success, credential).toEqual([]);
+				const text = JSON.stringify(result.error[0] ?? result.failure ?? {});
+				expect(text, credential).toMatch(
+					credential === 'ltiNoKey' ? /private key/i : credential === 'ltiWrongScope' ? /scope/i : /JWS|signature|invalid/i,
+				);
+			} finally {
+				await remove();
+			}
+		}
 	});
 
 	it('a personal API token is refused by the LTI services (401), whatever its permissions', async () => {

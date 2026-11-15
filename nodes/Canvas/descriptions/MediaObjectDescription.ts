@@ -129,6 +129,19 @@ export const mediaObjectFields: INodeProperties[] = [
 	//         mediaObject: listTracks, updateTracks
 	// ----------------------------------
 	{
+		displayName: 'Remove All Tracks',
+		name: 'removeAllTracks',
+		type: 'boolean',
+		default: false,
+		displayOptions: {
+			show: {
+				resource: ['mediaObject'],
+				operation: ['updateTracks'],
+			},
+		},
+		description: 'Whether to delete every caption track of the media object. Tracks listed below are ignored when this is on.',
+	},
+	{
 		displayName: 'Tracks',
 		name: 'tracks',
 		type: 'fixedCollection',

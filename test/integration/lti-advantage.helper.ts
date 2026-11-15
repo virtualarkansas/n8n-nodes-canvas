@@ -149,24 +149,22 @@ export async function ltiRequest(
 }
 
 /**
- * Make `token` available to `runNode({ persona })`: an n8n "Canvas API"
- * credential whose Access Token is the LTI Advantage token. This is the only
- * way the node's credentials can reach the LTI services.
+ * Create an n8n credential and make it available to `runNode({ persona })`.
  * Returns a function that deletes the credential again.
  */
-export async function createTokenPersona(persona: string, token: string): Promise<() => Promise<void>> {
+async function registerPersona(persona: string, type: string, data: Json): Promise<() => Promise<void>> {
 	const name = `Canvas battery (${persona})`;
 	const created = await n8n().api<{ id: string }>('POST', '/credentials', {
 		name,
-		type: 'canvasApi',
-		data: { canvasUrl: canvas().url, accessToken: token, allowedHttpRequestDomains: 'all' },
+		type,
+		data: { canvasUrl: canvas().url, allowedHttpRequestDomains: 'all', ...data },
 	});
 	// Register it in the (git-ignored) test state. Test files run in parallel and read the
 	// state all the time: replace the file atomically, and repeat until the entry sticks in
 	// case another file registered its own persona at the same moment.
 	for (let attempt = 0; attempt < 10; attempt++) {
 		const state = loadState();
-		state.n8n.credentials[persona] = { id: String(created.id), name, type: 'canvasApi' };
+		state.n8n.credentials[persona] = { id: String(created.id), name, type };
 		const temporary = `${STATE_PATH}.${process.pid}.tmp`;
 		writeFileSync(temporary, JSON.stringify(state, null, 2) + '\n');
 		renameSync(temporary, STATE_PATH);
@@ -178,4 +176,64 @@ export async function createTokenPersona(persona: string, token: string): Promis
 			.api('DELETE', `/credentials/${created.id}`)
 			.catch(() => undefined);
 	};
+}
+
+/**
+ * The tool as an n8n "Canvas LTI Advantage API" credential (persona for `runNode`):
+ * the node obtains and renews the access token itself. `overrides` replaces fields,
+ * e.g. to store a stale token or a wrong key.
+ */
+export function createLtiPersona(persona: string, tool: LtiTool, overrides: Json = {}): Promise<() => Promise<void>> {
+	return registerPersona(persona, 'canvasLtiAdvantageApi', {
+		clientId: tool.clientId,
+		privateKey: tool.privateKey.export({ type: 'pkcs8', format: 'pem' }) as string,
+		keyId: tool.keyId,
+		scopes: AGS_SCOPES.join(' '),
+		...overrides,
+	});
+}
+
+/**
+ * Put `sessionToken` into the stored credential of an LTI persona, as if n8n had
+ * fetched that token earlier. The public API does not accept hidden fields, so this
+ * goes through the editor's own API as the instance owner.
+ */
+export async function storeSessionToken(persona: string, tool: LtiTool, sessionToken: string): Promise<void> {
+	const state = loadState();
+	const credential = state.n8n.credentials[persona];
+	const headers = { 'content-type': 'application/json', 'browser-id': 'battery-lti' };
+	const email = process.env.N8N_OWNER_EMAIL ?? 'owner@example.com';
+	const login = await fetch(`${state.n8n.url}/rest/login`, {
+		method: 'POST',
+		headers,
+		body: JSON.stringify({ emailOrLdapLoginId: email, email, password: process.env.N8N_OWNER_PASSWORD ?? 'N8nTestPass123' }),
+	});
+	const cookie = (login.headers.getSetCookie?.() ?? []).find((c) => c.startsWith('n8n-auth='))?.split(';')[0];
+	if (!cookie) throw new Error(`n8n login failed: ${login.status}`);
+	const res = await fetch(`${state.n8n.url}/rest/credentials/${credential.id}`, {
+		method: 'PATCH',
+		headers: { ...headers, cookie },
+		body: JSON.stringify({
+			name: credential.name,
+			type: credential.type,
+			data: {
+				canvasUrl: canvas().url,
+				clientId: tool.clientId,
+				privateKey: tool.privateKey.export({ type: 'pkcs8', format: 'pem' }) as string,
+				keyId: tool.keyId,
+				scopes: AGS_SCOPES.join(' '),
+				sessionToken,
+				allowedHttpRequestDomains: 'all',
+			},
+		}),
+	});
+	if (!res.ok) throw new Error(`Could not update credential ${credential.id}: ${res.status} ${(await res.text()).slice(0, 300)}`);
+}
+
+/**
+ * An n8n "Canvas API" credential whose Access Token is an LTI Advantage token the
+ * caller obtained itself (it works until the token expires after an hour).
+ */
+export function createTokenPersona(persona: string, token: string): Promise<() => Promise<void>> {
+	return registerPersona(persona, 'canvasApi', { accessToken: token });
 }

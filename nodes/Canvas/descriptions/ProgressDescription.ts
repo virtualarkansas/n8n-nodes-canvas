@@ -30,7 +30,7 @@ export const progressOperations: INodeProperties[] = [
 				name: 'Get LTI',
 				value: 'getLti',
 				description:
-					'Get the progress of an LTI Assignment and Grade Services job (a score with file uploads). Needs an LTI Advantage access token of the tool that started it; a personal Canvas API token is rejected with 401.',
+					'Get the progress of an LTI Assignment and Grade Services job (a score with file uploads). Needs Authentication > LTI Advantage with the credential of the tool that started it; a personal Canvas API token is rejected with 401.',
 				action: 'Get LTI progress',
 			},
 		],

@@ -373,6 +373,58 @@ describe('sisImport', () => {
 		expect((await logins(kept.id)).map((l) => l.workflow_state)).toEqual(['active']);
 	});
 
+	it('create: binary files from a previous node: a CSV, a zip and a file without a name, each recognised', async () => {
+		const result = await runNode({
+			resource: 'sisImport',
+			operation: 'create',
+			// Binary File is the default File Source, "data" the default property.
+			params: { accountId: account },
+			binary: [
+				{ fileName: 'users.csv', mimeType: 'text/csv', b64: Buffer.from(usersCsv(userRow('b1', 'Binary', 'Csv'))).toString('base64') },
+				{
+					fileName: 'district export.ZIP',
+					mimeType: 'application/octet-stream',
+					b64: zip({ 'users.csv': usersCsv(userRow('b2', 'Binary', 'Zip')) }).toString('base64'),
+				},
+				// Neither a name nor a telling type: treated as CSV.
+				{ b64: Buffer.from(usersCsv(userRow('b3', 'Binary', 'Nameless'))).toString('base64') },
+			],
+		});
+		expect(result.failure).toBeUndefined();
+		expect(result.error).toEqual([]);
+		expect(result.success).toHaveLength(3);
+		for (const created of result.success) importsCreated.push(String(created.id));
+		for (const created of result.success) {
+			const finished = await waitFor(created.id);
+			expect(finished.workflow_state).toBe('imported');
+			expect(counts(finished)).toMatchObject({ users: 1 });
+		}
+		expect(((await getImport(String(result.success[1].id))).csv_attachments as Json[]).map((a) => a.display_name)).toEqual(['users.csv']);
+		for (const name of ['b1', 'b2', 'b3']) expect(await findUser(name), name).toBeDefined();
+
+		// The request, as debug mode shows it: the file is described, not printed.
+		const debug = await runNode({
+			resource: 'sisImport',
+			operation: 'create',
+			params: { debugMode: true, accountId: account, binaryPropertyName: 'upload' },
+			binary: [{ property: 'upload', fileName: 'terms.xml', mimeType: 'application/xml', b64: Buffer.from('<x/>').toString('base64') }],
+		});
+		expect(String(debug.debug[0].url)).toContain('extension=xml');
+		expect(String(debug.debug[0].curl)).toContain("-H 'Content-Type: text/xml'");
+		expect(String(debug.debug[0].curl)).toContain('--data-binary \'@<binary property "upload": terms.xml>\'');
+
+		// An item without the binary property fails on its own.
+		const missing = await runNode({
+			resource: 'sisImport',
+			operation: 'create',
+			params: { accountId: account, errorHandling: { onError: 'continueWithError' } },
+			binary: [{ json: { note: 'no file here' } }],
+		});
+		expect(missing.success).toEqual([]);
+		expect(missing.error[0]).toMatchObject({ errorCode: 0, operation: 'create' });
+		expect((missing.error[0].originalItem as Json).note).toBe('no file here');
+	});
+
 	it('create: a zip file as Base64, from several items', async () => {
 		const archive = zip({
 			'accounts.csv': `account_id,parent_account_id,name,status\n${sis('acct')},,Battery SIS sub-account 部门,active\n`,

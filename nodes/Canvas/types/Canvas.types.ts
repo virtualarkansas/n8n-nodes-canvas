@@ -40,6 +40,15 @@ export interface IRequestConfig {
 			contentType?: string;
 		};
 	};
+	/**
+	 * The request starts Canvas' three-step file upload. `body` holds the upload arguments
+	 * (name, parent_folder_path, on_duplicate ...); the file itself comes from a binary
+	 * property of the input item or from a URL Canvas fetches. The node runs all steps and
+	 * outputs the finished file (or, for a URL upload that is not waited for, its progress).
+	 */
+	upload?:
+		| { source: 'binaryData'; binaryPropertyName: string }
+		| { source: 'url'; url: string; waitForCompletion: boolean };
 	fetchAllPages?: boolean;
 	/**
 	 * The endpoint answers with its complete list whatever page is asked for, while

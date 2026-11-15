@@ -249,8 +249,9 @@ describe('file', () => {
 			{ fileName: 'empty.txt', mimeType: 'text/plain', size: 0 },
 		]);
 		expect(result.success).toEqual([]);
-		expect(result.error[0]).toMatchObject({ errorCode: 400, errorType: 'VALIDATION_ERROR', resource: 'file', operation: 'upload' });
-		expect(String(result.error[0].errorMessage)).toContain('rejected by the upload server');
+		// The node says so itself instead of passing on the upload server's bare "400".
+		expect(result.error[0]).toMatchObject({ errorCode: 0, errorType: 'INVALID_PARAMETERS', resource: 'file', operation: 'upload' });
+		expect(String(result.error[0].errorMessage)).toContain('The file to upload is empty');
 		// Nothing is left behind.
 		expect(await filesIn(folder)).toEqual([]);
 	});

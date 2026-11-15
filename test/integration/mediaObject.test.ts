@@ -273,5 +273,14 @@ describe('mediaObject', () => {
 		expect(notAllowed.success).toEqual([{ success: true }]);
 		const stored = await canvas().get<Json[]>(`/api/v1/media_objects/${courseMedia[2]}/media_tracks`);
 		expect(stored.map((t) => t.locale).sort()).toEqual(['en', 'fr']);
+
+		// Remove All Tracks sends the empty list on purpose (the tracks given along with it are ignored).
+		const removed = await runOk({
+			resource: 'mediaObject',
+			operation: 'updateTracks',
+			params: { mediaObjectId: courseMedia[2], removeAllTracks: true, tracks: { trackValues: [{ locale: 'de', content: srt('Hallo') }] } },
+		});
+		expect(removed.every((t) => !('locale' in t))).toBe(true);
+		expect(await canvas().get<Json[]>(`/api/v1/media_objects/${courseMedia[2]}/media_tracks`)).toEqual([]);
 	});
 });
