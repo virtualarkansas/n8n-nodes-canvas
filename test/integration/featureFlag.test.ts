@@ -3,13 +3,13 @@ import { canvas, CanvasClient, fx } from '../lib/canvas';
 import { runNode, runOk } from '../lib/harness';
 import type { RunNodeOptions, RunNodeResult } from '../lib/harness';
 import type { Json } from '../lib/n8n';
-import { createDedicatedAdmin, createDedicatedUser, removeDedicatedAdmin, removeDedicatedUser } from './support/dedicated';
-import type { DedicatedUser } from './support/dedicated';
-import { createCourse, deleteCourses, uniqueSisId } from './support/world';
-import type { OwnCourse } from './support/world';
+import { createDedicatedAdmin, createDedicatedUser, removeDedicatedAdmin, removeDedicatedUser } from './misc-support/dedicated';
+import type { DedicatedUser } from './misc-support/dedicated';
+import { createCourse, deleteCourses, uniqueSisId } from './misc-support/world';
+import type { OwnCourse } from './misc-support/world';
 
 vi.mock('../lib/state', async (original) =>
-	(await import('./support/state-overlay')).overlayState(await original()),
+	(await import('./misc-support/state-overlay')).overlayState(await original()),
 );
 
 /**

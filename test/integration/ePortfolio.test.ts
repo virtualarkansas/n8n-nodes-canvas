@@ -1,15 +1,15 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { CanvasClient } from '../lib/canvas';
+import { CanvasClient, fx } from '../lib/canvas';
 import { runNode, runOk } from '../lib/harness';
 import type { RunNodeOptions, RunNodeResult } from '../lib/harness';
 import type { Json } from '../lib/n8n';
-import { createDedicatedAdmin, createDedicatedUser, removeDedicatedAdmin, removeDedicatedUser } from './support/dedicated';
-import type { DedicatedUser } from './support/dedicated';
-import { createCourse, deleteCourses, uniqueSisId } from './support/world';
-import type { OwnCourse } from './support/world';
+import { createDedicatedAdmin, createDedicatedUser, removeDedicatedAdmin, removeDedicatedUser } from './misc-support/dedicated';
+import type { DedicatedUser } from './misc-support/dedicated';
+import { createCourse, deleteCourses, uniqueSisId } from './misc-support/world';
+import type { OwnCourse } from './misc-support/world';
 
 vi.mock('../lib/state', async (original) =>
-	(await import('./support/state-overlay')).overlayState(await original()),
+	(await import('./misc-support/state-overlay')).overlayState(await original()),
 );
 
 /**
@@ -136,6 +136,16 @@ describe('ePortfolio', () => {
 			params: { userId: `sis_user_id:${sisUserId}`, pagination: { returnAll: true } },
 		});
 		expect(bySis.map((p) => p.id)).toEqual(asSelf.map((p) => p.id));
+
+		// The seeded user whose SIS ID has a slash, a colon and a semicolon is found too (and has none).
+		const seededOdd = await run({
+			resource: 'ePortfolio',
+			operation: 'getAll',
+			params: { userId: `sis_user_id:${fx('oddSisUserSisId')}` },
+		});
+		expect(seededOdd.ok).toBe(true);
+		expect(seededOdd.error).toEqual([]);
+		expect(seededOdd.success).toEqual(await api.getAll<Json>(`/api/v1/users/${fx('oddSisUserId')}/eportfolios`));
 	});
 
 	it('getAll: a user without ePortfolios yields no items; another student may not list someone else\'s', async () => {

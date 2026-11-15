@@ -9,7 +9,7 @@ import type * as StateModule from '../../lib/state';
  * A test file opts in with:
  *
  *   vi.mock('../lib/state', async (original) =>
- *     (await import('./support/state-overlay')).overlayState(await original()));
+ *     (await import('./misc-support/state-overlay')).overlayState(await original()));
  */
 const extraTokens: Record<string, string> = {};
 const extraCredentials: Record<string, { id: string; name: string; type: string }> = {};

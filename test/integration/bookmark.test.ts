@@ -2,11 +2,11 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { CanvasClient } from '../lib/canvas';
 import { runNode, runOk } from '../lib/harness';
 import type { Json } from '../lib/n8n';
-import { createDedicatedUser, removeDedicatedUser } from './support/dedicated';
-import type { DedicatedUser } from './support/dedicated';
+import { createDedicatedUser, removeDedicatedUser } from './misc-support/dedicated';
+import type { DedicatedUser } from './misc-support/dedicated';
 
 vi.mock('../lib/state', async (original) =>
-	(await import('./support/state-overlay')).overlayState(await original()),
+	(await import('./misc-support/state-overlay')).overlayState(await original()),
 );
 
 /**
