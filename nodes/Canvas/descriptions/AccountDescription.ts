@@ -51,6 +51,13 @@ export const accountOperations: INodeProperties[] = [
 				action: 'Get help links of an account',
 			},
 			{
+				name: 'Get Manually Created Courses Account',
+				value: 'getManuallyCreatedCoursesAccount',
+				description:
+					'Get the sub-account of the root account in which Canvas puts the courses users create themselves ("Manually-Created Courses")',
+				action: 'Get the manually created courses account',
+			},
+			{
 				name: 'Get Many',
 				value: 'getAll',
 				description: 'List the accounts the current user can see, manage or create courses in',

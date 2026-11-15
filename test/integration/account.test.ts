@@ -924,4 +924,32 @@ describe('account', () => {
 		});
 		expect(result.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', operation: 'deleteSubAccount' });
 	});
+
+	// ------------------------------------------------------------------ getManuallyCreatedCoursesAccount
+
+	it('getManuallyCreatedCoursesAccount: returns the sub-account for courses users create themselves, in full for admins only', async () => {
+		const expected = await canvas().get<Json>('/api/v1/manually_created_courses_account');
+		const [manual] = await runOk({ resource: 'account', operation: 'getManuallyCreatedCoursesAccount', params: {} });
+		expect(manual).toEqual(expected);
+		// It is a sub-account of the root account, and what Get returns for that ID.
+		expect(manual).toMatchObject({ parent_account_id: Number(root), root_account_id: Number(root), workflow_state: 'active' });
+		expect(manual).toEqual(await canvas().get<Json>(`/api/v1/accounts/${String(manual.id)}`));
+		expect(manual).toHaveProperty('default_storage_quota_mb');
+
+		// One result per input item; a student gets the same account, without what only admins may see.
+		const asStudent = await runNode({
+			resource: 'account',
+			operation: 'getManuallyCreatedCoursesAccount',
+			persona: 'student',
+			items: [{ n: 1 }, { n: 2 }],
+			params: {},
+		});
+		expect(asStudent.ok).toBe(true);
+		expect(asStudent.error).toEqual([]);
+		const limited = await new CanvasClient('student').get<Json>('/api/v1/manually_created_courses_account');
+		expect(asStudent.success).toEqual([limited, limited]);
+		expect(asStudent.rawSuccess.map((item) => (item.pairedItem as Json).item)).toEqual([0, 1]);
+		expect(limited).toMatchObject({ id: manual.id, name: manual.name });
+		expect(limited).not.toHaveProperty('default_storage_quota_mb');
+	});
 });
