@@ -305,7 +305,12 @@ export class CanvasTrigger implements INodeType {
 		const events = this.getNodeParameter('events', []) as string[];
 		const courseIdFilter = String(this.getNodeParameter('courseId', '') ?? '').trim();
 		const accountIdFilter = String(this.getNodeParameter('accountId', '') ?? '').trim();
-		const options = this.getNodeParameter('triggerOptions', {}) as IDataObject;
+		// Workflows saved with 0.1.0 keep "Include Metadata" in `options`.
+		const legacyOptions = this.getNodeParameter('options', {}) as IDataObject;
+		const options: IDataObject = {
+			...(legacyOptions?.includeMetadata !== undefined ? { includeMetadata: legacyOptions.includeMetadata } : {}),
+			...(this.getNodeParameter('triggerOptions', {}) as IDataObject),
+		};
 
 		const request = this.getRequestObject();
 		const response = this.getResponseObject();

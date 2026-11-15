@@ -201,6 +201,13 @@ describe('Canvas Trigger: request handling', () => {
 		const trigger = await deployTrigger({ events: ['grade_change'], options: {} });
 		expect((await post(trigger.url, gradeChange)).status).toBe(200);
 		expect(await triggerOutput(trigger.workflowId)).toMatchObject({ eventType: 'grade_change', grade: '7' });
+
+		// "Include Metadata" switched off in such a workflow is still honoured.
+		const withoutMetadata = await deployTrigger({ events: ['grade_change'], options: { includeMetadata: false } });
+		expect((await post(withoutMetadata.url, gradeChange)).status).toBe(200);
+		const output = await triggerOutput(withoutMetadata.workflowId);
+		expect(output).toMatchObject({ eventType: 'grade_change' });
+		expect(output).not.toHaveProperty('metadata');
 	});
 
 	it('accepts form-encoded or charset-suffixed JSON content types', async () => {
