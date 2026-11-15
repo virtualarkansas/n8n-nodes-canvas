@@ -100,10 +100,14 @@ export function linkedIfAsked(
 
 /**
  * The ID in a value that may also be the URL Canvas hands out for the record: an ID
- * (`123`, `sis_course_id:x`) is returned as it is; a URL or path with `/<segment>/<id>`
- * (`https://canvas.example.com/api/v1/progress/123`, as in a `progress_url`) gives the ID
- * after the last such segment. Query string and fragment are ignored. Any other value
- * with a slash throws an ApplicationError naming `label`.
+ * (`123`, `sis_course_id:x`) is returned as it is; a URL or path that ends in
+ * `/<segment>/<id>` (`https://canvas.example.com/api/v1/progress/123`, as in a
+ * `progress_url`) gives that last part. Query string and fragment are ignored.
+ *
+ * The part is returned exactly as it stands in the URL, never decoded: it goes into a
+ * request path, and decoding it could turn one path segment into several (`5%2Fcancel`)
+ * or into a query (`5%3Fx`). Anything else with a slash, and a URL that goes on after the
+ * ID, throws an ApplicationError naming `label`.
  */
 export function idFromUrl(value: string, segment: string, label: string): string {
 	const text = value.trim();
@@ -113,12 +117,12 @@ export function idFromUrl(value: string, segment: string, label: string): string
 	const path = text.split(/[?#]/)[0];
 	const parts = path.split('/').filter((part) => part !== '');
 	const index = parts.lastIndexOf(segment);
-	if (index === -1 || index === parts.length - 1) {
+	if (index === -1 || index !== parts.length - 2) {
 		throw new ApplicationError(
 			`${label}: expected an ID or a URL ending in /${segment}/<ID>, got ${shown(text)}`,
 		);
 	}
-	return decodeURIComponent(parts[index + 1]);
+	return parts[index + 1];
 }
 
 /** A value as it is shown in an error message: its JSON text, cut off after 60 characters. */

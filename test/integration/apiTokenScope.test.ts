@@ -17,7 +17,7 @@ describe('apiTokenScope', () => {
 		const all = await runOk({
 			resource: 'apiTokenScope',
 			operation: 'getAll',
-			params: { accountId: root, returnAll: true },
+			params: { accountId: root },
 		});
 		expect(all).toHaveLength(expected.length);
 		expect(all.map((s) => s.scope)).toEqual(expected.map((s) => s.scope));
@@ -29,24 +29,19 @@ describe('apiTokenScope', () => {
 	it('getAll: Limit is honoured (default 50), also with the account given as "self" or a number', async () => {
 		const expected = await canvas().get<Json[]>(`/api/v1/accounts/${root}/scopes`);
 
+		// Canvas returns this list whole (several hundred scopes, no pages), so the node does too:
+		// there is no Limit to cut it, and the node-level page options change nothing.
 		const defaults = await runOk({ resource: 'apiTokenScope', operation: 'getAll', params: { accountId: 'self' } });
-		expect(defaults).toHaveLength(50);
-		expect(defaults.map((s) => s.scope)).toEqual(expected.slice(0, 50).map((s) => s.scope));
+		expect(defaults.length).toBeGreaterThan(100);
+		expect(defaults.map((s) => s.scope)).toEqual(expected.map((s) => s.scope));
 
-		const limited = await runOk({
+		const paged = await runOk({
 			resource: 'apiTokenScope',
 			operation: 'getAll',
 			items: [{ account: Number(root) }],
-			params: { accountId: '={{ $json.account }}', returnAll: false, limit: 7 },
+			params: { accountId: '={{ $json.account }}', pagination: { perPage: 7, maxPages: 2 } },
 		});
-		expect(limited).toHaveLength(7);
-
-		const many = await runOk({
-			resource: 'apiTokenScope',
-			operation: 'getAll',
-			params: { accountId: root, returnAll: false, limit: 250 },
-		});
-		expect(many).toHaveLength(250);
+		expect(paged).toHaveLength(expected.length);
 	});
 
 	it('getAll: grouped by resource the result is one item with a list of scopes per resource', async () => {
@@ -54,7 +49,7 @@ describe('apiTokenScope', () => {
 		const result = await runOk({
 			resource: 'apiTokenScope',
 			operation: 'getAll',
-			params: { accountId: root, returnAll: true, options: { group_by: 'resource_name' } },
+			params: { accountId: root, options: { group_by: 'resource_name' } },
 		});
 		expect(result).toHaveLength(1);
 		expect(Object.keys(result[0]).sort()).toEqual(Object.keys(expected).sort());

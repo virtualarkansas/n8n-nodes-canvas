@@ -135,7 +135,7 @@ export const authenticationsLogFields: INodeProperties[] = [
 			},
 		},
 		description:
-			'Whether to add to every event a "linked" object with the records its "links" point to (login, account, user, page view), as Canvas sends them with the event. Keeps the names of deleted records that cannot be looked up later.',
+			'Whether to add to every event a "linked" object with the records its "links" point to (login, account, user, page view), as Canvas sends them with the event. Keeps the names of deleted records that cannot be looked up later. The linked records are repeated on every event, so a long log grows considerably. Switch it off when the IDs are enough.',
 	},
 	{
 		displayName: 'Options',

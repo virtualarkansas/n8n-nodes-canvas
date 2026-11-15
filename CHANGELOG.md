@@ -15,7 +15,7 @@ This release changes behaviour that workflows saved with 0.1.0 may rely on. Read
 **Output**
 
 - **Lists: Return All and Limit on the operation.** Every operation that reads a list follows
-  Canvas' pagination, and 134 list operations now have n8n's usual **Return All** and **Limit**
+  Canvas' pagination, and 132 list operations now have n8n's usual **Return All** and **Limit**
   (default 50) fields. A workflow saved with 0.1.0 returns what it returned before: 50 records
   by default, everything with **Pagination → Return All**, and pages as configured where
   **Items Per Page** or **Max Pages** were set (with Limit left at 50 those two decide; a Limit
@@ -66,11 +66,12 @@ corrected. Where that changed what you see in the node:
 | Resource | Change | What to do |
 |---|---|---|
 | Account Notification | Update: **Message** is a required field (Canvas rejects an update without it) | Fill in Message |
-| Authentication Provider | Type `twitter` and the settings `scopes`, `skip_internal_lookup`, `user_info_endpoint` removed (Canvas knows `scope` and `userinfo_endpoint`); Update SSO Settings sends the settings where Canvas reads them | Re-select the settings |
+| Authentication Provider | Type `twitter` and the settings `scopes`, `skip_internal_lookup`, `user_info_endpoint` removed (Canvas knows `scope` and `userinfo_endpoint`); Update SSO Settings sends the settings where Canvas reads them; Get Many: Return All / Limit removed (Canvas returns the whole list, as 0.1.0 did in effect) | Re-select the settings |
 | Calendar Event | Get Many: `includes` replaced by `include` (the name Canvas reads) | Saved values still work |
 | Content Export, Content Migration, Notification Preference | **User ID** defaults to `self` (an empty ID built an invalid path) | Nothing |
 | Content Migration | Default migration type is Course Copy; `workflow_state` removed from Update; Get Selective Data: Group and User contexts removed (Canvas cannot list the content of their ZIP imports) | Choose the type explicitly |
 | Content Share | Create, Add Users, Update and Delete no longer take a User ID (Canvas only has these routes for the calling user) | Nothing |
+| API Token Scope | Get Many: Return All / Limit removed (Canvas returns the whole list, as 0.1.0 did in effect) | Nothing |
 | Account Calendar, Assignment | The JSON fields of Update Many, Bulk Update Dates, Batch Create Overrides and Batch Update Overrides are empty by default (the sample moved to the placeholder; the Update Many sample named account 1) | Fill in the list |
 | Course | **Copy: Only and Except now take effect.** 0.1.0 and earlier builds sent them where Canvas does not read them, so every copy was a complete copy; the value Assignment Groups is gone (groups come with their assignments). Create/Update: Allow Student Assignment Edits removed (Canvas ignores it; use Default Page Editing Roles). List Students uses the current roster endpoint: every student once (the old endpoint repeated a student per enrollment), without the test student unless included, and its options now take effect. Sort and include values Canvas cannot serve were removed | Check Copy workflows that set Only or Except: they now copy less. Check workflows that counted or de-duplicated students |
 | Course Pace | Create: `start_date` removed | Nothing |
@@ -187,9 +188,10 @@ corrected. Where that changed what you see in the node:
   header instead of the operation's name, items lost on empty answers, missing `pairedItem`, n8n's
   Continue On Fail ignored, error types, redirects on writes, uploads (three steps without a runtime
   dependency, URL uploads, empty files), expression errors swallowed into empty parameters.
-- Security: a value in an ID field can no longer change where a request goes. Every such value is
-  sent as one encoded path segment, relative segments (`..`, also written as `%2e%2e`) are refused
-  before anything is sent, and **Act as User ID** replaces any `as_user_id` that arrives another
+- Security: a value in an ID field can no longer change where a request goes. Every such value,
+  whether it arrives as text, a list or an object, is sent as one encoded path segment; a path
+  with a query, a fragment or a relative segment (`..`, also written as `%2e%2e`) is refused
+  before anything is sent; and **Act as User ID** replaces any `as_user_id` that arrives another
   way. 0.1.0 put such values into the path as they were.
 - Security: the credential is only ever sent to the configured Canvas host, and never over http
   when Canvas redirects within itself. Link and Location URLs

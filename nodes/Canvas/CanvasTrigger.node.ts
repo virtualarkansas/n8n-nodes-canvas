@@ -287,7 +287,7 @@ export class CanvasTrigger implements INodeType {
 						type: 'string',
 						default: '',
 						description:
-							'If set, only events of this Canvas root account are accepted (the "root_account_uuid" in the metadata of every event; Account > Get of your root account shows it as "uuid"). Events of any other Canvas are rejected.',
+							'If set, only events that carry this root account UUID start the workflow (the "root_account_uuid" in the metadata of an event; Account > Get of your root account shows it as "uuid"). Other events are acknowledged and ignored. Before relying on it, look at the UUID of a few real deliveries: events that Canvas emits from background jobs, such as those of a SIS import, may carry a different one.',
 					},
 					{
 						displayName: 'Secret Token',
@@ -509,7 +509,9 @@ export class CanvasTrigger implements INodeType {
 				| undefined;
 			const actual = String(event.metadata.root_account_uuid ?? extensions?.root_account_uuid ?? '');
 			if (!constantTimeEquals(actual, rootAccountUuid)) {
-				return reject(403, 'The event does not belong to the expected Canvas root account');
+				// Acknowledged like any other event that is filtered out: Canvas repeats what is
+				// not answered with a 2xx, and a sender learns nothing from the answer.
+				return ignore('event does not carry the expected root account UUID');
 			}
 		}
 

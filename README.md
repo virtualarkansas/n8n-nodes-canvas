@@ -227,7 +227,7 @@ The Production URL is public, so restrict who can use it (under **Options**):
 |---|---|
 | **Secret Token** | Requests must carry `?token=<value>`. Add it to the URL you enter in Data Services. |
 | **Require Signed Payload** | Only accepts events delivered with Data Services' **Sign Payload** option; the signature is then always checked. |
-| **Root Account UUID** | Only accepts events of your Canvas (the `uuid` of your root account, which every event carries). |
+| **Root Account UUID** | Only events that carry this UUID start the workflow (the `uuid` of your root account); others are acknowledged and ignored. Check a few real deliveries first: events from background jobs (a SIS import) may carry a different UUID. |
 | **Verify Signed Payloads** (on by default) | Checks the signature of signed events against the keys Instructure publishes. |
 | **JWKS URL** | Where the signing keys are fetched from; the default is Instructure's key set. |
 
@@ -317,9 +317,10 @@ Every operation that returns a list Canvas hands out page by page has n8n's usua
 - **Return All**: read the whole list
 - **Limit** (default 50): otherwise, the first so many records
 
-When a list is cut short, the node says so: the output panel shows a hint that Canvas has more
-records than were read. Nothing in the items marks it, so for a sync or an export that needs
-every record turn **Return All** on.
+When a list is cut short at the default Limit, the node says so: the output panel shows a warning
+that Canvas has more records than were read, and n8n's log gets the same line for runs nobody
+watches. Nothing in the items marks it, so for a sync or an export that needs every record turn
+**Return All** on. A Limit you set yourself is not warned about.
 
 The **Pagination** collection further down applies to the whole node:
 

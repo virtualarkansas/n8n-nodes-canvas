@@ -50,14 +50,14 @@ describe('authenticationProvider', () => {
 
 	// ------------------------------------------------------- get / getAll (read-only)
 
-	it('getAll: lists the active providers of the account; Limit and Return All are honoured', async () => {
+	it('getAll: lists the active providers of the account (Canvas returns the list whole)', async () => {
 		const expected = await providers(root);
 		expect(expected.length).toBeGreaterThanOrEqual(3);
 
 		const all = await runOk({
 			resource: 'authenticationProvider',
 			operation: 'getAll',
-			params: { accountId: root, returnAll: true },
+			params: { accountId: root },
 		});
 		expectSameIds(all, expected, await providers(root));
 		expect(ids(all)).toEqual(
@@ -69,17 +69,13 @@ describe('authenticationProvider', () => {
 		// Secrets are never part of the output.
 		expect(JSON.stringify(all)).not.toMatch(/client_secret|auth_password/);
 
-		const limited = await runOk({
+		// No pages to follow and nothing to cut: the node-level page options change nothing.
+		const paged = await runOk({
 			resource: 'authenticationProvider',
 			operation: 'getAll',
-			params: { accountId: 'self', returnAll: false, limit: 2 },
+			params: { accountId: 'self', pagination: { perPage: 1, maxPages: 1 } },
 		});
-		expect(limited).toHaveLength(2);
-		expect(limited[0].id).toBe(expected[0].id);
-
-		const defaults = await runOk({ resource: 'authenticationProvider', operation: 'getAll', params: { accountId: root } });
-		expect(defaults.length).toBeGreaterThanOrEqual(3);
-		expect(defaults.length).toBeLessThanOrEqual(50);
+		expectSameIds(paged, expected, await providers(root));
 	});
 
 	it('getAll: sub-accounts have no providers of their own, and a teacher is refused', async () => {

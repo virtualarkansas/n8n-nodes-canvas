@@ -547,11 +547,10 @@ export class Canvas implements INodeType {
 			const remedy = cutShort.hasLimitField
 				? 'Turn on Return All or raise the Limit to get all of them.'
 				: 'Turn on Pagination > Return All (or raise Max Pages) to get all of them.';
-			this.addExecutionHints?.({
-				message: `${lists} returned by Canvas LMS ${cutShort.count === 1 ? 'is' : 'are'} incomplete: Canvas has more records than were read. ${remedy}`,
-				type: 'warning',
-				location: 'outputPane',
-			});
+			const message = `${lists} returned by Canvas LMS ${cutShort.count === 1 ? 'is' : 'are'} incomplete: Canvas has more records than were read. ${remedy}`;
+			this.addExecutionHints?.({ message, type: 'warning', location: 'outputPane' });
+			// The hint is only seen in the editor; a run nobody watches leaves a line in n8n's log.
+			this.logger?.warn(`${this.getNode().name} (${resource}/${operation}): ${message}`);
 		}
 
 		return asTool ? [[...successItems, ...errorItems]] : [successItems, errorItems];
@@ -818,7 +817,9 @@ async function processItem(
 					request.dataKey,
 					request.pageTransform,
 				);
-				if (response.more && !request.singlePage) {
+				// Reading stopped at the default Limit or at the page budget while Canvas has more.
+				// A Limit the user set on purpose is no surprise and needs no warning.
+				if (response.more && !request.singlePage && (pagination.limit === undefined || pagination.limit === DEFAULT_LIMIT)) {
 					cutShort.count++;
 					cutShort.hasLimitField ||= pagination.limit !== undefined;
 				}
@@ -1010,21 +1011,27 @@ export function buildRequest(
 			emptyParams.push(name);
 			return defaultValue;
 		}
+		// Whatever shape the value arrives in (an expression hands over lists and objects as they
+		// are), the text the handler receives is remembered: any of it may end up in the path.
+		const remember = (text: string): string => {
+			pathValues.set(name, text);
+			return text;
+		};
 		if (Array.isArray(value)) {
 			// A list for a JSON field, or a list of records, stays JSON (it came from an
 			// expression); a list of plain values for any other field becomes "a,b,c".
-			return jsonParams.has(name) || value.some((entry) => entry !== null && typeof entry === 'object')
-				? JSON.stringify(value)
-				: value.map((entry) => String(entry)).join(',');
+			return remember(
+				jsonParams.has(name) || value.some((entry) => entry !== null && typeof entry === 'object')
+					? JSON.stringify(value)
+					: value.map((entry) => String(entry)).join(','),
+			);
 		}
 		if (typeof value === 'object') {
-			return JSON.stringify(value);
+			return remember(JSON.stringify(value));
 		}
 		// IDs arrive as numbers when they come from an expression, and pasted IDs often
 		// carry stray whitespace. Free text is passed through untouched.
-		const text = /id$/i.test(name) ? String(value).trim() : String(value);
-		pathValues.set(name, text);
-		return text;
+		return remember(/id$/i.test(name) ? String(value).trim() : String(value));
 	};
 
 	const getParamObject = (name: string): Record<string, unknown> => {
@@ -1061,24 +1068,43 @@ export function buildRequest(
 	for (const name of request.encodedParams ?? []) {
 		pathValues.delete(name);
 	}
-	request.endpoint = encodePathValues(request.endpoint, pathValues.values());
-
-	// "." and ".." as a path segment, however they are written (`%2e%2e`, with a backslash),
-	// would let an input value move the request to another path: HTTP clients and servers
-	// resolve them. Every segment of the finished path is checked, whoever put it there.
-	if (!/^https?:\/\//i.test(request.endpoint)) {
-		const builtPath = request.endpoint.split(/[?#]/)[0];
+	// A handler may have trimmed a value before using it: look for that form too.
+	const values = [...pathValues.values()].flatMap((value) => [value, value.trim()]);
+	const refuse = (path: string, why: string): never => {
+		throw new NodeOperationError(
+			context.getNode(),
+			`A parameter of ${resource}/${operation} is not a valid ID: it would change the path of the request`,
+			{ itemIndex, description: `The request path "${path}" must not contain ${why}.` },
+		);
+	};
+	// The same for the path of the request itself and of the read that follows a write.
+	const safePath = (endpoint: string): string => {
+		if (/^https?:\/\//i.test(endpoint)) {
+			return endpoint;
+		}
+		const encoded = encodePathValues(endpoint, values);
+		// No handler builds a path with a query string or a fragment (parameters travel in `qs`),
+		// so a "?" or "#" can only have come from a value that escaped the encoding above. The
+		// Custom API Request is the exception: its path is the user's own text.
+		if (resource !== 'apiRequest' && /[?#]/.test(encoded)) {
+			refuse(encoded, '"?" or "#"');
+		}
+		// "." and ".." as a path segment, however they are written (`%2e%2e`, with a backslash),
+		// would let an input value move the request to another path: HTTP clients and servers
+		// resolve them. Every segment of the finished path is checked, whoever put it there.
+		const builtPath = encoded.split(/[?#]/)[0];
 		// Decoded as well: a proxy in front of Canvas may resolve `..%2F..` after decoding it.
 		const relative = builtPath
 			.split(/[/\\]/)
 			.some((segment) => decodePathValue(segment).split(/[/\\]/).some((part) => /^\.{1,2}$/.test(part)));
 		if (relative || builtPath.includes('\\')) {
-			throw new NodeOperationError(
-				context.getNode(),
-				`A parameter of ${resource}/${operation} is not a valid ID: it would change the path of the request`,
-				{ itemIndex, description: `The request path "${builtPath}" must not contain relative segments ("." or "..") or backslashes.` },
-			);
+			refuse(builtPath, 'relative segments ("." or "..") or backslashes');
 		}
+		return encoded;
+	};
+	request.endpoint = safePath(request.endpoint);
+	if (request.thenGet) {
+		request.thenGet = safePath(request.thenGet);
 	}
 
 	// A required ID that resolved to nothing leaves an empty path segment

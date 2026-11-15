@@ -561,12 +561,12 @@ describe('cross-cutting', () => {
 			expect(ids(limited.success).slice(0, 50)).toEqual(ids(byDefault.success));
 			expectSameList(ids(everything.success), before, after);
 
-			// A partial list never passes for a complete one.
-			for (const partial of [byDefault, limited]) {
-				expect(hintsOf(partial)).toHaveLength(1);
-				expect(hintsOf(partial)[0]).toContain('incomplete');
-				expect(hintsOf(partial)[0]).toContain('Return All');
-			}
+			// A list cut at the default Limit never passes for a complete one. A Limit the user chose
+			// is no surprise and carries no warning; neither does the complete list.
+			expect(hintsOf(byDefault)).toHaveLength(1);
+			expect(hintsOf(byDefault)[0]).toContain('incomplete');
+			expect(hintsOf(byDefault)[0]).toContain('Return All');
+			expect(hintsOf(limited)).toEqual([]);
 			expect(hintsOf(everything)).toEqual([]);
 		});
 

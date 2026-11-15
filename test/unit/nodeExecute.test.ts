@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import type { IDataObject, IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
 import { Canvas } from '../../nodes/Canvas/Canvas.node.js';
 import { withMasquerade } from '../../nodes/Canvas/GenericFunctions';
+import { PAGED_LIST_OPERATIONS } from '../../nodes/Canvas/listOperations';
+import { buildRequestFor, listOperations, paramVariants } from '../lib/catalog';
 
 /**
  * The node itself (`execute`), run against a fake n8n context that records every request
@@ -82,6 +84,64 @@ describe('what an input value can do to the request', () => {
 		expect(sent.map((r) => `${r.method} ${r.url}`)).toEqual([
 			'DELETE https://canvas.test/api/v1/courses/5%3Fevent%3Ddelete%23%20/assignments/9?as_user_id=42',
 		]);
+	});
+
+	it('a list or an object from an expression is held to the same rule as text', async () => {
+		// `{{ $json.course_id }}` hands over whatever the input holds, also a list or an object.
+		const inputs: unknown[] = [['5?event=delete#'], ['5', '6?x=1'], { a: '?#' }, [' 5?event=delete# ']];
+		for (const courseId of inputs) {
+			const { outputs, sent } = await run({
+				...quiet,
+				resource: 'assignment',
+				operation: 'delete',
+				courseId,
+				assignmentId: 9,
+				requestOptions: { asUserId: '42' },
+			});
+			const label = JSON.stringify(courseId);
+			expect(outputs[1], label).toEqual([]);
+			expect(sent, label).toHaveLength(1);
+			const url = new URL(sent[0].url);
+			// One request, to the assignment of whatever course that text names: nothing but the node's own query.
+			expect(url.pathname.endsWith('/assignments/9'), label).toBe(true);
+			expect(url.pathname.split('/').length, label).toBe('/api/v1/courses/x/assignments/9'.split('/').length);
+			expect(url.search, label).toBe('?as_user_id=42');
+			expect(url.hash, label).toBe('');
+		}
+	});
+
+	it('a "?" or "#" that reaches a path in any other way is refused: no handler builds a path with a query', async () => {
+		// Late Policy > Update reads the policy again after the write: that second path is checked like the first.
+		const { outputs, sent } = await run({
+			...quiet,
+			resource: 'latePolicy',
+			operation: 'update',
+			courseId: ['7?x=1#'],
+			updateFields: { missing_submission_deduction_enabled: true },
+		});
+		for (const request of sent) {
+			expect(request.url).not.toMatch(/courses\/7\?/);
+			expect(new URL(request.url).hash).toBe('');
+		}
+		expect(outputs[0].length + outputs[1].length).toBe(1);
+	});
+
+	it('an ID taken out of a URL stays as it is written there: escapes in it are never resolved', async () => {
+		const progress = (progressId: string, operation = 'get') => run({ ...quiet, resource: 'progress', operation, progressId });
+
+		const plain = await progress('https://canvas.test/api/v1/progress/123');
+		expect(plain.sent.map((r) => r.url.replace(/\?.*/, ''))).toEqual(['https://canvas.test/api/v1/progress/123']);
+
+		// An escaped "?" or "/" in the URL must not become a query or another path segment.
+		const query = await progress('https://canvas.example/api/v1/progress/5%3Fas_user_id%3D42%23', 'cancel');
+		expect(query.sent.map((r) => `${r.method} ${r.url}`)).toEqual(['POST https://canvas.test/api/v1/progress/5%3Fas_user_id%3D42%23/cancel']);
+		const slash = await progress('https://canvas.example/api/v1/progress/5%2Fcancel');
+		expect(slash.sent.map((r) => new URL(r.url).pathname)).toEqual(['/api/v1/progress/5%2Fcancel']);
+
+		// A URL that goes on after the ID is not a progress URL.
+		const longer = await progress('/api/v1/progress/7/extra');
+		expect(longer.sent).toEqual([]);
+		expect(longer.outputs[1][0].json).toMatchObject({ errorType: 'INVALID_PARAMETERS' });
 	});
 
 	it('relative path segments are refused however they are written, and nothing is sent', async () => {
@@ -174,15 +234,16 @@ describe('lists: Return All, Limit and the node-level Pagination options', () =>
 		};
 	};
 
+	const properties = new Canvas().description.properties;
+	const shownFor = (name: string, resource: string, operation: string): boolean =>
+		properties.some(
+			(property) =>
+				property.name === name &&
+				(property.displayOptions?.show?.resource as string[] | undefined)?.includes(resource) &&
+				((property.displayOptions?.show?.operation as string[] | undefined)?.includes(operation) ?? true),
+		);
+
 	it('every paged list operation offers Return All and Limit', () => {
-		const properties = new Canvas().description.properties;
-		const shownFor = (name: string, resource: string, operation: string): boolean =>
-			properties.some(
-				(property) =>
-					property.name === name &&
-					(property.displayOptions?.show?.resource as string[] | undefined)?.includes(resource) &&
-					((property.displayOptions?.show?.operation as string[] | undefined)?.includes(operation) ?? true),
-			);
 		for (const [resource, operation] of [
 			['enrollment', 'getAll'],
 			['user', 'getAll'],
@@ -196,9 +257,42 @@ describe('lists: Return All, Limit and the node-level Pagination options', () =>
 			expect(shownFor('returnAll', resource, operation), `${resource}.${operation} Return All`).toBe(true);
 			expect(shownFor('limit', resource, operation), `${resource}.${operation} Limit`).toBe(true);
 		}
-		// Not on operations that return one record, or that always read everything.
+		// Not on operations that return one record, that always read everything, or whose list
+		// Canvas returns whole (a Limit there would cut what was never cut before).
 		expect(shownFor('returnAll', 'course', 'get')).toBe(false);
 		expect(shownFor('returnAll', 'course', 'listStudents')).toBe(false);
+		expect(shownFor('returnAll', 'apiTokenScope', 'getAll')).toBe(false);
+		expect(shownFor('returnAll', 'authenticationProvider', 'getAll')).toBe(false);
+		expect(shownFor('returnAll', 'notificationPreference', 'getAll')).toBe(false);
+	});
+
+	it('every entry of the list of paged operations names an operation of the node that reads with GET', () => {
+		const known = new Map(listOperations().map((op) => [`${op.resource}.${op.operation}`, op]));
+		const problems: string[] = [];
+		for (const [resource, operations] of Object.entries(PAGED_LIST_OPERATIONS)) {
+			for (const operation of operations) {
+				const op = known.get(`${resource}.${operation}`);
+				if (!op) {
+					problems.push(`${resource}.${operation} does not exist`);
+					continue;
+				}
+				// A typo here would silently leave an operation without its Return All / Limit fields.
+				if (!shownFor('returnAll', resource, operation) || !shownFor('limit', resource, operation)) {
+					problems.push(`${resource}.${operation} has no Return All / Limit`);
+				}
+				// The Custom API Request offers every method; its fields are shown for GET only.
+				if (resource === 'apiRequest') continue;
+				for (const variant of paramVariants(op)) {
+					try {
+						const request = buildRequestFor(resource, operation, variant.params);
+						if (request.method !== 'GET') problems.push(`${resource}.${operation} [${variant.label}] sends ${request.method}`);
+					} catch {
+						// a parameter set the operation refuses as a whole
+					}
+				}
+			}
+		}
+		expect(problems).toEqual([]);
 	});
 
 	it('by default the Limit of 50 is read in one request, and the output says that the list goes on', async () => {
@@ -209,10 +303,11 @@ describe('lists: Return All, Limit and the node-level Pagination options', () =>
 		expect(byDefault.hints[0].message).toContain('incomplete');
 		expect(byDefault.hints[0].message).toContain('Return All');
 
+		// A Limit the user chose is no surprise: no warning for it.
 		const larger = await read({ returnAll: false, limit: 250 });
 		expect(larger.count).toBe(250);
 		expect(larger.requests).toEqual([100, 100, 100]);
-		expect(larger.hints).toHaveLength(1);
+		expect(larger.hints).toEqual([]);
 
 		// A list that fits needs no hint, also when it ends exactly at the limit.
 		expect((await read({ returnAll: false, limit: 50 }, 50)).hints).toEqual([]);

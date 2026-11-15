@@ -1009,8 +1009,9 @@ export async function canvasApiRequest(
 					const failure = tagError(error as Error, 'UNAUTHORIZED');
 					throw method === 'GET' ? failure : markWrite(failure);
 				}
-				if (method !== 'GET' && refusedWith >= 500) {
-					// The write may have been carried out: do not send it again.
+				if (method !== 'GET' && (refusedWith >= 500 || refusedWith < 400)) {
+					// The write may have been carried out (a server error, or a redirect after it):
+					// do not send it again.
 					throw markWrite(error as Error);
 				}
 				// A read, or a write Canvas refused outright (4xx): send it once more the normal
@@ -1401,8 +1402,10 @@ export async function executeWithErrorHandling<T>(
 		} catch (error) {
 			const jsonError = error as JsonObject;
 
-			// A cancelled execution is not a failed item: stop, whatever the error mode.
-			if (isCancellation(error)) {
+			// A cancelled execution is not a failed item: stop, whatever the error mode. While a
+			// request is on its way the cancellation arrives as an aborted request, not as n8n's
+			// cancellation error, so the signal itself is asked as well.
+			if (isCancellation(error) || this.getExecutionCancelSignal?.()?.aborted === true) {
 				throw error;
 			}
 

@@ -374,11 +374,16 @@ describe('Canvas Trigger: authenticating the sender', () => {
 		const foreign = { ...gradeChange, metadata: { ...gradeChange.metadata, root_account_uuid: 'AnotherCanvasRootAccountUuid0000000000000' } };
 		const anonymous = { ...gradeChange, metadata: { ...gradeChange.metadata, root_account_uuid: undefined } };
 
-		// A validly signed event of another Instructure customer is still not ours.
-		const refused = await post(trigger.url, signJwt(foreign), 'application/jwt');
-		expect(refused.status).toBe(403);
-		expect((await post(trigger.url, foreign)).status).toBe(403);
-		expect((await post(trigger.url, anonymous)).status).toBe(403);
+		// A validly signed event of another Instructure customer is still not ours. Like every event
+		// that is filtered out, it is acknowledged (Canvas repeats anything else) and ignored.
+		for (const answer of [
+			await post(trigger.url, signJwt(foreign), 'application/jwt'),
+			await post(trigger.url, foreign),
+			await post(trigger.url, anonymous),
+		]) {
+			expect(answer.status).toBe(200);
+			expect(answer.json).toMatchObject({ status: 'ignored' });
+		}
 		expect(await executionCount(trigger.workflowId)).toBe(0);
 
 		expect((await post(trigger.url, gradeChange)).status).toBe(200);
