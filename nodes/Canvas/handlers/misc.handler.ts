@@ -1,16 +1,62 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
 
+/**
+ * A list option may arrive as an array (multi-select, or an expression that
+ * resolves to an array) or as comma-separated text. Empty entries are dropped.
+ */
+function toList(value: unknown): string[] {
+	if (value === undefined || value === null) {
+		return [];
+	}
+	const entries = Array.isArray(value) ? value : String(value).split(',');
+	return entries.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
+}
+
+/**
+ * An ID placed in the request path. Canvas accepts SIS IDs there (`sis_user_id:...`) and
+ * those may contain characters that would otherwise end or split the path (`/`, `?`, `#`,
+ * spaces, `%`). The value is the ID itself, never URL text, so it is always encoded;
+ * the colon of the SIS prefix stays readable.
+ */
+function pathId(value: string): string {
+	return encodeURIComponent(value.trim()).replace(/%3A/gi, ':');
+}
+
+/** True when an optional field was filled in (booleans and numbers count, '' does not). */
+function isSet(value: unknown): boolean {
+	return value !== undefined && value !== null && value !== '';
+}
+
 // ============================================
 // Bookmark
 // ============================================
+
+/**
+ * Canvas stores a bookmark's `data` as JSON. The UI field holds JSON text, so parse
+ * it and send the structure itself; sending the text would store one long string.
+ */
+function parseBookmarkData(value: unknown): unknown {
+	if (typeof value !== 'string') {
+		return value;
+	}
+	const text = value.trim();
+	if (text === '') {
+		return undefined;
+	}
+	try {
+		return JSON.parse(text) as unknown;
+	} catch {
+		throw new ApplicationError('Bookmark "Data" must be valid JSON, for example {"active_tab": 1}');
+	}
+}
 
 export function buildBookmarkRequest(
 	operation: string,
 	getParam: GetParam,
 	getParamObject: GetParamObject,
 ): IRequestConfig {
-	const bookmarkId = getParam('bookmarkId');
+	const bookmarkId = pathId(getParam('bookmarkId'));
 
 	switch (operation) {
 		case 'create': {
@@ -20,10 +66,11 @@ export function buildBookmarkRequest(
 				url: getParam('url'),
 			};
 
-			if (additionalFields.data) {
-				body.data = additionalFields.data;
+			const data = parseBookmarkData(additionalFields.data);
+			if (data !== undefined) {
+				body.data = data;
 			}
-			if (additionalFields.position !== undefined) {
+			if (isSet(additionalFields.position)) {
 				body.position = additionalFields.position;
 			}
 
@@ -48,10 +95,26 @@ export function buildBookmarkRequest(
 
 		case 'update': {
 			const updateFields = getParamObject('updateFields');
+			const body: Record<string, unknown> = {};
+
+			if (updateFields.name !== undefined) {
+				body.name = updateFields.name;
+			}
+			if (updateFields.url !== undefined) {
+				body.url = updateFields.url;
+			}
+			const data = parseBookmarkData(updateFields.data);
+			if (data !== undefined) {
+				body.data = data;
+			}
+			if (isSet(updateFields.position)) {
+				body.position = updateFields.position;
+			}
+
 			return {
 				method: 'PUT',
 				endpoint: `/api/v1/users/self/bookmarks/${bookmarkId}`,
-				body: updateFields,
+				body,
 			};
 		}
 
@@ -79,16 +142,17 @@ export function buildEPortfolioRequest(
 		case 'get':
 			return {
 				method: 'GET',
-				endpoint: `/api/v1/eportfolios/${getParam('ePortfolioId')}`,
+				endpoint: `/api/v1/eportfolios/${pathId(getParam('ePortfolioId'))}`,
 			};
 
 		case 'getAll': {
-			const userId = getParam('userId');
+			const userId = pathId(getParam('userId'));
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
 
-			if (options.include !== undefined) {
-				qs['include[]'] = 'deleted';
+			// Deleted ePortfolios are only listed for admins who may moderate user content.
+			if (options.include === true) {
+				qs.include = ['deleted'];
 			}
 
 			return {
@@ -101,42 +165,33 @@ export function buildEPortfolioRequest(
 		case 'getAllPages':
 			return {
 				method: 'GET',
-				endpoint: `/api/v1/eportfolios/${getParam('ePortfolioId')}/pages`,
+				endpoint: `/api/v1/eportfolios/${pathId(getParam('ePortfolioId'))}/pages`,
 			};
 
 		case 'delete':
 			return {
 				method: 'DELETE',
-				endpoint: `/api/v1/eportfolios/${getParam('ePortfolioId')}`,
+				endpoint: `/api/v1/eportfolios/${pathId(getParam('ePortfolioId'))}`,
 			};
 
-		case 'moderate': {
-			const ePortfolioId = getParam('ePortfolioId');
-			const spamStatus = getParam('spamStatus');
+		case 'moderate':
 			return {
 				method: 'PUT',
-				endpoint: `/api/v1/eportfolios/${ePortfolioId}/moderate/${spamStatus}`,
+				endpoint: `/api/v1/eportfolios/${pathId(getParam('ePortfolioId'))}/moderate`,
+				body: { spam_status: getParam('spamStatus') },
 			};
-		}
 
-		case 'moderateAll': {
-			const userId = getParam('userId');
-			const spamStatus = getParam('spamStatus');
+		case 'moderateAll':
 			return {
 				method: 'PUT',
-				endpoint: `/api/v1/eportfolios/moderate_all`,
-				body: {
-					user_id: userId,
-					spam_status: spamStatus,
-				},
+				endpoint: `/api/v1/users/${pathId(getParam('userId'))}/eportfolios`,
+				body: { spam_status: getParam('spamStatus') },
 			};
-		}
 
 		case 'restore':
 			return {
 				method: 'PUT',
-				endpoint: `/api/v1/eportfolios/${getParam('ePortfolioId')}`,
-				body: { eportfolio: { deleted: false } },
+				endpoint: `/api/v1/eportfolios/${pathId(getParam('ePortfolioId'))}/restore`,
 			};
 
 		default:
@@ -157,13 +212,13 @@ export function buildFavoriteRequest(
 		case 'addCourse':
 			return {
 				method: 'POST',
-				endpoint: `/api/v1/users/self/favorites/courses/${getParam('courseId')}`,
+				endpoint: `/api/v1/users/self/favorites/courses/${pathId(getParam('courseId'))}`,
 			};
 
 		case 'removeCourse':
 			return {
 				method: 'DELETE',
-				endpoint: `/api/v1/users/self/favorites/courses/${getParam('courseId')}`,
+				endpoint: `/api/v1/users/self/favorites/courses/${pathId(getParam('courseId'))}`,
 			};
 
 		case 'getAllCourses': {
@@ -172,6 +227,19 @@ export function buildFavoriteRequest(
 
 			if (options.exclude_blueprint_courses !== undefined) {
 				qs.exclude_blueprint_courses = options.exclude_blueprint_courses;
+			}
+			const include = toList(options.include);
+			if (include.length > 0) {
+				qs.include = include;
+			}
+			if (options.exclude_enrollments === true) {
+				qs.exclude = ['enrollments'];
+			}
+			if (isSet(options.observed_user_id)) {
+				qs.observed_user_id = String(options.observed_user_id).trim();
+			}
+			if (isSet(options.sort)) {
+				qs.sort = options.sort;
 			}
 
 			return {
@@ -184,13 +252,13 @@ export function buildFavoriteRequest(
 		case 'addGroup':
 			return {
 				method: 'POST',
-				endpoint: `/api/v1/users/self/favorites/groups/${getParam('groupId')}`,
+				endpoint: `/api/v1/users/self/favorites/groups/${pathId(getParam('groupId'))}`,
 			};
 
 		case 'removeGroup':
 			return {
 				method: 'DELETE',
-				endpoint: `/api/v1/users/self/favorites/groups/${getParam('groupId')}`,
+				endpoint: `/api/v1/users/self/favorites/groups/${pathId(getParam('groupId'))}`,
 			};
 
 		case 'getAllGroups':
@@ -223,12 +291,17 @@ export function buildFavoriteRequest(
 function getFeatureFlagBasePath(getParam: GetParam): string {
 	const contextType = getParam('contextType');
 	if (contextType === 'account') {
-		return `/api/v1/accounts/${getParam('accountId')}`;
+		return `/api/v1/accounts/${pathId(getParam('accountId'))}`;
 	}
 	if (contextType === 'user') {
-		return `/api/v1/users/${getParam('userId')}`;
+		return `/api/v1/users/${pathId(getParam('userId'))}`;
 	}
-	return `/api/v1/courses/${getParam('courseId')}`;
+	return `/api/v1/courses/${pathId(getParam('courseId'))}`;
+}
+
+/** Feature names are path segments; a stray space or slash must not change the route. */
+function featureSegment(getParam: GetParam): string {
+	return pathId(getParam('feature'));
 }
 
 export function buildFeatureFlagRequest(
@@ -236,18 +309,30 @@ export function buildFeatureFlagRequest(
 	getParam: GetParam,
 	getParamObject: GetParamObject,
 ): IRequestConfig {
+	// "Get Many Environment" has no context; do not read context parameters for it.
+	if (operation === 'getAllEnvironment') {
+		return {
+			method: 'GET',
+			endpoint: '/api/v1/features/environment',
+		};
+	}
+
 	const basePath = getFeatureFlagBasePath(getParam);
 
 	switch (operation) {
 		case 'get':
 			return {
 				method: 'GET',
-				endpoint: `${basePath}/features/flags/${getParam('feature')}`,
+				endpoint: `${basePath}/features/flags/${featureSegment(getParam)}`,
 			};
 
 		case 'getAll': {
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
+			// Canvas pages through every feature definition and only then drops the ones the
+			// caller may not see, so a page can hold fewer features than asked for, or none.
+			// With small pages the default page cap would silently cut the list short; the
+			// whole catalogue is a few dozen entries, so always ask for full pages.
+			const qs: Record<string, unknown> = { per_page: 100 };
 
 			if (options.hide_inherited_enabled !== undefined) {
 				qs.hide_inherited_enabled = options.hide_inherited_enabled;
@@ -256,7 +341,7 @@ export function buildFeatureFlagRequest(
 			return {
 				method: 'GET',
 				endpoint: `${basePath}/features`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs,
 			};
 		}
 
@@ -266,23 +351,17 @@ export function buildFeatureFlagRequest(
 				endpoint: `${basePath}/features/enabled`,
 			};
 
-		case 'getAllEnvironment':
-			return {
-				method: 'GET',
-				endpoint: '/api/v1/features/environment',
-			};
-
 		case 'update':
 			return {
 				method: 'PUT',
-				endpoint: `${basePath}/features/flags/${getParam('feature')}`,
+				endpoint: `${basePath}/features/flags/${featureSegment(getParam)}`,
 				body: { state: getParam('state') },
 			};
 
 		case 'delete':
 			return {
 				method: 'DELETE',
-				endpoint: `${basePath}/features/flags/${getParam('feature')}`,
+				endpoint: `${basePath}/features/flags/${featureSegment(getParam)}`,
 			};
 
 		default:
@@ -305,29 +384,35 @@ export function buildPlannerRequest(
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
 
-			if (options.start_date) {
+			if (isSet(options.start_date)) {
 				qs.start_date = options.start_date;
 			}
-			if (options.end_date) {
+			if (isSet(options.end_date)) {
 				qs.end_date = options.end_date;
 			}
-			if (options.filter) {
+			if (isSet(options.filter)) {
 				qs.filter = options.filter;
 			}
-			if (options.observed_user_id) {
-				qs.observed_user_id = options.observed_user_id;
+			if (isSet(options.observed_user_id)) {
+				qs.observed_user_id = String(options.observed_user_id).trim();
 			}
-			if (options.user_id) {
-				qs.user_id = options.user_id;
+			const contextCodes = toList(options.context_codes);
+			if (contextCodes.length > 0) {
+				qs.context_codes = contextCodes;
 			}
-			if (options.context_codes) {
-				const codes = (options.context_codes as string).split(',').map((code) => code.trim());
-				qs['context_codes[]'] = codes;
+			const include = toList(options.include);
+			if (include.length > 0) {
+				qs.include = include;
 			}
+
+			// Another user's planner (an observer reading a linked student) has its own route.
+			const userId = isSet(options.user_id) ? String(options.user_id).trim() : '';
 
 			return {
 				method: 'GET',
-				endpoint: '/api/v1/planner/items',
+				endpoint: userId
+					? `/api/v1/users/${pathId(userId)}/planner/items`
+					: '/api/v1/planner/items',
 				...(Object.keys(qs).length > 0 ? { qs } : {}),
 			};
 		}
@@ -336,21 +421,25 @@ export function buildPlannerRequest(
 		case 'createNote': {
 			const additionalFields = getParamObject('additionalFields');
 			const body: Record<string, unknown> = {
-				title: getParam('title'),
 				todo_date: getParam('todoDate'),
 			};
 
-			if (additionalFields.details) {
+			// Without a title Canvas uses the title of the linked object, so only send one that was given.
+			const title = getParam('title');
+			if (title !== '') {
+				body.title = title;
+			}
+			if (isSet(additionalFields.details)) {
 				body.details = additionalFields.details;
 			}
-			if (additionalFields.course_id) {
-				body.course_id = additionalFields.course_id;
+			if (isSet(additionalFields.course_id)) {
+				body.course_id = String(additionalFields.course_id).trim();
 			}
-			if (additionalFields.linked_object_type) {
+			if (isSet(additionalFields.linked_object_type)) {
 				body.linked_object_type = additionalFields.linked_object_type;
 			}
-			if (additionalFields.linked_object_id) {
-				body.linked_object_id = additionalFields.linked_object_id;
+			if (isSet(additionalFields.linked_object_id)) {
+				body.linked_object_id = String(additionalFields.linked_object_id).trim();
 			}
 
 			return {
@@ -363,22 +452,22 @@ export function buildPlannerRequest(
 		case 'getNote':
 			return {
 				method: 'GET',
-				endpoint: `/api/v1/planner_notes/${getParam('noteId')}`,
+				endpoint: `/api/v1/planner_notes/${pathId(getParam('noteId'))}`,
 			};
 
 		case 'getAllNotes': {
 			const options = getParamObject('options');
 			const qs: Record<string, unknown> = {};
 
-			if (options.start_date) {
+			if (isSet(options.start_date)) {
 				qs.start_date = options.start_date;
 			}
-			if (options.end_date) {
+			if (isSet(options.end_date)) {
 				qs.end_date = options.end_date;
 			}
-			if (options.context_codes) {
-				const codes = (options.context_codes as string).split(',').map((code) => code.trim());
-				qs['context_codes[]'] = codes;
+			const contextCodes = toList(options.context_codes);
+			if (contextCodes.length > 0) {
+				qs.context_codes = contextCodes;
 			}
 
 			return {
@@ -390,17 +479,33 @@ export function buildPlannerRequest(
 
 		case 'updateNote': {
 			const updateFields = getParamObject('updateFields');
+			const body: Record<string, unknown> = {};
+
+			if (updateFields.title !== undefined) {
+				body.title = updateFields.title;
+			}
+			if (updateFields.details !== undefined) {
+				body.details = updateFields.details;
+			}
+			if (updateFields.todo_date !== undefined) {
+				body.todo_date = updateFields.todo_date;
+			}
+			// An empty course ID is meaningful: it detaches the note from its course.
+			if (updateFields.course_id !== undefined) {
+				body.course_id = String(updateFields.course_id ?? '').trim();
+			}
+
 			return {
 				method: 'PUT',
-				endpoint: `/api/v1/planner_notes/${getParam('noteId')}`,
-				body: updateFields,
+				endpoint: `/api/v1/planner_notes/${pathId(getParam('noteId'))}`,
+				body,
 			};
 		}
 
 		case 'deleteNote':
 			return {
 				method: 'DELETE',
-				endpoint: `/api/v1/planner_notes/${getParam('noteId')}`,
+				endpoint: `/api/v1/planner_notes/${pathId(getParam('noteId'))}`,
 			};
 
 		// ----- Overrides -----
@@ -428,7 +533,7 @@ export function buildPlannerRequest(
 		case 'getOverride':
 			return {
 				method: 'GET',
-				endpoint: `/api/v1/planner/overrides/${getParam('overrideId')}`,
+				endpoint: `/api/v1/planner/overrides/${pathId(getParam('overrideId'))}`,
 			};
 
 		case 'getAllOverrides':
@@ -439,17 +544,22 @@ export function buildPlannerRequest(
 
 		case 'updateOverride': {
 			const updateFields = getParamObject('updateFields');
+			// Canvas rewrites both flags on every update and treats a missing one as false.
+			// Send both so the request (and the debug output) shows what will be stored.
 			return {
 				method: 'PUT',
-				endpoint: `/api/v1/planner/overrides/${getParam('overrideId')}`,
-				body: updateFields,
+				endpoint: `/api/v1/planner/overrides/${pathId(getParam('overrideId'))}`,
+				body: {
+					marked_complete: updateFields.marked_complete === true,
+					dismissed: updateFields.dismissed === true,
+				},
 			};
 		}
 
 		case 'deleteOverride':
 			return {
 				method: 'DELETE',
-				endpoint: `/api/v1/planner/overrides/${getParam('overrideId')}`,
+				endpoint: `/api/v1/planner/overrides/${pathId(getParam('overrideId'))}`,
 			};
 
 		default:
@@ -466,7 +576,7 @@ export function buildPollRequest(
 	getParam: GetParam,
 	getParamObject: GetParamObject,
 ): IRequestConfig {
-	const pollId = getParam('pollId');
+	const pollId = pathId(getParam('pollId'));
 
 	switch (operation) {
 		case 'create': {
@@ -475,7 +585,7 @@ export function buildPollRequest(
 				question: getParam('question'),
 			};
 
-			if (additionalFields.description) {
+			if (isSet(additionalFields.description)) {
 				poll.description = additionalFields.description;
 			}
 
@@ -486,26 +596,30 @@ export function buildPollRequest(
 			};
 		}
 
+		// Canvas wraps every poll response in { "polls": [...] }.
 		case 'get':
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/polls/${pollId}`,
+				dataKey: 'polls',
 			};
 
 		case 'getAll':
 			return {
 				method: 'GET',
 				endpoint: '/api/v1/polls',
+				dataKey: 'polls',
 			};
 
 		case 'update': {
 			const updateFields = getParamObject('updateFields');
 			const poll: Record<string, unknown> = {};
 
-			if (updateFields.question) {
+			if (isSet(updateFields.question)) {
 				poll.question = updateFields.question;
 			}
-			if (updateFields.description) {
+			// An empty description is meaningful: it clears the text.
+			if (updateFields.description !== undefined) {
 				poll.description = updateFields.description;
 			}
 

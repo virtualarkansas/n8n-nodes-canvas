@@ -63,7 +63,7 @@ export const bookmarkFields: INodeProperties[] = [
 				operation: ['get', 'update', 'delete'],
 			},
 		},
-		description: 'The ID of the bookmark',
+		description: 'The ID of the bookmark. Bookmarks belong to the user of the credential; other users\' bookmarks are not reachable.',
 	},
 
 	// ----------------------------------
@@ -95,7 +95,7 @@ export const bookmarkFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'The URL of the bookmark',
+		description: 'The URL of the bookmark. Canvas stores it as given, e.g. /courses/1 or a full URL.',
 	},
 	{
 		displayName: 'Additional Fields',
@@ -113,16 +113,21 @@ export const bookmarkFields: INodeProperties[] = [
 			{
 				displayName: 'Data',
 				name: 'data',
-				type: 'string',
-				default: '',
-				description: 'Additional data associated with the bookmark (JSON string)',
+				type: 'json',
+				default: '{}',
+				description:
+					'Free-form JSON stored with the bookmark, e.g. {"active_tab": 1}. It is sent to Canvas as a structure, not as text.',
 			},
 			{
 				displayName: 'Position',
 				name: 'position',
 				type: 'number',
-				default: 0,
-				description: 'The position of the bookmark. Defaults to the bottom.',
+				typeOptions: {
+					minValue: 1,
+				},
+				default: 1,
+				description:
+					'Position in the user\'s bookmark list, starting at 1. The bookmarks after it move down. Leave out to add at the bottom.',
 			},
 		],
 	},
@@ -146,9 +151,10 @@ export const bookmarkFields: INodeProperties[] = [
 			{
 				displayName: 'Data',
 				name: 'data',
-				type: 'string',
-				default: '',
-				description: 'Additional data associated with the bookmark (JSON string)',
+				type: 'json',
+				default: '{}',
+				description:
+					'Free-form JSON stored with the bookmark, e.g. {"active_tab": 1}. It is sent to Canvas as a structure, not as text.',
 			},
 			{
 				displayName: 'Name',
@@ -161,8 +167,12 @@ export const bookmarkFields: INodeProperties[] = [
 				displayName: 'Position',
 				name: 'position',
 				type: 'number',
-				default: 0,
-				description: 'The position of the bookmark',
+				typeOptions: {
+					minValue: 1,
+				},
+				default: 1,
+				description:
+					'New position in the user\'s bookmark list, starting at 1. The other bookmarks are renumbered around it.',
 			},
 			{
 				displayName: 'URL',

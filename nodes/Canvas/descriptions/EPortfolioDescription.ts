@@ -27,25 +27,25 @@ export const ePortfolioOperations: INodeProperties[] = [
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many ePortfolios',
+				description: 'Get the ePortfolios of a user',
 				action: 'Get many portfolios',
 			},
 			{
 				name: 'Get Many Pages',
 				value: 'getAllPages',
-				description: 'Get many ePortfolio pages',
+				description: 'Get the pages of an ePortfolio',
 				action: 'Get many portfolio pages',
 			},
 			{
 				name: 'Moderate',
 				value: 'moderate',
-				description: 'Moderate an ePortfolio',
+				description: 'Mark an ePortfolio as spam or as safe',
 				action: 'Moderate a portfolio',
 			},
 			{
 				name: 'Moderate All',
 				value: 'moderateAll',
-				description: 'Moderate all ePortfolios for a user',
+				description: 'Mark all active ePortfolios of a user as spam or as safe',
 				action: 'Moderate all portfolios for a user',
 			},
 			{
@@ -75,7 +75,8 @@ export const ePortfolioFields: INodeProperties[] = [
 				operation: ['getAll', 'moderateAll'],
 			},
 		},
-		description: 'The ID of the user whose ePortfolios to retrieve',
+		description:
+			'The user whose ePortfolios to list or moderate: a Canvas user ID, "self", or an SIS ID such as sis_user_id:ABC123',
 	},
 
 	// ----------------------------------
@@ -93,7 +94,8 @@ export const ePortfolioFields: INodeProperties[] = [
 				operation: ['get', 'delete', 'moderate', 'restore', 'getAllPages'],
 			},
 		},
-		description: 'The ID of the ePortfolio',
+		description:
+			'The ID of the ePortfolio (the number in its URL, /eportfolios/123). ePortfolios can only be created in the Canvas web interface.',
 	},
 
 	// ----------------------------------
@@ -121,7 +123,8 @@ export const ePortfolioFields: INodeProperties[] = [
 				value: 'marked_as_spam',
 			},
 		],
-		description: 'The spam status to set for the ePortfolio(s)',
+		description:
+			'The spam status to set. Needs an admin who may moderate user content. While an ePortfolio is marked as spam its author cannot edit it or create new ones; "Moderate All" only touches the user\'s active (not deleted) ePortfolios.',
 	},
 
 	// ----------------------------------
@@ -145,7 +148,8 @@ export const ePortfolioFields: INodeProperties[] = [
 				name: 'include',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to include deleted ePortfolios (admin only)',
+				description:
+					'Whether to include deleted ePortfolios. Only applies when an admin who may moderate user content lists another user; users never see their own deleted ePortfolios.',
 			},
 		],
 	},

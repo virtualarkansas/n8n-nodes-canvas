@@ -15,7 +15,8 @@ export const featureFlagOperations: INodeProperties[] = [
 			{
 				name: 'Delete',
 				value: 'delete',
-				description: 'Remove a feature flag',
+				description:
+					'Remove the flag set on this account, course or user, so the inherited state applies again',
 				action: 'Delete a feature flag',
 			},
 			{
@@ -27,19 +28,20 @@ export const featureFlagOperations: INodeProperties[] = [
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many features',
+				description:
+					'Get the features that apply to an account, course or user, each with its flag. Always fetched in full pages of 100: Canvas counts features hidden from you towards a page.',
 				action: 'Get many features',
 			},
 			{
 				name: 'Get Many Enabled',
 				value: 'getAllEnabled',
-				description: 'Get many enabled features',
+				description: 'Get the names of the features that are enabled for an account, course or user',
 				action: 'Get many enabled features',
 			},
 			{
 				name: 'Get Many Environment',
 				value: 'getAllEnvironment',
-				description: 'Get many environment features',
+				description: 'Get the on/off state of the features that affect the Canvas interface, as one item',
 				action: 'Get many environment features',
 			},
 			{
@@ -98,7 +100,7 @@ export const featureFlagFields: INodeProperties[] = [
 				contextType: ['account'],
 			},
 		},
-		description: 'The ID of the account',
+		description: 'The ID of the account (or sub-account), or an SIS ID such as sis_account_id:ABC',
 	},
 	{
 		displayName: 'Course ID',
@@ -113,7 +115,7 @@ export const featureFlagFields: INodeProperties[] = [
 				contextType: ['course'],
 			},
 		},
-		description: 'The ID of the course',
+		description: 'The ID of the course, or an SIS ID such as sis_course_id:ABC',
 	},
 	{
 		displayName: 'User ID',
@@ -128,7 +130,7 @@ export const featureFlagFields: INodeProperties[] = [
 				contextType: ['user'],
 			},
 		},
-		description: 'The ID of the user',
+		description: 'The ID of the user, "self", or an SIS ID such as sis_user_id:ABC',
 	},
 
 	// ----------------------------------
@@ -146,7 +148,8 @@ export const featureFlagFields: INodeProperties[] = [
 				operation: ['get', 'update', 'delete'],
 			},
 		},
-		description: 'The name of the feature flag',
+		description:
+			'The symbolic name of the feature, e.g. epub_export (the "feature" value returned by Get Many). The feature must apply to the chosen context type.',
 	},
 
 	// ----------------------------------
@@ -166,19 +169,30 @@ export const featureFlagFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Allowed',
+				name: 'Allowed (Off by Default)',
 				value: 'allowed',
+				description:
+					'Accounts only: off here, but sub-accounts and courses may turn the feature on',
+			},
+			{
+				name: 'Allowed (On by Default)',
+				value: 'allowed_on',
+				description:
+					'Accounts only: on here, but sub-accounts and courses may turn the feature off',
 			},
 			{
 				name: 'Off',
 				value: 'off',
+				description: 'Off for this context and everything below it',
 			},
 			{
 				name: 'On',
 				value: 'on',
+				description: 'On for this context and everything below it',
 			},
 		],
-		description: 'The state to set for the feature flag',
+		description:
+			'The state to set. Canvas refuses the change when a parent account has locked the flag (set it to On or Off), and refuses states the feature does not allow in this context.',
 	},
 
 	// ----------------------------------

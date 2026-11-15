@@ -63,7 +63,8 @@ export const pollFields: INodeProperties[] = [
 				operation: ['get', 'update', 'delete'],
 			},
 		},
-		description: 'The ID of the poll',
+		description:
+			'The ID of the poll. Polls belong to the teacher who created them; other users only see polls that have a session in one of their courses.',
 	},
 
 	// ----------------------------------
@@ -81,7 +82,7 @@ export const pollFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'The title or question of the poll',
+		description: 'The title or question of the poll (at most 255 characters)',
 	},
 	{
 		displayName: 'Additional Fields',
@@ -104,7 +105,7 @@ export const pollFields: INodeProperties[] = [
 					rows: 4,
 				},
 				default: '',
-				description: 'A brief description or instructions for the poll',
+				description: 'A brief description or instructions for the poll (at most 255 characters)',
 			},
 		],
 	},
@@ -133,14 +134,14 @@ export const pollFields: INodeProperties[] = [
 					rows: 4,
 				},
 				default: '',
-				description: 'A brief description or instructions for the poll',
+				description: 'A brief description or instructions for the poll (at most 255 characters)',
 			},
 			{
 				displayName: 'Question',
 				name: 'question',
 				type: 'string',
 				default: '',
-				description: 'The title or question of the poll',
+				description: 'The title or question of the poll (at most 255 characters)',
 			},
 		],
 	},
