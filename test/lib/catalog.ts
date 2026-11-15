@@ -1,8 +1,7 @@
 import type { INodeProperties, INodePropertyCollection, INodePropertyOptions } from 'n8n-workflow';
 // With the extension: next to Canvas.node.ts lives Canvas.node.json (the codex file), and
 // some loaders pick that one for an extension-less import.
-import { Canvas } from '../../nodes/Canvas/Canvas.node.js';
-import { resourceHandlers } from '../../nodes/Canvas/handlers';
+import { buildRequest, Canvas } from '../../nodes/Canvas/Canvas.node.js';
 import type { IRequestConfig } from '../../nodes/Canvas/types/Canvas.types';
 
 /**
@@ -204,32 +203,20 @@ export function paramVariants(info: OperationInfo, max = 24): ParamVariant[] {
 	});
 }
 
-/** Call a resource handler the way the node does, with parameters from a plain object. */
+/**
+ * The request the node builds for an operation, with parameters from a plain object. This is
+ * the node's own code path (parameters trimmed, path values encoded, unusable paths refused),
+ * so what the tools show is what a real run sends.
+ */
 export function buildRequestFor(
 	resource: string,
 	operation: string,
 	params: Record<string, unknown>,
 ): IRequestConfig {
-	const handler = resourceHandlers[resource];
-	if (!handler) throw new Error(`No handler for resource ${resource}`);
-	const getParam = (name: string, defaultValue = ''): string => {
-		const value = params[name];
-		if (value === undefined || value === null || value === '') return defaultValue;
-		if (Array.isArray(value)) {
-			const jsonField = nodeProperties().some(
-				(p) => p.name === name && p.type === 'json' && ((p.displayOptions?.show?.resource ?? []) as string[]).includes(resource),
-			);
-			return jsonField || value.some((entry) => entry !== null && typeof entry === 'object')
-				? JSON.stringify(value)
-				: value.map(String).join(',');
-		}
-		if (typeof value === 'object') return JSON.stringify(value);
-		return String(value);
+	const context = {
+		getNodeParameter: (name: string, _itemIndex: number, fallback?: unknown): unknown =>
+			params[name] === undefined ? fallback : params[name],
+		getNode: () => ({ name: 'Canvas', type: 'canvas', typeVersion: 1, position: [0, 0], parameters: {}, id: '1' }),
 	};
-	const getParamObject = (name: string): Record<string, unknown> => {
-		const value = params[name];
-		if (value === null || typeof value !== 'object' || Array.isArray(value)) return {};
-		return { ...(value as Record<string, unknown>) };
-	};
-	return handler(operation, getParam, getParamObject);
+	return buildRequest(context as unknown as Parameters<typeof buildRequest>[0], resource, operation, 0);
 }

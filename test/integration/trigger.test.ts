@@ -355,6 +355,51 @@ describe('Canvas Trigger: authenticating the sender', () => {
 		expect(await executionCount(trigger.workflowId)).toBe(0);
 	});
 
+	it('require signed payload always checks the signature, also with Verify Signed Payloads switched off', async () => {
+		const trigger = await deployTrigger({
+			events: ['*'],
+			triggerOptions: { jwksUrl, requireSignedPayload: true, verifySignedPayloads: false },
+		});
+		// Anything shaped like a JWT would otherwise count as "signed".
+		const forged = signJwt(gradeChange, other.privateKey);
+		expect((await post(trigger.url, forged, 'application/jwt')).status).toBe(401);
+		expect(await executionCount(trigger.workflowId)).toBe(0);
+		expect((await post(trigger.url, signJwt(gradeChange), 'application/jwt')).status).toBe(200);
+		expect(await executionCount(trigger.workflowId, 1)).toBe(1);
+	});
+
+	it('root account UUID: only events of that Canvas start the workflow, signed or not', async () => {
+		const uuid = String(gradeChange.metadata.root_account_uuid);
+		const trigger = await deployTrigger({ events: ['*'], triggerOptions: { jwksUrl, rootAccountUuid: uuid } });
+		const foreign = { ...gradeChange, metadata: { ...gradeChange.metadata, root_account_uuid: 'AnotherCanvasRootAccountUuid0000000000000' } };
+		const anonymous = { ...gradeChange, metadata: { ...gradeChange.metadata, root_account_uuid: undefined } };
+
+		// A validly signed event of another Instructure customer is still not ours.
+		const refused = await post(trigger.url, signJwt(foreign), 'application/jwt');
+		expect(refused.status).toBe(403);
+		expect((await post(trigger.url, foreign)).status).toBe(403);
+		expect((await post(trigger.url, anonymous)).status).toBe(403);
+		expect(await executionCount(trigger.workflowId)).toBe(0);
+
+		expect((await post(trigger.url, gradeChange)).status).toBe(200);
+		expect(await executionCount(trigger.workflowId, 1)).toBe(1);
+	});
+
+	it('a course filter given as a global ID does not match the same local ID on another shard', async () => {
+		const globalId = String(gradeChange.metadata.context_id);
+		expect(globalId.length).toBeGreaterThan(13);
+		const otherShard = `7${globalId.slice(1)}`;
+		const exact = await deployTrigger({ events: ['*'], courseId: globalId });
+		expect((await post(exact.url, gradeChange)).status).toBe(200);
+		expect(await executionCount(exact.workflowId, 1)).toBe(1);
+
+		const elsewhere = await deployTrigger({ events: ['*'], courseId: otherShard });
+		const ignored = await post(elsewhere.url, gradeChange);
+		expect(ignored.status).toBe(200);
+		expect(ignored.json).toMatchObject({ status: 'ignored' });
+		expect(await executionCount(elsewhere.workflowId)).toBe(0);
+	});
+
 	it('caches the key set instead of fetching it for every event', async () => {
 		const trigger = await deployTrigger({ events: ['*'], triggerOptions: { jwksUrl } });
 		const before = jwksHits;

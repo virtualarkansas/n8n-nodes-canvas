@@ -438,7 +438,7 @@ describe('cross-cutting', () => {
 				'continueOnFail: true (legacy setting)': { stop: toErrorOutput, continueWithError: toErrorOutput, ignoreAndContinue: dropped, retryThenError: toErrorOutput },
 				'onError: continueRegularOutput': { stop: toErrorOutput, continueWithError: toErrorOutput, ignoreAndContinue: dropped, retryThenError: toErrorOutput },
 				// "Continue (using error output)" makes n8n add a third output of its own, and that is where the
-				// user asked for failed items: they go there (with the same fields) instead of the node's own Error output.
+				// user asked for failed items: they go there instead of the node's own Error output.
 				'onError: continueErrorOutput': { stop: 'ok [2,0,1]', continueWithError: 'ok [2,0,1]', ignoreAndContinue: 'ok [2,0,0]', retryThenError: 'ok [2,0,1]' },
 			});
 		});
@@ -464,14 +464,13 @@ describe('cross-cutting', () => {
 			expect(outputSizes(continued)).toEqual([2, 1]);
 			expect(continued.success.map((c) => c.id)).toEqual([Number(course.id), Number(course.id)]);
 			expect(continued.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', endpoint: '/api/v1/courses/999999999' });
-			// With n8n's error output chosen, the failed item arrives there, with the node's error fields
-			// and (n8n's doing) the fields of the input item it belongs to.
+			// With n8n's error output chosen, the failed item arrives there in the shape n8n moves: the
+			// node's error record under "error", its message, and (n8n's doing) the fields of the input item.
 			expect(outputSizes(errorOutput)).toEqual([2, 0, 1]);
 			expect(raw(errorOutput, 2)[0].json).toMatchObject({
 				id: 999999999,
-				errorCode: 404,
-				errorType: 'NOT_FOUND',
-				endpoint: '/api/v1/courses/999999999',
+				message: 'The specified resource does not exist.',
+				error: { errorCode: 404, errorType: 'NOT_FOUND', endpoint: '/api/v1/courses/999999999' },
 			});
 		});
 
@@ -1058,13 +1057,15 @@ describe('cross-cutting', () => {
 			const relative = await viaStub({
 				resource: 'course',
 				operation: 'delete',
-				items: [{ id: '..' }, { id: '.' }, { id: '../accounts/1' }],
+				items: [{ id: '..' }, { id: '.' }, { id: '../accounts/1' }, { id: '%2e%2e/accounts/1' }, { id: 'a/b?event=conclude#' }],
 				params: { courseId: '={{ $json.id }}', errorHandling: { onError: 'continueWithError' } },
 			});
-			expect(relative.error.map((e) => e.errorType)).toEqual(['INVALID_PARAMETERS', 'INVALID_PARAMETERS']);
+			// Also when written with escapes or hidden behind a slash: a proxy in front of Canvas may resolve them.
+			expect(relative.error.map((e) => e.errorType)).toEqual(Array(4).fill('INVALID_PARAMETERS'));
 			expect(String(relative.error[0].errorMessage)).toContain('not a valid ID');
-			// A value with a slash is one (encoded) path segment, so it cannot leave its place either.
-			expect(stub.calls.map((c) => `${c.method} ${c.url}`)).toEqual(['DELETE /api/v1/courses/..%2Faccounts%2F1?event=delete']);
+			// Any other value is one (encoded) path segment, whatever it contains: it cannot leave its place,
+			// add a query parameter or cut the path short.
+			expect(stub.calls.map((c) => `${c.method} ${c.url}`)).toEqual(['DELETE /api/v1/courses/a%2Fb%3Fevent%3Dconclude%23?event=delete']);
 
 			// Nothing was sent for the empty items: no request ever goes to a path with an empty segment.
 			stub.reset();
@@ -1243,7 +1244,8 @@ describe('cross-cutting', () => {
 				// Including per_page on GET requests: the debug URL reproduces the real run exactly.
 				expect(`${stub.url}${sent.url}`, label).toBe(shown.url);
 				if (get) {
-					expect(String(shown.url), label).toContain('per_page=10');
+					// Every GET carries a page size: the operation's Limit, or the node-level default.
+					expect(String(shown.url), label).toMatch(/[?&]per_page=\d+/);
 				}
 				expect(curl.endsWith(`'${String(shown.url)}'`), label).toBe(true);
 			}

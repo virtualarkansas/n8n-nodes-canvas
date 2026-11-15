@@ -349,15 +349,16 @@ export class Canvas implements INodeType {
 		// what went wrong instead of receiving nothing.
 		const asTool = this.getNode().type.endsWith('Tool');
 		// n8n's own node setting "On Error: Continue (using error output)" adds an output of its
-		// own and moves there every item that carries an error. Failed items are marked that way
-		// when the setting is chosen, so they arrive where the user asked for them.
+		// own and moves there every item shaped { error, message } (it would reduce an item that
+		// carries an error object to the bare message). With that setting chosen, failed items
+		// take that shape, with the node's whole error record under "error", so they arrive where
+		// the user asked for them without losing anything.
 		const viaN8nErrorOutput = this.getNode().onError === 'continueErrorOutput';
 		const failedItem = (error: ICanvasErrorOutput, itemIndex: number): INodeExecutionData => ({
-			json: error as unknown as IDataObject,
+			json: viaN8nErrorOutput
+				? { error: error as unknown as IDataObject, message: error.errorMessage || 'The Canvas request failed' }
+				: (error as unknown as IDataObject),
 			pairedItem: { item: itemIndex },
-			...(viaN8nErrorOutput
-				? { error: new NodeOperationError(this.getNode(), error.errorMessage || 'The Canvas request failed', { itemIndex }) }
-				: {}),
 		});
 
 		// Get options
@@ -966,8 +967,13 @@ function jsonParameterNames(resource: string): Set<string> {
 	return names;
 }
 
-function buildRequest(
-	context: IExecuteFunctions,
+/**
+ * The request an operation makes for one item: the handler's request, with the parameters
+ * read, trimmed and encoded the way every caller must see them. Exported so that the test
+ * tools (route audit, request snapshot, `describe`) look at exactly what the node sends.
+ */
+export function buildRequest(
+	context: Pick<IExecuteFunctions, 'getNodeParameter' | 'getNode'>,
 	resource: string,
 	operation: string,
 	itemIndex: number,

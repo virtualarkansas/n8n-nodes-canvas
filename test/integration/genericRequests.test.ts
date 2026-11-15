@@ -95,7 +95,7 @@ describe('apiRequest', () => {
 			params: { debugMode: true, method: 'GET', path: `https://evil.example.com/api/v1/courses/${fx('courseId')}?include[]=term` },
 		});
 		const debug = result.debug[0];
-		expect(String(debug.url)).toMatch(new RegExp(`^http://localhost:3000/api/v1/courses/${fx('courseId')}\\?include\\[\\]=term&per_page=10$`));
+		expect(String(debug.url)).toMatch(new RegExp(`^http://localhost:3000/api/v1/courses/${fx('courseId')}\\?include\\[\\]=term&per_page=50$`));
 		expect(String(debug.curl)).not.toContain('evil.example.com');
 
 		const [course] = await runOk({

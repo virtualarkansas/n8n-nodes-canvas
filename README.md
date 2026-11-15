@@ -351,7 +351,8 @@ every item.
 
 n8n's own node settings work too: **On Error → Continue** sends failures to the node's Error
 output, and **On Error → Continue (using error output)** sends them to the error output n8n adds
-for that setting (the node's own Error output then stays empty).
+for that setting (the node's own Error output then stays empty). There the item is the input item
+plus `message` and `error`, which holds the record shown below.
 
 An item on the Error output looks like this:
 
