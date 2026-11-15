@@ -568,6 +568,11 @@ async function processItem(
 				qsData,
 				rateLimit,
 			);
+			// Some APIs wrap even a created or updated record: { "poll_choices": [{...}] }.
+			const data = response.data as IDataObject | undefined;
+			if (request.dataKey && data && Array.isArray(data[request.dataKey])) {
+				return data[request.dataKey] as IDataObject[];
+			}
 			return response.data;
 		},
 		errorHandling,

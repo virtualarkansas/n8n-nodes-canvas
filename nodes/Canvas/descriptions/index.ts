@@ -495,3 +495,19 @@ export {
 	courseAuditLogOperations,
 	courseAuditLogFields,
 } from './CourseAuditLogDescription';
+
+// Polling resource group descriptions (the poll resource itself lives with the misc group)
+export {
+	pollChoiceOperations,
+	pollChoiceFields,
+} from './PollChoiceDescription';
+
+export {
+	pollSessionOperations,
+	pollSessionFields,
+} from './PollSessionDescription';
+
+export {
+	pollSubmissionOperations,
+	pollSubmissionFields,
+} from './PollSubmissionDescription';

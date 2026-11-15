@@ -187,6 +187,13 @@ import {
 	buildCourseAuditLogRequest,
 } from './audit.handler';
 
+// Polling group
+import {
+	buildPollChoiceRequest,
+	buildPollSessionRequest,
+	buildPollSubmissionRequest,
+} from './polls.handler';
+
 /**
  * Maps every Canvas resource name to its handler function.
  * Each handler takes (operation, getParam, getParamObject) and returns IRequestConfig.
@@ -332,4 +339,9 @@ export const resourceHandlers: Record<string, ResourceHandler> = {
 	gradebookHistory: buildGradebookHistoryRequest,
 	gradeChangeLog: buildGradeChangeLogRequest,
 	courseAuditLog: buildCourseAuditLogRequest,
+
+	// Polling group
+	pollChoice: buildPollChoiceRequest,
+	pollSession: buildPollSessionRequest,
+	pollSubmission: buildPollSubmissionRequest,
 };
