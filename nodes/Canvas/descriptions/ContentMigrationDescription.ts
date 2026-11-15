@@ -4,6 +4,7 @@ const CONTEXT_OPERATIONS = [
 	'create',
 	'get',
 	'getAll',
+	'getIssue',
 	'getIssues',
 	'getSelectiveData',
 	'listMigrators',
@@ -244,6 +245,12 @@ export const contentMigrationOperations: INodeProperties[] = [
 				action: 'Get the asset ID mapping of a content migration',
 			},
 			{
+				name: 'Get Issue',
+				value: 'getIssue',
+				description: 'Get a single warning or error a content migration produced',
+				action: 'Get an issue of a content migration',
+			},
+			{
 				name: 'Get Issues',
 				value: 'getIssues',
 				description: 'Get the warnings and errors a content migration produced',
@@ -409,6 +416,7 @@ export const contentMigrationFields: INodeProperties[] = [
 				operation: [
 					'get',
 					'getAssetIdMapping',
+					'getIssue',
 					'getIssues',
 					'getSelectiveData',
 					'update',
@@ -588,7 +596,7 @@ export const contentMigrationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['contentMigration'],
-				operation: ['updateIssue'],
+				operation: ['getIssue', 'updateIssue'],
 			},
 		},
 		description: 'The ID of the migration issue (from Get Issues)',
