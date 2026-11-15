@@ -86,12 +86,20 @@ function patchState(mutate: (state: ReturnType<typeof loadState>) => void): void
 	renameSync(tmp, STATE_PATH);
 }
 
+/** A browser-style Canvas session (cookie + CSRF token) of one user. */
+export type WebForm = Record<string, string> | Array<[string, string]>;
+export interface WebSession {
+	/** POST a form to a web (non-API) route, or JSON to an API route, as the logged-in user. */
+	post(path: string, body: { form?: WebForm; json?: unknown }): Promise<{ status: number; data: unknown }>;
+	/** The same with PUT. A list of pairs allows repeated keys such as `user[]`. */
+	put(path: string, body: { form?: WebForm; json?: unknown }): Promise<{ status: number; data: unknown }>;
+}
+
 /**
- * Canvas only hands out a usable token to the user it belongs to (a token an
- * admin creates for someone else stays "pending"), so log in as the user with
- * a browser-style session and let them create their own.
+ * Log in the way a browser does. Needed for the few things Canvas only offers to a
+ * signed-in user: creating one's own access token, and web-only routes.
  */
-export async function createTokenByLogin(canvasUrl: string, login: string, password: string): Promise<string> {
+export async function webSession(canvasUrl: string, login: string, password: string): Promise<WebSession> {
 	const jar = new Map<string, string>();
 	const absorb = (res: Response): void => {
 		for (const cookie of res.headers.getSetCookie()) {
@@ -108,34 +116,74 @@ export async function createTokenByLogin(canvasUrl: string, login: string, passw
 
 	// Any response sets the CSRF cookie (HTML pages are not available on a Canvas without compiled assets).
 	absorb(await fetch(`${canvasUrl}/api/v1/accounts`, { headers: { accept: 'application/json' } }));
-	const form = new URLSearchParams({
-		authenticity_token: csrf(),
-		'pseudonym_session[unique_id]': login,
-		'pseudonym_session[password]': password,
-	});
 	const loginRes = await fetch(`${canvasUrl}/login/canvas`, {
 		method: 'POST',
 		redirect: 'manual',
 		headers: { cookie: cookieHeader(), 'content-type': 'application/x-www-form-urlencoded' },
-		body: form.toString(),
+		body: new URLSearchParams({
+			authenticity_token: csrf(),
+			'pseudonym_session[unique_id]': login,
+			'pseudonym_session[password]': password,
+		}).toString(),
 	});
 	absorb(loginRes);
 	if (loginRes.status !== 302 || !String(loginRes.headers.get('location')).includes('login_success')) {
 		throw new Error(`Canvas login as ${login} failed with status ${loginRes.status}`);
 	}
-	const tokenRes = await fetch(`${canvasUrl}/api/v1/users/self/tokens`, {
-		method: 'POST',
-		headers: { cookie: cookieHeader(), 'x-csrf-token': csrf(), 'content-type': 'application/json' },
+
+	const send = async (
+		method: string,
+		path: string,
+		body: { form?: WebForm; json?: unknown },
+	): Promise<{ status: number; data: unknown }> => {
+			const res = await fetch(`${canvasUrl}${path}`, {
+				method,
+				redirect: 'manual',
+				headers: {
+					cookie: cookieHeader(),
+					'x-csrf-token': csrf(),
+					accept: 'application/json',
+					'content-type': body.form ? 'application/x-www-form-urlencoded' : 'application/json',
+				},
+				body: body.form ? new URLSearchParams(body.form).toString() : JSON.stringify(body.json ?? {}),
+			});
+			absorb(res);
+			const text = await res.text();
+			let data: unknown = text;
+			try {
+				data = text ? JSON.parse(text) : null;
+			} catch {
+				// keep text
+			}
+			return { status: res.status, data };
+	};
+	return {
+		post: (path, body) => send('POST', path, body),
+		put: (path, body) => send('PUT', path, body),
+	};
+}
+
+/**
+ * Canvas only hands out a usable token to the user it belongs to (a token an
+ * admin creates for someone else stays "pending"), so log in as the user and
+ * let them create their own.
+ */
+export async function createTokenByLogin(canvasUrl: string, login: string, password: string): Promise<string> {
+	const session = await webSession(canvasUrl, login, password);
+	const res = await session.post('/api/v1/users/self/tokens', {
 		// Students must give their tokens an expiry (at most 120 days ahead).
-		body: JSON.stringify({
-			token: { purpose: 'n8n battery sandbox', expires_at: new Date(Date.now() + 100 * 86_400_000).toISOString() },
-		}),
+		json: { token: { purpose: 'n8n battery sandbox', expires_at: new Date(Date.now() + 100 * 86_400_000).toISOString() } },
 	});
-	const body = (await tokenRes.json()) as Json;
-	if (tokenRes.status >= 300 || typeof body.visible_token !== 'string' || body.workflow_state !== 'active') {
+	const body = res.data as Json;
+	if (res.status >= 300 || typeof body?.visible_token !== 'string' || body.workflow_state !== 'active') {
 		throw new Error(`Could not create a token for ${login}: ${JSON.stringify(body).slice(0, 300)}`);
 	}
 	return body.visible_token;
+}
+
+/** Browser-style session of a sandbox user (all sandbox users share one password). */
+export function sandboxWebSession(sandbox: Sandbox, user: SandboxUser): Promise<WebSession> {
+	return webSession(sandbox.canvasUrl, user.login, PASSWORD);
 }
 
 async function createUser(name: string, login: string): Promise<SandboxUser> {

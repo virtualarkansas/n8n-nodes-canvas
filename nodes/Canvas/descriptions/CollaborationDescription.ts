@@ -13,21 +13,27 @@ export const collaborationOperations: INodeProperties[] = [
 		},
 		options: [
 			{
+				name: 'Delete',
+				value: 'delete',
+				description: 'Delete a collaboration of a course or group',
+				action: 'Delete a collaboration',
+			},
+			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many collaborations',
+				description: 'Get the collaborations of a course or group that were created with an external (LTI) tool',
 				action: 'Get many collaborations',
 			},
 			{
 				name: 'List Members',
 				value: 'listMembers',
-				description: 'List members of a collaboration',
+				description: 'List the users and groups a collaboration is shared with',
 				action: 'List members of a collaboration',
 			},
 			{
 				name: 'List Potential Members',
 				value: 'listPotentialMembers',
-				description: 'List potential members for a collaboration',
+				description: 'List the users who could be added to a collaboration in a course or group',
 				action: 'List potential members for a collaboration',
 			},
 		],
@@ -37,7 +43,7 @@ export const collaborationOperations: INodeProperties[] = [
 
 export const collaborationFields: INodeProperties[] = [
 	// ----------------------------------
-	//         collaboration: getAll, listPotentialMembers
+	//         collaboration: getAll, listPotentialMembers, delete
 	// ----------------------------------
 	{
 		displayName: 'Context',
@@ -48,7 +54,7 @@ export const collaborationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['collaboration'],
-				operation: ['getAll', 'listPotentialMembers'],
+				operation: ['getAll', 'listPotentialMembers', 'delete'],
 			},
 		},
 		options: [
@@ -61,7 +67,7 @@ export const collaborationFields: INodeProperties[] = [
 				value: 'group',
 			},
 		],
-		description: 'The context to list collaborations from',
+		description: 'Whether the collaboration belongs to a course or to a group',
 	},
 	{
 		displayName: 'Course ID',
@@ -72,7 +78,7 @@ export const collaborationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['collaboration'],
-				operation: ['getAll', 'listPotentialMembers'],
+				operation: ['getAll', 'listPotentialMembers', 'delete'],
 				context: ['course'],
 			},
 		},
@@ -87,7 +93,7 @@ export const collaborationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['collaboration'],
-				operation: ['getAll', 'listPotentialMembers'],
+				operation: ['getAll', 'listPotentialMembers', 'delete'],
 				context: ['group'],
 			},
 		},
@@ -95,7 +101,7 @@ export const collaborationFields: INodeProperties[] = [
 	},
 
 	// ----------------------------------
-	//         collaboration: listMembers
+	//         collaboration: listMembers, delete
 	// ----------------------------------
 	{
 		displayName: 'Collaboration ID',
@@ -106,7 +112,7 @@ export const collaborationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['collaboration'],
-				operation: ['listMembers'],
+				operation: ['listMembers', 'delete'],
 			},
 		},
 		description: 'The ID of the collaboration',
