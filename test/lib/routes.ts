@@ -59,7 +59,22 @@ export function routesForPath(path: string): CompiledRoute[] {
 	return canvasRoutes().filter((route) => route.pattern.test(clean));
 }
 
+/** Number of `:param` and `*glob` segments of a route path. */
+export function parameterSegments(path: string): number {
+	return path.split('/').filter((segment) => /^\(?[:*]/.test(segment)).length;
+}
+
+/**
+ * The route Canvas would dispatch a request to: of the routes that match, the one with
+ * the fewest parameter segments, so `/files/quota` is attributed to the literal
+ * `/files/quota` route and not to `/files/:id`. Ties keep the order of the fixture.
+ */
 export function findRoute(method: string, path: string): CompiledRoute | undefined {
 	const verb = method.toUpperCase();
-	return routesForPath(path).find((route) => route.verb === verb);
+	let best: CompiledRoute | undefined;
+	for (const route of routesForPath(path)) {
+		if (route.verb !== verb) continue;
+		if (!best || parameterSegments(route.path) < parameterSegments(best.path)) best = route;
+	}
+	return best;
 }

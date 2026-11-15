@@ -324,14 +324,14 @@ function accommodationBody(
 	userId: string,
 	options: Record<string, unknown>,
 	allowed: string[],
-): Record<string, unknown> {
+): Array<Record<string, unknown>> {
 	const accommodation: Record<string, unknown> = { user_id: toId(userId) };
 	for (const key of allowed) {
 		if (options[key] !== undefined && options[key] !== '') {
 			accommodation[key] = options[key];
 		}
 	}
-	return [accommodation] as unknown as Record<string, unknown>;
+	return [accommodation];
 }
 
 export function buildNewQuizAccommodationsRequest(

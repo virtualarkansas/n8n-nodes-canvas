@@ -178,7 +178,10 @@ export const accountCalendarFields: INodeProperties[] = [
 		name: 'calendars',
 		type: 'json',
 		required: true,
-		default: '[\n  {\n    "id": "1",\n    "visible": true,\n    "auto_subscribe": false\n  }\n]',
+		default: '[]',
+		// The placeholder is JSON Canvas reads: its key is "id", not "ID".
+		// eslint-disable-next-line n8n-nodes-base/node-param-placeholder-miscased-id
+		placeholder: '[{"id": "12", "visible": true, "auto_subscribe": false}]',
 		displayOptions: {
 			show: {
 				resource: ['accountCalendar'],
@@ -186,6 +189,6 @@ export const accountCalendarFields: INodeProperties[] = [
 			},
 		},
 		description:
-			'JSON array of calendars to update, in the format of the default value. Each object needs the account ID (this account or one of its sub-accounts) and "visible" and/or "auto_subscribe". A list from an expression can be passed as it is.',
+			'JSON array of calendars to update, in the format of the placeholder. Each object needs the account ID (this account or one of its sub-accounts) and "visible" and/or "auto_subscribe". A list from an expression can be passed as it is.',
 	},
 ];

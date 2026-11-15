@@ -543,7 +543,7 @@ export function buildAccountCalendarRequest(
 				method: 'PUT',
 				endpoint: `/api/v1/accounts/${accountId}/account_calendars`,
 				// Canvas expects the JSON array itself as the request body.
-				body: calendars as unknown as Record<string, unknown>,
+				body: calendars,
 			};
 		}
 

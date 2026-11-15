@@ -215,7 +215,7 @@ export function handleAssignmentResource(
 				endpoint: `/api/v1/courses/${courseId}/assignments/bulk_update`,
 				method: 'PUT',
 				// The endpoint takes a bare JSON array as its body.
-				body: dates as unknown as Record<string, unknown>,
+				body: dates,
 			};
 		}
 

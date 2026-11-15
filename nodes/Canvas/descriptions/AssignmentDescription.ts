@@ -905,7 +905,10 @@ export const assignmentFields: INodeProperties[] = [
 		name: 'dates',
 		type: 'json',
 		required: true,
-		default: '[\n  {\n    "id": 0,\n    "all_dates": [\n      { "base": true, "due_at": "2030-01-31T23:59:00Z" }\n    ]\n  }\n]',
+		default: '[]',
+		// The placeholder is JSON Canvas reads: its key is "id", not "ID".
+		// eslint-disable-next-line n8n-nodes-base/node-param-placeholder-miscased-id
+		placeholder: '[{"id": 12, "all_dates": [{"base": true, "due_at": "2030-01-31T23:59:00Z"}]}]',
 		displayOptions: {
 			show: {
 				resource: ['assignment'],
@@ -937,7 +940,8 @@ export const assignmentFields: INodeProperties[] = [
 		name: 'overrides',
 		type: 'json',
 		required: true,
-		default: '[\n  {\n    "assignment_id": 0,\n    "course_section_id": 0,\n    "due_at": "2030-01-31T23:59:00Z"\n  }\n]',
+		default: '[]',
+		placeholder: '[{"assignment_id": 34, "course_section_id": 56, "due_at": "2030-01-31T23:59:00Z"}]',
 		displayOptions: {
 			show: {
 				resource: ['assignment'],
@@ -951,7 +955,10 @@ export const assignmentFields: INodeProperties[] = [
 		name: 'overrides',
 		type: 'json',
 		required: true,
-		default: '[\n  {\n    "id": 0,\n    "assignment_id": 0,\n    "due_at": "2030-01-31T23:59:00Z"\n  }\n]',
+		default: '[]',
+		// The placeholder is JSON Canvas reads: its key is "id", not "ID".
+		// eslint-disable-next-line n8n-nodes-base/node-param-placeholder-miscased-id
+		placeholder: '[{"id": 12, "assignment_id": 34, "due_at": "2030-01-31T23:59:00Z"}]',
 		displayOptions: {
 			show: {
 				resource: ['assignment'],

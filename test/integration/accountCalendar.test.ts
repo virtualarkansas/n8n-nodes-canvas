@@ -214,6 +214,22 @@ describe('accountCalendar', () => {
 		expect(await calendar(childIds[0])).toMatchObject({ visible: true, auto_subscribe: false });
 	});
 
+	it('updateMany: run unedited, nothing is sent (the field is empty, not a sample naming account 1)', async () => {
+		const rootBefore = await calendar(fx('accountId'));
+		const result = await runNode({
+			resource: 'accountCalendar',
+			operation: 'updateMany',
+			params: { accountId: fx('accountId'), errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(result.success).toEqual([]);
+		expect(result.error[0]).toMatchObject({ errorType: 'INVALID_PARAMETERS' });
+		expect(String(result.error[0].errorMessage)).toMatch(/Calendars must be a JSON array with at least one/);
+		expect(await calendar(fx('accountId'))).toMatchObject({
+			visible: rootBefore.visible,
+			auto_subscribe: rootBefore.auto_subscribe,
+		});
+	});
+
 	it('updateMany: calendars outside the account, duplicates and malformed JSON are refused', async () => {
 		const outside = await runNode({
 			resource: 'accountCalendar',
