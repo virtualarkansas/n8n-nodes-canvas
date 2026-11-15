@@ -141,11 +141,12 @@ export const proficiencyRatingFields: INodeProperties[] = [
 						type: 'color',
 						required: true,
 						default: '#00FF00',
-						description: 'The color associated with this rating level',
+						description: 'The color of this rating level (a six-digit hex color)',
 					},
 				],
 			},
 		],
-		description: 'The proficiency rating levels to set',
+		description:
+			'The rating levels, which replace all existing ones. List them from the highest to the lowest points (no two levels with the same points) and mark exactly one as mastery.',
 	},
 ];

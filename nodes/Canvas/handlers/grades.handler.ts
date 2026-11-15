@@ -2,6 +2,29 @@ import { ApplicationError } from 'n8n-workflow';
 import type { IDataObject } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
 
+/**
+ * IDs typed as "1, 2,3" (or handed over as an array / a single number by an
+ * expression) as a clean list. Canvas wants real arrays for `ids[]` arguments.
+ */
+function toIdList(value: unknown): string[] {
+	if (value === undefined || value === null) {
+		return [];
+	}
+	const parts = Array.isArray(value) ? value : String(value).split(',');
+	return parts.map((part) => String(part).trim()).filter((part) => part !== '');
+}
+
+/** True for values a user left empty in a fixed collection row. */
+function isBlank(value: unknown): boolean {
+	return value === undefined || value === null || value === '';
+}
+
+/** Rows of a `multipleValues` fixed collection. */
+function collectionRows(collection: Record<string, unknown>, key: string): IDataObject[] {
+	const rows = collection[key];
+	return Array.isArray(rows) ? (rows as IDataObject[]) : [];
+}
+
 // ============================================
 // CUSTOM GRADEBOOK COLUMN
 // ============================================
@@ -33,12 +56,7 @@ export function handleCustomGradebookColumnResource(
 				method: 'DELETE',
 			};
 
-		case 'get':
-			return {
-				endpoint: `/api/v1/courses/${courseId}/custom_gradebook_columns/${columnId}`,
-				method: 'GET',
-			};
-
+		// Canvas has no route for a single column; Get Many returns every column of the course.
 		case 'getAll':
 			return {
 				endpoint: `/api/v1/courses/${courseId}/custom_gradebook_columns`,
@@ -54,7 +72,12 @@ export function handleCustomGradebookColumnResource(
 			};
 
 		case 'reorder': {
-			const orderIds = getParam('order').split(',').map((id) => parseInt(id.trim(), 10));
+			const orderIds = toIdList(getParam('order'));
+			if (orderIds.length === 0) {
+				throw new ApplicationError(
+					'At least one column ID is required for customGradebookColumn reorder',
+				);
+			}
 			return {
 				endpoint: `/api/v1/courses/${courseId}/custom_gradebook_columns/reorder`,
 				method: 'POST',
@@ -73,16 +96,12 @@ export function handleCustomGradebookColumnResource(
 			return {
 				endpoint: `/api/v1/courses/${courseId}/custom_gradebook_columns/${columnId}/data/${getParam('userId')}`,
 				method: 'PUT',
+				// An empty content deletes the entry.
 				body: { column_data: { content: getParam('content') } },
 			};
 
 		case 'bulkUpdateData': {
-			const columnDataObj = getParamObject('columnData');
-			const dataEntries = (columnDataObj.dataEntry as Array<{
-				column_id: string;
-				user_id: string;
-				content: string;
-			}>) || [];
+			const dataEntries = collectionRows(getParamObject('columnData'), 'dataEntry');
 
 			if (dataEntries.length === 0) {
 				throw new ApplicationError(
@@ -90,14 +109,16 @@ export function handleCustomGradebookColumnResource(
 				);
 			}
 
+			// Canvas: PUT /courses/:course_id/custom_gradebook_column_data (not under .../custom_gradebook_columns).
 			return {
-				endpoint: `/api/v1/courses/${courseId}/custom_gradebook_columns`,
+				endpoint: `/api/v1/courses/${courseId}/custom_gradebook_column_data`,
 				method: 'PUT',
 				body: {
 					column_data: dataEntries.map((entry) => ({
-						column_id: entry.column_id,
-						user_id: entry.user_id,
-						content: entry.content,
+						column_id: String(entry.column_id ?? '').trim(),
+						user_id: String(entry.user_id ?? '').trim(),
+						// An empty string deletes the entry.
+						content: isBlank(entry.content) ? '' : String(entry.content),
 					})),
 				},
 			};
@@ -112,16 +133,38 @@ export function handleCustomGradebookColumnResource(
 // GRADING PERIOD
 // ============================================
 
+/**
+ * One row of the Batch Update collection as Canvas expects it. Only what was
+ * filled in is sent: an existing period (ID set) keeps every attribute that is left empty.
+ */
+function gradingPeriodAttributes(entry: IDataObject): IDataObject {
+	const period: IDataObject = {};
+	for (const key of ['id', 'title', 'start_date', 'end_date', 'close_date']) {
+		const value = entry[key];
+		if (!isBlank(value)) {
+			period[key] = typeof value === 'string' ? value.trim() : value;
+		}
+	}
+	if (!isBlank(entry.weight)) {
+		// Anything that is not a number is passed on as typed, for Canvas to reject.
+		const weight = Number(entry.weight);
+		period.weight = Number.isNaN(weight) ? String(entry.weight) : weight;
+	}
+	return period;
+}
+
 export function handleGradingPeriodResource(
 	operation: string,
 	getParam: GetParam,
 	getParamObject: GetParamObject,
 ): IRequestConfig {
 	switch (operation) {
+		// Canvas wraps grading periods as { grading_periods: [...] }, also a single one.
 		case 'get':
 			return {
 				endpoint: `/api/v1/courses/${getParam('courseId')}/grading_periods/${getParam('gradingPeriodId')}`,
 				method: 'GET',
+				dataKey: 'grading_periods',
 			};
 
 		case 'getAll': {
@@ -137,23 +180,21 @@ export function handleGradingPeriodResource(
 			return {
 				endpoint,
 				method: 'GET',
+				dataKey: 'grading_periods',
 			};
 		}
 
-		case 'update': {
-			const additionalFields = getParamObject('additionalFields');
+		// Only reaches grading periods owned by the course (legacy); Canvas answers 404 for
+		// a period of a grading period set, which is changed through batchUpdate.
+		case 'update':
 			return {
 				endpoint: `/api/v1/courses/${getParam('courseId')}/grading_periods/${getParam('gradingPeriodId')}`,
-				method: 'PATCH',
+				method: 'PUT',
 				body: {
-					grading_periods: [{
-						start_date: getParam('startDate'),
-						end_date: getParam('endDate'),
-						...additionalFields,
-					}],
+					grading_periods: [getParamObject('updateFields')],
 				},
+				dataKey: 'grading_periods',
 			};
-		}
 
 		case 'delete': {
 			const context = getParam('context');
@@ -172,24 +213,12 @@ export function handleGradingPeriodResource(
 		}
 
 		case 'batchUpdate': {
-			const batchContext = getParam('batchContext');
-			let endpoint: string;
+			// Always the route of the set. The course route cannot create periods any more and,
+			// when it refuses, leaves an empty course-level set behind that shadows the set of the
+			// course's term.
+			const endpoint = `/api/v1/grading_period_sets/${getParam('gradingPeriodSetId')}/grading_periods/batch_update`;
 
-			if (batchContext === 'gradingPeriodSet') {
-				endpoint = `/api/v1/grading_period_sets/${getParam('gradingPeriodSetId')}/grading_periods/batch_update`;
-			} else {
-				endpoint = `/api/v1/courses/${getParam('courseId')}/grading_periods/batch_update`;
-			}
-
-			const gradingPeriodsObj = getParamObject('gradingPeriods');
-			const gradingPeriodEntries = (gradingPeriodsObj.gradingPeriod as Array<{
-				id?: string;
-				title: string;
-				start_date: string;
-				end_date: string;
-				close_date: string;
-				weight?: number;
-			}>) || [];
+			const gradingPeriodEntries = collectionRows(getParamObject('gradingPeriods'), 'gradingPeriod');
 
 			if (gradingPeriodEntries.length === 0) {
 				throw new ApplicationError(
@@ -197,29 +226,13 @@ export function handleGradingPeriodResource(
 				);
 			}
 
-			const body: IDataObject = {
-				set_id: getParam('setId'),
-				grading_periods: gradingPeriodEntries.map((entry) => {
-					const period: IDataObject = {
-						title: entry.title,
-						start_date: entry.start_date,
-						end_date: entry.end_date,
-						close_date: entry.close_date,
-					};
-					if (entry.id) {
-						period.id = entry.id;
-					}
-					if (entry.weight !== undefined && entry.weight !== 0) {
-						period.weight = entry.weight;
-					}
-					return period;
-				}),
-			};
-
 			return {
 				endpoint,
 				method: 'PATCH',
-				body,
+				body: {
+					grading_periods: gradingPeriodEntries.map(gradingPeriodAttributes),
+				},
+				dataKey: 'grading_periods',
 			};
 		}
 
@@ -241,18 +254,17 @@ export function handleGradingPeriodSetResource(
 
 	switch (operation) {
 		case 'create': {
-			const additionalFields = getParamObject('additionalFields');
-			const body: IDataObject = {
+			// `enrollment_term_ids[]` is a request argument of its own, not part of the set.
+			const { enrollment_term_ids: termIds, ...setFields } = getParamObject('additionalFields');
+			const body: Record<string, unknown> = {
 				grading_period_set: {
 					title: getParam('title'),
-					...additionalFields,
+					...setFields,
 				},
 			};
-
-			// Handle enrollment_term_ids as comma-separated string to array
-			if (additionalFields.enrollment_term_ids && typeof additionalFields.enrollment_term_ids === 'string') {
-				const termIds = (additionalFields.enrollment_term_ids as string).split(',').map((id) => id.trim());
-				(body.grading_period_set as IDataObject).enrollment_term_ids = termIds;
+			const enrollmentTermIds = toIdList(termIds);
+			if (enrollmentTermIds.length > 0) {
+				body.enrollment_term_ids = enrollmentTermIds;
 			}
 
 			return {
@@ -272,24 +284,27 @@ export function handleGradingPeriodSetResource(
 			return {
 				endpoint: `/api/v1/accounts/${accountId}/grading_period_sets`,
 				method: 'GET',
+				dataKey: 'grading_period_sets',
 			};
 
 		case 'update': {
 			const updateFields = getParamObject('updateFields');
-			const body: IDataObject = {
-				grading_period_set: { ...updateFields },
-			};
-
-			// Handle enrollment_term_ids as comma-separated string to array
-			if (updateFields.enrollment_term_ids && typeof updateFields.enrollment_term_ids === 'string') {
-				const termIds = (updateFields.enrollment_term_ids as string).split(',').map((id) => id.trim());
-				(body.grading_period_set as IDataObject).enrollment_term_ids = termIds;
+			// Canvas replaces the terms first and only then looks at the set fields, so a request
+			// without set fields would fail with a 400 after the terms have already been changed.
+			if (Object.keys(updateFields).length === 0) {
+				throw new ApplicationError(
+					'At least one update field (Title, Weighted, Display Totals for All Grading Periods) is required for gradingPeriodSet update',
+				);
 			}
 
 			return {
 				endpoint: `/api/v1/accounts/${accountId}/grading_period_sets/${getParam('gradingPeriodSetId')}`,
 				method: 'PATCH',
-				body,
+				body: {
+					// Always sent: Canvas replaces the terms of the set with this list on every update.
+					enrollment_term_ids: toIdList(getParam('enrollmentTermIds')),
+					grading_period_set: updateFields,
+				},
 			};
 		}
 
@@ -301,6 +316,14 @@ export function handleGradingPeriodSetResource(
 // ============================================
 // GRADING STANDARD
 // ============================================
+
+/** Rows of the Grading Scheme collection as `grading_scheme_entry[]`. */
+function gradingSchemeEntries(collection: Record<string, unknown>): IDataObject[] {
+	return collectionRows(collection, 'gradeEntry').map((entry) => ({
+		name: entry.name,
+		value: entry.value,
+	}));
+}
 
 export function handleGradingStandardResource(
 	operation: string,
@@ -314,11 +337,7 @@ export function handleGradingStandardResource(
 
 	switch (operation) {
 		case 'create': {
-			const gradingSchemeObj = getParamObject('gradingScheme');
-			const gradeEntries = (gradingSchemeObj.gradeEntry as Array<{
-				name: string;
-				value: number;
-			}>) || [];
+			const gradeEntries = gradingSchemeEntries(getParamObject('gradingScheme'));
 
 			if (gradeEntries.length === 0) {
 				throw new ApplicationError(
@@ -326,18 +345,13 @@ export function handleGradingStandardResource(
 				);
 			}
 
-			const additionalFields = getParamObject('additionalFields');
-
 			return {
 				endpoint: `${baseEndpoint}/grading_standards`,
 				method: 'POST',
 				body: {
 					title: getParam('title'),
-					grading_scheme_entry: gradeEntries.map((entry) => ({
-						name: entry.name,
-						value: entry.value,
-					})),
-					...additionalFields,
+					...getParamObject('additionalFields'),
+					grading_scheme_entry: gradeEntries,
 				},
 			};
 		}
@@ -360,12 +374,18 @@ export function handleGradingStandardResource(
 				method: 'GET',
 			};
 
-		case 'update':
+		case 'update': {
+			const body: Record<string, unknown> = { ...getParamObject('updateFields') };
+			const gradeEntries = gradingSchemeEntries(getParamObject('gradingScheme'));
+			if (gradeEntries.length > 0) {
+				body.grading_scheme_entry = gradeEntries;
+			}
 			return {
 				endpoint: `${baseEndpoint}/grading_standards/${getParam('gradingStandardId')}`,
 				method: 'PUT',
-				body: getParamObject('updateFields'),
+				body,
 			};
+		}
 
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for gradingStandard`);
@@ -384,12 +404,18 @@ export function handleLatePolicyResource(
 	const courseId = getParam('courseId');
 
 	switch (operation) {
-		case 'create':
+		case 'create': {
+			const fields = getParamObject('additionalFields');
 			return {
 				endpoint: `/api/v1/courses/${courseId}/late_policy`,
 				method: 'POST',
-				body: { late_policy: getParamObject('additionalFields') },
+				// Canvas rejects an empty late_policy object. Its own default interval creates
+				// the policy with every deduction switched off.
+				body: {
+					late_policy: Object.keys(fields).length > 0 ? fields : { late_submission_interval: 'day' },
+				},
 			};
+		}
 
 		case 'get':
 			return {
@@ -430,7 +456,12 @@ export function handleModeratedGradingResource(
 			};
 
 		case 'selectStudentsForModeration': {
-			const studentIds = getParam('studentIds').split(',').map((id) => id.trim());
+			const studentIds = toIdList(getParam('studentIds'));
+			if (studentIds.length === 0) {
+				throw new ApplicationError(
+					'At least one student ID is required for moderatedGrading selectStudentsForModeration',
+				);
+			}
 			return {
 				endpoint: `${basePath}/moderated_students`,
 				method: 'POST',
@@ -439,17 +470,23 @@ export function handleModeratedGradingResource(
 		}
 
 		case 'getProvisionalGradeStatus': {
-			const identificationMethod = getParam('identificationMethod');
-			const qs: IDataObject = {};
+			const options = getParamObject('options');
+			const qs: Record<string, unknown> = {};
+			// Anonymous IDs have an endpoint of their own.
+			let endpoint = `${basePath}/provisional_grades/status`;
 
-			if (identificationMethod === 'studentId') {
-				qs.student_id = getParam('studentId');
-			} else {
+			if (getParam('identificationMethod') === 'anonymousId') {
+				endpoint = `${basePath}/anonymous_provisional_grades/status`;
 				qs.anonymous_id = getParam('anonymousId');
+			} else {
+				qs.student_id = getParam('studentId');
+			}
+			if (!isBlank(options.last_updated_at)) {
+				qs.last_updated_at = options.last_updated_at;
 			}
 
 			return {
-				endpoint: `${basePath}/provisional_grades/status`,
+				endpoint,
 				method: 'GET',
 				qs,
 			};
@@ -462,25 +499,19 @@ export function handleModeratedGradingResource(
 			};
 
 		case 'bulkSelectProvisionalGrades': {
-			const selectionsObj = getParamObject('provisionalGradeSelections');
-			const selections = (selectionsObj.selection as Array<{
-				student_id: string;
-				provisional_grade_id: string;
-			}>) || [];
+			// Canvas works out the student of each provisional grade itself.
+			const provisionalGradeIds = toIdList(getParam('provisionalGradeIds'));
 
-			if (selections.length === 0) {
+			if (provisionalGradeIds.length === 0) {
 				throw new ApplicationError(
-					'At least one selection is required for moderatedGrading bulkSelectProvisionalGrades',
+					'At least one provisional grade ID is required for moderatedGrading bulkSelectProvisionalGrades',
 				);
 			}
 
 			return {
 				endpoint: `${basePath}/provisional_grades/bulk_select`,
 				method: 'PUT',
-				body: selections.reduce((acc: IDataObject, sel) => {
-					acc[sel.student_id] = sel.provisional_grade_id;
-					return acc;
-				}, {}),
+				body: { provisional_grade_ids: provisionalGradeIds },
 			};
 		}
 

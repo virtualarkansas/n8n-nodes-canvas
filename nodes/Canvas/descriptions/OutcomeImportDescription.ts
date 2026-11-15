@@ -108,7 +108,7 @@ export const outcomeImportFields: INodeProperties[] = [
 				operation: ['getStatus', 'getCreatedGroupIds'],
 			},
 		},
-		description: 'The ID of the import (use "latest" for the most recent import)',
+		description: 'The ID of the import, or "latest" for the most recent import of the context',
 	},
 
 	// ----------------------------------
@@ -129,7 +129,8 @@ export const outcomeImportFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'The CSV data containing outcomes to import',
+		description:
+			'The outcomes and outcome groups to import, as CSV text in the Canvas outcomes format (header row vendor_guid, object_type, title, ...)',
 	},
 	{
 		displayName: 'Additional Fields',
@@ -145,18 +146,12 @@ export const outcomeImportFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				displayName: 'Import Type',
-				name: 'import_type',
-				type: 'string',
-				default: 'instructure_csv',
-				description: 'The data format of the import file',
-			},
-			{
 				displayName: 'Learning Outcome Group ID',
 				name: 'learning_outcome_group_id',
 				type: 'string',
 				default: '',
-				description: 'The ID of the outcome group to import into',
+				description:
+					'The ID of the outcome group of the context to import into. Without it the outcomes go into the root outcome group.',
 			},
 		],
 	},

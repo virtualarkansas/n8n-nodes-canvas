@@ -15,19 +15,19 @@ export const latePolicyOperations: INodeProperties[] = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create a late policy for a course',
+				description: 'Create the late policy of a course (a course has at most one; change an existing one with Update)',
 				action: 'Create a late policy',
 			},
 			{
 				name: 'Get',
 				value: 'get',
-				description: 'Get the late policy for a course',
+				description: 'Get the late policy of a course (Canvas answers "not found" when the course has none yet)',
 				action: 'Get a late policy',
 			},
 			{
 				name: 'Update',
 				value: 'update',
-				description: 'Update the late policy for a course',
+				description: 'Change fields of the existing late policy of a course',
 				action: 'Update a late policy',
 			},
 		],
@@ -62,6 +62,7 @@ export const latePolicyFields: INodeProperties[] = [
 		type: 'collection',
 		placeholder: 'Add Field',
 		default: {},
+		description: 'Without any field the policy is created with every deduction switched off',
 		displayOptions: {
 			show: {
 				resource: ['latePolicy'],
