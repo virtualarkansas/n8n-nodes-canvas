@@ -397,6 +397,84 @@ describe('quiz', () => {
 		expect(none.success).toEqual([]);
 	});
 
+	it('getAllWithNewQuizzes: the combined list of classic and New Quizzes, across pages', async () => {
+		const path = `/api/v1/courses/${listCourseId}/all_quizzes`;
+		const expected = await canvas().getAll<Json>(path);
+		// This Canvas has no New Quizzes service, so the combined list holds the classic quizzes.
+		const classic = await canvas().getAll<Json>(`/api/v1/courses/${listCourseId}/quizzes`);
+		expect(expected.map((q) => q.id).sort()).toEqual(classic.map((q) => q.id).sort());
+		expect(expected.length).toBeGreaterThanOrEqual(QUIZ_LIST_SIZE);
+
+		const all = await runOk({
+			resource: 'quiz',
+			operation: 'getAllWithNewQuizzes',
+			params: { courseId: listCourseId, pagination: { returnAll: true } },
+		});
+		expect(all.map((q) => q.id)).toEqual(expected.map((q) => q.id));
+		expect(new Set(all.map((q) => q.id)).size).toBe(all.length);
+		expect(all.every((q) => q.quiz_type !== 'quizzes.next')).toBe(true);
+		expect(all[0]).toHaveProperty('title');
+		expect(all[0]).toHaveProperty('question_count');
+
+		const defaults = await runOk({ resource: 'quiz', operation: 'getAllWithNewQuizzes', params: { courseId: listCourseId } });
+		expect(defaults.map((q) => q.id)).toEqual(expected.slice(0, 50).map((q) => q.id));
+		const threePages = await runOk({
+			resource: 'quiz',
+			operation: 'getAllWithNewQuizzes',
+			items: [{ course: Number(listCourseId) }],
+			params: { courseId: '={{ $json.course }}', pagination: { perPage: 7, maxPages: 3 } },
+		});
+		expect(threePages.map((q) => q.id)).toEqual(expected.slice(0, 21).map((q) => q.id));
+
+		const expectedFound = await canvas().getAll<Json>(`${path}?search_term=${encodeURIComponent('Zellbiologie')}`);
+		expect(expectedFound.length).toBeGreaterThan(10);
+		const found = await runOk({
+			resource: 'quiz',
+			operation: 'getAllWithNewQuizzes',
+			params: { courseId: listCourseId, options: { search_term: 'Zellbiologie' }, pagination: { returnAll: true } },
+		});
+		expect(found.map((q) => q.id)).toEqual(expectedFound.map((q) => q.id));
+		for (const quiz of found) expect(String(quiz.title)).toContain('Zellbiologie');
+
+		// Students only get the published quizzes.
+		const asStudent = await new CanvasClient('student').getAll<Json>(path);
+		expect(asStudent.length).toBeLessThan(expected.length);
+		const seen = await runOk({
+			resource: 'quiz',
+			operation: 'getAllWithNewQuizzes',
+			persona: 'student',
+			params: { courseId: listCourseId, pagination: { returnAll: true } },
+		});
+		expect(seen.map((q) => q.id)).toEqual(asStudent.map((q) => q.id));
+		for (const quiz of seen) expect(quiz.published).toBe(true);
+
+		const none = await runNode({
+			resource: 'quiz',
+			operation: 'getAllWithNewQuizzes',
+			params: { courseId: listCourseId, options: { search_term: 'no quiz has this title zzzz' } },
+		});
+		expect(none.ok).toBe(true);
+		expect(none.success).toEqual([]);
+
+		// Somebody who is not in the course (the designer persona), and a course that does not exist.
+		const outsider = await runNode({
+			resource: 'quiz',
+			operation: 'getAllWithNewQuizzes',
+			persona: 'designer',
+			items: [{ course: Number(listCourseId) }],
+			params: { courseId: '={{ $json.course }}', errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(outsider.success).toEqual([]);
+		expect([401, 403]).toContain(outsider.error[0].errorCode);
+		expect(outsider.error[0]).toMatchObject({ resource: 'quiz', operation: 'getAllWithNewQuizzes' });
+		const missing = await runNode({
+			resource: 'quiz',
+			operation: 'getAllWithNewQuizzes',
+			params: { courseId: '99999999', errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(missing.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', endpoint: '/api/v1/courses/99999999/all_quizzes' });
+	});
+
 	it('reorder: questions and groups take the given order', async () => {
 		const { id, questions } = await createQuiz(
 			courseId,

@@ -50,6 +50,13 @@ export const outcomeResultOperations: INodeProperties[] = [
 		},
 		options: [
 			{
+				name: 'Assign Outcome Order',
+				value: 'assignOutcomeOrder',
+				description:
+					'Save the order of the outcomes in the Learning Mastery Gradebook of a course for the user of the access token. Canvas uses it when that user arranges the gradebook as "custom".',
+				action: 'Assign the outcome order of a course',
+			},
+			{
 				name: 'Get Contributing Scores',
 				value: 'getContributingScores',
 				description: 'Get the alignments of an outcome in a course and the scores students got on them',
@@ -60,6 +67,13 @@ export const outcomeResultOperations: INodeProperties[] = [
 				value: 'getAll',
 				description: 'Get the outcome results of the students of a course, one item per result',
 				action: 'Get many outcome results',
+			},
+			{
+				name: 'Get Mastery Distribution',
+				value: 'getMasteryDistribution',
+				description:
+					'Get, for every outcome of a course, how many (and which) students reached each mastery level. One item for the whole course.',
+				action: 'Get the mastery distribution of a course',
 			},
 			{
 				name: 'Get Rollups',
@@ -107,6 +121,93 @@ export const outcomeResultFields: INodeProperties[] = [
 			},
 		},
 		description: 'The ID of an outcome that is linked into the course',
+	},
+
+	// ----------------------------------
+	//         outcomeResult: assignOutcomeOrder
+	// ----------------------------------
+	{
+		displayName: 'Outcome IDs',
+		name: 'outcomeIds',
+		type: 'string',
+		required: true,
+		default: '',
+		placeholder: '15,12,13',
+		displayOptions: {
+			show: {
+				resource: ['outcomeResult'],
+				operation: ['assignOutcomeOrder'],
+			},
+		},
+		description:
+			'Comma-separated numeric IDs of outcomes of the course, in the order they should appear. The list replaces the order saved before; outcomes that are left out come last.',
+	},
+
+	// ----------------------------------
+	//         outcomeResult: getMasteryDistribution - options
+	// ----------------------------------
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['outcomeResult'],
+				operation: ['getMasteryDistribution'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Add Defaults',
+				name: 'add_defaults',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether to add color and mastery level defaults to the ratings (no effect when the account uses mastery scales)',
+			},
+			{
+				displayName: 'Exclude Outcomes Without Results',
+				name: 'exclude_missing_outcome_results',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to leave out the outcomes nobody has a result for',
+			},
+			{
+				displayName: 'Include Alignment Distributions',
+				name: 'include_alignment_distributions',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether to add, per outcome, the distribution of the scores on each assignment, quiz or rubric aligned with it',
+			},
+			{
+				displayName: 'Only Assignment Alignments',
+				name: 'only_assignment_alignments',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether the alignment distributions are limited to alignments with assignments (with Include Alignment Distributions)',
+			},
+			filterOptions.outcomeIds,
+			{
+				displayName: 'Show Unpublished Assignments',
+				name: 'show_unpublished_assignments',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether the alignment distributions include unpublished assignments (with Include Alignment Distributions)',
+			},
+			{
+				displayName: 'Student IDs',
+				name: 'student_ids',
+				type: 'string',
+				default: '',
+				placeholder: '101,102',
+				description: 'Comma-separated numeric IDs of the students to count. Without it every student of the course is counted.',
+			},
+		],
 	},
 
 	// ----------------------------------

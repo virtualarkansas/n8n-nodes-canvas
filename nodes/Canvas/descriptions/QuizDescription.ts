@@ -37,6 +37,12 @@ export const quizOperations: INodeProperties[] = [
 				action: 'Get many quizzes',
 			},
 			{
+				name: 'Get Many (Classic and New)',
+				value: 'getAllWithNewQuizzes',
+				description: 'Get the classic quizzes and the New Quizzes of a course in one list (New Quizzes have the quiz type "quizzes.next"). Canvas caches this list for up to an hour.',
+				action: 'Get many classic and new quizzes',
+			},
+			{
 				name: 'Get Submission Users',
 				value: 'getSubmissionUsers',
 				description: 'List the students who have, or have not, submitted the quiz',
@@ -421,7 +427,7 @@ export const quizFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['quiz'],
-				operation: ['getAll'],
+				operation: ['getAll', 'getAllWithNewQuizzes'],
 			},
 		},
 		options: [

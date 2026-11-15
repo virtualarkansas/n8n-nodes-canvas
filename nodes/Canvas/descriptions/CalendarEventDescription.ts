@@ -31,6 +31,12 @@ export const calendarEventOperations: INodeProperties[] = [
 				action: 'Get a calendar event',
 			},
 			{
+				name: 'Get Course Timetable',
+				value: 'getTimetable',
+				description: 'Get the timetable that was last set for a course with Set Course Timetable',
+				action: 'Get the timetable of a course',
+			},
+			{
 				name: 'Get Many',
 				value: 'getAll',
 				description: 'Get the calendar events or assignments of the current user or of another user',
@@ -41,6 +47,18 @@ export const calendarEventOperations: INodeProperties[] = [
 				value: 'reserveTimeSlot',
 				description: 'Reserve a time slot of an appointment group',
 				action: 'Reserve a time slot',
+			},
+			{
+				name: 'Set Course Timetable',
+				value: 'setTimetable',
+				description: 'Generate the class meetings of a course as calendar events from a weekly schedule ("Monday and Wednesday at 2 pm") between the start and end date of the course. Replaces the timetable set before.',
+				action: 'Set the timetable of a course',
+			},
+			{
+				name: 'Set Course Timetable Events',
+				value: 'setTimetableEvents',
+				description: 'Set the class meetings of a course or section as calendar events from a complete list of dates. Timetable events that are not in the list are deleted.',
+				action: 'Set the timetable events of a course',
 			},
 			{
 				name: 'Update',
@@ -142,6 +160,206 @@ export const calendarEventFields: INodeProperties[] = [
 			},
 		},
 		description: 'The ID of the time slot: a calendar event of an appointment group (see Appointment Group > Get, field "appointments")',
+	},
+
+	// ----------------------------------
+	//         calendarEvent: course timetable
+	// ----------------------------------
+	{
+		displayName: 'Course ID',
+		name: 'courseId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['calendarEvent'],
+				operation: ['getTimetable', 'setTimetable', 'setTimetableEvents'],
+			},
+		},
+		description: 'The ID of the course (or "sis_course_id:..." for a SIS ID)',
+	},
+	{
+		displayName:
+			'Canvas creates the events in the background after it answers "ok". The timetable replaces the one set before: events that no longer fit are deleted, and sections that are not listed lose their timetable events.',
+		name: 'timetableNotice',
+		type: 'notice',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['calendarEvent'],
+				operation: ['setTimetable'],
+			},
+		},
+	},
+	{
+		displayName: 'Timetable',
+		name: 'timetables',
+		type: 'fixedCollection',
+		typeOptions: {
+			multipleValues: true,
+		},
+		required: true,
+		placeholder: 'Add Entry',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['calendarEvent'],
+				operation: ['setTimetable'],
+			},
+		},
+		description:
+			'The weekly meetings. Canvas creates one event per meeting between the start and the end date of the section, of the course (only used when the course restricts participation to its dates) or of the term, and refuses the timetable when it finds no such dates.',
+		options: [
+			{
+				displayName: 'Entry',
+				name: 'timetable',
+				values: [
+					{
+						displayName: 'Course Section ID',
+						name: 'course_section_id',
+						type: 'string',
+						default: 'all',
+						description: 'The section the meetings are for, or \'all\' for the whole course',
+					},
+					{
+						displayName: 'End Time',
+						name: 'end_time',
+						type: 'string',
+						default: '',
+						placeholder: '9:50 am',
+						description: 'The time each meeting ends, in the time zone of the course',
+					},
+					{
+						displayName: 'Location Name',
+						name: 'location_name',
+						type: 'string',
+						default: '',
+						description: 'Where the course meets, e.g. \'Room 237\'',
+					},
+					{
+						displayName: 'Start Time',
+						name: 'start_time',
+						type: 'string',
+						default: '',
+						placeholder: '9:00 am',
+						description: 'The time each meeting starts, in the time zone of the course (e.g. \'9:00 am\' or \'14:30\')',
+					},
+					{
+						displayName: 'Weekdays',
+						name: 'weekdays',
+						type: 'multiOptions',
+						options: [
+							{
+								name: 'Friday',
+								value: 'Fri',
+							},
+							{
+								name: 'Monday',
+								value: 'Mon',
+							},
+							{
+								name: 'Saturday',
+								value: 'Sat',
+							},
+							{
+								name: 'Sunday',
+								value: 'Sun',
+							},
+							{
+								name: 'Thursday',
+								value: 'Thu',
+							},
+							{
+								name: 'Tuesday',
+								value: 'Tue',
+							},
+							{
+								name: 'Wednesday',
+								value: 'Wed',
+							},
+						],
+						default: [],
+						description: 'The days of the week the course meets',
+					},
+			],
+			},
+		],
+	},
+	{
+		displayName: 'Course Section ID',
+		name: 'courseSectionId',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['calendarEvent'],
+				operation: ['setTimetableEvents'],
+			},
+		},
+		description: 'The section to set the events for. Leave empty for events of the whole course.',
+	},
+	{
+		displayName: 'Events',
+		name: 'events',
+		type: 'fixedCollection',
+		typeOptions: {
+			multipleValues: true,
+		},
+		required: true,
+		placeholder: 'Add Event',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['calendarEvent'],
+				operation: ['setTimetableEvents'],
+			},
+		},
+		description:
+			'The complete list of meetings of the course (or section). Canvas creates the events in the background, updates the ones it already has under the same code and deletes its other timetable events of the course (or section).',
+		options: [
+			{
+				displayName: 'Event',
+				name: 'event',
+				values: [
+					{
+						displayName: 'Code',
+						name: 'code',
+						type: 'string',
+						default: '',
+						description: 'An identifier of your own for the meeting, unique within the list. A later call with the same code updates the event instead of creating a new one. Without it Canvas derives a code from the start and end time.',
+					},
+					{
+						displayName: 'End At',
+						name: 'end_at',
+						type: 'dateTime',
+						default: '',
+						description: 'When the meeting ends',
+					},
+					{
+						displayName: 'Location Name',
+						name: 'location_name',
+						type: 'string',
+						default: '',
+						description: 'Where the course meets, e.g. \'Room 237\'',
+					},
+					{
+						displayName: 'Start At',
+						name: 'start_at',
+						type: 'dateTime',
+						default: '',
+						description: 'When the meeting starts',
+					},
+					{
+						displayName: 'Title',
+						name: 'title',
+						type: 'string',
+						default: '',
+						description: 'The title of the event. Defaults to the name of the course.',
+					},
+				],
+			},
+		],
 	},
 
 	// ----------------------------------

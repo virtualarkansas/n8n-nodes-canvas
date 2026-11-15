@@ -560,6 +560,9 @@ export {
 	quizSubmissionQuestionFields,
 } from './QuizSubmissionQuestionDescription';
 
+export { questionBankOperations, questionBankFields } from './QuestionBankDescription';
+export { brandConfigOperations, brandConfigFields } from './BrandConfigDescription';
+
 // Generic requests resource group descriptions
 export {
 	apiRequestOperations,

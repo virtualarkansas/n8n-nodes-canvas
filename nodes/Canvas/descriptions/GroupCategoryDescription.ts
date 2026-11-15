@@ -19,6 +19,12 @@ export const groupCategoryOperations: INodeProperties[] = [
 				action: 'Assign unassigned members to groups',
 			},
 			{
+				name: 'Bulk Manage Differentiation Tags',
+				value: 'bulkManageDifferentiationTags',
+				description: 'Create, rename and delete several differentiation tags of one tag set in a single request, or create a new tag set with its tags. Canvas applies all of it or nothing.',
+				action: 'Bulk manage differentiation tags',
+			},
+			{
 				name: 'Create',
 				value: 'create',
 				description: 'Create a group category (group set), optionally with a number of groups',
@@ -31,6 +37,18 @@ export const groupCategoryOperations: INodeProperties[] = [
 				action: 'Delete a group category',
 			},
 			{
+				name: 'Export',
+				value: 'export',
+				description: 'Export the students of the course with the group each one is in, as CSV in the format Import accepts. The node outputs the CSV text in the field "value".',
+				action: 'Export a group category',
+			},
+			{
+				name: 'Export Differentiation Tags',
+				value: 'exportDifferentiationTags',
+				description: 'Export the students of a course with their differentiation tags, as CSV in the format Import Differentiation Tags accepts. The rows of students without a tag are shorter than the header row. The node outputs the CSV text in the field "value".',
+				action: 'Export differentiation tags',
+			},
+			{
 				name: 'Get',
 				value: 'get',
 				description: 'Get a single group category',
@@ -41,6 +59,18 @@ export const groupCategoryOperations: INodeProperties[] = [
 				value: 'getAll',
 				description: 'Get many group categories',
 				action: 'Get many group categories',
+			},
+			{
+				name: 'Import',
+				value: 'import',
+				description: 'Create groups in a group category and put students into them from a CSV file. Canvas works in the background and the node outputs a progress record (see the Progress resource).',
+				action: 'Import groups into a category',
+			},
+			{
+				name: 'Import Differentiation Tags',
+				value: 'importDifferentiationTags',
+				description: 'Create differentiation tags in a course and tag students from a CSV file. Canvas works in the background and the node outputs a progress record (see the Progress resource).',
+				action: 'Import differentiation tags',
 			},
 			{
 				name: 'List Groups',
@@ -129,6 +159,13 @@ const sisGroupCategoryId: INodeProperties = {
 	description: 'The SIS ID of the group category (needs the right to manage SIS data)',
 };
 
+/** What the import files hold (the same for a binary file and for pasted text). */
+const groupCsvColumns =
+	'with a header row and one row per student. The student: canvas_user_id, user_id (SIS ID) or login_id. The group: canvas_group_id, group_id (SIS ID) or group_name; a name Canvas does not know in the category creates the group. A student who is in another group of the category is moved. Canvas skips rows it cannot use without an error: students who are not active students of the course, and every further row of a student it has already handled.';
+
+const tagCsvColumns =
+	'with a header row and one row per student. The student: canvas_user_id, user_id (SIS ID) or login_id. The tag: canvas_tag_id, tag_id (SIS ID) or tag_name. The tag set: canvas_tag_set_id, tag_set_id (SIS ID) or tag_set_name. Names Canvas does not know in the course create the tag and its set. Canvas skips rows it cannot use without an error: students who are not active students of the course, and every further row of a student it has already handled (to give a student a second tag, import a second file).';
+
 export const groupCategoryFields: INodeProperties[] = [
 	// ----------------------------------
 	//         groupCategory: shared
@@ -142,10 +179,265 @@ export const groupCategoryFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['groupCategory'],
-				operation: ['get', 'update', 'delete', 'listGroups', 'listUsers', 'assignUnassignedMembers'],
+				operation: [
+					'get',
+					'update',
+					'delete',
+					'listGroups',
+					'listUsers',
+					'assignUnassignedMembers',
+					'export',
+					'import',
+				],
 			},
 		},
 		description: 'The ID of the group category (or "sis_group_category_id:..." for a SIS ID)',
+	},
+
+	// ----------------------------------
+	//         groupCategory: differentiation tags
+	// ----------------------------------
+	{
+		displayName:
+			'Canvas only imports and exports differentiation tags where "Differentiation Tags" is switched on in the settings of the account the course belongs to (or of an account above it). Otherwise it answers "unauthorized".',
+		name: 'differentiationTagsNotice',
+		type: 'notice',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['groupCategory'],
+				operation: ['exportDifferentiationTags', 'importDifferentiationTags'],
+			},
+		},
+	},
+	{
+		displayName: 'Course ID',
+		name: 'courseId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['groupCategory'],
+				operation: ['bulkManageDifferentiationTags', 'exportDifferentiationTags', 'importDifferentiationTags'],
+			},
+		},
+		description: 'The ID of the course the differentiation tags belong to',
+	},
+
+	// ----------------------------------
+	//         groupCategory: import, importDifferentiationTags
+	// ----------------------------------
+	{
+		displayName: 'File Source',
+		name: 'fileSource',
+		type: 'options',
+		options: [
+			{
+				name: 'Binary File',
+				value: 'binaryData',
+				description: 'A CSV file from a previous node (Convert to File, Read/Write Files, HTTP Request ...)',
+			},
+			{
+				name: 'Text',
+				value: 'text',
+				description: 'The CSV text itself, typed in or from an expression',
+			},
+		],
+		default: 'binaryData',
+		displayOptions: {
+			show: {
+				resource: ['groupCategory'],
+				operation: ['import', 'importDifferentiationTags'],
+			},
+		},
+		description: 'Where the CSV file comes from',
+	},
+	{
+		displayName: 'Input Binary Field',
+		name: 'binaryPropertyName',
+		type: 'string',
+		required: true,
+		default: 'data',
+		displayOptions: {
+			show: {
+				resource: ['groupCategory'],
+				operation: ['import'],
+				fileSource: ['binaryData'],
+			},
+		},
+		hint: 'The name of the input binary field containing the CSV file to be imported',
+		description: `A UTF-8 CSV file ${groupCsvColumns}`,
+	},
+	{
+		displayName: 'Input Binary Field',
+		name: 'binaryPropertyName',
+		type: 'string',
+		required: true,
+		default: 'data',
+		displayOptions: {
+			show: {
+				resource: ['groupCategory'],
+				operation: ['importDifferentiationTags'],
+				fileSource: ['binaryData'],
+			},
+		},
+		hint: 'The name of the input binary field containing the CSV file to be imported',
+		description: `A UTF-8 CSV file ${tagCsvColumns}`,
+	},
+	{
+		displayName: 'File Content',
+		name: 'fileContent',
+		type: 'string',
+		typeOptions: {
+			rows: 6,
+		},
+		required: true,
+		default: '',
+		placeholder: 'canvas_user_id,group_name',
+		displayOptions: {
+			show: {
+				resource: ['groupCategory'],
+				operation: ['import'],
+				fileSource: ['text'],
+			},
+		},
+		description: `CSV text ${groupCsvColumns}`,
+	},
+	{
+		displayName: 'File Content',
+		name: 'fileContent',
+		type: 'string',
+		typeOptions: {
+			rows: 6,
+		},
+		required: true,
+		default: '',
+		placeholder: 'canvas_user_id,tag_name,tag_set_name',
+		displayOptions: {
+			show: {
+				resource: ['groupCategory'],
+				operation: ['importDifferentiationTags'],
+				fileSource: ['text'],
+			},
+		},
+		description: `CSV text ${tagCsvColumns}`,
+	},
+
+	// ----------------------------------
+	//         groupCategory: bulkManageDifferentiationTags
+	// ----------------------------------
+	{
+		displayName: 'Tag Set ID',
+		name: 'groupCategoryId',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['groupCategory'],
+				operation: ['bulkManageDifferentiationTags'],
+			},
+		},
+		description:
+			'The ID of an existing set of differentiation tags (a group category with Non Collaborative on) of the course. Leave empty to create a new tag set with the name below.',
+	},
+	{
+		displayName: 'Tag Set Name',
+		name: 'tagSetName',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['groupCategory'],
+				operation: ['bulkManageDifferentiationTags'],
+			},
+		},
+		description: 'The name of the new tag set, or a new name for the existing one. Required without a Tag Set ID.',
+	},
+	{
+		displayName: 'Tags to Create',
+		name: 'tagsToCreate',
+		type: 'fixedCollection',
+		typeOptions: {
+			multipleValues: true,
+		},
+		placeholder: 'Add Tag',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['groupCategory'],
+				operation: ['bulkManageDifferentiationTags'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Tag',
+				name: 'tags',
+				values: [
+					{
+						displayName: 'Name',
+						name: 'name',
+						type: 'string',
+						default: '',
+						description: 'The name of the new differentiation tag',
+					},
+				],
+			},
+		],
+		description: 'Differentiation tags to add to the tag set',
+	},
+	{
+		displayName: 'Tags to Rename',
+		name: 'tagsToRename',
+		type: 'fixedCollection',
+		typeOptions: {
+			multipleValues: true,
+		},
+		placeholder: 'Add Tag',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['groupCategory'],
+				operation: ['bulkManageDifferentiationTags'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Tag',
+				name: 'tags',
+				values: [
+					{
+						displayName: 'Tag ID',
+						name: 'id',
+						type: 'string',
+						default: '',
+						description: 'The ID of a differentiation tag of the tag set (the ID of the group)',
+					},
+					{
+						displayName: 'Name',
+						name: 'name',
+						type: 'string',
+						default: '',
+						description: 'The new name of the tag',
+					},
+				],
+			},
+		],
+		description: 'Differentiation tags of the tag set to rename',
+	},
+	{
+		displayName: 'Tag IDs to Delete',
+		name: 'tagIdsToDelete',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['groupCategory'],
+				operation: ['bulkManageDifferentiationTags'],
+			},
+		},
+		description:
+			'Comma-separated IDs of differentiation tags of the tag set to delete. Students lose the tag, and with it any assignment dates that were set for it.',
 	},
 
 	// ----------------------------------

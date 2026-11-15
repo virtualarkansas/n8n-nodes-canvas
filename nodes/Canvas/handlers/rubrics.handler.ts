@@ -1,5 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IDataObject } from 'n8n-workflow';
+import { buildMultipartBody } from '../GenericFunctions';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
 
 /**
@@ -319,6 +320,49 @@ export function handleRubricResource(
 				method: 'DELETE',
 				endpoint: `${coursePath}/rubric_associations/${getParam('rubricAssociationId')}/rubric_assessments/${getParam('rubricAssessmentId')}`,
 				dataKey: 'rubric_assessment',
+			};
+
+		case 'import': {
+			const csv = getParam('csvData');
+			if (csv.trim() === '') {
+				throw new ApplicationError(
+					'CSV Data is empty. Enter the rubrics to import as CSV text, including the header row (see Get Import Template).',
+				);
+			}
+			// Canvas only reads the file from a multipart form field called "attachment" (not from
+			// the request body, unlike the other CSV imports). Built as text so that debug mode
+			// shows exactly what is sent.
+			const form = buildMultipartBody(
+				{},
+				{ fieldName: 'attachment', fileName: 'rubrics.csv', contentType: 'text/csv', data: Buffer.from(csv, 'utf8') },
+			);
+			return {
+				method: 'POST',
+				endpoint: `${getRubricBasePath(getParam)}/rubrics/upload`,
+				body: form.body.toString('utf8'),
+				contentType: form.contentType,
+			};
+		}
+
+		case 'getImportStatus':
+			return {
+				method: 'GET',
+				endpoint: `${getRubricBasePath(getParam)}/rubrics/upload/${getParam('importId', 'latest')}`,
+			};
+
+		// Imported rubrics are drafts, which the rubric list leaves out: this is where their IDs come from.
+		case 'listImportedRubrics':
+			return {
+				method: 'GET',
+				endpoint: `${getRubricBasePath(getParam)}/rubrics/upload/${getParam('importId')}/rubrics`,
+			};
+
+		// Canvas answers with CSV text, not JSON.
+		case 'getImportTemplate':
+			return {
+				method: 'GET',
+				endpoint: '/api/v1/rubrics/upload_template',
+				singlePage: true,
 			};
 
 		default:
@@ -695,6 +739,64 @@ export function handleOutcomeResultResource(
 				method: 'GET',
 				endpoint: `/api/v1/courses/${courseId}/outcomes/${outcomeId}/contributing_scores`,
 				...(Object.keys(qs).length > 0 ? { qs } : {}),
+			};
+		}
+
+		// One record: { outcome_distributions: { "<outcome ID>": {...} }, students: [...] }.
+		case 'getMasteryDistribution': {
+			const options = getParamObject('options');
+			const qs: Record<string, unknown> = {};
+
+			const outcomeIds = toIdList(options.outcome_ids);
+			if (outcomeIds.length > 0) {
+				qs.outcome_ids = outcomeIds;
+			}
+			const studentIds = toIdList(options.student_ids);
+			if (studentIds.length > 0) {
+				qs.student_ids = studentIds;
+			}
+			// Canvas also documents "missing_user_rollups" here, but it changes nothing in this answer:
+			// students without a score are never counted, and the student list always has everybody.
+			if (options.exclude_missing_outcome_results === true) {
+				qs.exclude = ['missing_outcome_results'];
+			}
+			if (options.include_alignment_distributions === true) {
+				qs.include = ['alignment_distributions'];
+				// These two only concern the alignment distributions.
+				for (const key of ['only_assignment_alignments', 'show_unpublished_assignments']) {
+					if (options[key] !== undefined) {
+						qs[key] = options[key];
+					}
+				}
+			}
+			if (options.add_defaults !== undefined) {
+				qs.add_defaults = options.add_defaults;
+			}
+
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/outcome_mastery_distribution`,
+				...(Object.keys(qs).length > 0 ? { qs } : {}),
+			};
+		}
+
+		case 'assignOutcomeOrder': {
+			const outcomeIds = toIdList(getParam('outcomeIds'));
+			if (outcomeIds.length === 0) {
+				throw new ApplicationError('Enter at least one outcome ID, in the order the outcomes should appear');
+			}
+			// The request body is the list itself. Canvas compares the IDs as numbers: an ID sent
+			// as text is rejected as "Outcomes do not belong to Course".
+			const order = outcomeIds.map((id, position) => {
+				if (!/^\d+$/.test(id)) {
+					throw new ApplicationError(`"${id}" is not an outcome ID: this operation only accepts numeric IDs`);
+				}
+				return { outcome_id: Number(id), position };
+			});
+			return {
+				method: 'POST',
+				endpoint: `/api/v1/courses/${courseId}/assign_outcome_order`,
+				body: order,
 			};
 		}
 

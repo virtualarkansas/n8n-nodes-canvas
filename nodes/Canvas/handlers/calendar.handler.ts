@@ -158,6 +158,69 @@ export function buildCalendarEventRequest(
 				body: getParamObject('options'),
 			};
 
+		case 'getTimetable':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${getParam('courseId')}/calendar_events/timetable`,
+			};
+
+		case 'setTimetable': {
+			// Canvas wants the entries grouped by section: { all: [...], "<section ID>": [...] }.
+			const timetables: Record<string, Array<Record<string, unknown>>> = {};
+			for (const row of collectionRows(getParamObject('timetables'), 'timetable')) {
+				const weekdays = toList(row.weekdays);
+				if (weekdays.length === 0 || isBlank(row.start_time) || isBlank(row.end_time)) {
+					throw new ApplicationError('Every timetable entry needs Weekdays, a Start Time and an End Time');
+				}
+				const section = isBlank(row.course_section_id) ? 'all' : String(row.course_section_id).trim();
+				const entry: Record<string, unknown> = {
+					weekdays: weekdays.join(','),
+					start_time: row.start_time,
+					end_time: row.end_time,
+				};
+				if (!isBlank(row.location_name)) {
+					entry.location_name = row.location_name;
+				}
+				(timetables[section] ??= []).push(entry);
+			}
+			if (Object.keys(timetables).length === 0) {
+				throw new ApplicationError('Add at least one timetable entry');
+			}
+			return {
+				method: 'POST',
+				endpoint: `/api/v1/courses/${getParam('courseId')}/calendar_events/timetable`,
+				body: { timetables },
+			};
+		}
+
+		case 'setTimetableEvents': {
+			const events = collectionRows(getParamObject('events'), 'event').map((row) => {
+				if (isBlank(row.start_at) || isBlank(row.end_at)) {
+					throw new ApplicationError('Every timetable event needs a Start At and an End At');
+				}
+				const event: Record<string, unknown> = { start_at: row.start_at, end_at: row.end_at };
+				for (const key of ['code', 'location_name', 'title']) {
+					if (!isBlank(row[key])) {
+						event[key] = row[key];
+					}
+				}
+				return event;
+			});
+			if (events.length === 0) {
+				throw new ApplicationError('Add at least one timetable event');
+			}
+			const body: Record<string, unknown> = { events };
+			const sectionId = getParam('courseSectionId');
+			if (!isBlank(sectionId)) {
+				body.course_section_id = sectionId;
+			}
+			return {
+				method: 'POST',
+				endpoint: `/api/v1/courses/${getParam('courseId')}/calendar_events/timetable_events`,
+				body,
+			};
+		}
+
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for calendarEvent`);
 	}
