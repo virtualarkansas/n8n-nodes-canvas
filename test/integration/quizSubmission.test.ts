@@ -1,6 +1,9 @@
+import { createHash } from 'node:crypto';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { canvas, CanvasClient, fx, unique } from '../lib/canvas';
+import { patternBuffer } from '../lib/harness';
 import type { Json } from '../lib/n8n';
+import { startFileServer } from './support/fileServer';
 import { runNode, runOk } from './support/run';
 import {
 	answerQuestions,
@@ -639,6 +642,160 @@ describe('quizSubmission', () => {
 		// For comparison: the same quiz taken directly, picking the right answer.
 		expect(await takeQuiz(courseId, quiz.id, 'student')).toMatchObject({ workflow_state: 'complete', score: 3 });
 		await deleteQuiz(courseId, quiz.id);
+	});
+
+	// ------------------------------------------------------------- uploadFile
+
+	const FILE_UPLOAD = {
+		question_name: 'Hand-in',
+		question_text: '<p>Upload your worked solution.</p>',
+		question_type: 'file_upload_question',
+		points_possible: 5,
+	};
+	const sha = (buffer: Buffer): string => createHash('sha256').update(buffer).digest('hex');
+	/** What the student handed in for the quiz, as stored with the submission of its assignment. */
+	const handedIn = async (quiz: { quiz: Json }, userId: string): Promise<string> => {
+		const submission = await canvas().get<Json>(
+			`/api/v1/courses/${courseId}/assignments/${String(quiz.quiz.assignment_id)}/submissions/${userId}?include[]=submission_history`,
+		);
+		return JSON.stringify(((submission.submission_history as Json[]) ?? []).map((version) => version.submission_data));
+	};
+
+	it('uploadFile [needs shared change]: a student uploads files for the running attempt and answers a file upload question with one', async () => {
+		const quiz = await createQuiz(courseId, { title: unique('File upload quiz') }, [FILE_UPLOAD]);
+		try {
+			const running = await startAttempt(courseId, quiz.id, 'student2');
+			const size = 80_011;
+			const pdf = Buffer.from(`%PDF-1.4 Lösung ${unique('q')}\n`);
+			const uploaded = await runNode({
+				resource: 'quizSubmission',
+				operation: 'uploadFile',
+				persona: 'student2',
+				binary: [
+					// Name and type of the binary data ...
+					{ fileName: 'answer ünï.bin', mimeType: 'application/octet-stream', size },
+					// ... or the ones given in the options.
+					{
+						fileName: 'raw.bin',
+						mimeType: 'application/octet-stream',
+						b64: pdf.toString('base64'),
+						json: { name: 'Lösung "final".pdf', type: 'application/pdf' },
+					},
+				],
+				params: { courseId, quizId: quiz.id, options: { content_type: '={{ $json.type }}', name: '={{ $json.name }}' } },
+			});
+			expect(uploaded.failure, JSON.stringify(uploaded.failure)).toBeUndefined();
+			expect(uploaded.error).toEqual([]);
+			expect(uploaded.rawSuccess.map((item) => item.pairedItem)).toEqual([{ item: 0 }, { item: 1 }]);
+			const [first, second] = uploaded.success;
+			expect(first).toMatchObject({ display_name: 'answer ünï.bin', size, 'content-type': 'application/octet-stream', upload_status: 'success' });
+			expect(second).toMatchObject({ display_name: 'Lösung "final".pdf', size: pdf.length, 'content-type': 'application/pdf' });
+
+			// The files arrived byte for byte (read as the student who owns them).
+			const student2 = new CanvasClient('student2');
+			const download = async (file: Json): Promise<Buffer> => {
+				const res = await student2.request('GET', `/api/v1/files/${String(file.id)}/public_url`);
+				expect(res.status, JSON.stringify(res.data)).toBe(200);
+				return Buffer.from(await (await fetch(String((res.data as Json).public_url))).arrayBuffer());
+			};
+			expect(sha(await download(first))).toBe(sha(patternBuffer(size)));
+			expect((await download(second)).equals(pdf)).toBe(true);
+
+			// The ID of an uploaded file is the answer to the question.
+			await answerQuestions('student2', running, { [String(quiz.questions[0].id)]: String(second.id) });
+			const done = await completeAttempt(courseId, quiz.id, 'student2', running);
+			expect(['complete', 'pending_review']).toContain(done.workflow_state);
+			expect(await handedIn(quiz, fx('student2UserId'))).toContain(String(second.id));
+		} finally {
+			await deleteQuiz(courseId, quiz.id);
+		}
+	});
+
+	it('uploadFile [needs shared change]: from a URL, for the running attempt', async () => {
+		const server = await startFileServer();
+		const quiz = await createQuiz(courseId, { title: unique('File upload quiz by URL') }, [FILE_UPLOAD]);
+		try {
+			expect(server.url, 'this machine has no address Canvas is willing to fetch from').not.toBe('');
+			const content = Buffer.concat([Buffer.from(unique('quiz url')), patternBuffer(50_000)]);
+			server.serve('/worked solution.bin', content, 'application/octet-stream');
+			server.serve('/later.txt', 'fetched in the background\n');
+			await startAttempt(courseId, quiz.id, 'student2');
+			const params = { courseId, quizId: quiz.id, uploadSource: 'url' };
+
+			const [file] = await runOk({
+				resource: 'quizSubmission',
+				operation: 'uploadFile',
+				persona: 'student2',
+				params: {
+					...params,
+					fileUrl: `${server.url}/${encodeURIComponent('worked solution.bin')}`,
+					options: { content_type: 'application/zip', name: 'Lösung ünï.zip' },
+				},
+			});
+			expect(file).toMatchObject({ display_name: 'Lösung ünï.zip', 'content-type': 'application/zip', size: content.length });
+			const student2 = new CanvasClient('student2');
+			const link = await student2.get<Json>(`/api/v1/files/${String(file.id)}/public_url`);
+			expect(sha(Buffer.from(await (await fetch(String(link.public_url))).arrayBuffer()))).toBe(sha(content));
+
+			const [started] = await runOk({
+				resource: 'quizSubmission',
+				operation: 'uploadFile',
+				persona: 'student2',
+				params: { ...params, fileUrl: `${server.url}/later.txt`, waitForCompletion: false },
+			});
+			const progress = started.progress as Json;
+			expect(progress).toMatchObject({ tag: 'upload_via_url' });
+			let state: Json = {};
+			for (let i = 0; i < 60 && state.workflow_state !== 'completed' && state.workflow_state !== 'failed'; i++) {
+				await new Promise((r) => setTimeout(r, 1000));
+				state = await student2.get<Json>(`/api/v1/progress/${String(progress.id)}`);
+			}
+			expect(state.workflow_state).toBe('completed');
+			expect((await student2.get<Json>(`/api/v1/files/${String((state.results as Json).id)}`)).display_name).toBe('later.txt');
+		} finally {
+			server.close();
+			await deleteQuiz(courseId, quiz.id);
+		}
+	});
+
+	it('uploadFile: only for an attempt of the user of the credential', async () => {
+		const quiz = await createQuiz(courseId, { title: unique('File upload quiz, no attempt') }, [FILE_UPLOAD]);
+		try {
+			const upload = (persona: string, quiz_: string): ReturnType<typeof runNode> =>
+				runNode({
+					resource: 'quizSubmission',
+					operation: 'uploadFile',
+					persona,
+					binary: [{ fileName: 'x.txt', mimeType: 'text/plain', b64: 'eA==' }],
+					params: { courseId, quizId: quiz_, errorHandling: { onError: 'continueWithError' } },
+				});
+			// The student has not started this quiz; the administrator never takes it.
+			for (const persona of ['student', 'admin']) {
+				const result = await upload(persona, quiz.id);
+				expect(result.success, persona).toEqual([]);
+				expect(result.error[0], persona).toMatchObject({
+					errorCode: 404,
+					errorType: 'NOT_FOUND',
+					resource: 'quizSubmission',
+					operation: 'uploadFile',
+				});
+				expect(String(result.error[0].endpoint)).toBe(`/api/v1/courses/${courseId}/quizzes/${quiz.id}/submissions/self/files`);
+			}
+			const unknown = await upload('student', '999999999');
+			expect(unknown.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND' });
+
+			const noBinary = await runNode({
+				resource: 'quizSubmission',
+				operation: 'uploadFile',
+				persona: 'student',
+				items: [{ note: 'no file here' }],
+				params: { courseId, quizId: quiz.id, errorHandling: { onError: 'continueWithError' } },
+			});
+			expect(noBinary.success).toEqual([]);
+			expect(noBinary.error[0]).toMatchObject({ errorCode: 0, operation: 'uploadFile' });
+		} finally {
+			await deleteQuiz(courseId, quiz.id);
+		}
 	});
 
 	it('errors: an unknown quiz submission, and a student reading someone else\'s', async () => {
