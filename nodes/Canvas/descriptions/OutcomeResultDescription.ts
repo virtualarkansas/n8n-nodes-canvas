@@ -1,5 +1,42 @@
 import type { INodeProperties } from 'n8n-workflow';
 
+/** Filters shared by Get Many and Get Rollups. */
+const filterOptions: Record<'outcomeGroupId' | 'outcomeIds' | 'sectionId' | 'userIds', INodeProperties> = {
+	outcomeGroupId: {
+		displayName: 'Outcome Group ID',
+		name: 'outcome_group_id',
+		type: 'string',
+		default: '',
+		description:
+			'Only the outcomes linked directly into this outcome group of the course. Cannot be combined with Outcome IDs.',
+	},
+	outcomeIds: {
+		displayName: 'Outcome IDs',
+		name: 'outcome_ids',
+		type: 'string',
+		default: '',
+		placeholder: '12,15',
+		description:
+			'Comma-separated IDs of the outcomes to return. Canvas refuses outcomes that are not linked into the course.',
+	},
+	sectionId: {
+		displayName: 'Section ID',
+		name: 'section_id',
+		type: 'string',
+		default: '',
+		description: 'Only the students of this section of the course. Cannot be combined with User IDs.',
+	},
+	userIds: {
+		displayName: 'User IDs',
+		name: 'user_ids',
+		type: 'string',
+		default: '',
+		placeholder: '101,102',
+		description:
+			'Comma-separated IDs of the students to return ("sis_user_id:..." works too). Canvas refuses users who are not students of the course.',
+	},
+};
+
 export const outcomeResultOperations: INodeProperties[] = [
 	{
 		displayName: 'Operation',
@@ -15,19 +52,20 @@ export const outcomeResultOperations: INodeProperties[] = [
 			{
 				name: 'Get Contributing Scores',
 				value: 'getContributingScores',
-				description: 'Get contributing scores for an outcome',
+				description: 'Get the alignments of an outcome in a course and the scores students got on them',
 				action: 'Get contributing scores',
 			},
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many outcome results',
+				description: 'Get the outcome results of the students of a course, one item per result',
 				action: 'Get many outcome results',
 			},
 			{
 				name: 'Get Rollups',
 				value: 'getRollups',
-				description: 'Get outcome result rollups',
+				description:
+					'Get the calculated outcome scores of a course, one item per student (or one for the whole course)',
 				action: 'Get outcome rollups',
 			},
 		],
@@ -68,7 +106,7 @@ export const outcomeResultFields: INodeProperties[] = [
 				operation: ['getContributingScores'],
 			},
 		},
-		description: 'The ID of the outcome',
+		description: 'The ID of an outcome that is linked into the course',
 	},
 
 	// ----------------------------------
@@ -88,36 +126,17 @@ export const outcomeResultFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				displayName: 'Include',
-				name: 'include',
-				type: 'multiOptions',
-				options: [
-					{ name: 'Alignments', value: 'alignments' },
-				],
-				default: [],
-				description: 'Additional information to include with the results',
-			},
-			{
 				displayName: 'Include Hidden',
 				name: 'include_hidden',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to include hidden results',
+				description:
+					'Whether to include results that are hidden from the learning mastery gradebook and from student rollups',
 			},
-			{
-				displayName: 'Outcome IDs',
-				name: 'outcome_ids',
-				type: 'string',
-				default: '',
-				description: 'Comma-separated list of outcome IDs to filter by',
-			},
-			{
-				displayName: 'User IDs',
-				name: 'user_ids',
-				type: 'string',
-				default: '',
-				description: 'Comma-separated list of student IDs to filter by',
-			},
+			filterOptions.outcomeGroupId,
+			filterOptions.outcomeIds,
+			filterOptions.sectionId,
+			filterOptions.userIds,
 		],
 	},
 
@@ -142,7 +161,8 @@ export const outcomeResultFields: INodeProperties[] = [
 				name: 'add_defaults',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to add mastery level defaults to ratings',
+				description:
+					'Whether to add color and mastery level defaults to the ratings (no effect when the account uses mastery scales)',
 			},
 			{
 				displayName: 'Aggregate',
@@ -152,7 +172,7 @@ export const outcomeResultFields: INodeProperties[] = [
 					{ name: 'Course', value: 'course' },
 				],
 				default: 'course',
-				description: 'Aggregate rollups for the entire course',
+				description: 'Return one rollup for the whole course instead of one per student',
 			},
 			{
 				displayName: 'Aggregate Stat',
@@ -163,7 +183,7 @@ export const outcomeResultFields: INodeProperties[] = [
 					{ name: 'Median', value: 'median' },
 				],
 				default: 'mean',
-				description: 'The statistic to use for aggregation',
+				description: 'The statistic used for the course rollup (with Aggregate)',
 			},
 			{
 				displayName: 'Exclude',
@@ -174,35 +194,25 @@ export const outcomeResultFields: INodeProperties[] = [
 					{ name: 'Missing User Rollups', value: 'missing_user_rollups' },
 				],
 				default: [],
-				description: 'What to exclude from the results',
+				description: 'Leave out outcomes without any result, or students without any score',
 			},
-			{
-				displayName: 'Include',
-				name: 'include',
-				type: 'multiOptions',
-				options: [
-					{ name: 'Courses', value: 'courses' },
-				],
-				default: [],
-				description: 'Additional information to include with the rollups',
-			},
-			{
-				displayName: 'Outcome IDs',
-				name: 'outcome_ids',
-				type: 'string',
-				default: '',
-				description: 'Comma-separated list of outcome IDs to filter by',
-			},
+			filterOptions.outcomeGroupId,
+			filterOptions.outcomeIds,
+			filterOptions.sectionId,
 			{
 				displayName: 'Sort By',
 				name: 'sort_by',
 				type: 'options',
 				options: [
-					{ name: 'Outcome', value: 'outcome' },
+					{ name: 'Outcome Score', value: 'outcome', description: 'Requires Sort Outcome ID' },
 					{ name: 'Student', value: 'student' },
+					{ name: 'Student Integration ID', value: 'student_integration_id' },
+					{ name: 'Student Login ID', value: 'student_login_id' },
+					{ name: 'Student Name', value: 'student_name' },
+					{ name: 'Student SIS ID', value: 'student_sis_id' },
 				],
 				default: 'student',
-				description: 'The field to sort results by',
+				description: 'How to order the student rollups',
 			},
 			{
 				displayName: 'Sort Order',
@@ -213,22 +223,16 @@ export const outcomeResultFields: INodeProperties[] = [
 					{ name: 'Descending', value: 'desc' },
 				],
 				default: 'asc',
-				description: 'The sort order for results',
+				description: 'The direction of the sort (with Sort By)',
 			},
 			{
 				displayName: 'Sort Outcome ID',
 				name: 'sort_outcome_id',
 				type: 'string',
 				default: '',
-				description: 'The outcome ID to use for sorting when sort_by is outcome',
+				description: 'The outcome whose score orders the students when Sort By is Outcome Score',
 			},
-			{
-				displayName: 'User IDs',
-				name: 'user_ids',
-				type: 'string',
-				default: '',
-				description: 'Comma-separated list of student IDs to filter by',
-			},
+			filterOptions.userIds,
 		],
 	},
 
@@ -253,22 +257,16 @@ export const outcomeResultFields: INodeProperties[] = [
 				name: 'only_assignment_alignments',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to only return assignment-aligned results',
+				description: 'Whether to return only alignments with assignments (not with question banks or rubrics)',
 			},
 			{
 				displayName: 'Show Unpublished Assignments',
 				name: 'show_unpublished_assignments',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to include unpublished assignments',
+				description: 'Whether to include alignments with unpublished assignments',
 			},
-			{
-				displayName: 'User IDs',
-				name: 'user_ids',
-				type: 'string',
-				default: '',
-				description: 'Comma-separated list of student IDs to filter by',
-			},
+			filterOptions.userIds,
 		],
 	},
 ];

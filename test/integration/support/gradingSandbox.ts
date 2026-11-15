@@ -75,6 +75,8 @@ export interface SandboxCourseOptions {
 	personas?: Array<'teacher' | 'ta' | 'student' | 'student2' | 'designer'>;
 	/** Extra course attributes (enrollment_term_id, ...). */
 	course?: Json;
+	/** Account to create the course in (default: the root account). */
+	accountId?: string;
 }
 
 const PERSONA_ENROLLMENT: Record<string, { fixture: string; type: string }> = {
@@ -94,7 +96,7 @@ export async function enroll(courseId: string, userId: number | string, type: st
 /** A published course of its own for one test file. Delete it with `deleteSandboxCourse` afterwards. */
 export async function createSandboxCourse(label: string, options: SandboxCourseOptions = {}): Promise<SandboxCourse> {
 	const sisId = unique(`GRD-${label}`).replace(/\s/g, '-');
-	const course = await canvas().post<Json>(`/api/v1/accounts/${fx('accountId')}/courses`, {
+	const course = await canvas().post<Json>(`/api/v1/accounts/${options.accountId ?? fx('accountId')}/courses`, {
 		course: { name: unique(`Grading sandbox: ${label}`), course_code: label, sis_course_id: sisId, ...(options.course ?? {}) },
 		offer: true,
 	});
@@ -112,6 +114,20 @@ export async function createSandboxCourse(label: string, options: SandboxCourseO
 export async function deleteSandboxCourse(course: SandboxCourse | undefined): Promise<void> {
 	if (!course) return;
 	await canvas().request('DELETE', `/api/v1/courses/${course.id}?event=delete`);
+}
+
+/** A sub-account of its own, for account-level settings that must not touch the root account. */
+export async function createSandboxAccount(label: string): Promise<string> {
+	const account = await canvas().post<Json>(`/api/v1/accounts/${fx('accountId')}/sub_accounts`, {
+		account: { name: unique(`Grading sandbox account: ${label}`) },
+	});
+	return String(account.id);
+}
+
+/** Delete a sandbox sub-account (its courses must have been deleted first). */
+export async function deleteSandboxAccount(accountId: string | undefined): Promise<void> {
+	if (!accountId) return;
+	await canvas().request('DELETE', `/api/v1/accounts/${fx('accountId')}/sub_accounts/${accountId}`);
 }
 
 /** Wait for a Canvas Progress (background job) to finish and return it. */
