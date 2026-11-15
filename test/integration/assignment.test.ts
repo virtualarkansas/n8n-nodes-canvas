@@ -941,6 +941,21 @@ describe('assignment', () => {
 		expect((await overrideFromCanvas(a, batch.group.id)).lock_at).toBe('2035-03-10T12:00:00Z');
 	});
 
+	it('batch writes run unedited send nothing: their JSON field is empty, not a sample', async () => {
+		const before = await canvas().getAll<Json>(`/api/v1/courses/${courseId}/assignments/${groupAssignmentId}/overrides`);
+		for (const operation of ['bulkUpdateDates', 'batchCreateOverrides', 'batchUpdateOverrides']) {
+			const result = await runNode({
+				resource: 'assignment',
+				operation,
+				params: { courseId, errorHandling: { onError: 'continueWithError' } },
+			});
+			expect(result.success, operation).toEqual([]);
+			expect(result.error[0], operation).toMatchObject({ errorType: 'INVALID_PARAMETERS' });
+			expect(String(result.error[0].errorMessage), operation).toMatch(/at least one entry/);
+		}
+		expect(await canvas().getAll<Json>(`/api/v1/courses/${courseId}/assignments/${groupAssignmentId}/overrides`)).toEqual(before);
+	});
+
 	it('batch overrides: input that is not a list is rejected by the node; incomplete entries and students by Canvas', async () => {
 		const run = (operation: string, overrides: string, persona = 'admin'): ReturnType<typeof runNode> =>
 			runNode({

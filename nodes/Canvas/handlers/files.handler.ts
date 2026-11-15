@@ -484,7 +484,7 @@ export function handleMediaObjectResource(
 				endpoint: `${getMediaObjectPath(getParam)}/media_tracks`,
 				qs: getParamObject('options'),
 				// The endpoint takes a bare JSON array: the complete list of tracks to keep.
-				body: tracks as unknown as Record<string, unknown>,
+				body: tracks,
 			};
 		}
 

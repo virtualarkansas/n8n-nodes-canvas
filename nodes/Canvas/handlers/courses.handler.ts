@@ -1,7 +1,7 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IDataObject } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { collectionRows, takeKeys, toList, withoutBlanks } from './shared';
+import { collectionRows, parseJsonObject, takeKeys, toList, withoutBlanks } from './shared';
 
 // ============================================
 // Course
@@ -39,6 +39,100 @@ function buildCourseUsersQuery(options: Record<string, unknown>): Record<string,
 	return qs;
 }
 
+/**
+ * The content types of Course → Copy and the key Canvas' course copy selects each one
+ * with: `copy[all_<key>]` (`ContentMigrationsController#update_migration`,
+ * `ContentExport#export_object?`). Canvas does not read `settings[only]` or
+ * `settings[except]`: without `copy` (or `select`) it copies everything.
+ */
+const COPY_TYPE_KEYS: Record<string, string> = {
+	announcements: 'announcements',
+	assessment_question_banks: 'assessment_question_banks',
+	assignments: 'assignments',
+	attachments: 'attachments',
+	calendar_events: 'calendar_events',
+	context_external_tools: 'context_external_tools',
+	course_paces: 'course_paces',
+	course_settings: 'course_settings',
+	discussion_topics: 'discussion_topics',
+	groups: 'groups',
+	learning_outcomes: 'learning_outcomes',
+	modules: 'context_modules',
+	quizzes: 'quizzes',
+	rubrics: 'rubrics',
+	syllabus_body: 'syllabus_body',
+	tool_profiles: 'tool_profiles',
+	wiki_pages: 'wiki_pages',
+};
+
+function copyTypes(value: unknown, label: string): string[] {
+	const types = toList(value);
+	for (const type of types) {
+		if (COPY_TYPE_KEYS[type] === undefined) {
+			const hint =
+				type === 'assignment_groups'
+					? ' Canvas copies assignment groups together with their assignments: choose "Assignments".'
+					: '';
+			throw new ApplicationError(
+				`${label}: "${type}" is not a content type Canvas can copy on its own.${hint} Use one of: ${Object.keys(COPY_TYPE_KEYS).join(', ')}.`,
+			);
+		}
+	}
+	return types;
+}
+
+/**
+ * The `copy` argument of a course copy: every type set to "1" (copied) or "0" (left
+ * out), or undefined for a copy of the whole course.
+ */
+function buildCopySelection(options: Record<string, unknown>): Record<string, string> | undefined {
+	const only = copyTypes(options.only, 'Only');
+	const except = copyTypes(options.except, 'Except');
+	if (only.length === 0 && except.length === 0) {
+		return undefined;
+	}
+	const copy: Record<string, string> = {};
+	for (const [type, key] of Object.entries(COPY_TYPE_KEYS)) {
+		const included = (only.length === 0 || only.includes(type)) && !except.includes(type);
+		copy[`all_${key}`] = included ? '1' : '0';
+	}
+	return copy;
+}
+
+const BLUEPRINT_LOCK_TYPES = ['content', 'points', 'due_dates', 'availability_dates', 'settings', 'state'];
+
+/**
+ * Course fields of Create and Update that Canvas expects in another shape than the UI
+ * holds them: the blueprint restrictions as an object of locks, the restrictions per
+ * type as an object.
+ */
+function buildCourseFields(fields: Record<string, unknown>, operation: string): Record<string, unknown> {
+	if (fields.blueprint_restrictions !== undefined) {
+		const locked = toList(fields.blueprint_restrictions);
+		const unknown = locked.filter((lock) => !BLUEPRINT_LOCK_TYPES.includes(lock));
+		if (unknown.length > 0) {
+			throw new ApplicationError(
+				`Blueprint Restrictions: unknown restriction ${unknown.join(', ')} (expected ${BLUEPRINT_LOCK_TYPES.join(', ')}) for course ${operation}`,
+			);
+		}
+		fields.blueprint_restrictions = Object.fromEntries(
+			BLUEPRINT_LOCK_TYPES.map((lock) => [lock, locked.includes(lock)]),
+		);
+	}
+	if (fields.blueprint_restrictions_by_object_type !== undefined) {
+		const byType = parseJsonObject(fields.blueprint_restrictions_by_object_type, {
+			invalidJson: `Invalid JSON in Blueprint Restrictions by Object Type for course ${operation}`,
+			notAnObject: `Blueprint Restrictions by Object Type must be a JSON object like {"assignment": {"content": true}} for course ${operation}`,
+		});
+		if (byType === undefined || Object.keys(byType).length === 0) {
+			delete fields.blueprint_restrictions_by_object_type;
+		} else {
+			fields.blueprint_restrictions_by_object_type = byType;
+		}
+	}
+	return fields;
+}
+
 export function buildCourseRequest(
 	operation: string,
 	getParam: GetParam,
@@ -71,7 +165,7 @@ export function buildCourseRequest(
 			return {
 				method: 'POST',
 				endpoint: `/api/v1/accounts/${getParam('accountId')}/courses`,
-				body: { course: { name: getParam('name'), ...fields }, ...topLevel },
+				body: { course: { name: getParam('name'), ...buildCourseFields(fields, operation) }, ...topLevel },
 			};
 		}
 		case 'delete':
@@ -212,27 +306,36 @@ export function buildCourseRequest(
 				endpoint: `/api/v1/courses/${courseId}/settings`,
 				body: getParamObject('settings'),
 			};
-		case 'update':
+		case 'update': {
+			const fields = getParamObject('updateFields');
+			// A request-level argument in Canvas, not an attribute of the course. It goes into
+			// the query string, as for sections.
+			const qs = takeKeys(fields, ['override_sis_stickiness']);
 			return {
 				method: 'PUT',
 				endpoint: `/api/v1/courses/${courseId}`,
-				body: { course: getParamObject('updateFields') },
+				body: { course: buildCourseFields(fields, operation) },
+				...(Object.keys(qs).length > 0 ? { qs } : {}),
 			};
+		}
 		case 'conclude':
 			return {
 				method: 'DELETE',
 				endpoint: `/api/v1/courses/${courseId}`,
 				qs: { event: 'conclude' },
 			};
-		case 'copy':
+		case 'copy': {
+			const copy = buildCopySelection(getParamObject('options'));
 			return {
 				method: 'POST',
 				endpoint: `/api/v1/courses/${courseId}/content_migrations`,
 				body: {
 					migration_type: 'course_copy_importer',
-					settings: { source_course_id: getParam('sourceCourseId'), ...getParamObject('options') },
+					settings: { source_course_id: getParam('sourceCourseId') },
+					...(copy ? { copy } : {}),
 				},
 			};
+		}
 		case 'listStudents': {
 			// Canvas' own "list students" endpoint is deprecated: it takes no arguments at all
 			// (every option was ignored), is not paginated and repeats a student for each of

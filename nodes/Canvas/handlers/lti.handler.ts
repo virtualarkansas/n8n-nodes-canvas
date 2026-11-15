@@ -473,7 +473,7 @@ export function handleLtiResourceLinkResource(
 				method: 'POST',
 				endpoint: `${basePath}/bulk`,
 				// The request body is the JSON array itself, not an object wrapping it.
-				body: resourceLinks as unknown as Record<string, unknown>,
+				body: resourceLinks,
 			};
 		}
 

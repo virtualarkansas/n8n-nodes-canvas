@@ -1,4 +1,28 @@
-import type { INodeProperties } from 'n8n-workflow';
+import type { INodePropertyOptions, INodeProperties } from 'n8n-workflow';
+
+/**
+ * What Course → Copy can copy or leave out: the types Canvas' course copy selects
+ * with `copy[all_<type>]` (see `COPY_TYPE_KEYS` in handlers/courses.handler.ts).
+ */
+const COPY_CONTENT_TYPES: INodePropertyOptions[] = [
+	{ name: 'Announcements', value: 'announcements' },
+	{ name: 'Assignments (with Assignment Groups)', value: 'assignments' },
+	{ name: 'Calendar Events', value: 'calendar_events' },
+	{ name: 'Course Paces', value: 'course_paces' },
+	{ name: 'Course Settings', value: 'course_settings' },
+	{ name: 'Discussion Topics', value: 'discussion_topics' },
+	{ name: 'External Tools', value: 'context_external_tools' },
+	{ name: 'Files', value: 'attachments' },
+	{ name: 'Learning Outcomes', value: 'learning_outcomes' },
+	{ name: 'Modules', value: 'modules' },
+	{ name: 'Pages', value: 'wiki_pages' },
+	{ name: 'Question Banks', value: 'assessment_question_banks' },
+	{ name: 'Quizzes', value: 'quizzes' },
+	{ name: 'Rubrics', value: 'rubrics' },
+	{ name: 'Student Groups', value: 'groups' },
+	{ name: 'Syllabus Body', value: 'syllabus_body' },
+	{ name: 'Tool Profiles', value: 'tool_profiles' },
+];
 
 export const courseOperations: INodeProperties[] = [
 	{
@@ -30,7 +54,7 @@ export const courseOperations: INodeProperties[] = [
 				name: 'Copy',
 				value: 'copy',
 				description:
-					'Copy a course to a new course',
+					'Copy the content of another course into this course (starts a course copy content migration)',
 				action: 'Copy a course',
 			},
 			{
@@ -310,13 +334,6 @@ export const courseFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				displayName: 'Allow Student Assignment Edits',
-				name: 'allow_student_assignment_edits',
-				type: 'boolean',
-				default: false,
-				description: 'Whether students can edit their own assignments',
-			},
-			{
 				displayName: 'Allow Student Forum Attachments',
 				name: 'allow_student_forum_attachments',
 				type: 'boolean',
@@ -355,6 +372,19 @@ export const courseFields: INodeProperties[] = [
 				],
 				default: 'online',
 				description: 'The format of the course',
+			},
+			{
+				displayName: 'Default Page Editing Roles',
+				name: 'default_wiki_editing_roles',
+				type: 'options',
+				options: [
+					{ name: 'Anyone', value: 'teachers,students,public' },
+					{ name: 'Only Teachers', value: 'teachers' },
+					{ name: 'Teachers and Students', value: 'teachers,students' },
+				],
+				default: 'teachers',
+				description:
+					'Who can create, rename and edit course pages by default. This is how Canvas\' "allow student wiki edits" is set: Canvas derives that flag from this setting on every save and ignores it when it is sent on its own.',
 			},
 			{
 				displayName: 'Default View',
@@ -529,6 +559,23 @@ export const courseFields: INodeProperties[] = [
 				description: 'Course start date in ISO 8601 format',
 			},
 			{
+				displayName: 'Storage Quota (MB)',
+				name: 'storage_quota_mb',
+				type: 'number',
+				typeOptions: { minValue: 0 },
+				default: 500,
+				description:
+					'The storage quota of the course in megabytes. Canvas ignores it without an error unless the user of the credential may manage storage quotas in the account.',
+			},
+			{
+				displayName: 'Sub-Account ID',
+				name: 'account_id',
+				type: 'string',
+				default: '',
+				description:
+					'Create the course in this sub-account of Account ID instead of in Account ID itself (Canvas looks for it among the accounts below Account ID and answers 404 when it is not there)',
+			},
+			{
 				displayName: 'Syllabus Body',
 				name: 'syllabus_body',
 				type: 'string',
@@ -537,6 +584,14 @@ export const courseFields: INodeProperties[] = [
 				},
 				default: '',
 				description: 'The syllabus content (supports HTML)',
+			},
+			{
+				displayName: 'Template',
+				name: 'template',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether the course is a course template, which an account can then use as the starting content of new courses. A template cannot have enrollments, so do not combine it with Enroll Me.',
 			},
 			{
 				displayName: 'Term ID',
@@ -572,11 +627,12 @@ export const courseFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				displayName: 'Allow Student Assignment Edits',
-				name: 'allow_student_assignment_edits',
-				type: 'boolean',
-				default: false,
-				description: 'Whether students can edit their own assignments',
+				displayName: 'Account ID',
+				name: 'account_id',
+				type: 'string',
+				default: '',
+				description:
+					'Move the course to this account (a sub-account of the same root account). Canvas ignores it without an error unless the user of the credential may manage courses in both the current and the new account.',
 			},
 			{
 				displayName: 'Allow Student Forum Attachments',
@@ -600,6 +656,39 @@ export const courseFields: INodeProperties[] = [
 				description: 'Whether to weight final grade based on assignment groups',
 			},
 			{
+				displayName: 'Blueprint',
+				name: 'blueprint',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether the course is a blueprint course (the precondition for every Blueprint Course operation). Needs the "Blueprint Courses - add / edit / associate / delete" permission in the account; Canvas refuses a course with students or observers, or one that is itself associated with a blueprint.',
+			},
+			{
+				displayName: 'Blueprint Restrictions',
+				name: 'blueprint_restrictions',
+				type: 'multiOptions',
+				options: [
+					{ name: 'Availability Dates', value: 'availability_dates' },
+					{ name: 'Content', value: 'content' },
+					{ name: 'Due Dates', value: 'due_dates' },
+					{ name: 'Points', value: 'points' },
+					{ name: 'Settings', value: 'settings' },
+					{ name: 'State', value: 'state' },
+				],
+				default: [],
+				description:
+					'What associated courses may not change in content locked by the blueprint (every type of content alike). The chosen ones are locked, the others unlocked. Only for a blueprint course: set Blueprint in the same update or before.',
+			},
+			{
+				displayName: 'Blueprint Restrictions by Object Type',
+				name: 'blueprint_restrictions_by_object_type',
+				type: 'json',
+				default: '{}',
+				placeholder: '{"assignment": {"content": true, "points": true}, "wiki_page": {"content": true}}',
+				description:
+					'Locks per type of content, used instead of Blueprint Restrictions when Use Blueprint Restrictions by Object Type is on. JSON object; keys: assignment, attachment, discussion_topic, quiz, wiki_page, course_pace; values: objects of content, points, due_dates, availability_dates, settings, state set to true or false. Only for a blueprint course.',
+			},
+			{
 				displayName: 'Course Code',
 				name: 'course_code',
 				type: 'string',
@@ -617,6 +706,19 @@ export const courseFields: INodeProperties[] = [
 				],
 				default: 'online',
 				description: 'The format of the course',
+			},
+			{
+				displayName: 'Default Page Editing Roles',
+				name: 'default_wiki_editing_roles',
+				type: 'options',
+				options: [
+					{ name: 'Anyone', value: 'teachers,students,public' },
+					{ name: 'Only Teachers', value: 'teachers' },
+					{ name: 'Teachers and Students', value: 'teachers,students' },
+				],
+				default: 'teachers',
+				description:
+					'Who can create, rename and edit course pages by default. This is how Canvas\' "allow student wiki edits" is set: Canvas derives that flag from this setting on every save and ignores it when it is sent on its own.',
 			},
 			{
 				displayName: 'Default View',
@@ -739,6 +841,14 @@ export const courseFields: INodeProperties[] = [
 				description: 'Whether to allow self-enrollment',
 			},
 			{
+				displayName: 'Override SIS Stickiness',
+				name: 'override_sis_stickiness',
+				type: 'boolean',
+				default: true,
+				description:
+					'Whether to change fields that an SIS import may later overwrite (Canvas default: true). When turned off, Canvas leaves the "sticky" fields that were already changed outside SIS (name, course code, dates, date restriction, term, state) as they are and changes only the others.',
+			},
+			{
 				displayName: 'Public Description',
 				name: 'public_description',
 				type: 'string',
@@ -791,6 +901,15 @@ export const courseFields: INodeProperties[] = [
 				description: 'Course start date in ISO 8601 format',
 			},
 			{
+				displayName: 'Storage Quota (MB)',
+				name: 'storage_quota_mb',
+				type: 'number',
+				typeOptions: { minValue: 0 },
+				default: 500,
+				description:
+					'The storage quota of the course in megabytes. Canvas ignores it without an error unless the user of the credential may manage storage quotas in the account.',
+			},
+			{
 				displayName: 'Syllabus Body',
 				name: 'syllabus_body',
 				type: 'string',
@@ -799,6 +918,14 @@ export const courseFields: INodeProperties[] = [
 				},
 				default: '',
 				description: 'The syllabus content (supports HTML)',
+			},
+			{
+				displayName: 'Template',
+				name: 'template',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether the course is a course template, which an account can then use as the starting content of new courses. Needs the "Course Templates - create" (or "- delete" to turn it off) permission; Canvas ignores it without an error otherwise. A course with enrollments cannot become a template, and one an account uses as its template cannot stop being one.',
 			},
 			{
 				displayName: 'Term ID',
@@ -813,6 +940,14 @@ export const courseFields: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				description: 'The time zone for the course (e.g., "America/New_York")',
+			},
+			{
+				displayName: 'Use Blueprint Restrictions by Object Type',
+				name: 'use_blueprint_restrictions_by_object_type',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether locked blueprint content follows Blueprint Restrictions by Object Type (on) or the same Blueprint Restrictions for every type (off). Only for a blueprint course.',
 			},
 		],
 	},
@@ -1028,39 +1163,19 @@ export const courseFields: INodeProperties[] = [
 				displayName: 'Except',
 				name: 'except',
 				type: 'multiOptions',
-				options: [
-					{ name: 'Announcements', value: 'announcements' },
-					{ name: 'Assignment Groups', value: 'assignment_groups' },
-					{ name: 'Assignments', value: 'assignments' },
-					{ name: 'Attachments', value: 'attachments' },
-					{ name: 'Calendar Events', value: 'calendar_events' },
-					{ name: 'Discussion Topics', value: 'discussion_topics' },
-					{ name: 'Modules', value: 'modules' },
-					{ name: 'Quizzes', value: 'quizzes' },
-					{ name: 'Rubrics', value: 'rubrics' },
-					{ name: 'Wiki Pages', value: 'wiki_pages' },
-				],
+				options: COPY_CONTENT_TYPES,
 				default: [],
-				description: 'Content types to exclude from the copy',
+				description:
+					'Content types to leave out: everything else is copied (or, together with Only, the Only types minus these). Left empty with Only empty, the whole course is copied.',
 			},
 			{
 				displayName: 'Only',
 				name: 'only',
 				type: 'multiOptions',
-				options: [
-					{ name: 'Announcements', value: 'announcements' },
-					{ name: 'Assignment Groups', value: 'assignment_groups' },
-					{ name: 'Assignments', value: 'assignments' },
-					{ name: 'Attachments', value: 'attachments' },
-					{ name: 'Calendar Events', value: 'calendar_events' },
-					{ name: 'Discussion Topics', value: 'discussion_topics' },
-					{ name: 'Modules', value: 'modules' },
-					{ name: 'Quizzes', value: 'quizzes' },
-					{ name: 'Rubrics', value: 'rubrics' },
-					{ name: 'Wiki Pages', value: 'wiki_pages' },
-				],
+				options: COPY_CONTENT_TYPES,
 				default: [],
-				description: 'Content types to include in the copy (if specified, only these are copied)',
+				description:
+					'Copy just these content types. Modules bring along the content their items point to, assignments their assignment groups. Left empty, every type is copied (minus Except).',
 			},
 		],
 	},
