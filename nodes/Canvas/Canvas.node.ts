@@ -5,7 +5,7 @@ import type {
 	INodeTypeDescription,
 	IDataObject,
 } from 'n8n-workflow';
-import { NodeConnectionTypes, ApplicationError } from 'n8n-workflow';
+import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
 import {
 	canvasApiRequest,
@@ -14,7 +14,9 @@ import {
 	canvasFileUploadFromUrl,
 	executeWithErrorHandling,
 	buildCurlCommand,
+	buildCanvasUrl,
 	getCanvasUrl,
+	CANVAS_MAX_PER_PAGE,
 	DEFAULT_RATE_LIMIT_OPTIONS,
 	DEFAULT_PAGINATION_OPTIONS,
 	DEFAULT_ERROR_HANDLING_OPTIONS,
@@ -796,7 +798,7 @@ export class Canvas implements INodeType {
 					resource,
 					operation,
 					method,
-					url: `${canvasBaseUrl}${endpoint}`,
+					url: buildCanvasUrl(canvasBaseUrl, endpoint, qs),
 					queryString: qs || {},
 					body: body || {},
 					curl,
@@ -806,7 +808,7 @@ export class Canvas implements INodeType {
 					debugJson._note = 'This is Step 1 of 3. Steps 2 (multipart upload) and 3 (confirmation) are handled automatically at runtime.';
 				}
 
-				debugItems.push({ json: debugJson });
+				debugItems.push({ json: debugJson, pairedItem: { item: i } });
 			}
 
 			return [[], [], debugItems];
@@ -816,21 +818,27 @@ export class Canvas implements INodeType {
 		const errorHandlingRaw = this.getNodeParameter('errorHandling', 0, {}) as IDataObject;
 		const errorHandling: IErrorHandlingOptions = {
 			onError: (errorHandlingRaw.onError as IErrorHandlingOptions['onError']) || DEFAULT_ERROR_HANDLING_OPTIONS.onError,
-			maxRetries: (errorHandlingRaw.maxRetries as number) || DEFAULT_ERROR_HANDLING_OPTIONS.maxRetries,
+			maxRetries: toNumber(errorHandlingRaw.maxRetries, DEFAULT_ERROR_HANDLING_OPTIONS.maxRetries, 0),
 		};
 
 		const paginationRaw = this.getNodeParameter('pagination', 0, {}) as IDataObject;
+		const nodeReturnAll = paginationRaw.returnAll === true;
 		const pagination: IPaginationOptions = {
 			enabled: true,
-			perPage: (paginationRaw.perPage as number) || DEFAULT_PAGINATION_OPTIONS.perPage,
-			maxPages: paginationRaw.returnAll ? 0 : ((paginationRaw.maxPages as number) ?? DEFAULT_PAGINATION_OPTIONS.maxPages),
+			// Fetching everything is far cheaper with full pages unless a size was chosen explicitly.
+			perPage: toNumber(
+				paginationRaw.perPage,
+				nodeReturnAll ? CANVAS_MAX_PER_PAGE : DEFAULT_PAGINATION_OPTIONS.perPage,
+				1,
+			),
+			maxPages: nodeReturnAll ? 0 : toNumber(paginationRaw.maxPages, DEFAULT_PAGINATION_OPTIONS.maxPages, 0),
 		};
 
 		const rateLimitRaw = this.getNodeParameter('rateLimiting', 0, {}) as IDataObject;
 		const rateLimit: IRateLimitOptions = {
 			enabled: rateLimitRaw.enabled !== false,
-			threshold: (rateLimitRaw.threshold as number) || DEFAULT_RATE_LIMIT_OPTIONS.threshold,
-			maxRetries: (rateLimitRaw.maxRetries as number) || DEFAULT_RATE_LIMIT_OPTIONS.maxRetries,
+			threshold: toNumber(rateLimitRaw.threshold, DEFAULT_RATE_LIMIT_OPTIONS.threshold, 0),
+			maxRetries: toNumber(rateLimitRaw.maxRetries, DEFAULT_RATE_LIMIT_OPTIONS.maxRetries, 0),
 			baseDelayMs: DEFAULT_RATE_LIMIT_OPTIONS.baseDelayMs,
 			maxDelayMs: DEFAULT_RATE_LIMIT_OPTIONS.maxDelayMs,
 		};
@@ -838,8 +846,19 @@ export class Canvas implements INodeType {
 		const batchRaw = this.getNodeParameter('batchProcessing', 0, {}) as IDataObject;
 		const batch: IBatchOptions = {
 			mode: (batchRaw.mode as IBatchOptions['mode']) || 'batch',
-			batchSize: (batchRaw.batchSize as number) || 10,
-			batchDelay: (batchRaw.batchDelay as number) || 1000,
+			batchSize: toNumber(batchRaw.batchSize, 10, 1),
+			batchDelay: toNumber(batchRaw.batchDelay, 1000, 0),
+		};
+
+		const collect = (result: IProcessResult): void => {
+			if (result.success) {
+				successItems.push(...result.items);
+			} else if (result.error) {
+				errorItems.push({
+					json: result.error as unknown as IDataObject,
+					pairedItem: { item: result.itemIndex },
+				});
+			}
 		};
 
 		// Process items
@@ -848,56 +867,88 @@ export class Canvas implements INodeType {
 				const batchItems = items.slice(i, i + batch.batchSize);
 
 				const results = await Promise.all(
-					batchItems.map(async (item, batchIndex) => {
-						const itemIndex = i + batchIndex;
-						return processItem(
+					batchItems.map(async (item, batchIndex) =>
+						processItem(
 							this,
 							item,
-							itemIndex,
+							i + batchIndex,
 							resource,
 							operation,
 							errorHandling,
 							pagination,
 							rateLimit,
-						);
-					}),
+						),
+					),
 				);
 
-				for (const result of results) {
-					if (result.success) {
-						successItems.push(...result.items);
-					} else if (result.error) {
-						errorItems.push({ json: result.error as unknown as IDataObject });
-					}
-				}
+				results.forEach(collect);
 
-				if (i + batch.batchSize < items.length) {
+				if (i + batch.batchSize < items.length && batch.batchDelay > 0) {
 					await sleep(batch.batchDelay);
 				}
 			}
 		} else {
 			for (let i = 0; i < items.length; i++) {
-				const result = await processItem(
-					this,
-					items[i],
-					i,
-					resource,
-					operation,
-					errorHandling,
-					pagination,
-					rateLimit,
+				collect(
+					await processItem(
+						this,
+						items[i],
+						i,
+						resource,
+						operation,
+						errorHandling,
+						pagination,
+						rateLimit,
+					),
 				);
-
-				if (result.success) {
-					successItems.push(...result.items);
-				} else if (result.error) {
-					errorItems.push({ json: result.error as unknown as IDataObject });
-				}
 			}
 		}
 
 		return [successItems, errorItems];
 	}
+}
+
+interface IProcessResult {
+	success: boolean;
+	itemIndex: number;
+	items: INodeExecutionData[];
+	error?: ICanvasErrorOutput;
+}
+
+/**
+ * Read a numeric option, falling back when it is unset or not a number.
+ * (`||` would turn a deliberate 0 into the default.)
+ */
+function toNumber(value: unknown, fallback: number, min: number): number {
+	const parsed = typeof value === 'number' ? value : parseFloat(String(value ?? ''));
+	if (!Number.isFinite(parsed)) {
+		return fallback;
+	}
+	return Math.max(min, parsed);
+}
+
+/**
+ * Turn a Canvas response into n8n items, always linked to the input item.
+ *   - a list becomes one item per record (an empty list yields no items),
+ *   - a record becomes one item,
+ *   - an empty body (204, or `null`) becomes `{ success: true }` so the item is not lost.
+ */
+function toOutputItems(data: unknown, itemIndex: number): INodeExecutionData[] {
+	const pairedItem = { item: itemIndex };
+	const wrap = (value: unknown): INodeExecutionData => {
+		if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+			return { json: value as IDataObject, pairedItem };
+		}
+		return { json: { value: value as IDataObject[keyof IDataObject] }, pairedItem };
+	};
+
+	if (Array.isArray(data)) {
+		return data.map(wrap);
+	}
+	if (data === undefined || data === null || data === '') {
+		return [{ json: { success: true }, pairedItem }];
+	}
+	return [wrap(data)];
 }
 
 async function processItem(
@@ -907,18 +958,22 @@ async function processItem(
 	resource: string,
 	operation: string,
 	errorHandling: IErrorHandlingOptions,
-	pagination: IPaginationOptions,
+	nodePagination: IPaginationOptions,
 	rateLimit: IRateLimitOptions,
-): Promise<{ success: boolean; items: INodeExecutionData[]; error?: ICanvasErrorOutput }> {
-	const { endpoint, method, body, qs } = buildRequest(context, resource, operation, itemIndex);
-	const bodyData = body as IDataObject | undefined;
-	const qsData = qs as IDataObject | undefined;
+): Promise<IProcessResult> {
+	// Known once the request has been built; reported with any error.
+	let endpoint = '';
 
-	// Special case: File Upload (three-step process)
-	if (resource === 'file' && operation === 'upload') {
-		const result = await executeWithErrorHandling.call(
-			context,
-			async () => {
+	const result = await executeWithErrorHandling.call(
+		context,
+		async () => {
+			const request = buildRequest(context, resource, operation, itemIndex);
+			endpoint = request.endpoint;
+			const bodyData = request.body as IDataObject | undefined;
+			const qsData = request.qs as IDataObject | undefined;
+
+			// Special case: File Upload (three-step process)
+			if (resource === 'file' && operation === 'upload') {
 				const uploadSource = context.getNodeParameter('uploadSource', itemIndex, 'binaryData') as string;
 
 				if (uploadSource === 'binaryData') {
@@ -937,72 +992,57 @@ async function processItem(
 
 					return canvasFileUpload.call(
 						context,
-						endpoint,
+						request.endpoint,
 						step1Body,
 						itemIndex,
 						binaryPropertyName,
 						rateLimit,
 					);
-				} else {
-					const fileUrl = context.getNodeParameter('fileUrl', itemIndex) as string;
-					const waitForCompletion = context.getNodeParameter('waitForCompletion', itemIndex, true) as boolean;
-
-					const step1Body = { ...(bodyData || {}) } as IDataObject;
-					if (!step1Body.name) {
-						try {
-							const urlPath = new URL(fileUrl).pathname;
-							step1Body.name = urlPath.split('/').pop() || 'uploaded_file';
-						} catch {
-							step1Body.name = 'uploaded_file';
-						}
-					}
-
-					return canvasFileUploadFromUrl.call(
-						context,
-						endpoint,
-						step1Body,
-						fileUrl,
-						waitForCompletion,
-						rateLimit,
-					);
 				}
-			},
-			errorHandling,
-			item.json,
-			resource,
-			operation,
-			endpoint,
-		);
 
-		if (result.success && result.data) {
-			const data = result.data as IDataObject;
-			return { success: true, items: [{ json: data }] };
-		}
-		return { success: false, items: [], error: result.error };
-	}
+				const fileUrl = context.getNodeParameter('fileUrl', itemIndex) as string;
+				const waitForCompletion = context.getNodeParameter('waitForCompletion', itemIndex, true) as boolean;
 
-	const result = await executeWithErrorHandling.call(
-		context,
-		async () => {
-			// Handle list operations with pagination
-			if (operation === 'getAll' || operation.startsWith('getAll') || operation.startsWith('list')) {
-				const response = await canvasApiRequestAllItems.call(
+				const step1Body = { ...(bodyData || {}) } as IDataObject;
+				if (!step1Body.name) {
+					try {
+						const urlPath = new URL(fileUrl).pathname;
+						step1Body.name = decodeURIComponent(urlPath.split('/').pop() || '') || 'uploaded_file';
+					} catch {
+						step1Body.name = 'uploaded_file';
+					}
+				}
+
+				return canvasFileUploadFromUrl.call(
 					context,
-					method,
-					endpoint,
-					bodyData,
-					qsData,
-					pagination,
+					request.endpoint,
+					step1Body,
+					fileUrl,
+					waitForCompletion,
 					rateLimit,
 				);
-				return response.items;
 			}
 
-			// Handle single item operations
+			// Every GET goes through the paginating request: Canvas tells us through the
+			// Link header whether there is more, so no list endpoint is cut off at one page.
+			if (request.method === 'GET') {
+				const response = await canvasApiRequestAllItems.call(
+					context,
+					request.method,
+					request.endpoint,
+					bodyData,
+					qsData,
+					resolvePagination(context, itemIndex, nodePagination),
+					rateLimit,
+					request.dataKey,
+				);
+				return response.isList ? response.items : response.items[0];
+			}
+
 			const response = await canvasApiRequest.call(
 				context,
-				method,
-				endpoint,
+				request.method,
+				request.endpoint,
 				bodyData,
 				qsData,
 				rateLimit,
@@ -1013,18 +1053,47 @@ async function processItem(
 		item.json,
 		resource,
 		operation,
-		endpoint,
+		() => endpoint,
+		itemIndex,
 	);
 
-	if (result.success && result.data) {
-		const data = result.data as IDataObject | IDataObject[];
-		const items = Array.isArray(data)
-			? data.map((d) => ({ json: d }))
-			: [{ json: data }];
-		return { success: true, items };
+	if (result.success) {
+		return { success: true, itemIndex, items: toOutputItems(result.data, itemIndex) };
 	}
 
-	return { success: false, items: [], error: result.error };
+	return { success: false, itemIndex, items: [], error: result.error };
+}
+
+/**
+ * Operation-level "Return All" / "Limit" fields (where a resource defines them)
+ * take precedence over the node-level Pagination options.
+ */
+function resolvePagination(
+	context: IExecuteFunctions,
+	itemIndex: number,
+	nodePagination: IPaginationOptions,
+): IPaginationOptions {
+	let returnAll: unknown;
+	let limit: unknown;
+	try {
+		returnAll = context.getNodeParameter('returnAll', itemIndex, null);
+		limit = context.getNodeParameter('limit', itemIndex, null);
+	} catch {
+		return nodePagination;
+	}
+	if (returnAll === null || returnAll === undefined) {
+		return nodePagination;
+	}
+	if (returnAll === true) {
+		return { ...nodePagination, perPage: CANVAS_MAX_PER_PAGE, maxPages: 0, limit: undefined };
+	}
+	const itemLimit = toNumber(limit, 50, 1);
+	return {
+		...nodePagination,
+		perPage: Math.min(CANVAS_MAX_PER_PAGE, itemLimit),
+		maxPages: 0,
+		limit: itemLimit,
+	};
 }
 
 function buildRequest(
@@ -1033,27 +1102,63 @@ function buildRequest(
 	operation: string,
 	itemIndex: number,
 ): IRequestConfig {
-	// Helper to safely get parameters
-	const getParam = (name: string, defaultValue: string = '') => {
-		try {
-			return context.getNodeParameter(name, itemIndex, defaultValue) as string;
-		} catch {
+	const emptyParams: string[] = [];
+
+	// Parameters hidden for the current operation resolve to the default; expression
+	// errors are real errors and must surface instead of silently becoming ''.
+	const getParam = (name: string, defaultValue: string = ''): string => {
+		const value = context.getNodeParameter(name, itemIndex, defaultValue) as unknown;
+		if (value === undefined || value === null || value === '') {
+			emptyParams.push(name);
 			return defaultValue;
 		}
+		if (Array.isArray(value)) {
+			return value.map((entry) => String(entry)).join(',');
+		}
+		if (typeof value === 'object') {
+			return JSON.stringify(value);
+		}
+		// IDs arrive as numbers when they come from an expression, and pasted IDs often
+		// carry stray whitespace. Free text is passed through untouched.
+		const text = String(value);
+		return /id$/i.test(name) ? text.trim() : text;
 	};
 
 	const getParamObject = (name: string): Record<string, unknown> => {
-		try {
-			return context.getNodeParameter(name, itemIndex, {}) as Record<string, unknown>;
-		} catch {
+		const value = context.getNodeParameter(name, itemIndex, {}) as unknown;
+		if (value === null || typeof value !== 'object' || Array.isArray(value)) {
 			return {};
 		}
+		// Copy: handlers add and rewrite keys, and n8n hands out the stored parameter object.
+		return { ...(value as Record<string, unknown>) };
 	};
 
 	const handler = resourceHandlers[resource];
 	if (!handler) {
-		throw new ApplicationError(`Resource "${resource}" is not implemented`);
+		throw new NodeOperationError(context.getNode(), `Resource "${resource}" is not implemented`, {
+			itemIndex,
+		});
 	}
 
-	return handler(operation, getParam, getParamObject);
+	const request = handler(operation, getParam, getParamObject);
+
+	// A required ID that resolved to nothing leaves an empty path segment
+	// (e.g. /api/v1/courses//assignments), which Canvas answers with a misleading 404.
+	const path = request.endpoint.split('?')[0];
+	if (/\/\/|\/$|\/(undefined|null|NaN)(\/|$)/.test(path)) {
+		const candidates = Array.from(new Set(emptyParams)).filter((name) => /id$|url$|type$|code$/i.test(name));
+		throw new NodeOperationError(
+			context.getNode(),
+			`A required parameter is empty for ${resource}/${operation}`,
+			{
+				itemIndex,
+				description:
+					`The request path "${path}" has an empty segment.` +
+					(candidates.length > 0 ? ` Check these parameters: ${candidates.join(', ')}.` : '') +
+					' If the value comes from an expression, make sure it resolves for every input item.',
+			},
+		);
+	}
+
+	return request;
 }

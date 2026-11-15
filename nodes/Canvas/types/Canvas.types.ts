@@ -10,6 +10,12 @@ export interface IRequestConfig {
 	method: IHttpRequestMethods;
 	body?: Record<string, unknown>;
 	qs?: Record<string, unknown>;
+	/**
+	 * For list endpoints that wrap their results in an object
+	 * (e.g. `{ "quiz_submissions": [...] }`), the key holding the array.
+	 * The node unwraps it so every record becomes its own item.
+	 */
+	dataKey?: string;
 }
 
 /**
@@ -57,6 +63,8 @@ export interface IPaginationOptions {
 	perPage: number;
 	/** Maximum pages to fetch (default: 5, 0 = unlimited) */
 	maxPages: number;
+	/** Maximum number of items to return (undefined = no item limit) */
+	limit?: number;
 }
 
 /**
@@ -94,12 +102,15 @@ export interface IBatchOptions {
  * Canvas API error categories
  */
 export type CanvasErrorType =
+	| 'VALIDATION_ERROR' // 400, 422
 	| 'UNAUTHORIZED' // 401
 	| 'FORBIDDEN' // 403
 	| 'NOT_FOUND' // 404
-	| 'VALIDATION_ERROR' // 422
-	| 'RATE_LIMITED' // 429
+	| 'CONFLICT' // 409
+	| 'RATE_LIMITED' // 429, or 403 "Rate Limit Exceeded" (Canvas' default throttle response)
 	| 'SERVER_ERROR' // 500+
+	| 'INVALID_PARAMETERS' // rejected by the node before any request was sent
+	| 'NETWORK_ERROR' // no HTTP response (DNS, connection refused, timeout)
 	| 'UNKNOWN'; // Other
 
 /**
@@ -107,10 +118,15 @@ export type CanvasErrorType =
  */
 export interface ICanvasErrorOutput {
 	error: true;
+	/** HTTP status code, or 0 when no HTTP response was received */
 	errorCode: number;
 	errorType: CanvasErrorType;
+	/** Human readable message; Canvas' own message(s) when it sent any */
 	errorMessage: string;
+	/** Canvas `error_code` / validation `type` of the first reported error, when present */
 	canvasErrorCode?: string;
+	/** The `errors` payload exactly as Canvas returned it */
+	canvasErrors?: unknown;
 	originalItem: IDataObject;
 	resource: string;
 	operation: string;
@@ -138,18 +154,6 @@ export interface IParsedLinkHeader {
 }
 
 /**
- * Canvas API request options
- */
-export interface ICanvasRequestOptions {
-	method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-	endpoint: string;
-	body?: IDataObject;
-	query?: IDataObject;
-	/** Additional include[] parameters */
-	include?: string[];
-}
-
-/**
  * Canvas API response with headers
  */
 export interface ICanvasResponse<T = IDataObject | IDataObject[]> {
@@ -166,132 +170,3 @@ export interface IPaginatedResult<T = IDataObject> {
 	totalPages: number;
 	rateLimitStatus: IRateLimitStatus;
 }
-
-/**
- * Canvas resource categories for mega-node
- */
-export type CanvasResource =
-	// Account & Admin
-	| 'accessToken'
-	| 'account'
-	| 'accountCalendar'
-	| 'accountDomainLookup'
-	| 'accountNotification'
-	| 'accountReport'
-	| 'admin'
-	| 'apiTokenScope'
-	| 'brandConfig'
-	| 'role'
-	| 'sandbox'
-	| 'service'
-	// Users & Identity
-	| 'user'
-	| 'login'
-	| 'authenticationProvider'
-	| 'authenticationsLog'
-	| 'communicationChannel'
-	| 'userObservee'
-	| 'temporaryEnrollmentPairing'
-	// Courses & Structure
-	| 'course'
-	| 'section'
-	| 'coursePace'
-	| 'courseAuditLog'
-	| 'courseReport'
-	| 'tab'
-	| 'module'
-	| 'moduleItem'
-	| 'page'
-	| 'favorite'
-	| 'blueprintCourse'
-	| 'contentExport'
-	| 'contentMigration'
-	// Enrollments & Groups
-	| 'enrollment'
-	| 'enrollmentTerm'
-	| 'group'
-	| 'groupCategory'
-	| 'contentShare'
-	// Assignments & Grading
-	| 'assignment'
-	| 'assignmentExtension'
-	| 'assignmentGroup'
-	| 'submission'
-	| 'submissionComment'
-	| 'customGradebookColumn'
-	| 'gradeChangeLog'
-	| 'gradebookHistory'
-	| 'gradingPeriod'
-	| 'gradingPeriodSet'
-	| 'gradingStandard'
-	| 'latePolicy'
-	| 'moderatedGrading'
-	| 'peerReview'
-	// Quizzes
-	| 'quiz'
-	| 'quizQuestion'
-	| 'quizQuestionGroup'
-	| 'quizSubmission'
-	| 'quizReport'
-	| 'quizStatistics'
-	| 'quizExtension'
-	| 'newQuiz'
-	| 'newQuizItem'
-	// Rubrics & Outcomes
-	| 'rubric'
-	| 'outcome'
-	| 'outcomeGroup'
-	| 'outcomeImport'
-	| 'outcomeResult'
-	| 'proficiencyRating'
-	| 'originalityReport'
-	// Calendar
-	| 'calendarEvent'
-	| 'appointmentGroup'
-	| 'blackoutDate'
-	// Communication
-	| 'announcement'
-	| 'announcementExternalFeed'
-	| 'conversation'
-	| 'notificationPreference'
-	// Discussions & Collaboration
-	| 'discussionTopic'
-	| 'conference'
-	| 'collaboration'
-	// Files & Media
-	| 'file'
-	| 'folder'
-	| 'mediaObject'
-	| 'ePortfolio'
-	// LTI & External Tools
-	| 'externalTool'
-	| 'developerKey'
-	| 'ltiRegistration'
-	// Analytics & Reporting
-	| 'analytics'
-	| 'progress'
-	| 'search'
-	// SIS
-	| 'sisImport'
-	// Other
-	| 'featureFlag'
-	| 'planner'
-	| 'bookmark';
-
-/**
- * Common Canvas API operations
- */
-export type CanvasOperation =
-	| 'create'
-	| 'get'
-	| 'getAll'
-	| 'update'
-	| 'delete'
-	| 'list'
-	// Specialized operations
-	| 'enroll'
-	| 'conclude'
-	| 'copy'
-	| 'grade'
-	| 'submit'
-	| 'upload';

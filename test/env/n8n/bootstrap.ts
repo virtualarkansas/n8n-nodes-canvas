@@ -20,7 +20,12 @@ const OWNER = {
 
 let cookie = '';
 
-async function rest(method: string, path: string, body?: unknown): Promise<{ status: number; json: any }> {
+interface ApiResult {
+	status: number;
+	json: { data?: Record<string, unknown> & unknown[]; id?: string; [key: string]: unknown };
+}
+
+async function rest(method: string, path: string, body?: unknown): Promise<ApiResult> {
 	const res = await fetch(`${N8N_URL}/rest${path}`, {
 		method,
 		headers: {
@@ -34,16 +39,16 @@ async function rest(method: string, path: string, body?: unknown): Promise<{ sta
 	const auth = setCookie.find((c) => c.startsWith('n8n-auth='));
 	if (auth) cookie = auth.split(';')[0];
 	const text = await res.text();
-	let json: any = {};
+	let json: ApiResult['json'] = {};
 	try {
-		json = JSON.parse(text);
+		json = JSON.parse(text) as ApiResult['json'];
 	} catch {
 		json = { raw: text };
 	}
 	return { status: res.status, json };
 }
 
-async function api(apiKey: string, method: string, path: string, body?: unknown): Promise<{ status: number; json: any }> {
+async function api(apiKey: string, method: string, path: string, body?: unknown): Promise<ApiResult> {
 	const res = await fetch(`${N8N_URL}/api/v1${path}`, {
 		method,
 		headers: {
@@ -53,7 +58,7 @@ async function api(apiKey: string, method: string, path: string, body?: unknown)
 		body: body === undefined ? undefined : JSON.stringify(body),
 	});
 	const text = await res.text();
-	return { status: res.status, json: text ? JSON.parse(text) : {} };
+	return { status: res.status, json: (text ? JSON.parse(text) : {}) as ApiResult['json'] };
 }
 
 async function main(): Promise<void> {
@@ -87,7 +92,7 @@ async function main(): Promise<void> {
 			expiresAt: null,
 			scopes: scopes.json.data,
 		});
-		apiKey = created.json?.data?.rawApiKey;
+		apiKey = String(created.json?.data?.rawApiKey ?? '');
 		if (!apiKey) {
 			throw new Error(`Could not create n8n API key: ${JSON.stringify(created.json).slice(0, 300)}`);
 		}

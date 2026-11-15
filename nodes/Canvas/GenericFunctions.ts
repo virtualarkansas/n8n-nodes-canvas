@@ -7,7 +7,7 @@ import type {
 	IDataObject,
 	JsonObject,
 } from 'n8n-workflow';
-import { NodeApiError, ApplicationError } from 'n8n-workflow';
+import { NodeApiError, NodeOperationError } from 'n8n-workflow';
 
 import type {
 	IRateLimitOptions,
@@ -20,6 +20,8 @@ import type {
 	CanvasErrorType,
 	IErrorHandlingOptions,
 } from './types/Canvas.types';
+
+type CanvasContext = IExecuteFunctions | ILoadOptionsFunctions | IHookFunctions;
 
 /**
  * Default rate limit options
@@ -49,6 +51,9 @@ export const DEFAULT_ERROR_HANDLING_OPTIONS: IErrorHandlingOptions = {
 	maxRetries: 3,
 };
 
+/** Canvas never returns more than 100 records per page. */
+export const CANVAS_MAX_PER_PAGE = 100;
+
 /**
  * Sleep utility for backoff delays
  * Uses global.setTimeout to avoid ESLint restriction on setTimeout
@@ -72,14 +77,18 @@ export function calculateBackoff(
 }
 
 /**
- * Parse rate limit headers from Canvas API response
+ * Parse rate limit headers from Canvas API response.
+ * `remaining` is undefined-safe: when Canvas sends no header (throttling disabled
+ * on self-hosted instances) the bucket is treated as full.
  */
-export function parseRateLimitHeaders(headers: IDataObject): IRateLimitStatus {
+export function parseRateLimitHeaders(headers: IDataObject | undefined): IRateLimitStatus {
+	const remainingHeader = headers?.['x-rate-limit-remaining'];
+	const costHeader = headers?.['x-request-cost'];
+	const remaining = parseFloat(String(remainingHeader ?? ''));
+	const cost = parseFloat(String(costHeader ?? ''));
 	return {
-		remaining: parseFloat((headers['x-rate-limit-remaining'] as string) || '1000'),
-		cost: headers['x-request-cost']
-			? parseFloat(headers['x-request-cost'] as string)
-			: undefined,
+		remaining: Number.isFinite(remaining) ? remaining : 1000,
+		cost: Number.isFinite(cost) ? cost : undefined,
 	};
 }
 
@@ -90,57 +99,340 @@ export function parseRateLimitHeaders(headers: IDataObject): IRateLimitStatus {
 export function parseLinkHeader(linkHeader: string | undefined): IParsedLinkHeader {
 	const result: IParsedLinkHeader = {};
 
-	if (!linkHeader) {
+	if (!linkHeader || typeof linkHeader !== 'string') {
 		return result;
 	}
 
 	// Parse links like: <url>; rel="next", <url>; rel="prev"
-	const links = linkHeader.split(',');
-
-	for (const link of links) {
-		const match = link.match(/<([^>]+)>;\s*rel="([^"]+)"/);
-		if (match) {
-			const [, url, rel] = match;
-			switch (rel) {
-				case 'current':
-					result.current = url;
-					break;
-				case 'next':
-					result.next = url;
-					break;
-				case 'prev':
-					result.prev = url;
-					break;
-				case 'first':
-					result.first = url;
-					break;
-				case 'last':
-					result.last = url;
-					break;
-			}
+	// URLs may themselves contain commas, so match whole <...>; rel="..." groups.
+	const pattern = /<([^>]+)>\s*;\s*rel="?([a-zA-Z]+)"?/g;
+	let match: RegExpExecArray | null;
+	while ((match = pattern.exec(linkHeader)) !== null) {
+		const [, url, rel] = match;
+		switch (rel) {
+			case 'current':
+				result.current = url;
+				break;
+			case 'next':
+				result.next = url;
+				break;
+			case 'prev':
+				result.prev = url;
+				break;
+			case 'first':
+				result.first = url;
+				break;
+			case 'last':
+				result.last = url;
+				break;
 		}
 	}
 
 	return result;
 }
 
+// ============================================
+// Query string serialization
+// ============================================
+
+function appendQueryPair(parts: string[], key: string, value: unknown): void {
+	if (value === undefined || value === null) {
+		return;
+	}
+	if (Array.isArray(value)) {
+		for (const entry of value) {
+			if (entry !== null && typeof entry === 'object' && !Array.isArray(entry)) {
+				// Array of objects, e.g. quiz_extensions[][user_id]=1
+				for (const [subKey, subValue] of Object.entries(entry as Record<string, unknown>)) {
+					appendQueryPair(parts, `${key}[][${encodeURIComponent(subKey)}]`, subValue);
+				}
+			} else {
+				appendQueryPair(parts, `${key}[]`, entry);
+			}
+		}
+		return;
+	}
+	if (typeof value === 'object') {
+		for (const [subKey, subValue] of Object.entries(value as Record<string, unknown>)) {
+			appendQueryPair(parts, `${key}[${encodeURIComponent(subKey)}]`, subValue);
+		}
+		return;
+	}
+	// Scalars: a key that already ends in [] (e.g. `key[]` reached through recursion) is kept.
+	parts.push(`${key}=${encodeURIComponent(String(value))}`);
+}
+
+/**
+ * Serialize query parameters the way Canvas (Rails) expects them:
+ *   - arrays become repeated `key[]=value` pairs,
+ *   - nested objects become `key[sub]=value`,
+ *   - `undefined` / `null` are dropped.
+ *
+ * A key may be given with or without a trailing `[]`; both produce `key[]=...`.
+ * The node builds the query string itself instead of delegating to the HTTP
+ * client so the request is identical on every n8n version and matches the
+ * curl command shown in debug mode.
+ */
+export function buildCanvasQueryString(query?: Record<string, unknown>): string {
+	if (!query) {
+		return '';
+	}
+	const parts: string[] = [];
+	for (const [rawKey, rawValue] of Object.entries(query)) {
+		if (rawValue === undefined || rawValue === null) {
+			continue;
+		}
+		let key = rawKey;
+		let value = rawValue;
+		if (key.endsWith('[]')) {
+			key = key.slice(0, -2);
+			if (!Array.isArray(value)) {
+				value = [value];
+			}
+		}
+		// Keep bracket syntax in keys readable (`enrollment[user_id]`), encode everything else.
+		const encodedKey = key
+			.split(/([[\]])/)
+			.map((piece) => (piece === '[' || piece === ']' ? piece : encodeURIComponent(piece)))
+			.join('');
+		appendQueryPair(parts, encodedKey, value);
+	}
+	return parts.join('&');
+}
+
+/**
+ * Build the absolute request URL for an endpoint (`/api/v1/...`) plus query.
+ */
+export function buildCanvasUrl(
+	canvasUrl: string,
+	endpoint: string,
+	query?: Record<string, unknown>,
+): string {
+	const queryString = buildCanvasQueryString(query);
+	if (!queryString) {
+		return `${canvasUrl}${endpoint}`;
+	}
+	const separator = endpoint.includes('?') ? '&' : '?';
+	return `${canvasUrl}${endpoint}${separator}${queryString}`;
+}
+
+/**
+ * Canvas returns absolute URLs in Link and Location headers. Requests carrying
+ * the user's token must only ever go to the configured Canvas host, so keep
+ * the path and query of such a URL and re-anchor it on the configured base URL.
+ * (This also keeps pagination working when Canvas sits behind a proxy that
+ * reports a different scheme or host name.)
+ */
+export function resolveCanvasUrl(canvasUrl: string, url: string): string {
+	if (!/^https?:\/\//i.test(url)) {
+		return `${canvasUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+	}
+	const parsed = new URL(url);
+	return `${canvasUrl}${parsed.pathname}${parsed.search}`;
+}
+
+// ============================================
+// Errors
+// ============================================
+
+function toStatus(value: unknown): number | undefined {
+	if (typeof value === 'number' && Number.isFinite(value)) {
+		return value;
+	}
+	if (typeof value === 'string' && /^\d{3}$/.test(value.trim())) {
+		return parseInt(value, 10);
+	}
+	return undefined;
+}
+
+/**
+ * Find the HTTP status code on an error thrown by n8n's request helpers.
+ * `NodeApiError.httpCode` is a string ("404"); other shapes carry numbers.
+ */
+export function extractHttpStatus(error: unknown): number | undefined {
+	const seen = new Set<unknown>();
+	let current = error as JsonObject | undefined;
+	for (let depth = 0; current && typeof current === 'object' && depth < 4; depth++) {
+		if (seen.has(current)) {
+			break;
+		}
+		seen.add(current);
+		const response = current.response as JsonObject | undefined;
+		const status =
+			toStatus(current.httpCode) ??
+			toStatus(current.statusCode) ??
+			toStatus(current.status) ??
+			toStatus(response?.status) ??
+			toStatus(response?.statusCode);
+		if (status !== undefined) {
+			return status;
+		}
+		current = current.cause as JsonObject | undefined;
+	}
+	return undefined;
+}
+
+/**
+ * The response body Canvas sent with an error, when n8n kept it.
+ */
+function getErrorResponseBody(error: unknown): unknown {
+	const seen = new Set<unknown>();
+	let current = error as JsonObject | undefined;
+	for (let depth = 0; current && typeof current === 'object' && depth < 4; depth++) {
+		if (seen.has(current)) {
+			break;
+		}
+		seen.add(current);
+		const context = current.context as JsonObject | undefined;
+		if (context?.data !== undefined && context.data !== null) {
+			return context.data;
+		}
+		const response = current.response as JsonObject | undefined;
+		const body = response?.data ?? response?.body;
+		if (body !== undefined && body !== null) {
+			return body;
+		}
+		current = current.cause as JsonObject | undefined;
+	}
+	return undefined;
+}
+
+function collectMessages(value: unknown, out: string[], depth = 0): void {
+	if (value === undefined || value === null || depth > 4 || out.length >= 10) {
+		return;
+	}
+	if (typeof value === 'string') {
+		if (value.trim()) {
+			out.push(value.trim());
+		}
+		return;
+	}
+	if (Array.isArray(value)) {
+		for (const entry of value) {
+			collectMessages(entry, out, depth + 1);
+		}
+		return;
+	}
+	if (typeof value === 'object') {
+		const obj = value as Record<string, unknown>;
+		if (typeof obj.message === 'string') {
+			out.push(obj.message.trim());
+			return;
+		}
+		for (const [key, entry] of Object.entries(obj)) {
+			// Validation errors: { "name": [{ "attribute": "name", "type": "blank", "message": "blank" }] }
+			const before = out.length;
+			collectMessages(entry, out, depth + 1);
+			if (depth === 0 && out.length > before && !/^\d+$/.test(key)) {
+				for (let i = before; i < out.length; i++) {
+					out[i] = `${key}: ${out[i]}`;
+				}
+			}
+		}
+	}
+}
+
+/**
+ * Canvas reports errors in several shapes:
+ *   { "errors": [{ "message": "..." , "error_code": "..." }] }
+ *   { "errors": { "field": [{ "type": "blank", "message": "..." }] } }
+ *   { "message": "..." } / { "error": "..." } / plain text
+ */
+export function getCanvasErrorDetails(error: unknown): {
+	messages: string[];
+	code?: string;
+	errors?: unknown;
+} {
+	const body = getErrorResponseBody(error);
+	const messages: string[] = [];
+	let code: string | undefined;
+	let errors: unknown;
+
+	if (typeof body === 'string') {
+		const text = body.trim();
+		// Skip HTML error pages; keep short plain-text bodies such as "403 Forbidden (Rate Limit Exceeded)".
+		if (text && !text.startsWith('<') && text.length <= 500) {
+			messages.push(text);
+		}
+	} else if (body && typeof body === 'object') {
+		const obj = body as Record<string, unknown>;
+		errors = obj.errors ?? obj.error ?? obj.message;
+		collectMessages(obj.errors, messages);
+		if (messages.length === 0) {
+			collectMessages(obj.message ?? obj.error, messages);
+		}
+		const first = Array.isArray(obj.errors)
+			? (obj.errors[0] as Record<string, unknown> | undefined)
+			: undefined;
+		if (first && typeof first === 'object') {
+			code = (first.error_code ?? first.type) as string | undefined;
+		}
+		if (!code && typeof obj.error_code === 'string') {
+			code = obj.error_code;
+		}
+	}
+
+	return { messages: Array.from(new Set(messages)), code, errors };
+}
+
+/**
+ * Canvas answers throttled requests with `403 Forbidden (Rate Limit Exceeded)`
+ * by default, and with 429 only when the instance opts in.
+ */
+export function isRateLimitError(error: unknown): boolean {
+	const status = extractHttpStatus(error);
+	if (status === 429) {
+		return true;
+	}
+	if (status !== 403) {
+		return false;
+	}
+	const body = getErrorResponseBody(error);
+	const haystack = [
+		typeof body === 'string' ? body : JSON.stringify(body ?? ''),
+		String((error as JsonObject)?.message ?? ''),
+		String((error as JsonObject)?.description ?? ''),
+	].join(' ');
+	return /rate limit exceeded/i.test(haystack);
+}
+
+/**
+ * Errors worth retrying: throttling, server-side failures and network failures.
+ * Client errors (400, 401, 403, 404, 422, ...) will not succeed on a retry.
+ */
+export function isRetryableError(error: unknown): boolean {
+	if (isRateLimitError(error)) {
+		return true;
+	}
+	const status = extractHttpStatus(error);
+	if (status === undefined) {
+		// No HTTP response at all. Errors raised by the node itself are not retryable.
+		const name = String((error as JsonObject)?.name ?? '');
+		return name !== 'NodeOperationError' && name !== 'ApplicationError';
+	}
+	return status >= 500;
+}
+
 /**
  * Categorize HTTP error codes into Canvas error types
  */
-export function categorizeError(statusCode: number): CanvasErrorType {
+export function categorizeError(statusCode: number | undefined): CanvasErrorType {
 	switch (statusCode) {
+		case 400:
+		case 422:
+			return 'VALIDATION_ERROR';
 		case 401:
 			return 'UNAUTHORIZED';
 		case 403:
 			return 'FORBIDDEN';
 		case 404:
 			return 'NOT_FOUND';
-		case 422:
-			return 'VALIDATION_ERROR';
+		case 409:
+			return 'CONFLICT';
 		case 429:
 			return 'RATE_LIMITED';
 		default:
-			if (statusCode >= 500) {
+			if (statusCode !== undefined && statusCode >= 500) {
 				return 'SERVER_ERROR';
 			}
 			return 'UNKNOWN';
@@ -157,84 +449,149 @@ export function createErrorOutput(
 	operation: string,
 	endpoint: string,
 ): ICanvasErrorOutput {
-	const statusCode = (error.httpCode as number) || (error.statusCode as number) || 500;
-	const message =
-		(error.message as string) ||
-		(error.description as string) ||
-		'Unknown error occurred';
+	const statusCode = extractHttpStatus(error);
+	const details = getCanvasErrorDetails(error);
+	const name = String(error?.name ?? '');
 
-	return {
+	let errorType: CanvasErrorType;
+	if (isRateLimitError(error)) {
+		errorType = 'RATE_LIMITED';
+	} else if (statusCode !== undefined) {
+		errorType = categorizeError(statusCode);
+	} else if (name === 'NodeOperationError' || name === 'ApplicationError') {
+		errorType = 'INVALID_PARAMETERS';
+	} else if (error?.code || /ECONN|ETIMEDOUT|ENOTFOUND|EAI_AGAIN|socket|network/i.test(String(error?.message ?? ''))) {
+		errorType = 'NETWORK_ERROR';
+	} else {
+		errorType = 'UNKNOWN';
+	}
+
+	const fallbackMessage =
+		(error?.message as string) || (error?.description as string) || 'Unknown error occurred';
+	const message = details.messages.length > 0 ? details.messages.join('; ') : fallbackMessage;
+
+	const output: ICanvasErrorOutput = {
 		error: true,
-		errorCode: statusCode,
-		errorType: categorizeError(statusCode),
+		errorCode: statusCode ?? 0,
+		errorType,
 		errorMessage: message,
-		canvasErrorCode: error.error as string | undefined,
 		originalItem,
 		resource,
 		operation,
 		endpoint,
 		timestamp: new Date().toISOString(),
 	};
+	if (details.code) {
+		output.canvasErrorCode = details.code;
+	}
+	if (details.errors !== undefined) {
+		output.canvasErrors = details.errors;
+	}
+	return output;
+}
+
+// ============================================
+// Credentials / base URL
+// ============================================
+
+function getCredentialType(context: CanvasContext): string {
+	const authType = context.getNodeParameter('authentication', 0) as string;
+	return authType === 'oAuth2' ? 'canvasOAuth2Api' : 'canvasApi';
 }
 
 /**
  * Get Canvas API base URL from credentials
  */
-export async function getCanvasUrl(
-	this: IExecuteFunctions | ILoadOptionsFunctions | IHookFunctions,
-): Promise<string> {
-	const authType = this.getNodeParameter('authentication', 0) as string;
-	const credentialType = authType === 'oAuth2' ? 'canvasOAuth2Api' : 'canvasApi';
-	const credentials = await this.getCredentials(credentialType);
-	let canvasUrl = credentials.canvasUrl as string;
+export async function getCanvasUrl(this: CanvasContext): Promise<string> {
+	const credentials = await this.getCredentials(getCredentialType(this));
+	const canvasUrl = String(credentials.canvasUrl ?? '')
+		.trim()
+		.replace(/\/+$/, '');
 
-	// Remove trailing slash if present
-	if (canvasUrl.endsWith('/')) {
-		canvasUrl = canvasUrl.slice(0, -1);
+	if (!/^https?:\/\/[^/]+/i.test(canvasUrl)) {
+		throw new NodeOperationError(
+			this.getNode(),
+			'The Canvas URL in the credentials is not valid',
+			{ description: 'Enter the full address of your Canvas instance, e.g. https://school.instructure.com' },
+		);
 	}
 
 	return canvasUrl;
+}
+
+// ============================================
+// Rate limiting
+// ============================================
+
+interface IRateLimitState {
+	/** Last X-Rate-Limit-Remaining value seen in this execution */
+	remaining?: number;
+	/** In-flight probe shared by parallel requests */
+	probe?: Promise<IRateLimitStatus>;
+}
+
+/** One state object per node execution (the context object lives exactly that long). */
+const rateLimitStates = new WeakMap<object, IRateLimitState>();
+
+function getRateLimitState(context: CanvasContext): IRateLimitState {
+	let state = rateLimitStates.get(context);
+	if (!state) {
+		state = {};
+		rateLimitStates.set(context, state);
+	}
+	return state;
 }
 
 /**
  * Check rate limit status by making a lightweight probe request
  */
 export async function checkRateLimit(
-	this: IExecuteFunctions | ILoadOptionsFunctions | IHookFunctions,
+	this: CanvasContext,
 	options: IRateLimitOptions,
 ): Promise<IRateLimitStatus> {
 	if (!options.enabled) {
 		return { remaining: 1000 };
 	}
 
-	const canvasUrl = await getCanvasUrl.call(this);
-	const authType = this.getNodeParameter('authentication', 0) as string;
-	const credentialType = authType === 'oAuth2' ? 'canvasOAuth2Api' : 'canvasApi';
-
-	const requestOptions: IHttpRequestOptions = {
-		method: 'GET',
-		url: `${canvasUrl}/api/v1/users/self`,
-		returnFullResponse: true,
-	};
-
-	try {
-		const response = await this.helpers.httpRequestWithAuthentication.call(
-			this,
-			credentialType,
-			requestOptions,
-		);
-		return parseRateLimitHeaders(response.headers as IDataObject);
-	} catch {
-		// If probe fails, assume we have quota (don't block on probe errors)
-		return { remaining: 1000 };
+	const state = getRateLimitState(this);
+	if (!state.probe) {
+		const run = async (): Promise<IRateLimitStatus> => {
+			const canvasUrl = await getCanvasUrl.call(this);
+			const requestOptions: IHttpRequestOptions = {
+				method: 'GET',
+				url: `${canvasUrl}/api/v1/users/self`,
+				returnFullResponse: true,
+				json: true,
+			};
+			try {
+				const response = await this.helpers.httpRequestWithAuthentication.call(
+					this,
+					getCredentialType(this),
+					requestOptions,
+				);
+				return parseRateLimitHeaders(response.headers as IDataObject);
+			} catch (error) {
+				if (isRateLimitError(error)) {
+					return { remaining: 0 };
+				}
+				// If the probe fails for another reason, let the real request report it.
+				return { remaining: 1000 };
+			}
+		};
+		state.probe = run().finally(() => {
+			state.probe = undefined;
+		});
 	}
+	const status = await state.probe;
+	state.remaining = status.remaining;
+	return status;
 }
 
 /**
  * Wait for rate limit to recover
  */
 export async function waitForRateLimit(
-	this: IExecuteFunctions | ILoadOptionsFunctions | IHookFunctions,
+	this: CanvasContext,
 	options: IRateLimitOptions,
 ): Promise<void> {
 	for (let attempt = 0; attempt < options.maxRetries; attempt++) {
@@ -248,16 +605,52 @@ export async function waitForRateLimit(
 		await sleep(delay);
 	}
 
-	throw new Error(
-		`Rate limit still below threshold (${options.threshold}) after ${options.maxRetries} retries`,
+	const last = await checkRateLimit.call(this, options);
+	if (last.remaining >= options.threshold) {
+		return;
+	}
+
+	throw new NodeOperationError(
+		this.getNode(),
+		`Canvas rate limit quota is still below the threshold (${options.threshold}) after ${options.maxRetries} retries`,
+		{
+			description:
+				'Lower the Threshold under Rate Limiting, reduce the Batch Size, or try again later. ' +
+				`Last X-Rate-Limit-Remaining: ${last.remaining}`,
+		},
 	);
 }
 
 /**
- * Make a Canvas API request with rate limit handling
+ * Before a request: make sure the quota is above the threshold.
+ * The quota is read from the previous response of this execution; Canvas is
+ * only probed when nothing is known yet or when the last reading was low.
+ */
+async function ensureRateLimit(context: CanvasContext, options: IRateLimitOptions): Promise<void> {
+	if (!options.enabled) {
+		return;
+	}
+	const state = getRateLimitState(context);
+	if (state.remaining !== undefined && state.remaining >= options.threshold) {
+		return;
+	}
+	const status = await checkRateLimit.call(context, options);
+	if (status.remaining < options.threshold) {
+		await waitForRateLimit.call(context, options);
+	}
+}
+
+// ============================================
+// Requests
+// ============================================
+
+/**
+ * Make a Canvas API request with rate limit handling.
+ * `endpoint` is a path such as `/api/v1/courses`, or an absolute Canvas URL
+ * taken from a Link/Location header.
  */
 export async function canvasApiRequest(
-	this: IExecuteFunctions | ILoadOptionsFunctions | IHookFunctions,
+	this: CanvasContext,
 	method: IHttpRequestMethods,
 	endpoint: string,
 	body?: IDataObject,
@@ -265,29 +658,29 @@ export async function canvasApiRequest(
 	rateLimitOptions: IRateLimitOptions = DEFAULT_RATE_LIMIT_OPTIONS,
 ): Promise<ICanvasResponse> {
 	const canvasUrl = await getCanvasUrl.call(this);
-	const authType = this.getNodeParameter('authentication', 0) as string;
-	const credentialType = authType === 'oAuth2' ? 'canvasOAuth2Api' : 'canvasApi';
+	const credentialType = getCredentialType(this);
 
-	// Check rate limit before request
-	if (rateLimitOptions.enabled) {
-		const status = await checkRateLimit.call(this, rateLimitOptions);
-		if (status.remaining < rateLimitOptions.threshold) {
-			await waitForRateLimit.call(this, rateLimitOptions);
-		}
-	}
+	const baseUrl = /^https?:\/\//i.test(endpoint)
+		? resolveCanvasUrl(canvasUrl, endpoint)
+		: `${canvasUrl}${endpoint}`;
+	const queryString = buildCanvasQueryString(query);
+	const url = queryString ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${queryString}` : baseUrl;
 
 	const requestOptions: IHttpRequestOptions = {
 		method,
-		url: `${canvasUrl}${endpoint}`,
-		body,
-		qs: query,
+		url,
 		returnFullResponse: true,
 		json: true,
 	};
+	if (body !== undefined && method !== 'GET' && Object.keys(body).length > 0) {
+		requestOptions.body = body;
+	}
 
-	let lastError: Error | undefined;
+	const state = getRateLimitState(this);
 
-	for (let attempt = 0; attempt <= rateLimitOptions.maxRetries; attempt++) {
+	for (let attempt = 0; ; attempt++) {
+		await ensureRateLimit(this, rateLimitOptions);
+
 		try {
 			const response = await this.helpers.httpRequestWithAuthentication.call(
 				this,
@@ -295,63 +688,75 @@ export async function canvasApiRequest(
 				requestOptions,
 			);
 
-			const headers = response.headers as IDataObject;
+			const headers = (response.headers ?? {}) as IDataObject;
+			const rateLimitStatus = parseRateLimitHeaders(headers);
+			if (headers['x-rate-limit-remaining'] !== undefined) {
+				state.remaining = rateLimitStatus.remaining;
+			}
 			return {
 				data: response.body as IDataObject | IDataObject[],
-				rateLimitStatus: parseRateLimitHeaders(headers),
+				rateLimitStatus,
 				linkHeader: parseLinkHeader(headers.link as string),
 			};
 		} catch (error) {
-			lastError = error as Error;
-			const statusCode = (error as JsonObject).httpCode || (error as JsonObject).statusCode;
-
-			// Only retry on rate limit errors
-			if (statusCode === 429 && attempt < rateLimitOptions.maxRetries) {
-				const delay = calculateBackoff(
-					attempt,
-					rateLimitOptions.baseDelayMs,
-					rateLimitOptions.maxDelayMs,
+			// Only throttling is retried here; other failures go to the error handling mode.
+			if (isRateLimitError(error) && attempt < rateLimitOptions.maxRetries) {
+				state.remaining = 0;
+				await sleep(
+					calculateBackoff(attempt, rateLimitOptions.baseDelayMs, rateLimitOptions.maxDelayMs),
 				);
-				await sleep(delay);
-
-				// Re-check rate limit after delay
-				const status = await checkRateLimit.call(this, rateLimitOptions);
-				if (status.remaining < rateLimitOptions.threshold) {
-					await waitForRateLimit.call(this, rateLimitOptions);
-				}
 				continue;
 			}
-
 			throw error;
 		}
 	}
-
-	throw lastError || new Error('Max retries exceeded');
 }
 
 /**
- * Make a Canvas API request and follow pagination to get all items
+ * Pull the record list out of a list response.
+ * Returns undefined when the response is not a list.
+ */
+function extractList(data: unknown, dataKey?: string): IDataObject[] | undefined {
+	if (Array.isArray(data)) {
+		return data as IDataObject[];
+	}
+	if (dataKey && data && typeof data === 'object') {
+		const wrapped = (data as IDataObject)[dataKey];
+		if (Array.isArray(wrapped)) {
+			return wrapped as IDataObject[];
+		}
+	}
+	return undefined;
+}
+
+/**
+ * Make a Canvas API request and follow pagination to collect the items.
+ *
+ * Works for any GET: when the response is not a list (a single record) it is
+ * returned as the only entry of `items` and no further pages are requested.
  */
 export async function canvasApiRequestAllItems(
-	this: IExecuteFunctions | ILoadOptionsFunctions | IHookFunctions,
+	this: CanvasContext,
 	method: IHttpRequestMethods,
 	endpoint: string,
 	body?: IDataObject,
 	query?: IDataObject,
 	paginationOptions: IPaginationOptions = DEFAULT_PAGINATION_OPTIONS,
 	rateLimitOptions: IRateLimitOptions = DEFAULT_RATE_LIMIT_OPTIONS,
-): Promise<IPaginatedResult> {
-	const allItems: IDataObject[] = [];
-	let pageCount = 0;
-	let lastRateLimitStatus: IRateLimitStatus = { remaining: 1000 };
+	dataKey?: string,
+): Promise<IPaginatedResult & { isList: boolean }> {
+	const limit =
+		paginationOptions.limit !== undefined && paginationOptions.limit > 0
+			? paginationOptions.limit
+			: undefined;
+	let perPage = Math.min(Math.max(1, paginationOptions.perPage), CANVAS_MAX_PER_PAGE);
+	if (limit !== undefined) {
+		perPage = Math.min(perPage, limit);
+	}
 
-	// Add per_page to query
-	const paginatedQuery = {
-		...query,
-		per_page: paginationOptions.perPage,
-	};
+	// A per_page set explicitly on the operation wins over the node-level option.
+	const paginatedQuery: IDataObject = { per_page: perPage, ...(query ?? {}) };
 
-	// First request
 	let response = await canvasApiRequest.call(
 		this,
 		method,
@@ -361,99 +766,61 @@ export async function canvasApiRequestAllItems(
 		rateLimitOptions,
 	);
 
-	const data = response.data;
-	if (Array.isArray(data)) {
-		allItems.push(...data);
-	} else {
-		allItems.push(data);
+	const firstList = extractList(response.data, dataKey);
+	if (firstList === undefined) {
+		return {
+			items: [response.data as IDataObject],
+			totalPages: 1,
+			rateLimitStatus: response.rateLimitStatus,
+			isList: false,
+		};
 	}
-	pageCount++;
-	lastRateLimitStatus = response.rateLimitStatus;
 
-	// Follow pagination if enabled
-	if (paginationOptions.enabled) {
-		const canvasUrl = await getCanvasUrl.call(this);
-		const authType = this.getNodeParameter('authentication', 0) as string;
-		const credentialType = authType === 'oAuth2' ? 'canvasOAuth2Api' : 'canvasApi';
+	const allItems: IDataObject[] = [...firstList];
+	let pageCount = 1;
 
-		while (response.linkHeader.next) {
-			// Check max pages
-			if (paginationOptions.maxPages > 0 && pageCount >= paginationOptions.maxPages) {
-				break;
-			}
-
-			// Check rate limit before next request
-			if (rateLimitOptions.enabled) {
-				const status = await checkRateLimit.call(this, rateLimitOptions);
-				if (status.remaining < rateLimitOptions.threshold) {
-					await waitForRateLimit.call(this, rateLimitOptions);
-				}
-			}
-
-			// Use the opaque next URL directly (it includes all necessary params)
-			let nextUrl = response.linkHeader.next;
-
-			// Ensure URL is absolute
-			if (!nextUrl.startsWith('http')) {
-				nextUrl = `${canvasUrl}${nextUrl}`;
-			}
-
-			const requestOptions: IHttpRequestOptions = {
-				method: 'GET',
-				url: nextUrl,
-				returnFullResponse: true,
-				json: true,
-			};
-
-			const nextResponse = await this.helpers.httpRequestWithAuthentication.call(
-				this,
-				credentialType,
-				requestOptions,
-			);
-
-			const headers = nextResponse.headers as IDataObject;
-			response = {
-				data: nextResponse.body as IDataObject | IDataObject[],
-				rateLimitStatus: parseRateLimitHeaders(headers),
-				linkHeader: parseLinkHeader(headers.link as string),
-			};
-
-			const nextData = response.data;
-			if (Array.isArray(nextData)) {
-				allItems.push(...nextData);
-			} else {
-				allItems.push(nextData);
-			}
-			pageCount++;
-			lastRateLimitStatus = response.rateLimitStatus;
+	while (paginationOptions.enabled && response.linkHeader.next) {
+		if (paginationOptions.maxPages > 0 && pageCount >= paginationOptions.maxPages) {
+			break;
 		}
+		if (limit !== undefined && allItems.length >= limit) {
+			break;
+		}
+
+		// The next URL is opaque (page numbers or bookmarks) and already carries every parameter.
+		response = await canvasApiRequest.call(
+			this,
+			'GET',
+			response.linkHeader.next,
+			undefined,
+			undefined,
+			rateLimitOptions,
+		);
+
+		const pageItems = extractList(response.data, dataKey);
+		if (pageItems === undefined) {
+			break;
+		}
+		allItems.push(...pageItems);
+		pageCount++;
 	}
 
 	return {
-		items: allItems,
+		items: limit !== undefined ? allItems.slice(0, limit) : allItems,
 		totalPages: pageCount,
-		rateLimitStatus: lastRateLimitStatus,
+		rateLimitStatus: response.rateLimitStatus,
+		isList: true,
 	};
 }
 
-/**
- * Build include[] query parameters
- */
-export function buildIncludeParams(includes: string[]): IDataObject {
-	const query: IDataObject = {};
-	for (const include of includes) {
-		// Canvas uses array notation: include[]=term&include[]=teachers
-		if (!query['include[]']) {
-			query['include[]'] = [];
-		}
-		(query['include[]'] as string[]).push(include);
-	}
-	return query;
+// ============================================
+// Debug output
+// ============================================
+
+function shellQuote(value: string): string {
+	return `'${value.replace(/'/g, `'\\''`)}'`;
 }
 
-/**
- * Execute with error handling based on options
- */
 /**
  * Build a curl command string from request details for debug output
  */
@@ -465,19 +832,7 @@ export function buildCurlCommand(
 	body?: Record<string, unknown>,
 	authType?: string,
 ): string {
-	const url = new URL(`${baseUrl}${endpoint}`);
-
-	if (qs) {
-		for (const [key, value] of Object.entries(qs)) {
-			if (Array.isArray(value)) {
-				for (const v of value) {
-					url.searchParams.append(key, String(v));
-				}
-			} else if (value !== undefined && value !== null) {
-				url.searchParams.append(key, String(value));
-			}
-		}
-	}
+	const url = buildCanvasUrl(baseUrl, endpoint, qs);
 
 	const tokenLabel = authType === 'oAuth2' ? '<OAUTH2_TOKEN>' : '<ACCESS_TOKEN>';
 	const parts: string[] = [
@@ -486,16 +841,23 @@ export function buildCurlCommand(
 		`-H 'Authorization: Bearer ${tokenLabel}'`,
 	];
 
-	if (body && Object.keys(body).length > 0) {
+	if (body && method !== 'GET' && Object.keys(body).length > 0) {
 		parts.push("-H 'Content-Type: application/json'");
-		parts.push(`-d '${JSON.stringify(body)}'`);
+		parts.push(`-d ${shellQuote(JSON.stringify(body))}`);
 	}
 
-	parts.push(`'${url.toString()}'`);
+	parts.push(shellQuote(url));
 
 	return parts.join(' \\\n  ');
 }
 
+// ============================================
+// Error handling modes
+// ============================================
+
+/**
+ * Execute with error handling based on options
+ */
 export async function executeWithErrorHandling<T>(
 	this: IExecuteFunctions,
 	operation: () => Promise<T>,
@@ -503,41 +865,41 @@ export async function executeWithErrorHandling<T>(
 	originalItem: IDataObject,
 	resource: string,
 	operationName: string,
-	endpoint: string,
+	getEndpoint: string | (() => string),
+	itemIndex?: number,
 ): Promise<{ success: boolean; data?: T; error?: ICanvasErrorOutput }> {
-	const attemptOperation = async (retriesLeft: number): Promise<{ success: boolean; data?: T; error?: ICanvasErrorOutput }> => {
+	// n8n's own "On Error: Continue" node setting must not fail the workflow either.
+	const mode =
+		errorOptions.onError === 'stop' && this.continueOnFail()
+			? 'continueWithError'
+			: errorOptions.onError;
+	const endpointOf = (): string => (typeof getEndpoint === 'function' ? getEndpoint() : getEndpoint);
+
+	let attempt = 0;
+	for (;;) {
 		try {
 			const data = await operation();
 			return { success: true, data };
 		} catch (error) {
 			const jsonError = error as JsonObject;
 
-			// For retryThenError mode, retry before giving up
-			if (errorOptions.onError === 'retryThenError' && retriesLeft > 0) {
-				const delay = calculateBackoff(
-					errorOptions.maxRetries - retriesLeft,
-					DEFAULT_RATE_LIMIT_OPTIONS.baseDelayMs,
-					DEFAULT_RATE_LIMIT_OPTIONS.maxDelayMs,
+			// Retry Then Error: only failures that can succeed on a second try.
+			if (mode === 'retryThenError' && attempt < errorOptions.maxRetries && isRetryableError(error)) {
+				await sleep(
+					calculateBackoff(
+						attempt,
+						DEFAULT_RATE_LIMIT_OPTIONS.baseDelayMs,
+						DEFAULT_RATE_LIMIT_OPTIONS.maxDelayMs,
+					),
 				);
-				await sleep(delay);
-				return attemptOperation(retriesLeft - 1);
+				attempt++;
+				continue;
 			}
 
-			const errorOutput = createErrorOutput(
-				jsonError,
-				originalItem,
-				resource,
-				operationName,
-				endpoint,
-			);
+			const endpoint = endpointOf();
+			const errorOutput = createErrorOutput(jsonError, originalItem, resource, operationName, endpoint);
 
-			switch (errorOptions.onError) {
-				case 'stop':
-					throw new NodeApiError(this.getNode(), jsonError, {
-						message: errorOutput.errorMessage,
-						description: `${errorOutput.errorType} error on ${resource}/${operationName}`,
-					});
-
+			switch (mode) {
 				case 'continueWithError':
 				case 'retryThenError':
 					return { success: false, error: errorOutput };
@@ -545,14 +907,89 @@ export async function executeWithErrorHandling<T>(
 				case 'ignoreAndContinue':
 					return { success: false };
 
-				default:
-					throw error;
+				case 'stop':
+				default: {
+					const where = `${resource}/${operationName}${endpoint ? ` (${endpoint})` : ''}`;
+					if (extractHttpStatus(error) === undefined) {
+						// Not an HTTP failure: keep the original error (parameter problems, network errors).
+						if (error instanceof NodeOperationError || (error as JsonObject)?.name === 'NodeOperationError') {
+							throw error;
+						}
+						throw new NodeOperationError(this.getNode(), error as Error, {
+							itemIndex,
+							description: `${errorOutput.errorType} error on ${where}`,
+						});
+					}
+					throw new NodeApiError(this.getNode(), jsonError, {
+						message: errorOutput.errorMessage,
+						description: `${errorOutput.errorType} error (HTTP ${errorOutput.errorCode}) on ${where}`,
+						httpCode: String(errorOutput.errorCode),
+						itemIndex,
+					});
+				}
 			}
 		}
-	};
+	}
+}
 
-	const retries = errorOptions.onError === 'retryThenError' ? errorOptions.maxRetries : 0;
-	return attemptOperation(retries);
+// ============================================
+// File uploads
+// ============================================
+
+/**
+ * Build a multipart/form-data body by hand (no runtime dependency).
+ * Canvas requires the file to be the last part.
+ */
+export function buildMultipartBody(
+	fields: Record<string, unknown>,
+	file?: { fieldName: string; fileName: string; contentType: string; data: Buffer },
+): { body: Buffer; contentType: string } {
+	const boundary = `----n8nCanvasBoundary${Date.now().toString(16)}${Math.random().toString(16).slice(2)}`;
+	const chunks: Buffer[] = [];
+	const clean = (value: string): string => value.replace(/[\r\n]/g, ' ').replace(/"/g, '%22');
+
+	for (const [key, value] of Object.entries(fields)) {
+		if (value === undefined || value === null) {
+			continue;
+		}
+		chunks.push(
+			Buffer.from(
+				`--${boundary}\r\nContent-Disposition: form-data; name="${clean(key)}"\r\n\r\n${String(value)}\r\n`,
+				'utf8',
+			),
+		);
+	}
+
+	if (file) {
+		chunks.push(
+			Buffer.from(
+				`--${boundary}\r\nContent-Disposition: form-data; name="${clean(file.fieldName)}"; filename="${clean(file.fileName)}"\r\n` +
+					`Content-Type: ${clean(file.contentType)}\r\n\r\n`,
+				'utf8',
+			),
+		);
+		chunks.push(file.data);
+		chunks.push(Buffer.from('\r\n', 'utf8'));
+	}
+
+	chunks.push(Buffer.from(`--${boundary}--\r\n`, 'utf8'));
+	return { body: Buffer.concat(chunks), contentType: `multipart/form-data; boundary=${boundary}` };
+}
+
+function parseJsonBody(body: unknown): IDataObject | undefined {
+	if (body && typeof body === 'object' && !Buffer.isBuffer(body)) {
+		return body as IDataObject;
+	}
+	const text = Buffer.isBuffer(body) ? body.toString('utf8') : typeof body === 'string' ? body : '';
+	if (!text.trim()) {
+		return undefined;
+	}
+	try {
+		const parsed = JSON.parse(text) as unknown;
+		return parsed && typeof parsed === 'object' ? (parsed as IDataObject) : undefined;
+	} catch {
+		return undefined;
+	}
 }
 
 /**
@@ -581,94 +1018,90 @@ export async function canvasFileUpload(
 	);
 
 	const step1Data = step1Response.data as IDataObject;
-	const uploadUrl = step1Data.upload_url as string;
-	const uploadParams = step1Data.upload_params as IDataObject;
+	const uploadUrl = step1Data?.upload_url as string | undefined;
+	const uploadParams = (step1Data?.upload_params ?? {}) as IDataObject;
 
-	if (!uploadUrl || !uploadParams) {
-		throw new ApplicationError(
-			'Canvas Step 1 response missing upload_url or upload_params',
+	if (!uploadUrl) {
+		throw new NodeOperationError(
+			this.getNode(),
+			'Canvas did not return an upload URL for this file',
+			{
+				itemIndex,
+				description: `The response to POST ${step1Endpoint} had no upload_url. Check that the target accepts file uploads.`,
+			},
 		);
 	}
 
-	// --- Step 2: Multipart upload to upload_url ---
+	// --- Step 2: Multipart upload to upload_url (no Canvas token: the URL is pre-signed) ---
 	const binaryData = this.helpers.assertBinaryData(itemIndex, binaryPropertyName);
 	const binaryDataBuffer = await this.helpers.getBinaryDataBuffer(itemIndex, binaryPropertyName);
 
-	// eslint-disable-next-line @typescript-eslint/no-require-imports
-	const FormData = require('form-data');
-	const formData = new FormData();
-
-	// Add all upload_params first (order matters - file must be last)
-	for (const [key, value] of Object.entries(uploadParams)) {
-		formData.append(key, String(value));
-	}
-
-	// Add file last
-	formData.append('file', binaryDataBuffer, {
-		filename: binaryData.fileName || 'file',
+	const multipart = buildMultipartBody(uploadParams, {
+		fieldName: (step1Data.file_param as string) || 'file',
+		fileName: (step1Body.name as string) || binaryData.fileName || 'file',
 		contentType: binaryData.mimeType || 'application/octet-stream',
+		data: binaryDataBuffer,
 	});
 
 	const step2Options: IHttpRequestOptions = {
 		method: 'POST',
 		url: uploadUrl,
-		body: formData,
-		headers: formData.getHeaders(),
+		body: multipart.body,
+		headers: {
+			'Content-Type': multipart.contentType,
+			'Content-Length': String(multipart.body.length),
+		},
 		returnFullResponse: true,
 		json: false,
+		// The confirmation request needs the Canvas token, so follow the redirect ourselves.
+		disableFollowRedirect: true,
 		ignoreHttpStatusErrors: true,
 	};
 
 	const step2Response = await this.helpers.httpRequest(step2Options);
 	const step2Headers = (step2Response.headers || {}) as IDataObject;
 	const step2StatusCode = step2Response.statusCode as number;
+	const step2Body = parseJsonBody(step2Response.body);
 
-	// Some 2xx responses return the file object directly in the body
-	if (step2StatusCode >= 200 && step2StatusCode < 300) {
-		try {
-			const bodyData = typeof step2Response.body === 'string'
-				? JSON.parse(step2Response.body as string) as IDataObject
-				: step2Response.body as IDataObject;
-			if (bodyData && bodyData.id) {
-				return bodyData;
-			}
-		} catch {
-			// Not JSON, continue to check Location
-		}
+	if (step2StatusCode >= 400) {
+		throw new NodeApiError(
+			this.getNode(),
+			{ ...(step2Body ?? {}), httpCode: String(step2StatusCode) } as JsonObject,
+			{
+				message: `The file upload was rejected by the upload server (HTTP ${step2StatusCode})`,
+				httpCode: String(step2StatusCode),
+				itemIndex,
+			},
+		);
 	}
 
-	// Extract Location header from response (handles both 2xx and 3xx)
-	const locationUrl = (step2Headers.location || step2Headers.Location) as string | undefined;
+	// Some storage back ends answer 200/201 with the finished file object.
+	if (step2StatusCode >= 200 && step2StatusCode < 300 && step2Body?.id !== undefined) {
+		return step2Body;
+	}
+
+	// Otherwise confirm the upload: 3xx Location header, or `location` in a 201 body.
+	const locationUrl = (step2Headers.location ?? step2Body?.location) as string | undefined;
 
 	if (!locationUrl) {
-		throw new ApplicationError(
-			`Canvas Step 2 response missing Location header for upload confirmation (status: ${step2StatusCode})`,
+		throw new NodeOperationError(
+			this.getNode(),
+			`The upload server did not say where to confirm the upload (HTTP ${step2StatusCode})`,
+			{ itemIndex },
 		);
 	}
 
 	// --- Step 3: Confirm upload with Canvas auth ---
-	const canvasUrl = await getCanvasUrl.call(this);
-	const confirmUrl = locationUrl.startsWith('http')
-		? locationUrl
-		: `${canvasUrl}${locationUrl}`;
-
-	const authType = this.getNodeParameter('authentication', 0) as string;
-	const credentialType = authType === 'oAuth2' ? 'canvasOAuth2Api' : 'canvasApi';
-
-	const step3Options: IHttpRequestOptions = {
-		method: 'GET',
-		url: confirmUrl,
-		returnFullResponse: true,
-		json: true,
-	};
-
-	const step3Response = await this.helpers.httpRequestWithAuthentication.call(
+	const step3Response = await canvasApiRequest.call(
 		this,
-		credentialType,
-		step3Options,
+		'GET',
+		locationUrl,
+		undefined,
+		undefined,
+		rateLimitOptions,
 	);
 
-	return step3Response.body as IDataObject;
+	return step3Response.data as IDataObject;
 }
 
 /**
@@ -699,44 +1132,59 @@ export async function canvasFileUploadFromUrl(
 	);
 
 	const responseData = step1Response.data as IDataObject;
-	const uploadUrl = responseData.upload_url as string | undefined;
-	const uploadParams = responseData.upload_params as IDataObject | undefined;
-	const progress = responseData.progress as IDataObject | undefined;
+	const uploadUrl = responseData?.upload_url as string | undefined;
+	const uploadParams = responseData?.upload_params as IDataObject | undefined;
+	let progress = responseData?.progress as IDataObject | undefined;
 
 	// --- Step 1b: POST to upload_url if present ---
 	if (uploadUrl && uploadParams) {
-		// eslint-disable-next-line @typescript-eslint/no-require-imports
-		const FormData = require('form-data');
-		const formData = new FormData();
-
-		for (const [key, value] of Object.entries(uploadParams)) {
-			formData.append(key, String(value));
-		}
-		formData.append('target_url', fileUrl);
+		const multipart = buildMultipartBody({ ...uploadParams, target_url: fileUrl });
 
 		const uploadOptions: IHttpRequestOptions = {
 			method: 'POST',
 			url: uploadUrl,
-			body: formData,
-			headers: formData.getHeaders(),
+			body: multipart.body,
+			headers: {
+				'Content-Type': multipart.contentType,
+				'Content-Length': String(multipart.body.length),
+			},
 			returnFullResponse: true,
 			json: false,
+			disableFollowRedirect: true,
 			ignoreHttpStatusErrors: true,
 		};
 
-		await this.helpers.httpRequest(uploadOptions);
+		const uploadResponse = await this.helpers.httpRequest(uploadOptions);
+		const uploadStatus = uploadResponse.statusCode as number;
+		const uploadBody = parseJsonBody(uploadResponse.body);
+
+		if (uploadStatus >= 400) {
+			throw new NodeApiError(
+				this.getNode(),
+				{ ...(uploadBody ?? {}), httpCode: String(uploadStatus) } as JsonObject,
+				{
+					message: `The upload server rejected the URL upload (HTTP ${uploadStatus})`,
+					httpCode: String(uploadStatus),
+				},
+			);
+		}
+
+		// The upload server may answer with the progress object (or the finished file).
+		if (uploadBody?.progress && typeof uploadBody.progress === 'object') {
+			progress = uploadBody.progress as IDataObject;
+		} else if (uploadBody?.workflow_state !== undefined && uploadBody?.url !== undefined) {
+			progress = uploadBody;
+		} else if (uploadBody?.id !== undefined && uploadBody?.upload_url === undefined && !progress) {
+			return uploadBody;
+		}
 	}
 
 	// --- Step 2: Poll progress if requested ---
 	if (!waitForCompletion || !progress?.url) {
-		return responseData;
+		return progress ? { ...responseData, progress } : responseData;
 	}
 
-	return pollCanvasProgress.call(
-		this,
-		progress.url as string,
-		rateLimitOptions,
-	);
+	return pollCanvasProgress.call(this, progress.url as string, rateLimitOptions);
 }
 
 /**
@@ -750,30 +1198,18 @@ export async function pollCanvasProgress(
 	maxAttempts: number = 60,
 	intervalMs: number = 2000,
 ): Promise<IDataObject> {
-	const canvasUrl = await getCanvasUrl.call(this);
-	const authType = this.getNodeParameter('authentication', 0) as string;
-	const credentialType = authType === 'oAuth2' ? 'canvasOAuth2Api' : 'canvasApi';
-
-	const fullUrl = progressUrl.startsWith('http')
-		? progressUrl
-		: `${canvasUrl}${progressUrl}`;
-
 	for (let attempt = 0; attempt < maxAttempts; attempt++) {
-		const pollOptions: IHttpRequestOptions = {
-			method: 'GET',
-			url: fullUrl,
-			returnFullResponse: true,
-			json: true,
-		};
-
-		const response = await this.helpers.httpRequestWithAuthentication.call(
+		const response = await canvasApiRequest.call(
 			this,
-			credentialType,
-			pollOptions,
+			'GET',
+			progressUrl,
+			undefined,
+			undefined,
+			rateLimitOptions,
 		);
 
-		const progressData = response.body as IDataObject;
-		const state = progressData.workflow_state as string;
+		const progressData = response.data as IDataObject;
+		const state = progressData?.workflow_state as string;
 
 		if (state === 'completed') {
 			const results = progressData.results as IDataObject | undefined;
@@ -793,7 +1229,8 @@ export async function pollCanvasProgress(
 		}
 
 		if (state === 'failed') {
-			throw new ApplicationError(
+			throw new NodeOperationError(
+				this.getNode(),
 				`Canvas URL upload failed: ${(progressData.message as string) || 'Unknown error'}`,
 			);
 		}
@@ -802,7 +1239,8 @@ export async function pollCanvasProgress(
 		await sleep(intervalMs);
 	}
 
-	throw new ApplicationError(
+	throw new NodeOperationError(
+		this.getNode(),
 		`Canvas URL upload timed out after ${(maxAttempts * intervalMs) / 1000} seconds`,
 	);
 }
