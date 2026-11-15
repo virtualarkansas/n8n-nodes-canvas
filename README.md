@@ -18,13 +18,15 @@ Choose the installation method that matches your n8n setup:
 
 ### Option 1: n8n Community Nodes (Recommended)
 
-*Available once published to npm.*
-
 1. Open your n8n instance
 2. Go to **Settings → Community Nodes**
 3. Click **Install**
-4. Enter `n8n-nodes-canvas`
+4. Enter `@kyancey-va/n8n-nodes-canvas`
 5. Click **Install**
+
+> ⚠️ **Package name:** this project is published as `@kyancey-va/n8n-nodes-canvas`.
+> There is an unrelated package named `n8n-nodes-canvas` on npm — installing that name gives you
+> a different, smaller node without the Conversations API.
 
 ### Option 2: npm Install
 
@@ -32,7 +34,7 @@ For self-hosted n8n installed via npm:
 
 ```bash
 # In your n8n installation directory
-npm install n8n-nodes-canvas
+npm install @kyancey-va/n8n-nodes-canvas
 ```
 
 Then restart n8n.
@@ -102,7 +104,7 @@ environment:
   - N8N_COMMUNITY_PACKAGES_ENABLED=true
 
 # Then restart and install via n8n UI, or:
-docker exec -it <n8n-container> npm install n8n-nodes-canvas
+docker exec -it <n8n-container> npm install @kyancey-va/n8n-nodes-canvas
 docker compose restart
 ```
 
