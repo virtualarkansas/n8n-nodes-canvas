@@ -155,6 +155,16 @@ export function buildCourseRequest(
 				method: 'GET',
 				endpoint: `/api/v1/courses/${courseId}/effective_due_dates`,
 				...(assignmentIds.length > 0 ? { qs: { assignment_ids: assignmentIds } } : {}),
+				// Canvas answers one object, { "<assignment ID>": { "<student ID>": { due_at, ... } } }:
+				// one item per assignment and student is what a workflow can filter and loop over.
+				transform: ([byAssignment]) =>
+					Object.entries(byAssignment ?? {}).flatMap(([assignmentId, byStudent]) =>
+						Object.entries((byStudent ?? {}) as Record<string, Record<string, unknown>>).map(([userId, dates]) => ({
+							assignment_id: Number(assignmentId),
+							user_id: Number(userId),
+							...dates,
+						})),
+					) as IDataObject[],
 			};
 		}
 		case 'getPermissions': {

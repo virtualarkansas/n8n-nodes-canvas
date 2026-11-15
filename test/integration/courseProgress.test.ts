@@ -274,61 +274,78 @@ describe('course: progress, due dates, to-do, activity', () => {
 	// ----------------------------------
 	//         getEffectiveDueDates
 	// ----------------------------------
-	it('getEffectiveDueDates: one record keyed by assignment and student, with overrides applied', async () => {
-		const [dates] = await runOk({ resource: 'course', operation: 'getEffectiveDueDates', params: { courseId } });
-		expect(dates).toEqual(await canvas().get<Json>(`/api/v1/courses/${courseId}/effective_due_dates`));
-		// Every assignment of the course is a key (the practice quiz has no assignment).
-		expect(Object.keys(dates).sort()).toEqual([assignmentId, undatedAssignmentId].sort());
-		const essay = dates[assignmentId] as Record<string, Json>;
-		expect(Object.keys(essay).sort()).toEqual([studentA, studentB, fx('studentUserId')].sort());
-		expect(essay[studentA]).toEqual({ due_at: dueForA, grading_period_id: null, in_closed_grading_period: false });
-		expect(essay[studentB]).toEqual({ due_at: dueForAll, grading_period_id: null, in_closed_grading_period: false });
-		const undated = dates[undatedAssignmentId] as Record<string, Json>;
-		expect(undated[studentB]).toEqual({ due_at: null, grading_period_id: null, in_closed_grading_period: false });
+	/** The node's items (one per assignment and student) back in the shape Canvas answers with. */
+	const nested = (items: Json[]): Record<string, Record<string, Json>> => {
+		const out: Record<string, Record<string, Json>> = {};
+		for (const { assignment_id: assignment, user_id: user, ...dates } of items) {
+			(out[String(assignment)] ??= {})[String(user)] = dates;
+		}
+		return out;
+	};
+
+	it('getEffectiveDueDates: one item per assignment and student, with overrides applied', async () => {
+		const items = await runOk({ resource: 'course', operation: 'getEffectiveDueDates', params: { courseId } });
+		expect(nested(items)).toEqual(await canvas().get<Json>(`/api/v1/courses/${courseId}/effective_due_dates`));
+		// Every assignment of the course appears (the practice quiz has no assignment), for every student.
+		expect([...new Set(items.map((i) => String(i.assignment_id)))].sort()).toEqual([assignmentId, undatedAssignmentId].sort());
+		const of = (assignment: string, user: string): Json | undefined =>
+			items.find((i) => String(i.assignment_id) === assignment && String(i.user_id) === user);
+		expect(items.filter((i) => String(i.assignment_id) === assignmentId).map((i) => String(i.user_id)).sort()).toEqual(
+			[studentA, studentB, String(fx('studentUserId'))].sort(),
+		);
+		expect(of(assignmentId, studentA)).toEqual({
+			assignment_id: Number(assignmentId),
+			user_id: Number(studentA),
+			due_at: dueForA,
+			grading_period_id: null,
+			in_closed_grading_period: false,
+		});
+		expect(of(assignmentId, studentB)).toMatchObject({ due_at: dueForAll });
+		expect(of(undatedAssignmentId, studentB)).toMatchObject({ due_at: null, grading_period_id: null, in_closed_grading_period: false });
 	});
 
 	it('getEffectiveDueDates: assignment IDs limit the result (typed list, array from an expression)', async () => {
-		const [one] = await runOk({
+		const one = await runOk({
 			resource: 'course',
 			operation: 'getEffectiveDueDates',
 			persona: 'teacher',
 			params: { courseId, options: { assignment_ids: ` ${assignmentId} ` } },
 		});
-		expect(Object.keys(one)).toEqual([assignmentId]);
+		expect(Object.keys(nested(one))).toEqual([assignmentId]);
 
-		const [both] = await runOk({
+		const both = await runOk({
 			resource: 'course',
 			operation: 'getEffectiveDueDates',
 			items: [{ wanted: [Number(undatedAssignmentId), Number(assignmentId)] }],
 			params: { courseId, options: { assignment_ids: '={{ $json.wanted }}' } },
 		});
-		expect(Object.keys(both).sort()).toEqual([assignmentId, undatedAssignmentId].sort());
+		expect(Object.keys(nested(both)).sort()).toEqual([assignmentId, undatedAssignmentId].sort());
 
-		// An assignment of another course is not in this one: nothing to report.
-		const [none] = await runOk({
+		// An assignment of another course is not in this one: nothing to report, no items.
+		const none = await runOk({
 			resource: 'course',
 			operation: 'getEffectiveDueDates',
 			params: { courseId, options: { assignment_ids: fx('assignmentId') } },
 		});
-		expect(none).toEqual({});
+		expect(none).toEqual([]);
 	});
 
 	it('getEffectiveDueDates: grading periods of a seeded course are reported', async () => {
-		const assignment = fx('assignmentId');
-		const [dates] = await runOk({
+		const assignment = String(fx('assignmentId'));
+		const items = await runOk({
 			resource: 'course',
 			operation: 'getEffectiveDueDates',
 			params: { courseId: main, options: { assignment_ids: `${assignment},${fx('overrideAssignmentId')}` } },
 		});
-		expect(dates).toEqual(
+		expect(nested(items)).toEqual(
 			await canvas().get<Json>(
 				`/api/v1/courses/${main}/effective_due_dates?assignment_ids[]=${assignment}&assignment_ids[]=${fx('overrideAssignmentId')}`,
 			),
 		);
-		const persona = (dates[assignment] as Record<string, Json>)[fx('studentUserId')];
+		const persona = items.find((i) => String(i.assignment_id) === assignment && String(i.user_id) === String(fx('studentUserId'))) as Json;
 		expect(persona.grading_period_id).toBeTypeOf('number');
 		expect(persona.in_closed_grading_period).toBeTypeOf('boolean');
-		expect(Object.keys(dates[assignment] as Json).length).toBeGreaterThan(50);
+		expect(items.filter((i) => String(i.assignment_id) === assignment).length).toBeGreaterThan(50);
 	});
 
 	it('getEffectiveDueDates: errors — invalid IDs are rejected by Canvas, students may not ask', async () => {

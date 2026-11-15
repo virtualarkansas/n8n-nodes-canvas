@@ -79,7 +79,7 @@ export const courseOperations: INodeProperties[] = [
 				name: 'Get Effective Due Dates',
 				value: 'getEffectiveDueDates',
 				description:
-					'Get the due date that applies to each student for each assignment, after overrides',
+					'Get the due date that applies to each student for each assignment, after overrides: one item per assignment and student',
 				action: 'Get effective due dates in a course',
 			},
 			{
