@@ -194,6 +194,12 @@ import {
 	buildPollSubmissionRequest,
 } from './polls.handler';
 
+// Account security group
+import {
+	buildCspSettingRequest,
+	buildDeveloperKeyAccountBindingRequest,
+} from './accountSecurity.handler';
+
 /**
  * Maps every Canvas resource name to its handler function.
  * Each handler takes (operation, getParam, getParamObject) and returns IRequestConfig.
@@ -344,4 +350,8 @@ export const resourceHandlers: Record<string, ResourceHandler> = {
 	pollChoice: buildPollChoiceRequest,
 	pollSession: buildPollSessionRequest,
 	pollSubmission: buildPollSubmissionRequest,
+
+	// Account security group
+	cspSetting: buildCspSettingRequest,
+	developerKeyAccountBinding: buildDeveloperKeyAccountBindingRequest,
 };

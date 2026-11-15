@@ -511,3 +511,14 @@ export {
 	pollSubmissionOperations,
 	pollSubmissionFields,
 } from './PollSubmissionDescription';
+
+// Account security resource group descriptions
+export {
+	cspSettingOperations,
+	cspSettingFields,
+} from './CspSettingDescription';
+
+export {
+	developerKeyAccountBindingOperations,
+	developerKeyAccountBindingFields,
+} from './DeveloperKeyAccountBindingDescription';

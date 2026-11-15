@@ -27,6 +27,11 @@ export interface IRequestConfig {
 	 * that Canvas split across pages.
 	 */
 	transform?: (records: IDataObject[]) => IDataObject[];
+	/**
+	 * After a successful write, read this endpoint and output its response instead.
+	 * For the few calls whose own response does not reflect the change they made.
+	 */
+	thenGet?: string;
 }
 
 /**

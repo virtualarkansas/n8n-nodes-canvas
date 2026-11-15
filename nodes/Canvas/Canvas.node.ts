@@ -568,6 +568,17 @@ async function processItem(
 				qsData,
 				rateLimit,
 			);
+			if (request.thenGet) {
+				const current = await canvasApiRequest.call(
+					context,
+					'GET',
+					request.thenGet,
+					undefined,
+					undefined,
+					rateLimit,
+				);
+				return current.data;
+			}
 			// Some APIs wrap even a created or updated record: { "poll_choices": [{...}] }.
 			const data = response.data as IDataObject | undefined;
 			if (request.dataKey && data && Array.isArray(data[request.dataKey])) {
