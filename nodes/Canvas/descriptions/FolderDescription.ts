@@ -49,6 +49,12 @@ export const folderOperations: INodeProperties[] = [
 				action: 'Get many folders',
 			},
 			{
+				name: 'Get Media Folder',
+				value: 'getMediaFolder',
+				description: 'Get the folder for uploaded media ("Uploaded Media") that the user of the credential may upload to; Canvas creates it when it does not exist yet. It is the folder of the course or group for users who manage its files, and the one in their own personal files for everybody else.',
+				action: 'Get the media folder of a course or group',
+			},
+			{
 				name: 'List Files',
 				value: 'listFiles',
 				description: 'List files in a folder',
@@ -175,6 +181,66 @@ export const folderFields: INodeProperties[] = [
 		description: 'Whose files the path refers to',
 	},
 	{
+		displayName: 'Context Type',
+		name: 'contextType',
+		type: 'options',
+		required: true,
+		default: 'none',
+		displayOptions: {
+			show: {
+				resource: ['folder'],
+				operation: ['get'],
+			},
+		},
+		options: [
+			{
+				name: 'Any (Folder ID Only)',
+				value: 'none',
+				description: 'Find the folder wherever it is',
+			},
+			{
+				name: 'Course',
+				value: 'course',
+				description: 'A folder of this course; the folder ID "root" stands for its top folder',
+			},
+			{
+				name: 'Group',
+				value: 'group',
+				description: 'A folder of this group; the folder ID "root" stands for its top folder',
+			},
+			{
+				name: 'User',
+				value: 'user',
+				description: 'A folder of the personal files of this user; the folder ID "root" stands for its top folder',
+			},
+		],
+		description: 'Whether to look for the folder by its ID alone or within one course, group or user, where a folder from elsewhere is reported as not found',
+	},
+	{
+		displayName: 'Context Type',
+		name: 'contextType',
+		type: 'options',
+		required: true,
+		default: 'course',
+		displayOptions: {
+			show: {
+				resource: ['folder'],
+				operation: ['getMediaFolder'],
+			},
+		},
+		options: [
+			{
+				name: 'Course',
+				value: 'course',
+			},
+			{
+				name: 'Group',
+				value: 'group',
+			},
+		],
+		description: 'Whether the media folder belongs to a course or a group',
+	},
+	{
 		displayName: 'Account ID',
 		name: 'accountId',
 		type: 'string',
@@ -198,7 +264,7 @@ export const folderFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['folder'],
-				operation: ['getAll', 'create', 'getByPath'],
+				operation: ['get', 'getAll', 'create', 'getByPath', 'getMediaFolder'],
 				contextType: ['course'],
 			},
 		},
@@ -213,7 +279,7 @@ export const folderFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['folder'],
-				operation: ['getAll', 'create', 'getByPath'],
+				operation: ['get', 'getAll', 'create', 'getByPath'],
 				contextType: ['user'],
 			},
 		},
@@ -228,7 +294,7 @@ export const folderFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['folder'],
-				operation: ['getAll', 'create', 'getByPath'],
+				operation: ['get', 'getAll', 'create', 'getByPath', 'getMediaFolder'],
 				contextType: ['group'],
 			},
 		},
@@ -279,10 +345,24 @@ export const folderFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['folder'],
-				operation: ['get', 'update', 'delete', 'listFiles'],
+				operation: ['update', 'delete', 'listFiles'],
 			},
 		},
 		description: 'The ID of the folder',
+	},
+	{
+		displayName: 'Folder ID',
+		name: 'folderId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['folder'],
+				operation: ['get'],
+			},
+		},
+		description: 'The ID of the folder. Within a course, group or user (see Context Type), "root" stands for its top folder.',
 	},
 
 	// ----------------------------------

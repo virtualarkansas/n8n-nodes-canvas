@@ -67,6 +67,12 @@ export const quizSubmissionOperations: INodeProperties[] = [
 				description: 'Update scores or comments for a quiz submission',
 				action: 'Update quiz submission score',
 			},
+			{
+				name: 'Upload File',
+				value: 'uploadFile',
+				description: 'Upload a file for the running quiz attempt of the user the credential belongs to (handles all upload steps). The ID of the uploaded file is the answer to a file upload question.',
+				action: 'Upload a file for a quiz submission',
+			},
 		],
 		default: 'getAll',
 	},
@@ -319,5 +325,109 @@ export const quizSubmissionFields: INodeProperties[] = [
 		},
 		description:
 			'Comma-separated IDs of the quiz submissions to grade, as returned by "Get Many Outstanding". Submissions that are not outstanding are left untouched.',
+	},
+
+	// ----------------------------------
+	//         quizSubmission: uploadFile
+	// ----------------------------------
+	{
+		displayName: 'Upload Source',
+		name: 'uploadSource',
+		type: 'options',
+		required: true,
+		default: 'binaryData',
+		displayOptions: {
+			show: {
+				resource: ['quizSubmission'],
+				operation: ['uploadFile'],
+			},
+		},
+		options: [
+			{
+				name: 'Binary Data',
+				value: 'binaryData',
+				description: 'Upload from binary data in the workflow',
+			},
+			{
+				name: 'URL',
+				value: 'url',
+				description: 'Provide a public URL for Canvas to fetch',
+			},
+		],
+		description: 'Where the file data comes from',
+	},
+	{
+		displayName: 'Input Data Field Name',
+		name: 'binaryPropertyName',
+		type: 'string',
+		required: true,
+		default: 'data',
+		displayOptions: {
+			show: {
+				resource: ['quizSubmission'],
+				operation: ['uploadFile'],
+				uploadSource: ['binaryData'],
+			},
+		},
+		description: 'The name of the incoming field containing the binary file data to upload',
+	},
+	{
+		displayName: 'File URL',
+		name: 'fileUrl',
+		type: 'string',
+		required: true,
+		default: '',
+		placeholder: 'https://example.com/file.pdf',
+		displayOptions: {
+			show: {
+				resource: ['quizSubmission'],
+				operation: ['uploadFile'],
+				uploadSource: ['url'],
+			},
+		},
+		description: 'A publicly accessible HTTP or HTTPS URL for Canvas to fetch the file from',
+	},
+	{
+		displayName: 'Wait for Completion',
+		name: 'waitForCompletion',
+		type: 'boolean',
+		default: true,
+		displayOptions: {
+			show: {
+				resource: ['quizSubmission'],
+				operation: ['uploadFile'],
+				uploadSource: ['url'],
+			},
+		},
+		description: 'Whether to poll until Canvas finishes fetching the URL. If false, returns the progress object immediately.',
+	},
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['quizSubmission'],
+				operation: ['uploadFile'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Content Type',
+				name: 'content_type',
+				type: 'string',
+				default: '',
+				description: 'The content type of the file. Without it the type of the binary data is used, or Canvas goes by the file name.',
+			},
+			{
+				displayName: 'File Name',
+				name: 'name',
+				type: 'string',
+				default: '',
+				description: 'The name of the file in Canvas. Without it the file name of the binary data, or the last part of the URL, is used.',
+			},
+		],
 	},
 ];

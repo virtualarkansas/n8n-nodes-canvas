@@ -13,6 +13,24 @@ export const assignmentOperations: INodeProperties[] = [
 		},
 		options: [
 			{
+				name: 'Batch Create Overrides',
+				value: 'batchCreateOverrides',
+				description: 'Create overrides for several assignments of a course in one request: all of them are created, or none',
+				action: 'Create several assignment overrides',
+			},
+			{
+				name: 'Batch Get Overrides',
+				value: 'batchGetOverrides',
+				description: 'Get overrides of several assignments of a course in one request',
+				action: 'Get several assignment overrides',
+			},
+			{
+				name: 'Batch Update Overrides',
+				value: 'batchUpdateOverrides',
+				description: 'Update overrides of several assignments of a course in one request: all of them are updated, or none',
+				action: 'Update several assignment overrides',
+			},
+			{
 				name: 'Bulk Update Dates',
 				value: 'bulkUpdateDates',
 				description: 'Change due and availability dates of several assignments at once (runs as a background job)',
@@ -63,8 +81,14 @@ export const assignmentOperations: INodeProperties[] = [
 			{
 				name: 'Get Override',
 				value: 'getOverride',
-				description: 'Get a single assignment override',
+				description: 'Get a single assignment override, by its ID or by the group or section it applies to',
 				action: 'Get an assignment override',
+			},
+			{
+				name: 'List Group Members',
+				value: 'listGroupMembers',
+				description: 'List the students who share a group assignment with a student (the members of their group)',
+				action: 'List the group members of a student for an assignment',
 			},
 			{
 				name: 'List Overrides',
@@ -487,9 +511,91 @@ export const assignmentFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['assignment'],
+				operation: [
+					'batchCreateOverrides',
+					'batchGetOverrides',
+					'batchUpdateOverrides',
+					'bulkUpdateDates',
+					'create',
+					'createOverride',
+					'delete',
+					'deleteOverride',
+					'duplicate',
+					'get',
+					'getAll',
+					'listGroupMembers',
+					'listOverrides',
+					'update',
+					'updateOverride',
+				],
 			},
 		},
 		description: 'The ID of the course',
+	},
+	// Get Override: a group or a section identifies the course by itself.
+	{
+		displayName: 'Find Override By',
+		name: 'overrideBy',
+		type: 'options',
+		required: true,
+		default: 'id',
+		displayOptions: {
+			show: {
+				resource: ['assignment'],
+				operation: ['getOverride'],
+			},
+		},
+		options: [
+			{ name: 'Group', value: 'group', description: 'The override that applies to a group (group assignments)' },
+			{ name: 'Override ID', value: 'id' },
+			{ name: 'Section', value: 'section', description: 'The override that applies to a section' },
+		],
+		description: 'Whether to look the override up by its own ID or by the group or section it was made for',
+	},
+	{
+		displayName: 'Course ID',
+		name: 'courseId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['assignment'],
+				operation: ['getOverride'],
+				overrideBy: ['id'],
+			},
+		},
+		description: 'The ID of the course',
+	},
+	{
+		displayName: 'Group ID',
+		name: 'groupId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['assignment'],
+				operation: ['getOverride'],
+				overrideBy: ['group'],
+			},
+		},
+		description: 'The ID of the group the override applies to',
+	},
+	{
+		displayName: 'Section ID',
+		name: 'courseSectionId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['assignment'],
+				operation: ['getOverride'],
+				overrideBy: ['section'],
+			},
+		},
+		description: 'The ID of the course section the override applies to',
 	},
 	{
 		displayName: 'Assignment ID',
@@ -505,6 +611,7 @@ export const assignmentFields: INodeProperties[] = [
 					'update',
 					'delete',
 					'duplicate',
+					'listGroupMembers',
 					'listOverrides',
 					'getOverride',
 					'createOverride',
@@ -514,6 +621,24 @@ export const assignmentFields: INodeProperties[] = [
 			},
 		},
 		description: 'The ID of the assignment',
+	},
+
+	// ----------------------------------
+	//         assignment: listGroupMembers
+	// ----------------------------------
+	{
+		displayName: 'User ID',
+		name: 'userId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['assignment'],
+				operation: ['listGroupMembers'],
+			},
+		},
+		description: 'The numeric ID of a student of the course (SIS IDs are not accepted here). The result is that student alone when the assignment is not a group assignment or the student is in none of its groups.',
 	},
 
 	// ----------------------------------
@@ -791,6 +916,52 @@ export const assignmentFields: INodeProperties[] = [
 	},
 
 	// ----------------------------------
+	//         assignment: batch overrides
+	// ----------------------------------
+	{
+		displayName: 'Overrides',
+		name: 'overrides',
+		type: 'json',
+		required: true,
+		default: '[\n  { "id": 0, "assignment_id": 0 }\n]',
+		displayOptions: {
+			show: {
+				resource: ['assignment'],
+				operation: ['batchGetOverrides'],
+			},
+		},
+		description: 'JSON array with one entry per override to fetch: its "ID" and the "assignment_id" it belongs to. The overrides come back in this order; one that does not exist, or that the user of the credential may not see, comes back as { "ID", "assignment_id", "not_found": true }. Use JSON.stringify() when the value comes from an expression.',
+	},
+	{
+		displayName: 'Overrides',
+		name: 'overrides',
+		type: 'json',
+		required: true,
+		default: '[\n  {\n    "assignment_id": 0,\n    "course_section_id": 0,\n    "due_at": "2030-01-31T23:59:00Z"\n  }\n]',
+		displayOptions: {
+			show: {
+				resource: ['assignment'],
+				operation: ['batchCreateOverrides'],
+			},
+		},
+		description: 'JSON array with one entry per new override: "assignment_id", its target (one of "student_ids" (a list), "group_id" or "course_section_id") and optionally "title" (student overrides), "due_at", "unlock_at" and "lock_at". Canvas creates all of them or, when one is refused, none. Use JSON.stringify() when the value comes from an expression.',
+	},
+	{
+		displayName: 'Overrides',
+		name: 'overrides',
+		type: 'json',
+		required: true,
+		default: '[\n  {\n    "id": 0,\n    "assignment_id": 0,\n    "due_at": "2030-01-31T23:59:00Z"\n  }\n]',
+		displayOptions: {
+			show: {
+				resource: ['assignment'],
+				operation: ['batchUpdateOverrides'],
+			},
+		},
+		description: 'JSON array with one entry per override to change: its "ID", its "assignment_id" and the new values ("due_at", "unlock_at", "lock_at"; for student overrides also "student_ids" and "title"). Every date the override should keep has to be given again: a date that is left out is no longer overridden. Canvas updates all of them or, when one is refused, none. Use JSON.stringify() when the value comes from an expression.',
+	},
+
+	// ----------------------------------
 	//         assignment: overrides
 	// ----------------------------------
 	{
@@ -802,7 +973,22 @@ export const assignmentFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['assignment'],
-				operation: ['getOverride', 'updateOverride', 'deleteOverride'],
+				operation: ['updateOverride', 'deleteOverride'],
+			},
+		},
+		description: 'The ID of the assignment override',
+	},
+	{
+		displayName: 'Override ID',
+		name: 'overrideId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['assignment'],
+				operation: ['getOverride'],
+				overrideBy: ['id'],
 			},
 		},
 		description: 'The ID of the assignment override',

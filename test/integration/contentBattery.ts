@@ -710,6 +710,141 @@ export function ensureSubmissionsBattery(): Promise<SubmissionsBattery> {
 }
 
 // ---------------------------------------------------------------------------
+// Anonymous grading, peer review allocation, read state, restricted uploads
+// ---------------------------------------------------------------------------
+
+export interface SubmissionExtrasBattery {
+	courseId: string;
+	/** The only section of the course. */
+	sectionId: string;
+	/** Own students of the course (the first six bulk students); the student personas are enrolled too. */
+	studentIds: string[];
+	/** Anonymously graded assignment (text and uploads); the first three students handed in. */
+	anonymous: { assignmentId: string; submittedIds: string[] };
+	/**
+	 * Peer review assignment for Canvas' own allocation (two reviews per student). The first three
+	 * students and both student personas handed in.
+	 */
+	allocation: { assignmentId: string; authorIds: string[] };
+	/** Two text assignments that exist for read state tests only (the personas get graded on them). */
+	readStateAssignmentIds: string[];
+	/** Upload assignment that only accepts .txt and .pdf files. */
+	restrictedUploadAssignmentId: string;
+	/** Assignment that only the first two students are assigned to (through an override). */
+	selective: { assignmentId: string; studentIds: string[] };
+}
+
+/**
+ * A course of its own with the course features "Anonymous Grading" and "Peer Review
+ * Allocation and Grading" turned on (the latter is a hidden feature: only a site
+ * administrator can turn it on). The teacher persona teaches it.
+ */
+export function ensureSubmissionExtrasBattery(): Promise<SubmissionExtrasBattery> {
+	return withLock('submission-extras', async () => {
+		const courseId = await ensureCourse('E', 'W5682 anonymous grading battery');
+		const base = `/api/v1/courses/${courseId}`;
+
+		for (const feature of ['anonymous_marking', 'peer_review_allocation_and_grading']) {
+			const flag = await canvas().request('GET', `${base}/features/flags/${feature}`);
+			if (flag.status !== 200 || (flag.data as Json).state !== 'on' || (flag.data as Json).context_type !== 'Course') {
+				await canvas().put(`${base}/features/flags/${feature}`, { state: 'on' });
+			}
+		}
+
+		const studentIds = await pool(Array.from({ length: 6 }, (_, i) => i + 1), 6, (n) =>
+			ensureUser(`${PREFIX}-S-${pad(n)}`, `W5682 Student ${pad(n)}`),
+		);
+		await ensureStudents(courseId, [...studentIds, fx('studentUserId'), fx('student2UserId')]);
+		await ensureTeachers(courseId, [fx('teacherUserId')]);
+		const sections = await canvas().getAll<Json>(`${base}/sections`);
+		const sectionId = String(sections[0].id);
+
+		const assignments = await canvas().getAll<Json>(`${base}/assignments`);
+		const assignmentNamed = async (name: string, fields: Json): Promise<string> => {
+			const found = assignments.find((a) => a.name === name);
+			if (found) return String(found.id);
+			const created = await canvas().post<Json>(`${base}/assignments`, {
+				assignment: { name, points_possible: 10, published: true, submission_types: ['online_text_entry'], ...fields },
+			});
+			return String(created.id);
+		};
+		const submitFor = async (assignmentId: string, userIds: string[]): Promise<void> => {
+			const existing = await canvas().getAll<Json>(`${base}/assignments/${assignmentId}/submissions`);
+			// (An anonymously graded assignment lists its submissions without the student: ask per student.)
+			const state = new Map(existing.filter((sub) => sub.user_id).map((sub) => [String(sub.user_id), String(sub.workflow_state)]));
+			for (const userId of userIds) {
+				let current = state.get(userId);
+				current ??= String((await canvas().get<Json>(`${base}/assignments/${assignmentId}/submissions/${userId}`)).workflow_state);
+				if (current !== 'unsubmitted') continue;
+				await canvas().post(`${base}/assignments/${assignmentId}/submissions`, {
+					submission: { submission_type: 'online_text_entry', body: `<p>Answer of ${userId}</p>`, user_id: userId },
+				});
+			}
+		};
+
+		const anonymous = {
+			assignmentId: await assignmentNamed('Anonymous playground', {
+				submission_types: ['online_text_entry', 'online_upload'],
+				anonymous_grading: true,
+			}),
+			submittedIds: studentIds.slice(0, 3),
+		};
+		await submitFor(anonymous.assignmentId, anonymous.submittedIds);
+
+		const allocation = {
+			assignmentId: await assignmentNamed('Allocation playground', { peer_reviews: true, peer_review_count: 2 }),
+			authorIds: studentIds.slice(0, 3),
+		};
+		await submitFor(allocation.assignmentId, [...allocation.authorIds, fx('studentUserId'), fx('student2UserId')]);
+
+		const readStateAssignmentIds = [await assignmentNamed('Read state A', {}), await assignmentNamed('Read state B', {})];
+		const restrictedUploadAssignmentId = await assignmentNamed('Restricted upload', {
+			submission_types: ['online_upload'],
+			allowed_extensions: ['txt', 'pdf'],
+		});
+
+		const selective = {
+			assignmentId: await assignmentNamed('Only two students', { only_visible_to_overrides: true }),
+			studentIds: studentIds.slice(0, 2),
+		};
+		const overrides = await canvas().getAll<Json>(`${base}/assignments/${selective.assignmentId}/overrides`);
+		if (overrides.length === 0) {
+			await canvas().post(`${base}/assignments/${selective.assignmentId}/overrides`, {
+				assignment_override: { student_ids: selective.studentIds.map(Number), title: 'Only two students' },
+			});
+		}
+		// Who an assignment is visible to is cached as well: wait until Canvas agrees.
+		const visibleBy = Date.now() + 6 * 60_000;
+		for (;;) {
+			const gradeable = await canvas().getAll<Json>(
+				`${base}/assignments/gradeable_students?assignment_ids[]=${selective.assignmentId}`,
+			);
+			if (gradeable.map((user) => String(user.id)).sort().join() === [...selective.studentIds].sort().join()) break;
+			if (Date.now() > visibleBy) throw new Error('The selective assignment is still not limited to its two students');
+			await new Promise((r) => setTimeout(r, 5000));
+		}
+
+		// Wait until the personas can see the assignments (visibility cache, at most five minutes).
+		const personas = [new CanvasClient('student'), new CanvasClient('student2')];
+		const deadline = Date.now() + 6 * 60_000;
+		for (;;) {
+			const seen = await Promise.all(
+				personas.flatMap((client) =>
+					[anonymous.assignmentId, allocation.assignmentId, ...readStateAssignmentIds, restrictedUploadAssignmentId].map((id) =>
+						client.request('GET', `${base}/assignments/${id}`),
+					),
+				),
+			);
+			if (seen.every((res) => res.status === 200)) break;
+			if (Date.now() > deadline) throw new Error('The student personas still cannot see the assignments of the extras course');
+			await new Promise((r) => setTimeout(r, 5000));
+		}
+
+		return { courseId, sectionId, studentIds, anonymous, allocation, readStateAssignmentIds, restrictedUploadAssignmentId, selective };
+	});
+}
+
+// ---------------------------------------------------------------------------
 // Files, folders, media objects
 // ---------------------------------------------------------------------------
 

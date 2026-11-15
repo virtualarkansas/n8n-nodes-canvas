@@ -1,5 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { buildUploadSource } from './submissions.handler';
 
 // ============================================
 // Helpers
@@ -493,6 +494,25 @@ export function handleQuizSubmissionResource(
 				endpoint: `${base}/outstanding_quiz_submissions`,
 				method: 'POST',
 				body: { quiz_submission_ids: ids },
+			};
+		}
+
+		case 'uploadFile': {
+			// Step 1 of the upload, for the running attempt of the user of the credential.
+			// The ID of the finished file answers a file upload question.
+			const options = getParamObject('options');
+			const body: Record<string, unknown> = {};
+			if (options.name) {
+				body.name = options.name;
+			}
+			if (options.content_type) {
+				body.content_type = options.content_type;
+			}
+			return {
+				endpoint: `${base}/submissions/self/files`,
+				method: 'POST',
+				body,
+				upload: buildUploadSource(getParam),
 			};
 		}
 

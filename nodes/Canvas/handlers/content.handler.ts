@@ -337,6 +337,14 @@ export function handleContentMigrationResource(
 			};
 		}
 
+		case 'getIssue': {
+			const basePath = getContentMigrationBasePath(getParam);
+			return {
+				method: 'GET',
+				endpoint: `${basePath}/content_migrations/${getParam('contentMigrationId')}/migration_issues/${getParam('issueId')}`,
+			};
+		}
+
 		case 'getIssues': {
 			const basePath = getContentMigrationBasePath(getParam);
 			return {

@@ -186,6 +186,111 @@ describe('folder', () => {
 		expect(mixed.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', resource: 'folder', operation: 'get' });
 	});
 
+	it('get: within a course, a group or a user; "root" is the top folder there', async () => {
+		const get = (params: Json, persona = 'admin'): ReturnType<typeof runNode> =>
+			runNode({ resource: 'folder', operation: 'get', persona, params: { ...params, errorHandling: { onError: 'continueWithError' } } });
+		const found = async (params: Json, persona?: string): Promise<Json> => {
+			const result = await get(params, persona);
+			expect(result.error, JSON.stringify(result.error)).toEqual([]);
+			return result.success[0];
+		};
+		const notFound = async (params: Json, persona?: string): Promise<void> => {
+			const result = await get(params, persona);
+			expect(result.success, JSON.stringify(params)).toEqual([]);
+			expect(result.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', resource: 'folder', operation: 'get' });
+		};
+		const groupRoot = await canvas().get<Json>(`/api/v1/groups/${battery.groupId}/folders/root`);
+		const userRoot = await new CanvasClient('student2').get<Json>('/api/v1/users/self/folders/root');
+
+		// Course.
+		const courseRoot = await found({ contextType: 'course', courseId, folderId: 'root' });
+		expect(courseRoot).toMatchObject({ id: Number(battery.rootFolderId), full_name: 'course files', context_type: 'Course', parent_folder_id: null });
+		expect((await found({ contextType: 'course', courseId: 'sis_course_id:W5682-D', folderId: battery.bulkFoldersId })).name).toBe('bulk-folders');
+		await notFound({ contextType: 'group', groupId: battery.groupId, folderId: battery.bulkFoldersId });
+		await notFound({ contextType: 'user', userId: fx('student2UserId'), folderId: battery.bulkFoldersId });
+
+		// Group.
+		expect(await found({ contextType: 'group', groupId: battery.groupId, folderId: 'root' })).toMatchObject({
+			id: groupRoot.id,
+			context_type: 'Group',
+			context_id: Number(battery.groupId),
+		});
+		expect((await found({ contextType: 'group', groupId: battery.groupId, folderId: String(groupRoot.id) })).id).toBe(groupRoot.id);
+		await notFound({ contextType: 'course', courseId, folderId: String(groupRoot.id) });
+
+		// User: "self" for the owner, the user ID for an administrator.
+		expect(await found({ contextType: 'user', userId: 'self', folderId: 'root' }, 'student2')).toMatchObject({
+			id: userRoot.id,
+			context_type: 'User',
+			context_id: Number(fx('student2UserId')),
+		});
+		expect((await found({ contextType: 'user', userId: fx('student2UserId'), folderId: String(userRoot.id) })).id).toBe(userRoot.id);
+		await notFound({ contextType: 'user', userId: fx('studentUserId'), folderId: String(userRoot.id) });
+
+		// "root" only means something within a context.
+		await notFound({ contextType: 'none', folderId: 'root' });
+		// By ID alone, IDs from expressions.
+		const anywhere = await runNode({
+			resource: 'folder',
+			operation: 'get',
+			items: [{ id: Number(battery.rootFolderId) }, { id: groupRoot.id }, { id: userRoot.id }],
+			params: { contextType: 'none', folderId: '={{ $json.id }}' },
+		});
+		expect(anywhere.failure, JSON.stringify(anywhere.failure)).toBeUndefined();
+		expect(ids(anywhere.success)).toEqual([Number(battery.rootFolderId), groupRoot.id, userRoot.id]);
+
+		// A student cannot look into the folders of a classmate.
+		const classmate = await get({ contextType: 'user', userId: fx('student2UserId'), folderId: 'root' }, 'student');
+		expect(classmate.success).toEqual([]);
+		expect([401, 403]).toContain(classmate.error[0].errorCode);
+	});
+
+	it('getMediaFolder: the folder for uploaded media of a course or group, or of the user for those who do not manage its files', async () => {
+		const [ofCourse] = await runOk({ resource: 'folder', operation: 'getMediaFolder', params: { contextType: 'course', courseId } });
+		expect(ofCourse).toEqual(await canvas().get<Json>(`/api/v1/courses/${courseId}/folders/media`));
+		expect(ofCourse).toMatchObject({
+			name: 'Uploaded Media',
+			full_name: 'course files/Uploaded Media',
+			context_type: 'Course',
+			context_id: Number(courseId),
+			parent_folder_id: Number(battery.rootFolderId),
+		});
+		// Asking again returns the same folder: it is only created once.
+		const [again] = await runOk({
+			resource: 'folder',
+			operation: 'getMediaFolder',
+			items: [{ course: Number(courseId) }],
+			params: { contextType: 'course', courseId: '={{ $json.course }}' },
+		});
+		expect(again.id).toBe(ofCourse.id);
+
+		const [ofGroup] = await runOk({ resource: 'folder', operation: 'getMediaFolder', params: { contextType: 'group', groupId: battery.groupId } });
+		expect(ofGroup).toEqual(await canvas().get<Json>(`/api/v1/groups/${battery.groupId}/folders/media`));
+		expect(ofGroup).toMatchObject({ context_type: 'Group', context_id: Number(battery.groupId) });
+
+		// A student may read the course's files but not manage them: Canvas answers with the
+		// media folder of the student's own files.
+		const [ofStudent] = await runOk({ resource: 'folder', operation: 'getMediaFolder', persona: 'student2', params: { contextType: 'course', courseId } });
+		expect(ofStudent).toMatchObject({ context_type: 'User', context_id: Number(fx('student2UserId')) });
+		expect(ofStudent.id).not.toBe(ofCourse.id);
+		expect(ofStudent.id).toBe((await new CanvasClient('student2').get<Json>(`/api/v1/courses/${courseId}/folders/media`)).id);
+
+		const outsider = await runNode({
+			resource: 'folder',
+			operation: 'getMediaFolder',
+			persona: 'sbxStudent1',
+			params: { contextType: 'course', courseId, errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(outsider.success).toEqual([]);
+		expect([401, 403]).toContain(outsider.error[0].errorCode);
+		const unknown = await runNode({
+			resource: 'folder',
+			operation: 'getMediaFolder',
+			params: { contextType: 'group', groupId: '999999999', errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(unknown.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', resource: 'folder', operation: 'getMediaFolder' });
+	});
+
 	it('getAll: the direct sub-folders of a folder, paginated', async () => {
 		const expected = await subFolders(battery.bulkFoldersId);
 		expect(expected).toHaveLength(BULK);

@@ -19,9 +19,27 @@ export const submissionOperations: INodeProperties[] = [
 				action: 'Grade multiple submissions',
 			},
 			{
+				name: 'Bulk Grade Across Assignments',
+				value: 'bulkGradeMultiple',
+				description: 'Grade or comment on submissions for several assignments of a course or section in one request (runs as a background job)',
+				action: 'Grade submissions across assignments',
+			},
+			{
+				name: 'Bulk Mark Read',
+				value: 'bulkMarkRead',
+				description: 'Mark several of the own submissions of the user of the credential as read',
+				action: 'Mark multiple submissions as read',
+			},
+			{
+				name: 'Clear Unread',
+				value: 'clearUnread',
+				description: 'Mark every submission of a student in a course as read (site administrators only)',
+				action: 'Clear the unread submissions of a student',
+			},
+			{
 				name: 'Get',
 				value: 'get',
-				description: 'Get a single submission',
+				description: 'Get a single submission, by student or by anonymous ID',
 				action: 'Get a submission',
 			},
 			{
@@ -37,6 +55,12 @@ export const submissionOperations: INodeProperties[] = [
 				action: 'Get many submissions for students',
 			},
 			{
+				name: 'Get Read State',
+				value: 'getReadState',
+				description: 'Get whether the student has seen the document annotations or the rubric assessments of a submission',
+				action: 'Get the read state of a submission item',
+			},
+			{
 				name: 'Get Summary',
 				value: 'getSummary',
 				description: 'Count the graded, ungraded and missing submissions of an assignment',
@@ -45,7 +69,7 @@ export const submissionOperations: INodeProperties[] = [
 			{
 				name: 'Grade',
 				value: 'grade',
-				description: 'Grade or comment on a submission',
+				description: 'Grade or comment on a submission, by student or by anonymous ID',
 				action: 'Grade a submission',
 			},
 			{
@@ -55,9 +79,15 @@ export const submissionOperations: INodeProperties[] = [
 				action: 'List gradeable students of an assignment',
 			},
 			{
+				name: 'List Gradeable Students for Assignments',
+				value: 'listGradeableStudentsMultiple',
+				description: 'List the students who can be graded for any of several assignments, each with the assignments that apply to them',
+				action: 'List gradeable students of several assignments',
+			},
+			{
 				name: 'Mark Read',
 				value: 'markRead',
-				description: 'Mark a submission, or its grade, comments or rubric assessment, as read for the user of the credential',
+				description: 'Mark a submission, or its grade, comments, rubric assessment or document annotations, as read for the user of the credential',
 				action: 'Mark a submission as read',
 			},
 			{
@@ -72,6 +102,12 @@ export const submissionOperations: INodeProperties[] = [
 				description: 'Submit an assignment',
 				action: 'Submit an assignment',
 			},
+			{
+				name: 'Upload File',
+				value: 'uploadFile',
+				description: 'Upload a file to hand in for an assignment (handles all upload steps). Hand it in with Submit, using the ID of the uploaded file.',
+				action: 'Upload a file for a submission',
+			},
 		],
 		default: 'getAll',
 	},
@@ -80,13 +116,90 @@ export const submissionOperations: INodeProperties[] = [
 /** Operations that Canvas offers per course and per section. */
 const contextOperations = [
 	'bulkGrade',
+	'bulkGradeMultiple',
+	'bulkMarkRead',
+	'clearUnread',
 	'get',
 	'getAll',
 	'getAllForStudents',
+	'getReadState',
 	'grade',
 	'markRead',
 	'markUnread',
 	'submit',
+	'uploadFile',
+];
+
+/** One student's grade and comment in the bulk grading operations (alphabetical by display name). */
+const bulkGradeValues: INodeProperties[] = [
+	{
+		displayName: 'Comment',
+		name: 'text_comment',
+		type: 'string',
+		default: '',
+		description: 'Add a text comment to the submission',
+	},
+	{
+		displayName: 'Comment File IDs',
+		name: 'file_ids',
+		type: 'string',
+		default: '',
+		description: 'Comma-separated list of file IDs to attach to the comment (files uploaded with Submission Comment > Upload File, or own files of the user of the credential)',
+	},
+	{
+		displayName: 'Excuse',
+		name: 'excuse',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to excuse the student from this assignment',
+	},
+	{
+		displayName: 'Grade',
+		name: 'posted_grade',
+		type: 'string',
+		default: '',
+		description: 'The grade: points ("13.5"), a percentage ("40%"), a letter grade ("A-") or "pass"/"complete"/"fail"/"incomplete"',
+	},
+	{
+		displayName: 'Group Comment',
+		name: 'group_comment',
+		type: 'boolean',
+		default: false,
+		description: 'Whether the comment should be sent to all group members (for group assignments)',
+	},
+	{
+		displayName: 'Media Comment ID',
+		name: 'media_comment_id',
+		type: 'string',
+		default: '',
+		description: 'The ID of a media recording to add as a comment (a media object ID such as "m-1234")',
+	},
+	{
+		displayName: 'Media Comment Type',
+		name: 'media_comment_type',
+		type: 'options',
+		options: [
+			{ name: 'Audio', value: 'audio' },
+			{ name: 'Video', value: 'video' },
+		],
+		default: 'video',
+		description: 'The type of the media recording (only sent together with a Media Comment ID)',
+	},
+	{
+		displayName: 'Rubric Assessment',
+		name: 'rubric_assessment',
+		type: 'json',
+		default: '{}',
+		description: 'JSON object keyed by rubric criterion ID, each with "points" and optionally "rating_id" and "comments", e.g. {"_1234": {"points": 4}}. Requires a rubric attached to the assignment.',
+	},
+	{
+		displayName: 'Student ID',
+		name: 'student_id',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The ID of the student',
+	},
 ];
 
 export const submissionFields: INodeProperties[] = [
@@ -150,7 +263,7 @@ export const submissionFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['submission'],
-				operation: ['getSummary', 'listGradeableStudents'],
+				operation: ['getSummary', 'listGradeableStudents', 'listGradeableStudentsMultiple'],
 			},
 		},
 		description: 'The ID of the course',
@@ -168,20 +281,92 @@ export const submissionFields: INodeProperties[] = [
 					'bulkGrade',
 					'get',
 					'getAll',
+					'getReadState',
 					'getSummary',
 					'grade',
 					'listGradeableStudents',
 					'markRead',
 					'markUnread',
 					'submit',
+					'uploadFile',
 				],
 			},
 		},
 		description: 'The ID of the assignment',
 	},
+	{
+		displayName: 'Assignment IDs',
+		name: 'assignmentIds',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['listGradeableStudentsMultiple'],
+			},
+		},
+		description: 'Comma-separated list of assignment IDs. Every student who can be graded for at least one of them is returned, with the IDs of those assignments in "assignment_ids".',
+	},
 
 	// ----------------------------------
-	//         submission: get, grade, markRead, markUnread
+	//         submission: get, grade - by student or by anonymous ID
+	// ----------------------------------
+	{
+		displayName: 'Identify Submission By',
+		name: 'submissionBy',
+		type: 'options',
+		required: true,
+		default: 'userId',
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['get', 'grade'],
+			},
+		},
+		options: [
+			{
+				name: 'Anonymous ID',
+				value: 'anonymousId',
+				description: 'The ID Canvas gives each submission of an anonymously graded assignment (the result then leaves out who the student is)',
+			},
+			{ name: 'User ID', value: 'userId', description: 'The student the submission belongs to' },
+		],
+		description: 'Whether to address the submission by its student or, for anonymous grading, by its anonymous ID',
+	},
+	{
+		displayName: 'User ID',
+		name: 'userId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['get', 'grade'],
+				submissionBy: ['userId'],
+			},
+		},
+		description: 'The ID of the student the submission belongs to',
+	},
+	{
+		displayName: 'Anonymous ID',
+		name: 'anonymousId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['get', 'grade'],
+				submissionBy: ['anonymousId'],
+			},
+		},
+		description: 'The anonymous ID of the submission ("anonymous_id" in Get Many, or in List Gradeable Students with Anonymous IDs turned on)',
+	},
+
+	// ----------------------------------
+	//         submission: markRead, markUnread, getReadState
 	// ----------------------------------
 	{
 		displayName: 'User ID',
@@ -192,10 +377,36 @@ export const submissionFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['submission'],
-				operation: ['get', 'grade', 'markRead', 'markUnread'],
+				operation: ['getReadState', 'markRead', 'markUnread'],
 			},
 		},
 		description: 'The ID of the student the submission belongs to',
+	},
+	{
+		displayName: 'Item',
+		name: 'readStateItem',
+		type: 'options',
+		required: true,
+		default: 'document_annotations',
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['getReadState'],
+			},
+		},
+		options: [
+			{
+				name: 'Document Annotations',
+				value: 'document_annotations',
+				description: 'Annotations a grader made on a submitted document',
+			},
+			{
+				name: 'Rubric Assessments',
+				value: 'rubric_assessments',
+				description: 'Rubric comments and ratings. Current Canvas keeps track of unread rubric assessments with the submission itself (see Mark Read > Item > Rubric) and no longer raises this flag, so expect "read": true.',
+			},
+		],
+		description: 'Which part of the feedback to ask about. The result is { "read": true } when the student has nothing unseen there. (The read state of the submission as a whole comes with Get > Include > Read State.)',
 	},
 
 	// ----------------------------------
@@ -220,11 +431,223 @@ export const submissionFields: INodeProperties[] = [
 				type: 'options',
 				options: [
 					{ name: 'Comment', value: 'comment' },
+					{
+						name: 'Document Annotations',
+						value: 'document_annotations',
+						description: 'The flag Get Read State reports for document annotations. Only the student the submission belongs to can do this.',
+					},
 					{ name: 'Grade', value: 'grade' },
 					{ name: 'Rubric', value: 'rubric' },
+					{
+						name: 'Rubric Assessments',
+						value: 'rubric_assessments',
+						description: 'The flag Get Read State reports for rubric assessments. Only the student the submission belongs to can do this.',
+					},
 				],
 				default: 'comment',
 				description: 'Mark only this part of the submission as read. A submission with unread comments or an unread rubric assessment stays unread until those are marked as read too.',
+			},
+		],
+	},
+
+	// ----------------------------------
+	//         submission: bulkMarkRead, clearUnread
+	// ----------------------------------
+	{
+		displayName: 'Submission IDs',
+		name: 'submissionIds',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['bulkMarkRead'],
+			},
+		},
+		description: 'Comma-separated list of submission IDs (the "ID" of each submission, not the ID of the student). Canvas only marks submissions that belong to the user of the credential; any others are skipped without an error.',
+	},
+	{
+		displayName: 'User ID',
+		name: 'userId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['clearUnread'],
+			},
+		},
+		description: 'The numeric ID of the student whose submissions are marked as read (SIS IDs are not accepted here)',
+	},
+
+	// ----------------------------------
+	//         submission: uploadFile
+	// ----------------------------------
+	{
+		displayName: 'User ID',
+		name: 'userId',
+		type: 'string',
+		required: true,
+		default: 'self',
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['uploadFile'],
+			},
+		},
+		description: 'The ID of the student the file is uploaded for; "self" for the user of the credential. Uploading for another student requires permission to grade.',
+	},
+	{
+		displayName: 'Upload Source',
+		name: 'uploadSource',
+		type: 'options',
+		required: true,
+		default: 'binaryData',
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['uploadFile'],
+			},
+		},
+		options: [
+			{
+				name: 'Binary Data',
+				value: 'binaryData',
+				description: 'Upload from binary data in the workflow',
+			},
+			{
+				name: 'URL',
+				value: 'url',
+				description: 'Provide a public URL for Canvas to fetch',
+			},
+		],
+		description: 'Where the file data comes from',
+	},
+	{
+		displayName: 'Input Data Field Name',
+		name: 'binaryPropertyName',
+		type: 'string',
+		required: true,
+		default: 'data',
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['uploadFile'],
+				uploadSource: ['binaryData'],
+			},
+		},
+		description: 'The name of the incoming field containing the binary file data to upload',
+	},
+	{
+		displayName: 'File URL',
+		name: 'fileUrl',
+		type: 'string',
+		required: true,
+		default: '',
+		placeholder: 'https://example.com/file.pdf',
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['uploadFile'],
+				uploadSource: ['url'],
+			},
+		},
+		description: 'A publicly accessible HTTP or HTTPS URL for Canvas to fetch the file from',
+	},
+	{
+		displayName: 'Submit Assignment',
+		name: 'submitAssignment',
+		type: 'boolean',
+		default: false,
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['uploadFile'],
+				uploadSource: ['url'],
+			},
+		},
+		description: 'Whether Canvas hands the file in as soon as it has fetched it, without a separate Submit. Canvas submits for the user of the credential, whatever the User ID: leave this off when uploading for another student.',
+	},
+	{
+		displayName: 'Wait for Completion',
+		name: 'waitForCompletion',
+		type: 'boolean',
+		default: true,
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['uploadFile'],
+				uploadSource: ['url'],
+			},
+		},
+		description: 'Whether to poll until Canvas finishes fetching the URL. If false, returns the progress object immediately.',
+	},
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['uploadFile'],
+				uploadSource: ['binaryData'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Content Type',
+				name: 'content_type',
+				type: 'string',
+				default: '',
+				description: 'The content type of the file. Without it the type of the binary data is used.',
+			},
+			{
+				displayName: 'File Name',
+				name: 'name',
+				type: 'string',
+				default: '',
+				description: 'The name of the file in Canvas. Without it the file name of the binary data is used. When the assignment restricts file types, the name must end in an allowed extension.',
+			},
+		],
+	},
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['uploadFile'],
+				uploadSource: ['url'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Comment',
+				name: 'comment',
+				type: 'string',
+				default: '',
+				description: 'A comment added to the submission (only together with Submit Assignment)',
+			},
+			{
+				displayName: 'Content Type',
+				name: 'content_type',
+				type: 'string',
+				default: '',
+				description: 'The content type of the file. Without it Canvas goes by the file name.',
+			},
+			{
+				displayName: 'File Name',
+				name: 'name',
+				type: 'string',
+				default: '',
+				description: 'The name of the file in Canvas. Without it the last part of the URL is used. When the assignment restricts file types, the name must end in an allowed extension.',
 			},
 		],
 	},
@@ -517,6 +940,13 @@ export const submissionFields: INodeProperties[] = [
 		},
 		options: [
 			{
+				displayName: 'Anonymous IDs',
+				name: 'allow_new_anonymous_id',
+				type: 'boolean',
+				default: true,
+				description: 'Whether to return anonymous IDs in place of the students when the assignment is graded anonymously and the user of the credential may not see who the students are. The anonymous IDs are what Get and Grade take under Identify Submission By > Anonymous ID.',
+			},
+			{
 				displayName: 'Order',
 				name: 'order',
 				type: 'options',
@@ -647,43 +1077,44 @@ export const submissionFields: INodeProperties[] = [
 			{
 				name: 'gradeValues',
 				displayName: 'Grade',
+				values: bulkGradeValues,
+			},
+		],
+	},
+
+	// ----------------------------------
+	//         submission: bulkGradeMultiple
+	// ----------------------------------
+	{
+		displayName: 'Grades',
+		name: 'grades',
+		type: 'fixedCollection',
+		typeOptions: {
+			multipleValues: true,
+		},
+		placeholder: 'Add Grade',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['submission'],
+				operation: ['bulkGradeMultiple'],
+			},
+		},
+		description: 'One entry per assignment and student. Canvas applies them in a background job and returns its progress object (follow it with Progress > Get). Every assignment has to be published.',
+		options: [
+			{
+				name: 'gradeValues',
+				displayName: 'Grade',
 				values: [
 					{
-						displayName: 'Comment',
-						name: 'text_comment',
-						type: 'string',
-						default: '',
-						description: 'Add a text comment to the submission',
-					},
-					{
-						displayName: 'Excuse',
-						name: 'excuse',
-						type: 'boolean',
-						default: false,
-						description: 'Whether to excuse the student from this assignment',
-					},
-					{
-						displayName: 'Grade',
-						name: 'posted_grade',
-						type: 'string',
-						default: '',
-						description: 'The grade: points ("13.5"), a percentage ("40%"), a letter grade ("A-") or "pass"/"complete"/"fail"/"incomplete"',
-					},
-					{
-						displayName: 'Group Comment',
-						name: 'group_comment',
-						type: 'boolean',
-						default: false,
-						description: 'Whether the comment should be sent to all group members (for group assignments)',
-					},
-					{
-						displayName: 'Student ID',
-						name: 'student_id',
+						displayName: 'Assignment ID',
+						name: 'assignment_id',
 						type: 'string',
 						required: true,
 						default: '',
-						description: 'The ID of the student',
+						description: 'The ID of the assignment',
 					},
+					...bulkGradeValues,
 				],
 			},
 		],

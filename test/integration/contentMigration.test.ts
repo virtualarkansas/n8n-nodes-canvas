@@ -541,6 +541,106 @@ describe('contentMigration', () => {
 		expect(list.map((m) => m.id)).toEqual([created.id]);
 	});
 
+	it('getIssue: a single issue of a migration, in every context', async () => {
+		// One import per context that fails (Canvas cannot download from that URL) and therefore has an issue.
+		const failingImport = async (
+			contextPath: string,
+			body: Json,
+			request: (method: string, path: string, body?: unknown) => Promise<Json> = (method, path, payload) =>
+				method === 'POST' ? canvas().post<Json>(path, payload) : canvas().get<Json>(path),
+		): Promise<{ migrationId: string; issue: Json }> => {
+			const migration = await request('POST', `${contextPath}/content_migrations`, body);
+			const path = `${contextPath}/content_migrations/${String(migration.id)}`;
+			const issues = await eventually(async () => {
+				const state = await request('GET', path);
+				if (state.workflow_state !== 'failed') return undefined;
+				const list = (await request('GET', `${path}/migration_issues`)) as unknown as Json[];
+				return list.length > 0 ? list : undefined;
+			}, `the failed import into ${contextPath}`, 120_000);
+			return { migrationId: String(migration.id), issue: issues[0] };
+		};
+		const cartridge = { migration_type: 'common_cartridge_importer', settings: { file_url: 'https://files.battery.invalid/issue.imscc' } };
+		const zipInto = (folderId: unknown): Json => ({
+			migration_type: 'zip_file_importer',
+			settings: { file_url: 'https://files.battery.invalid/issue.zip', folder_id: String(folderId) },
+		});
+		// A course and a group of their own: other tests count the migrations of the shared ones.
+		const issueCourse = await newCourse('issues');
+		const category = await canvas().post<Json>(`/api/v1/courses/${issueCourse}/group_categories`, { name: unique('Issue groups') });
+		const issueGroup = String(
+			(await canvas().post<Json>(`/api/v1/group_categories/${String(category.id)}/groups`, { name: unique('Issue group') })).id,
+		);
+		const groupFolder = await canvas().get<Json>(`/api/v1/groups/${issueGroup}/folders/root`);
+		const userFolder = await asUser<Json>(owner as OwnUser, 'GET', '/api/v1/users/self/folders/root');
+
+		const inCourse = await failingImport(`/api/v1/courses/${issueCourse}`, cartridge);
+		const inAccount = await failingImport(`/api/v1/accounts/${accountId}`, cartridge);
+		const inGroup = await failingImport(`/api/v1/groups/${issueGroup}`, zipInto(groupFolder.id));
+		const inUser = await failingImport(`/api/v1/users/${owner!.id}`, zipInto(userFolder.id), (method, path, body) =>
+			asUser<Json>(owner as OwnUser, method, path, body),
+		);
+
+		const cases: Array<[Json, { migrationId: string; issue: Json }, string | undefined]> = [
+			[{ contextType: 'course', courseId: issueCourse }, inCourse, undefined],
+			[{ contextType: 'account', accountId }, inAccount, undefined],
+			[{ contextType: 'group', groupId: issueGroup }, inGroup, undefined],
+			[{ contextType: 'user', userId: 'self' }, inUser, persona],
+		];
+		for (const [context, { migrationId, issue }, runAs] of cases) {
+			const [fetched] = await runOk({
+				resource: 'contentMigration',
+				operation: 'getIssue',
+				persona: runAs,
+				items: [{ migration: Number(migrationId), issue: issue.id }],
+				params: { ...context, contentMigrationId: '={{ $json.migration }}', issueId: '={{ $json.issue }}' },
+			});
+			// (The administrator also gets Canvas' internal error report with the issue; the owner of a user import does not.)
+			expect(fetched, String(context.contextType)).toMatchObject({
+				id: issue.id,
+				workflow_state: 'active',
+				issue_type: issue.issue_type,
+				description: issue.description,
+				content_migration_url: issue.content_migration_url,
+			});
+			expect(String(fetched.description).length).toBeGreaterThan(0);
+			expect(String(fetched.content_migration_url)).toContain(`/content_migrations/${migrationId}`);
+		}
+
+		const run = (params: Json, runAs?: string): ReturnType<typeof runNode> =>
+			runNode({
+				resource: 'contentMigration',
+				operation: 'getIssue',
+				persona: runAs,
+				params: { ...params, errorHandling: { onError: 'continueWithError' } },
+			});
+
+		// The user context by the ID of the user: for that user only, not even for an administrator.
+		const ofUser = { contextType: 'user', userId: owner!.id, contentMigrationId: inUser.migrationId, issueId: String(inUser.issue.id) };
+		const byUserId = await run(ofUser, persona);
+		expect(byUserId.error).toEqual([]);
+		expect(byUserId.success[0].id).toBe(inUser.issue.id);
+		const asAdmin = await run(ofUser);
+		expect(asAdmin.success).toEqual([]);
+		expect(asAdmin.error[0]).toMatchObject({ errorCode: 403, errorType: 'FORBIDDEN', resource: 'contentMigration', operation: 'getIssue' });
+
+		// An issue is only found under its own migration; unknown issues are not found; students have no access.
+		const course = { contextType: 'course', courseId: issueCourse, contentMigrationId: inCourse.migrationId };
+		const mixed = await runNode({
+			resource: 'contentMigration',
+			operation: 'getIssue',
+			items: [{ issue: 999999999 }, { issue: inCourse.issue.id }, { issue: inAccount.issue.id }],
+			params: { ...course, issueId: '={{ $json.issue }}', errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(mixed.rawSuccess.map((item) => item.pairedItem)).toEqual([{ item: 1 }]);
+		expect(mixed.error).toHaveLength(2);
+		for (const error of mixed.error) {
+			expect(error).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', resource: 'contentMigration', operation: 'getIssue' });
+		}
+		const asStudent = await run({ ...course, issueId: String(inCourse.issue.id) }, 'student');
+		expect(asStudent.success).toEqual([]);
+		expect([401, 403, 404]).toContain(asStudent.error[0].errorCode);
+	});
+
 	it('getAll: the migrations of a course, newest first, with paging; getIssues of a clean migration is empty', async () => {
 		// A few more migrations into the full copy course (selective, so nothing is imported).
 		for (let i = 0; i < 4; i++) {

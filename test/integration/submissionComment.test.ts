@@ -1,9 +1,12 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { createHash } from 'node:crypto';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { canvas, fx, unique } from '../lib/canvas';
 import { runNode, runOk } from '../lib/harness';
 import type { Json } from '../lib/n8n';
-import { ensureSubmissionsBattery, uploadDirect } from './contentBattery';
+import { downloadFile, ensureSubmissionsBattery, patternBuffer, uploadDirect } from './contentBattery';
 import type { SubmissionsBattery } from './contentBattery';
+import { startFileServer } from './support/fileServer';
+import type { FileServer } from './support/fileServer';
 
 /**
  * Resource: submissionComment. Uses students of the submissions battery
@@ -17,6 +20,7 @@ describe('submissionComment', () => {
 	let student = '';
 	let quietStudent = '';
 	let commentId = '';
+	let server: FileServer;
 	const marker = unique('Kommentar');
 
 	const commentsFromCanvas = async (user: string, assignment = assignmentId): Promise<Json[]> =>
@@ -37,7 +41,12 @@ describe('submissionComment', () => {
 				submission: { submission_type: 'online_text_entry', body: text, user_id: student },
 			});
 		}
+		server = await startFileServer();
 	}, 1_200_000);
+
+	afterAll(() => {
+		server?.close();
+	});
 
 	it('create: a plain comment returns the submission with its comments', async () => {
 		const text = `${marker} ünï 评论 💬 "quoted" & ampersand`;
@@ -178,6 +187,205 @@ describe('submissionComment', () => {
 		expect(forbidden.success).toEqual([]);
 		expect(forbidden.error[0]).toMatchObject({ errorType: 'FORBIDDEN' });
 		expect((await commentsFromCanvas(student)).map((c) => c.comment)).not.toContain(`${marker} not allowed`);
+	});
+
+	// ------------------------------------------------------------- uploadFile
+
+	const sha = (buffer: Buffer): string => createHash('sha256').update(buffer).digest('hex');
+	const attachmentsOf = (comment: Json): Json[] => (comment.attachments ?? []) as Json[];
+
+	it('uploadFile + create: files uploaded for a comment are attached with Create and read back byte for byte', async () => {
+		const size = 150_003;
+		const plainName = `${unique('feedback').replace(/\s/g, '-')}.bin`;
+		const pdfName = `Korrektur ünï "final" ${unique('k')}.pdf`;
+		const pdf = Buffer.from(`%PDF-1.4 Korrektur ${marker}\n`);
+		const uploaded = await runNode({
+			resource: 'submissionComment',
+			operation: 'uploadFile',
+			binary: [
+				// Name and type of the binary data ...
+				{ fileName: plainName, mimeType: 'application/octet-stream', size, json: { user: Number(student) } },
+				// ... or the ones given in the options.
+				{
+					fileName: 'raw.bin',
+					mimeType: 'application/octet-stream',
+					b64: pdf.toString('base64'),
+					json: { user: student, name: pdfName, type: 'application/pdf' },
+				},
+			],
+			params: {
+				courseId,
+				assignmentId,
+				userId: '={{ $json.user }}',
+				options: { content_type: '={{ $json.type }}', name: '={{ $json.name }}' },
+			},
+		});
+		expect(uploaded.failure, JSON.stringify(uploaded.failure)).toBeUndefined();
+		expect(uploaded.error).toEqual([]);
+		expect(uploaded.rawSuccess.map((item) => item.pairedItem)).toEqual([{ item: 0 }, { item: 1 }]);
+		const [plain, named] = uploaded.success;
+		expect(plain).toMatchObject({ display_name: plainName, size, 'content-type': 'application/octet-stream', upload_status: 'success' });
+		expect(named).toMatchObject({ display_name: pdfName, size: pdf.length, 'content-type': 'application/pdf' });
+
+		// Uploading alone adds no comment.
+		const before = await commentsFromCanvas(student);
+		expect(before.flatMap((c) => attachmentsOf(c).map((a) => a.id))).not.toContain(plain.id);
+
+		const text = `${marker} with uploaded files`;
+		await runOk({
+			resource: 'submissionComment',
+			operation: 'create',
+			params: {
+				courseId,
+				assignmentId,
+				userId: student,
+				comment: text,
+				additionalFields: { file_ids: `${String(plain.id)}, ${String(named.id)}` },
+			},
+		});
+		const actual = (await commentsFromCanvas(student)).find((c) => c.comment === text)!;
+		expect(attachmentsOf(actual).map((a) => a.id).sort()).toEqual([plain.id, named.id].sort());
+		const byId = new Map(attachmentsOf(actual).map((a) => [a.id, a]));
+		const downloaded = await downloadFile(byId.get(plain.id) as Json);
+		expect(downloaded.length).toBe(size);
+		expect(sha(downloaded)).toBe(sha(patternBuffer(size)));
+		expect((await downloadFile(byId.get(named.id) as Json)).equals(pdf)).toBe(true);
+	});
+
+	it('uploadFile from URL: Canvas fetches the file for the comment, with or without waiting for it', async () => {
+		expect(server.url, 'this machine has no address Canvas is willing to fetch from').not.toBe('');
+		const stamp = unique('url');
+		const waited = Buffer.concat([Buffer.from(stamp), patternBuffer(120_000)]);
+		const notWaited = Buffer.from(`fetched in the background ${stamp}\n`);
+		server.serve(`/rubric ${stamp}.bin`, waited, 'application/octet-stream');
+		server.serve('/background.txt', notWaited);
+		const params = { courseId, assignmentId, userId: student, uploadSource: 'url' };
+
+		const [file] = await runOk({
+			resource: 'submissionComment',
+			operation: 'uploadFile',
+			params: {
+				...params,
+				fileUrl: `${server.url}/${encodeURIComponent(`rubric ${stamp}.bin`)}?download=1`,
+				options: { content_type: 'application/zip', name: `Bewertung ünï ${stamp}.zip` },
+			},
+		});
+		expect(file).toMatchObject({ display_name: `Bewertung ünï ${stamp}.zip`, 'content-type': 'application/zip', size: waited.length });
+
+		const [started] = await runOk({
+			resource: 'submissionComment',
+			operation: 'uploadFile',
+			params: { ...params, fileUrl: `${server.url}/background.txt`, waitForCompletion: false },
+		});
+		const progress = started.progress as Json;
+		expect(progress).toMatchObject({ tag: 'upload_via_url' });
+		let done: Json = {};
+		for (let i = 0; i < 60 && done.workflow_state !== 'completed' && done.workflow_state !== 'failed'; i++) {
+			await new Promise((r) => setTimeout(r, 1000));
+			done = await canvas().get<Json>(`/api/v1/progress/${String(progress.id)}`);
+		}
+		expect(done.workflow_state).toBe('completed');
+		const backgroundId = (done.results as Json).id;
+
+		const text = `${marker} with files from URLs`;
+		await runOk({
+			resource: 'submissionComment',
+			operation: 'create',
+			items: [{ files: [file.id, backgroundId] }],
+			params: { courseId, assignmentId, userId: student, comment: text, additionalFields: { file_ids: '={{ $json.files }}' } },
+		});
+		const actual = (await commentsFromCanvas(student)).find((c) => c.comment === text)!;
+		const byId = new Map(attachmentsOf(actual).map((a) => [a.id, a]));
+		expect([...byId.keys()].sort()).toEqual([file.id, backgroundId].sort());
+		expect(sha(await downloadFile(byId.get(file.id) as Json))).toBe(sha(waited));
+		// Without a name the last part of the URL is the file name.
+		expect(byId.get(backgroundId)).toMatchObject({ display_name: 'background.txt' });
+		expect((await downloadFile(byId.get(backgroundId) as Json)).equals(notWaited)).toBe(true);
+	});
+
+	it('uploadFile + create: a student attaches a file to a comment on their own submission', async () => {
+		const content = Buffer.from(`my own notes ${unique('n')}\n`);
+		const uploaded = await runNode({
+			resource: 'submissionComment',
+			operation: 'uploadFile',
+			persona: 'student',
+			binary: [{ fileName: 'my notes.txt', mimeType: 'text/plain', b64: content.toString('base64') }],
+			params: { courseId, assignmentId, userId: 'self' },
+		});
+		expect(uploaded.failure, JSON.stringify(uploaded.failure)).toBeUndefined();
+		expect(uploaded.error).toEqual([]);
+		const [file] = uploaded.success;
+		expect(file).toMatchObject({ display_name: 'my notes.txt', size: content.length });
+
+		const text = `${marker} from the student, with a file`;
+		await runOk({
+			resource: 'submissionComment',
+			operation: 'create',
+			persona: 'student',
+			params: { courseId, assignmentId, userId: 'self', comment: text, additionalFields: { file_ids: String(file.id) } },
+		});
+		const mine = (await commentsFromCanvas(fx('studentUserId'))).find((c) => c.comment === text)!;
+		expect(mine.author_id).toBe(Number(fx('studentUserId')));
+		expect(attachmentsOf(mine).map((a) => a.id)).toEqual([file.id]);
+		expect((await downloadFile(attachmentsOf(mine)[0])).equals(content)).toBe(true);
+	});
+
+	it('uploadFile: unknown students, classmates and items without a file are reported per item', async () => {
+		const input = { fileName: 'x.txt', mimeType: 'text/plain', b64: 'eA==' };
+		const mixed = await runNode({
+			resource: 'submissionComment',
+			operation: 'uploadFile',
+			binary: [
+				{ ...input, json: { user: 999999999 } },
+				{ json: { user: Number(student), note: 'no file here' } },
+				{ ...input, fileName: `${unique('ok').replace(/\s/g, '-')}.txt`, json: { user: Number(student) } },
+			],
+			params: { courseId, assignmentId, userId: '={{ $json.user }}', errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(mixed.failure, JSON.stringify(mixed.failure)).toBeUndefined();
+		expect(mixed.rawSuccess.map((item) => item.pairedItem)).toEqual([{ item: 2 }]);
+		expect(mixed.error).toHaveLength(2);
+		expect(mixed.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', resource: 'submissionComment', operation: 'uploadFile' });
+		expect(mixed.error[1]).toMatchObject({ errorCode: 0 });
+		expect((mixed.error[1].originalItem as Json).note).toBe('no file here');
+
+		// Canvas stores a comment file for anyone who takes part in the assignment, whoever the
+		// student is: what a classmate cannot do is attach it to a comment on that submission.
+		const classmate = await runNode({
+			resource: 'submissionComment',
+			operation: 'uploadFile',
+			persona: 'student2',
+			binary: [input],
+			params: { courseId, assignmentId, userId: student, errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(classmate.error).toEqual([]);
+		const attached = await runNode({
+			resource: 'submissionComment',
+			operation: 'create',
+			persona: 'student2',
+			params: {
+				courseId,
+				assignmentId,
+				userId: student,
+				comment: `${marker} with a classmate's file`,
+				additionalFields: { file_ids: String(classmate.success[0].id) },
+				errorHandling: { onError: 'continueWithError' },
+			},
+		});
+		expect(attached.success).toEqual([]);
+		expect(attached.error[0]).toMatchObject({ errorType: 'FORBIDDEN' });
+		expect((await commentsFromCanvas(student)).map((c) => c.comment)).not.toContain(`${marker} with a classmate's file`);
+
+		// Somebody outside the course cannot upload at all.
+		const outsider = await runNode({
+			resource: 'submissionComment',
+			operation: 'uploadFile',
+			persona: 'sbxStudent1',
+			binary: [input],
+			params: { courseId, assignmentId, userId: student, errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(outsider.success).toEqual([]);
+		expect([401, 403, 404]).toContain(outsider.error[0].errorCode);
 	});
 
 	it('getAll: returns every comment of a submission as its own item', async () => {

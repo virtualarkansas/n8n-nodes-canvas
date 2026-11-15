@@ -92,12 +92,32 @@ export function handleFileResource(
 			} else {
 				delete qs.replacement_chain_context_id;
 			}
+			// Asked for through a course, group or user, Canvas only finds the file when it belongs there.
+			const within = getParam('contextType', 'none');
 			return {
 				method: 'GET',
-				endpoint: `/api/v1/files/${getParam('fileId')}`,
+				endpoint: `${within === 'none' ? '/api/v1' : getFileContextBasePath(getParam)}/files/${getParam('fileId')}`,
 				qs,
 			};
 		}
+
+		case 'getByMigrationId':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${getParam('courseId')}/files/file_ref/${getParam('migrationId')}`,
+			};
+
+		case 'getIconMetadata':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/files/${getParam('fileId')}/icon_metadata`,
+			};
+
+		case 'resetVerifier':
+			return {
+				method: 'POST',
+				endpoint: `/api/v1/files/${getParam('fileId')}/reset_verifier`,
+			};
 
 		case 'getAll': {
 			const basePath = getFileContextBasePath(getParam);
@@ -288,11 +308,23 @@ export function handleFolderResource(
 			};
 		}
 
-		case 'get':
+		case 'get': {
+			// Asked for through a course, group or user, Canvas only finds the folder when it
+			// belongs there, and "root" stands for the top folder of that context.
+			const within = getParam('contextType', 'none');
 			return {
 				method: 'GET',
-				endpoint: `/api/v1/folders/${getParam('folderId')}`,
+				endpoint: `${within === 'none' ? '/api/v1' : getFolderContextBasePath(getParam)}/folders/${getParam('folderId')}`,
 			};
+		}
+
+		case 'getMediaFolder': {
+			const basePath = getFolderContextBasePath(getParam);
+			return {
+				method: 'GET',
+				endpoint: `${basePath}/folders/media`,
+			};
+		}
 
 		case 'getAll': {
 			const basePath = getFolderContextBasePath(getParam);
@@ -375,6 +407,16 @@ function getMediaObjectContextBasePath(getParam: GetParam): string {
 	}
 }
 
+/**
+ * A media object is addressed by its own media ID, or through the file
+ * (attachment) that holds it: then the rights on that file decide what is allowed.
+ */
+function getMediaObjectPath(getParam: GetParam): string {
+	return getParam('mediaBy', 'mediaObjectId') === 'attachmentId'
+		? `/api/v1/media_attachments/${getParam('attachmentId')}`
+		: `/api/v1/media_objects/${getParam('mediaObjectId')}`;
+}
+
 export function handleMediaObjectResource(
 	operation: string,
 	getParam: GetParam,
@@ -393,7 +435,7 @@ export function handleMediaObjectResource(
 		case 'update':
 			return {
 				method: 'PUT',
-				endpoint: `/api/v1/media_objects/${getParam('mediaObjectId')}`,
+				endpoint: getMediaObjectPath(getParam),
 				// The parameter is called user_entered_title; "title" is ignored by Canvas.
 				body: { user_entered_title: getParam('title') },
 			};
@@ -401,7 +443,7 @@ export function handleMediaObjectResource(
 		case 'listTracks':
 			return {
 				method: 'GET',
-				endpoint: `/api/v1/media_objects/${getParam('mediaObjectId')}/media_tracks`,
+				endpoint: `${getMediaObjectPath(getParam)}/media_tracks`,
 				qs: getParamObject('options'),
 			};
 
@@ -409,7 +451,7 @@ export function handleMediaObjectResource(
 			if (getParam('removeAllTracks', 'false') === 'true') {
 				return {
 					method: 'PUT',
-					endpoint: `/api/v1/media_objects/${getParam('mediaObjectId')}/media_tracks`,
+					endpoint: `${getMediaObjectPath(getParam)}/media_tracks`,
 					// The complete list of tracks to keep: none.
 					body: [],
 				};
@@ -434,7 +476,7 @@ export function handleMediaObjectResource(
 			}
 			return {
 				method: 'PUT',
-				endpoint: `/api/v1/media_objects/${getParam('mediaObjectId')}/media_tracks`,
+				endpoint: `${getMediaObjectPath(getParam)}/media_tracks`,
 				qs: getParamObject('options'),
 				// The endpoint takes a bare JSON array: the complete list of tracks to keep.
 				body: tracks as unknown as Record<string, unknown>,
