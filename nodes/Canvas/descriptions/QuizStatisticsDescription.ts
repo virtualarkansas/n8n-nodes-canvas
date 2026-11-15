@@ -77,6 +77,13 @@ export const quizStatisticsFields: INodeProperties[] = [
 				default: false,
 				description: 'Whether to include statistics from all submission attempts',
 			},
+			{
+				displayName: 'Section IDs',
+				name: 'section_ids',
+				type: 'string',
+				default: '',
+				description: 'Comma-separated IDs of course sections; only submissions of students in these sections are counted',
+			},
 		],
 	},
 ];

@@ -27,13 +27,38 @@ export const quizSubmissionOperations: INodeProperties[] = [
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many quiz submissions',
+				description:
+					'Get the quiz submissions of a quiz: every student for graders, only their own for students',
 				action: 'Get many quiz submissions',
+			},
+			{
+				name: 'Get Many Outstanding',
+				value: 'getAllOutstanding',
+				description: 'Get the quiz submissions that were started, never turned in and are now overdue',
+				action: 'Get many outstanding quiz submissions',
+			},
+			{
+				name: 'Get Own',
+				value: 'getOwn',
+				description: 'Get the quiz submission of the user the credential belongs to',
+				action: 'Get own quiz submission',
+			},
+			{
+				name: 'Get Time',
+				value: 'getTime',
+				description: 'Get the end time and the seconds left of a running quiz attempt',
+				action: 'Get the time left of a quiz submission',
+			},
+			{
+				name: 'Grade Outstanding',
+				value: 'gradeOutstanding',
+				description: 'Turn in and grade overdue quiz submissions that students never submitted',
+				action: 'Grade outstanding quiz submissions',
 			},
 			{
 				name: 'Start',
 				value: 'start',
-				description: 'Start taking a quiz',
+				description: 'Start taking a quiz as the user the credential belongs to',
 				action: 'Start a quiz submission',
 			},
 			{
@@ -79,7 +104,7 @@ export const quizSubmissionFields: INodeProperties[] = [
 	},
 
 	// ----------------------------------
-	//         quizSubmission: get, complete, updateScore
+	//         quizSubmission: get, getTime, complete, updateScore
 	// ----------------------------------
 	{
 		displayName: 'Submission ID',
@@ -90,10 +115,11 @@ export const quizSubmissionFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['quizSubmission'],
-				operation: ['get', 'complete', 'updateScore'],
+				operation: ['get', 'getTime', 'complete', 'updateScore'],
 			},
 		},
-		description: 'The ID of the quiz submission',
+		description:
+			'The ID of the quiz submission. This is not the ID of the gradebook submission the quiz submission also refers to.',
 	},
 
 	// ----------------------------------
@@ -124,7 +150,8 @@ export const quizSubmissionFields: INodeProperties[] = [
 				name: 'preview',
 				type: 'boolean',
 				default: false,
-				description: 'Whether this is a preview submission (will not be graded)',
+				description:
+					'Whether this is a preview submission that does not count towards the course record (teachers only)',
 			},
 		],
 	},
@@ -144,7 +171,7 @@ export const quizSubmissionFields: INodeProperties[] = [
 				operation: ['complete'],
 			},
 		},
-		description: 'The attempt number being completed',
+		description: 'The attempt number being completed. Must be the latest attempt.',
 	},
 	{
 		displayName: 'Validation Token',
@@ -201,13 +228,13 @@ export const quizSubmissionFields: INodeProperties[] = [
 				operation: ['updateScore'],
 			},
 		},
-		description: 'The attempt number to update',
+		description: 'The attempt number to update. The attempt must already be completed.',
 	},
 	{
 		displayName: 'Update Fields',
 		name: 'updateFields',
 		type: 'collection',
-		placeholder: 'Add Option',
+		placeholder: 'Add Field',
 		default: {},
 		displayOptions: {
 			show: {
@@ -250,36 +277,15 @@ export const quizSubmissionFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				displayName: 'Include',
-				name: 'include',
-				type: 'multiOptions',
-				options: [
-					{ name: 'Quiz', value: 'quiz' },
-					{ name: 'Submission', value: 'submission' },
-					{ name: 'User', value: 'user' },
-				],
-				default: [],
-				description: 'Additional information to include',
+				displayName: 'Attempt',
+				name: 'attempt',
+				type: 'number',
+				typeOptions: {
+					minValue: 1,
+				},
+				default: 1,
+				description: 'Return the submission as it was at this attempt instead of the latest one',
 			},
-		],
-	},
-
-	// ----------------------------------
-	//         quizSubmission: getAll - options
-	// ----------------------------------
-	{
-		displayName: 'Options',
-		name: 'options',
-		type: 'collection',
-		placeholder: 'Add Option',
-		default: {},
-		displayOptions: {
-			show: {
-				resource: ['quizSubmission'],
-				operation: ['getAll'],
-			},
-		},
-		options: [
 			{
 				displayName: 'Include',
 				name: 'include',
@@ -290,8 +296,28 @@ export const quizSubmissionFields: INodeProperties[] = [
 					{ name: 'User', value: 'user' },
 				],
 				default: [],
-				description: 'Additional information to include',
+				description:
+					'Associated records to return. When set, the output item is Canvas\' compound document: "quiz_submissions" (a list holding the quiz submission) next to "quizzes", "submissions" and "users".',
 			},
 		],
+	},
+
+	// ----------------------------------
+	//         quizSubmission: gradeOutstanding
+	// ----------------------------------
+	{
+		displayName: 'Quiz Submission IDs',
+		name: 'quizSubmissionIds',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['quizSubmission'],
+				operation: ['gradeOutstanding'],
+			},
+		},
+		description:
+			'Comma-separated IDs of the quiz submissions to grade, as returned by "Get Many Outstanding". Submissions that are not outstanding are left untouched.',
 	},
 ];
