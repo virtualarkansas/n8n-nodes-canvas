@@ -353,7 +353,8 @@ describe('search', () => {
 			catalogChanged = true;
 			await setCourseCatalog(true);
 			try {
-				const courseIds = (items: Json[]): number[] => items.map((item) => (item.course as Json).id as number);
+				// Canvas wraps every entry as { course: {...} }; the node outputs the course itself.
+				const courseIds = (items: Json[]): number[] => items.map((item) => ((item.course as Json | undefined) ?? item).id as number);
 				const own = ownCourses.slice(0, 12).map(Number);
 
 				const expected = await canvas().getAll<Json>(`/api/v1/search/all_courses?search=${marker}`);
@@ -365,7 +366,8 @@ describe('search', () => {
 					params: { options: { search: marker } },
 				});
 				expect(courseIds(found)).toEqual(own);
-				expect((found[0].course as Json).name).toBe(`${marker} course 00`);
+				expect(found[0].name).toBe(`${marker} course 00`);
+				expect(found[0]).not.toHaveProperty('course');
 
 				const twoPages = await runOk({
 					resource: 'search',

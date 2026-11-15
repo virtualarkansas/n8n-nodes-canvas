@@ -346,7 +346,24 @@ export class Canvas implements INodeType {
 			const debugItems: INodeExecutionData[] = [];
 
 			for (let i = 0; i < items.length; i++) {
-				const request = buildRequest(this, resource, operation, i);
+				// A request that cannot be built is handled like a failed one: per the error mode.
+				const built = await executeWithErrorHandling.call(
+					this,
+					async () => buildRequest(this, resource, operation, i),
+					{ ...errorHandling, maxRetries: 0 },
+					items[i].json,
+					resource,
+					operation,
+					'',
+					i,
+				);
+				if (!built.success || !built.data) {
+					if (built.error) {
+						errorItems.push({ json: built.error as unknown as IDataObject, pairedItem: { item: i } });
+					}
+					continue;
+				}
+				const request = built.data as IRequestConfig;
 				const { endpoint, method, body } = request;
 				// Show the query exactly as a real run sends it: every GET carries per_page.
 				let qs = request.qs;
@@ -376,7 +393,7 @@ export class Canvas implements INodeType {
 				debugItems.push({ json: debugJson, pairedItem: { item: i } });
 			}
 
-			return [[], [], debugItems];
+			return [[], errorItems, debugItems];
 		}
 
 		const collect = (result: IProcessResult): void => {

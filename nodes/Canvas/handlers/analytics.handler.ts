@@ -220,6 +220,8 @@ export function handleSearchResource(
 				method: 'GET',
 				endpoint: '/api/v1/search/all_courses',
 				qs,
+				// Canvas wraps every entry: [{ "course": { ... } }]
+				itemKey: 'course',
 			};
 		}
 

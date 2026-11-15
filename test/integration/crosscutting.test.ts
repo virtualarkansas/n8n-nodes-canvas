@@ -1138,17 +1138,32 @@ describe('cross-cutting', () => {
 			expect(JSON.stringify(failed.execution.raw)).not.toContain(admin.token);
 		});
 
-		it('debug mode stops at the first item it cannot build a request for', async () => {
-			const result = await run({
+		it('an item no request can be built for follows the error mode in debug mode too', async () => {
+			const params = { debugMode: true, courseId: '={{ $json.id }}' };
+			const items = [{ id: 1 }, { id: '' }, { id: 3 }];
+
+			// Stop (default): the node fails and says which item.
+			const stopped = await run({ resource: 'course', operation: 'get', items, params });
+			expect(stopped.ok).toBe(false);
+			expect(stopped.failure?.message).toBe('A required parameter is empty for course/get');
+			expect((stopped.failure?.raw.context as Json).itemIndex).toBe(1);
+
+			// Continue: the other items are shown, the unusable one arrives on the Error output.
+			const continued = await run({
 				resource: 'course',
 				operation: 'get',
-				items: [{ id: 1 }, { id: '' }, { id: 3 }],
-				params: { debugMode: true, courseId: '={{ $json.id }}', errorHandling: { onError: 'continueWithError' } },
+				items,
+				params: { ...params, errorHandling: { onError: 'continueWithError' } },
 			});
-			// The error handling modes do not apply to debug mode: there is no Error output item, the node fails.
-			expect(result.ok).toBe(false);
-			expect(result.failure?.message).toBe('A required parameter is empty for course/get');
-			expect((result.failure?.raw.context as Json).itemIndex).toBe(1);
+			expect(continued.ok).toBe(true);
+			expect(continued.success).toEqual([]);
+			expect(continued.debug.map((d) => String(d.url).replace(/^.*\/api/, '/api'))).toEqual([
+				'/api/v1/courses/1?per_page=10',
+				'/api/v1/courses/3?per_page=10',
+			]);
+			expect(paired(continued, 2)).toEqual([0, 2]);
+			expect(paired(continued, 1)).toEqual([1]);
+			expect(continued.error[0]).toMatchObject({ errorCode: 0, errorType: 'INVALID_PARAMETERS', resource: 'course', operation: 'get' });
 		});
 	});
 
