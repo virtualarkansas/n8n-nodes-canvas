@@ -7,7 +7,7 @@ on:
 
 permissions:
   contents: write  # create the GitHub release
-  id-token: write  # required for npm provenance
+  id-token: write  # npm trusted publishing (OIDC) and provenance
 
 jobs:
   release:
@@ -29,11 +29,11 @@ jobs:
             exit 1
           fi
 
+      # No package cache: a job that can publish installs everything fresh.
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
           registry-url: 'https://registry.npmjs.org'
 
       - name: Tag matches package.json
@@ -74,11 +74,22 @@ jobs:
             *)       echo "tag=latest" >> "$GITHUB_OUTPUT" ;;
           esac
 
+      # Publishing uses npm trusted publishing: npm exchanges this job's identity token (OIDC) for
+      # a short-lived credential, so there is no npm token to store or renew. The trusted
+      # publisher is set up on npmjs.com (package settings) for this repository and this file
+      # name: renaming this file breaks publishing until it is set up again. It needs npm 11.5.1
+      # or later and Node 22 brings npm 10, so a pinned npm is installed next to the project and
+      # used for this step only.
+      - name: Install an npm that supports trusted publishing
+        run: |
+          npm install --prefix "$RUNNER_TEMP/npm" --no-save --ignore-scripts --no-audit --no-fund npm@11.21.2
+          "$RUNNER_TEMP/npm/node_modules/.bin/npm" --version
+
       - name: Publish to npm
-        run: npm publish --tag "$DIST_TAG"
+        run: |
+          "$RUNNER_TEMP/npm/node_modules/.bin/npm" publish --tag "$DIST_TAG"
         env:
           DIST_TAG: ${{ steps.npm_tag.outputs.tag }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Release notes: the section of CHANGELOG.md for this version (heading "## X.Y.Z ..."),
       # followed by how to install it.
