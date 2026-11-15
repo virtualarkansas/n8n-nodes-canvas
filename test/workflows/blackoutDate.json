@@ -1,0 +1,245 @@
+{
+  "name": "Canvas battery — blackoutDate",
+  "nodes": [
+    {
+      "id": "30b8edfb-19d1-4780-922b-c1d0e913db56",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "6c9d03dc-a3ef-4cf6-ad44-1e860affc5ba",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "baf07128-cb1d-4479-9ed8-967320e21915",
+      "name": "create — create (account): on the batterys own sub-account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blackoutDate",
+        "operation": "create",
+        "contextType": "account",
+        "accountId": "25",
+        "eventTitle": "District closure",
+        "startDate": "2027-11-25",
+        "endDate": "2027-11-26"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c21895d0-3758-49d9-b375-08f17609b1be",
+      "name": "get — get: in both contexts",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blackoutDate",
+        "operation": "get",
+        "contextType": "account",
+        "accountId": "25",
+        "blackoutDateId": "={{ $('create — create (account): on the batterys own sub-account').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b2c90d54-f696-451e-8665-52850f852a22",
+      "name": "getAll — getAll: in both contexts, ordered by start date, with more e",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blackoutDate",
+        "operation": "getAll",
+        "contextType": "account",
+        "accountId": "25"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "27cb6507-8a0f-451b-aaa1-9c0ae3076ae3",
+      "name": "update — update: each field on its own and all together, in both cont",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blackoutDate",
+        "operation": "update",
+        "contextType": "account",
+        "accountId": "25",
+        "blackoutDateId": "={{ $('getAll — getAll: in both contexts, ordered by start date, with more e').first().json.id }}",
+        "updateFields": {
+          "event_title": "District closure (moved)",
+          "start_date": "2027-12-02",
+          "end_date": "2027-12-03"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2951d07a-632f-48c3-9d4f-f1b7b3fe683c",
+      "name": "delete — delete: in both contexts, several input items with one unkno",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blackoutDate",
+        "operation": "delete",
+        "contextType": "account",
+        "accountId": "25",
+        "blackoutDateId": "={{ $('update — update: each field on its own and all together, in both cont').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create (account): on the batterys own sub-account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (account): on the batterys own sub-account": {
+      "main": [
+        [
+          {
+            "node": "get — get: in both contexts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: in both contexts": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: in both contexts, ordered by start date, with more e",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: in both contexts, ordered by start date, with more e": {
+      "main": [
+        [
+          {
+            "node": "update — update: each field on its own and all together, in both cont",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: each field on its own and all together, in both cont": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: in both contexts, several input items with one unkno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

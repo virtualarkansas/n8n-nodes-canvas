@@ -1,0 +1,2189 @@
+{
+  "name": "Canvas battery — assignment",
+  "nodes": [
+    {
+      "id": "106415b6-da87-44fc-91e9-6f7a54a863d9",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "d9f21fdf-78a2-408b-bf8e-ed0a07a1bd4c",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "55f0926c-0b66-407f-be54-a78e3a0c8dd9",
+      "name": "create — create: every general, peer review and group field reaches C",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "create",
+        "courseId": "115",
+        "name": "=Aufgabe ünï 作业 📝 \"quoted\" & <b>tags</b> {{ $execution.id }}-1",
+        "additionalFields": {
+          "allowed_attempts": 3,
+          "allowed_extensions": "pdf, doc,.DOCX",
+          "anonymous_peer_reviews": true,
+          "assignment_group_id": "123",
+          "automatic_peer_reviews": true,
+          "description": "<h3>Aufgabe</h3><p>Text with <em>markup</em>, “quotes” &amp; emoji 🎓</p>",
+          "due_at": "2031-02-01T12:00:00Z",
+          "grade_group_students_individually": true,
+          "grading_standard_id": "1",
+          "grading_type": "letter_grade",
+          "group_category_id": "15",
+          "important_dates": true,
+          "integration_data": "{\"sis\": {\"code\": \"A-1\"}, \"n\": 5}",
+          "integration_id": "=int-{{ $execution.id }}-3",
+          "intra_group_peer_reviews": true,
+          "lock_at": "2031-03-01T12:00:00Z",
+          "notify_of_update": true,
+          "omit_from_final_grade": true,
+          "only_visible_to_overrides": false,
+          "peer_review_count": 2,
+          "peer_reviews": true,
+          "peer_reviews_assign_at": "2031-02-10T12:00:00Z",
+          "points_possible": 12.5,
+          "position": 1,
+          "post_to_sis": true,
+          "published": true,
+          "sis_assignment_id": "=SIS-A-{{ $execution.id }}-2",
+          "submission_types": [
+            "online_upload",
+            "online_text_entry",
+            "online_url",
+            "media_recording"
+          ],
+          "unlock_at": "2031-01-15T12:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b77298d6-fc18-4163-b83d-32fae0b264ba",
+      "name": "create — create: minimal assignment gets the Canvas defaults",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "create",
+        "courseId": "={{ $('create — create: every general, peer review and group field reaches C').first().json.course_id }}",
+        "name": "=Minimal {{ $execution.id }}-4"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f02d155b-2ed7-4305-938d-f408d339cd09",
+      "name": "create — create: moderated grading fields",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "create",
+        "courseId": "={{ $('create — create: minimal assignment gets the Canvas defaults').first().json.course_id }}",
+        "name": "=Moderated {{ $execution.id }}-5",
+        "additionalFields": {
+          "final_grader_id": "898",
+          "grader_comments_visible_to_graders": true,
+          "grader_count": 2,
+          "grader_names_visible_to_final_grader": false,
+          "graders_anonymous_to_graders": true,
+          "moderated_grading": true,
+          "points_possible": 10,
+          "submission_types": [
+            "online_text_entry"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e0408bc8-a5bd-4b56-802e-cfff5dafc3b7",
+      "name": "create — create: anonymous grading is sent, but Canvas ignores it whi",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "create",
+        "courseId": "={{ $('create — create: moderated grading fields').first().json.course_id }}",
+        "name": "=Anonymous {{ $execution.id }}-6",
+        "additionalFields": {
+          "anonymous_grading": true,
+          "points_possible": 5,
+          "submission_types": [
+            "online_text_entry"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "07d3834b-dea7-4280-81c1-43f8eb752bce",
+      "name": "create — create: external tool and student annotation assignments",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "create",
+        "courseId": "={{ $('create — create: anonymous grading is sent, but Canvas ignores it whi').first().json.course_id }}",
+        "name": "=LTI assignment {{ $execution.id }}-7",
+        "additionalFields": {
+          "external_tool_new_tab": true,
+          "external_tool_url": "https://lti.example.com/launch",
+          "points_possible": 10,
+          "submission_types": [
+            "external_tool"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "972e28f5-6cff-4055-870e-236c6eccfa88",
+      "name": "create — create: hide in gradebook is only accepted together with ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "create",
+        "courseId": "={{ $('create — create: external tool and student annotation assignments').first().json.course_id }}",
+        "name": "=Hidden {{ $execution.id }}-10",
+        "additionalFields": {
+          "hide_in_gradebook": true,
+          "omit_from_final_grade": true,
+          "points_possible": 0
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0c1b314b-ee27-4829-8e87-7428db8dbec6",
+      "name": "get — get: every option",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "get",
+        "courseId": "={{ $('create — create: hide in gradebook is only accepted together with ').first().json.course_id }}",
+        "assignmentId": "={{ $('create — create: every general, peer review and group field reaches C').first().json.id }}",
+        "options": {
+          "all_dates": true,
+          "include": [
+            "ab_guid",
+            "assignment_visibility",
+            "can_edit",
+            "observed_users",
+            "overrides",
+            "score_statistics",
+            "submission"
+          ],
+          "needs_grading_count_by_section": true,
+          "override_assignment_dates": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c4c7a71c-dbd8-4155-bccc-c0043d324ddb",
+      "name": "getAll — getAll: pages through more than 100 assignments without dupl",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('get — get: every option').first().json.course_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "196a3683-4f6b-49e1-9f99-0ed356a23f81",
+      "name": "getAll — getAll: pages through more than 100 assignments without dupl (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: pages through more than 100 assignments without dupl').first().json.course_id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "83b4a395-163a-4f4e-9052-6709c9f913e7",
+      "name": "getAll — getAll: pages through more than 100 assignments without dupl (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: pages through more than 100 assignments without dupl (2)').first().json.course_id }}",
+        "pagination": {
+          "perPage": 11,
+          "maxPages": 4
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5ea943fe-9e75-4361-8a72-b2c734a0060e",
+      "name": "getAll — getAll: search term, order, SIS filter and assignment IDs",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: pages through more than 100 assignments without dupl (3)').first().json.course_id }}",
+        "options": {
+          "search_term": "Bulk assignment",
+          "order_by": "name"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5281dec2-c971-45ba-9ba8-50a9a1ea73fa",
+      "name": "getAll — getAll: search term, order, SIS filter and assignment IDs (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: search term, order, SIS filter and assignment IDs').first().json.course_id }}",
+        "options": {
+          "search_term": "Bulk assignment",
+          "order_by": "due_at"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "26f8b1a3-a35d-4597-8e4f-d1c6fb9c2537",
+      "name": "getAll — getAll: search term, order, SIS filter and assignment IDs (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: search term, order, SIS filter and assignment IDs (2)').first().json.course_id }}",
+        "options": {
+          "search_term": "Bulk assignment",
+          "post_to_sis": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1d713579-7ec2-44af-bdd7-85208b061dce",
+      "name": "getAll — getAll: search term, order, SIS filter and assignment IDs (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: search term, order, SIS filter and assignment IDs (3)').first().json.course_id }}",
+        "options": {
+          "search_term": "Bulk assignment",
+          "post_to_sis": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "39f30300-7f9a-4f65-bc4f-d3c23fd8316a",
+      "name": "getAll — getAll: search term, order, SIS filter and assignment IDs (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: search term, order, SIS filter and assignment IDs (4)').first().json.course_id }}",
+        "options": {
+          "assignment_ids": " 716, 793, 815 "
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dc831bee-eddf-42a2-9d53-64089417efe5",
+      "name": "getAll — getAll: every bucket matches what Canvas returns for it",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: search term, order, SIS filter and assignment IDs (5)').first().json.course_id }}",
+        "options": {
+          "bucket": "future",
+          "search_term": "Bulk assignment"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "114a324b-a04a-49b0-a8cf-b1a6927e5908",
+      "name": "getAll — getAll: every bucket matches what Canvas returns for it (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: every bucket matches what Canvas returns for it').first().json.course_id }}",
+        "options": {
+          "bucket": "overdue",
+          "search_term": "Bulk assignment"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fd6760e0-f404-482b-8c48-65afdc6a226c",
+      "name": "getAll — getAll: every bucket matches what Canvas returns for it (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: every bucket matches what Canvas returns for it (2)').first().json.course_id }}",
+        "options": {
+          "bucket": "past",
+          "search_term": "Bulk assignment"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "45d6b89d-7a6e-4a1e-bb09-1ae1ef3174d6",
+      "name": "getAll — getAll: every bucket matches what Canvas returns for it (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: every bucket matches what Canvas returns for it (3)').first().json.course_id }}",
+        "options": {
+          "bucket": "undated",
+          "search_term": "Bulk assignment"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6b49b300-a997-407d-87a8-4bdcb3c12b5d",
+      "name": "getAll — getAll: every bucket matches what Canvas returns for it (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: every bucket matches what Canvas returns for it (4)').first().json.course_id }}",
+        "options": {
+          "bucket": "ungraded",
+          "search_term": "Bulk assignment"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6b694c45-eaed-4336-90ba-23e6a3fc69b9",
+      "name": "getAll — getAll: every bucket matches what Canvas returns for it (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: every bucket matches what Canvas returns for it (4)').first().json.course_id }}",
+        "options": {
+          "bucket": "unsubmitted",
+          "search_term": "Bulk assignment"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "eac2ad05-1b53-4015-8110-344f2db1c7b6",
+      "name": "getAll — getAll: every bucket matches what Canvas returns for it (7)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: every bucket matches what Canvas returns for it (6)').first().json.course_id }}",
+        "options": {
+          "bucket": "upcoming",
+          "search_term": "Bulk assignment"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8730f00b-1232-4ef5-8496-5854da661eaa",
+      "name": "getAll — getAll: new quizzes only filters when on and is not sent w",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: every bucket matches what Canvas returns for it (6)').first().json.course_id }}",
+        "options": {
+          "new_quizzes": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fd23f17a-8846-4c47-a80a-503d7f10b348",
+      "name": "getAll — getAll: new quizzes only filters when on and is not sent w (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: every bucket matches what Canvas returns for it (6)').first().json.course_id }}",
+        "options": {
+          "new_quizzes": false,
+          "search_term": "Bulk assignment 00"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6125bee0-a10c-4777-b63c-19411b7791fc",
+      "name": "getAll — getAll: include and date options",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: new quizzes only filters when on and is not sent w (2)').first().json.course_id }}",
+        "options": {
+          "search_term": "=Aufgabe ünï 作业 📝 \"quoted\" & <b>tags</b> {{ $execution.id }}-1",
+          "include": [
+            "ab_guid",
+            "all_dates",
+            "assignment_visibility",
+            "can_edit",
+            "observed_users",
+            "overrides",
+            "score_statistics",
+            "submission"
+          ],
+          "needs_grading_count_by_section": true,
+          "override_assignment_dates": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "69df6cf0-7923-42d6-9861-9cf3f08e1e7b",
+      "name": "getAll — getAll: one assignment group, and the assignments of one use",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: include and date options').first().json.course_id }}",
+        "options": {
+          "assignment_group_id": "121"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "913a51fa-b6f5-424c-b05a-f5a7a05c9430",
+      "name": "getAll — getAll: one assignment group, and the assignments of one use (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: one assignment group, and the assignments of one use').first().json.course_id }}",
+        "options": {
+          "user_id": "5",
+          "search_term": "Bulk assignment"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f0ad79c3-7341-4859-b5aa-2144918a70f7",
+      "name": "getAll — getAll: one assignment group, and the assignments of one use (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getAll",
+        "courseId": "={{ $('getAll — getAll: one assignment group, and the assignments of one use (2)').first().json.course_id }}",
+        "options": {
+          "user_id": "5",
+          "assignment_group_id": "122"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e16d0959-6305-4902-be3f-c37481ac6d30",
+      "name": "update — update: every general field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "update",
+        "courseId": "={{ $('getAll — getAll: one assignment group, and the assignments of one use (3)').first().json.course_id }}",
+        "assignmentId": "={{ $('getAll — getAll: include and date options').first().json.id }}",
+        "updateFields": {
+          "allowed_attempts": -1,
+          "allowed_extensions": "png",
+          "anonymous_peer_reviews": false,
+          "assignment_group_id": "124",
+          "automatic_peer_reviews": false,
+          "description": "<p>Second version</p>",
+          "due_at": "2032-02-01T12:00:00Z",
+          "force_updated_at": true,
+          "grade_group_students_individually": false,
+          "grading_type": "percent",
+          "important_dates": false,
+          "integration_data": "{\"n\": 6}",
+          "integration_id": "=int2-{{ $execution.id }}-14",
+          "intra_group_peer_reviews": false,
+          "lock_at": "2032-03-01T12:00:00Z",
+          "name": "=Aufgabe ünï 作业 📝 \"quoted\" & <b>tags</b> {{ $execution.id }}-1 (renamed)",
+          "notify_of_update": false,
+          "omit_from_final_grade": false,
+          "peer_review_count": 0,
+          "peer_reviews": false,
+          "points_possible": 20,
+          "position": 2,
+          "post_to_sis": false,
+          "published": false,
+          "sis_assignment_id": "=SIS-B-{{ $execution.id }}-15",
+          "submission_types": [
+            "online_url"
+          ],
+          "unlock_at": "2032-01-15T12:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "57cd4d04-caa8-4773-9e59-4cf7f68ae6db",
+      "name": "update — update: empty values clear dates, extensions, group set and ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "update",
+        "courseId": "={{ $('update — update: every general field reaches Canvas').first().json.course_id }}",
+        "assignmentId": "={{ $('update — update: every general field reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "allowed_extensions": "",
+          "due_at": "",
+          "group_category_id": "",
+          "grading_standard_id": "",
+          "lock_at": "",
+          "unlock_at": "",
+          "published": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "906d442c-98e5-4eef-b230-58ce344d531b",
+      "name": "update — update: moderated grading fields, external tool settings",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "update",
+        "courseId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.course_id }}",
+        "assignmentId": "={{ $('create — create: moderated grading fields').first().json.id }}",
+        "updateFields": {
+          "final_grader_id": "899",
+          "grader_comments_visible_to_graders": false,
+          "grader_count": 1,
+          "grader_names_visible_to_final_grader": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "96e8fc15-7108-47ad-bd02-d2153d70de64",
+      "name": "update — update: moderated grading fields, external tool settings (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "update",
+        "courseId": "={{ $('update — update: moderated grading fields, external tool settings').first().json.course_id }}",
+        "assignmentId": "={{ $('update — update: moderated grading fields, external tool settings').first().json.id }}",
+        "updateFields": {
+          "moderated_grading": false,
+          "only_visible_to_overrides": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "123571a3-94dd-4a2d-afe0-4647f827b18b",
+      "name": "create — update: Canvas refuses a final grader who is not an instruct",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "create",
+        "courseId": "={{ $('update — update: moderated grading fields, external tool settings (2)').first().json.course_id }}",
+        "name": "=Moderated 2 {{ $execution.id }}-16",
+        "additionalFields": {
+          "moderated_grading": true,
+          "grader_count": 1,
+          "points_possible": 5,
+          "submission_types": [
+            "online_text_entry"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6d1dddb3-2397-491b-8b09-f3e2208a11b1",
+      "name": "duplicate — duplicate: copies the assignment next to the original",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "duplicate",
+        "courseId": "={{ $('create — update: Canvas refuses a final grader who is not an instruct').first().json.course_id }}",
+        "assignmentId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7cb97986-db90-4679-85c0-f46ba1b8cd84",
+      "name": "duplicate — duplicate: copies the assignment next to the original (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "duplicate",
+        "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original').first().json.course_id }}",
+        "assignmentId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.id }}",
+        "options": {
+          "result_type": "Quiz"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "705fddaf-c056-4587-82a4-316ad50be4ed",
+      "name": "createOverride — overrides: create for students, a section and a group; list,",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "createOverride",
+        "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
+        "assignmentId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.id }}",
+        "overrideTarget": "students",
+        "studentIds": "5, 6",
+        "additionalFields": {
+          "due_at": "2033-01-10T12:00:00Z",
+          "lock_at": "2033-01-20T12:00:00Z",
+          "title": "Extra time ünï",
+          "unlock_at": "2033-01-01T12:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2470b0a7-cf3d-4301-ad94-5ec5284a4f9f",
+      "name": "createOverride — overrides: create for students, a section and a group; list, (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "createOverride",
+        "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
+        "assignmentId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.id }}",
+        "overrideTarget": "section",
+        "courseSectionId": "230",
+        "additionalFields": {
+          "due_at": "2033-02-10T12:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9ecde326-88c2-4128-a2a0-7043291f17e5",
+      "name": "createOverride — overrides: create for students, a section and a group; list, (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "createOverride",
+        "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
+        "assignmentId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.id }}",
+        "overrideTarget": "group",
+        "groupId": "56",
+        "additionalFields": {
+          "lock_at": "2033-03-10T12:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ab41460e-467e-4a4a-9c41-c4fffde74c79",
+      "name": "listOverrides — overrides: create for students, a section and a group; list,",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "listOverrides",
+        "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
+        "assignmentId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1a9e2677-d455-41f3-976f-dfded0542717",
+      "name": "updateOverride — overrides: create for students, a section and a group; list,",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "updateOverride",
+        "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
+        "assignmentId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.id }}",
+        "overrideId": "70",
+        "updateFields": {
+          "due_at": "2033-01-12T12:00:00Z",
+          "student_ids": "6",
+          "title": "Only one student"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0fc8a89b-69d8-465b-a60a-f822eed60dae",
+      "name": "deleteOverride — overrides: create for students, a section and a group; list,",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "deleteOverride",
+        "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
+        "assignmentId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.id }}",
+        "overrideId": "70"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3ba8b481-28c7-4fcd-aa50-e853a88b988d",
+      "name": "batchCreateOverrides — batchCreateOverrides: overrides for students, a section and ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "batchCreateOverrides",
+        "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
+        "overrides": "[{\"assignment_id\":1154,\"student_ids\":[5],\"title\":\"Batch ünï \\\"one\\\"\",\"due_at\":\"2035-01-10T12:00:00Z\",\"unlock_at\":\"2035-01-01T12:00:00Z\",\"lock_at\":\"2035-01-20T12:00:00Z\"},{\"assignment_id\":\"1154\",\"course_section_id\":\"230\",\"due_at\":\"2035-02-10T12:00:00Z\"},{\"assignment_id\":\"1154\",\"group_id\":56,\"lock_at\":\"2035-03-10T12:00:00Z\"},{\"assignment_id\":1155,\"student_ids\":\"5, 6\",\"title\":\"Two students\",\"unlock_at\":\"2035-04-01T12:00:00Z\"}]"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "02aeb0a0-54b7-43eb-af73-53dc5896a25f",
+      "name": "batchGetOverrides — batchGetOverrides: returns the overrides in the order asked ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "batchGetOverrides",
+        "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
+        "overrides": "[{\"id\":76,\"assignment_id\":1155},{\"id\":999999999,\"assignment_id\":1154},{\"id\":75,\"assignment_id\":\"1154\"},{\"id\":74,\"assignment_id\":\"1155\"},{\"id\":\"73\",\"assignment_id\":\"1154\"}]"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5fc66567-156a-4250-8152-aeb86157b3aa",
+      "name": "batchUpdateOverrides — batchUpdateOverrides: changes several overrides at once; dat",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "batchUpdateOverrides",
+        "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
+        "overrides": "[{\"id\":73,\"assignment_id\":1154,\"student_ids\":[6],\"title\":\"Batch renamed\",\"due_at\":\"2035-01-12T12:00:00Z\"},{\"id\":74,\"assignment_id\":\"1154\",\"lock_at\":\"2035-02-20T12:00:00Z\"},{\"id\":76,\"assignment_id\":1155,\"unlock_at\":null,\"due_at\":\"2035-04-15T12:00:00Z\"}]"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "90aa52fe-6c7a-4a69-8e85-d62fedc9ff88",
+      "name": "batchGetOverrides — batch overrides: input that is not a list is rejected by the",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "batchGetOverrides",
+        "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
+        "overrides": "[{\"assignment_id\":\"1155\"}]",
+        "errorHandling": {
+          "onError": "continueWithError"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7f34d7bf-2712-4698-bf33-073802b0ec4c",
+      "name": "getOverride — getOverride: by the group or the section the override applie",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getOverride",
+        "overrideBy": "group",
+        "groupId": "={{ $('createOverride — overrides: create for students, a section and a group; list, (3)').first().json.group_id }}",
+        "assignmentId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "828aed33-33b6-4155-8840-d6419a0e6694",
+      "name": "getOverride — getOverride: by the group or the section the override applie (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "getOverride",
+        "overrideBy": "id",
+        "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
+        "assignmentId": "={{ $('update — update: empty values clear dates, extensions, group set and ').first().json.id }}",
+        "overrideId": "73"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e7be1273-5512-4d3d-a5ee-5d8fd1c90ec6",
+      "name": "listGroupMembers — listGroupMembers: the students who share a group assignment ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "listGroupMembers",
+        "courseId": "111",
+        "assignmentId": "703",
+        "userId": "746"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "216cd9e3-4e68-4978-a3c9-ece337a75589",
+      "name": "listGroupMembers — listGroupMembers: the students who share a group assignment  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "listGroupMembers",
+        "courseId": "111",
+        "assignmentId": "698",
+        "userId": "749"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "42a53fb6-d8e9-4601-aede-5494ddcb692c",
+      "name": "bulkUpdateDates — bulkUpdateDates: changes base and override dates of several ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "assignment",
+        "operation": "bulkUpdateDates",
+        "courseId": "={{ $('duplicate — duplicate: copies the assignment next to the original (2)').first().json.course_id }}",
+        "dates": "[{\"id\":1155,\"all_dates\":[{\"base\":true,\"due_at\":\"2034-05-01T12:00:00Z\",\"unlock_at\":\"2034-04-01T12:00:00Z\",\"lock_at\":null}]},{\"id\":1156,\"all_dates\":[{\"base\":true,\"due_at\":\"2034-06-01T12:00:00Z\"},{\"id\":77,\"due_at\":\"2034-06-15T12:00:00Z\"}]}]"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every general, peer review and group field reaches C",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every general, peer review and group field reaches C": {
+      "main": [
+        [
+          {
+            "node": "create — create: minimal assignment gets the Canvas defaults",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: minimal assignment gets the Canvas defaults": {
+      "main": [
+        [
+          {
+            "node": "create — create: moderated grading fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: moderated grading fields": {
+      "main": [
+        [
+          {
+            "node": "create — create: anonymous grading is sent, but Canvas ignores it whi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: anonymous grading is sent, but Canvas ignores it whi": {
+      "main": [
+        [
+          {
+            "node": "create — create: external tool and student annotation assignments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: external tool and student annotation assignments": {
+      "main": [
+        [
+          {
+            "node": "create — create: hide in gradebook is only accepted together with ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: hide in gradebook is only accepted together with ": {
+      "main": [
+        [
+          {
+            "node": "get — get: every option",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: every option": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more than 100 assignments without dupl",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more than 100 assignments without dupl": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more than 100 assignments without dupl (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more than 100 assignments without dupl (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more than 100 assignments without dupl (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more than 100 assignments without dupl (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search term, order, SIS filter and assignment IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search term, order, SIS filter and assignment IDs": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search term, order, SIS filter and assignment IDs (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search term, order, SIS filter and assignment IDs (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search term, order, SIS filter and assignment IDs (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search term, order, SIS filter and assignment IDs (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search term, order, SIS filter and assignment IDs (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search term, order, SIS filter and assignment IDs (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search term, order, SIS filter and assignment IDs (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search term, order, SIS filter and assignment IDs (5)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every bucket matches what Canvas returns for it",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every bucket matches what Canvas returns for it": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every bucket matches what Canvas returns for it (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every bucket matches what Canvas returns for it (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every bucket matches what Canvas returns for it (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every bucket matches what Canvas returns for it (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every bucket matches what Canvas returns for it (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every bucket matches what Canvas returns for it (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every bucket matches what Canvas returns for it (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every bucket matches what Canvas returns for it (5)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every bucket matches what Canvas returns for it (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every bucket matches what Canvas returns for it (6)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every bucket matches what Canvas returns for it (7)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every bucket matches what Canvas returns for it (7)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: new quizzes only filters when on and is not sent w",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: new quizzes only filters when on and is not sent w": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: new quizzes only filters when on and is not sent w (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: new quizzes only filters when on and is not sent w (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: include and date options",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: include and date options": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: one assignment group, and the assignments of one use",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: one assignment group, and the assignments of one use": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: one assignment group, and the assignments of one use (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: one assignment group, and the assignments of one use (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: one assignment group, and the assignments of one use (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: one assignment group, and the assignments of one use (3)": {
+      "main": [
+        [
+          {
+            "node": "update — update: every general field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every general field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: empty values clear dates, extensions, group set and ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: empty values clear dates, extensions, group set and ": {
+      "main": [
+        [
+          {
+            "node": "update — update: moderated grading fields, external tool settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: moderated grading fields, external tool settings": {
+      "main": [
+        [
+          {
+            "node": "update — update: moderated grading fields, external tool settings (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: moderated grading fields, external tool settings (2)": {
+      "main": [
+        [
+          {
+            "node": "create — update: Canvas refuses a final grader who is not an instruct",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — update: Canvas refuses a final grader who is not an instruct": {
+      "main": [
+        [
+          {
+            "node": "duplicate — duplicate: copies the assignment next to the original",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "duplicate — duplicate: copies the assignment next to the original": {
+      "main": [
+        [
+          {
+            "node": "duplicate — duplicate: copies the assignment next to the original (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "duplicate — duplicate: copies the assignment next to the original (2)": {
+      "main": [
+        [
+          {
+            "node": "createOverride — overrides: create for students, a section and a group; list,",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createOverride — overrides: create for students, a section and a group; list,": {
+      "main": [
+        [
+          {
+            "node": "createOverride — overrides: create for students, a section and a group; list, (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createOverride — overrides: create for students, a section and a group; list, (2)": {
+      "main": [
+        [
+          {
+            "node": "createOverride — overrides: create for students, a section and a group; list, (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createOverride — overrides: create for students, a section and a group; list, (3)": {
+      "main": [
+        [
+          {
+            "node": "listOverrides — overrides: create for students, a section and a group; list,",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listOverrides — overrides: create for students, a section and a group; list,": {
+      "main": [
+        [
+          {
+            "node": "updateOverride — overrides: create for students, a section and a group; list,",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateOverride — overrides: create for students, a section and a group; list,": {
+      "main": [
+        [
+          {
+            "node": "deleteOverride — overrides: create for students, a section and a group; list,",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deleteOverride — overrides: create for students, a section and a group; list,": {
+      "main": [
+        [
+          {
+            "node": "batchCreateOverrides — batchCreateOverrides: overrides for students, a section and ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "batchCreateOverrides — batchCreateOverrides: overrides for students, a section and ": {
+      "main": [
+        [
+          {
+            "node": "batchGetOverrides — batchGetOverrides: returns the overrides in the order asked ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "batchGetOverrides — batchGetOverrides: returns the overrides in the order asked ": {
+      "main": [
+        [
+          {
+            "node": "batchUpdateOverrides — batchUpdateOverrides: changes several overrides at once; dat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "batchUpdateOverrides — batchUpdateOverrides: changes several overrides at once; dat": {
+      "main": [
+        [
+          {
+            "node": "batchGetOverrides — batch overrides: input that is not a list is rejected by the",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "batchGetOverrides — batch overrides: input that is not a list is rejected by the": {
+      "main": [
+        [
+          {
+            "node": "getOverride — getOverride: by the group or the section the override applie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getOverride — getOverride: by the group or the section the override applie": {
+      "main": [
+        [
+          {
+            "node": "getOverride — getOverride: by the group or the section the override applie (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getOverride — getOverride: by the group or the section the override applie (2)": {
+      "main": [
+        [
+          {
+            "node": "listGroupMembers — listGroupMembers: the students who share a group assignment ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listGroupMembers — listGroupMembers: the students who share a group assignment ": {
+      "main": [
+        [
+          {
+            "node": "listGroupMembers — listGroupMembers: the students who share a group assignment  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listGroupMembers — listGroupMembers: the students who share a group assignment  (2)": {
+      "main": [
+        [
+          {
+            "node": "bulkUpdateDates — bulkUpdateDates: changes base and override dates of several ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

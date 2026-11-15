@@ -1,0 +1,392 @@
+{
+  "name": "Canvas battery — quizQuestionGroup",
+  "nodes": [
+    {
+      "id": "ff0be98d-5d29-4ce7-9c2f-ed6b024672b8",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "ab90ea83-cdff-4d80-8456-12ad3908fc46",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "8cad05de-e324-42fa-bf8e-8a8148baab45",
+      "name": "create — create: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestionGroup",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "166",
+        "name": "=Pool \"A\" & <b>B</b> — ünï 题库 {{ $execution.id }}-1",
+        "additionalFields": {
+          "assessment_question_bank_id": "7",
+          "pick_count": 2,
+          "question_points": 2.5
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ec518bfa-07a4-4429-b881-542c121719fe",
+      "name": "create — create: a group with only a name; a question bank of another",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestionGroup",
+        "operation": "create",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: every optional field reaches Canvas').first().json.quiz_id }}",
+        "name": "Bare group",
+        "additionalFields": {
+          "assessment_question_bank_id": "99999999"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0f4d4351-be78-4e50-b152-e286df8d1ee1",
+      "name": "getAll — getAll: one item per group of the quiz",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestionGroup",
+        "operation": "getAll",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: a group with only a name; a question bank of another').first().json.quiz_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "69f2637e-ff59-460b-bffd-825e0a38b51b",
+      "name": "getAll — getAll: one item per group of the quiz (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestionGroup",
+        "operation": "getAll",
+        "courseId": "119",
+        "quizId": "={{ $('getAll — getAll: one item per group of the quiz').first().json.quiz_id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "252691a8-4fe1-4ab7-868a-478e0e4e23e3",
+      "name": "getAll — getAll: a quiz without groups gives no items",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestionGroup",
+        "operation": "getAll",
+        "courseId": "119",
+        "quizId": "168"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7893935b-03ce-4394-85be-51f9cceb5907",
+      "name": "update — update: every field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestionGroup",
+        "operation": "update",
+        "courseId": "119",
+        "quizId": "={{ $('getAll — getAll: one item per group of the quiz (2)').first().json.quiz_id }}",
+        "groupId": "={{ $('getAll — getAll: one item per group of the quiz (2)').first().json.id }}",
+        "updateFields": {
+          "name": "=Pool \"A\" & <b>B</b> — ünï 题库 {{ $execution.id }}-1 (renamed)",
+          "pick_count": 3,
+          "question_points": 4
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a4f41279-618c-434a-aa44-859e2eae1c0c",
+      "name": "reorder — reorder: listed questions move into the group in the given o",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestionGroup",
+        "operation": "reorder",
+        "courseId": "119",
+        "quizId": "={{ $('update — update: every field reaches Canvas').first().json.quiz_id }}",
+        "groupId": "={{ $('update — update: every field reaches Canvas').first().json.id }}",
+        "questionOrder": {
+          "questions": [
+            {
+              "id": 339
+            },
+            {
+              "id": " 337 "
+            },
+            {
+              "id": "338"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7ecac8a9-5068-4188-abec-77eea554e3d4",
+      "name": "reorder — reorder: listed questions move into the group in the given o (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizQuestionGroup",
+        "operation": "reorder",
+        "courseId": "119",
+        "quizId": "={{ $('update — update: every field reaches Canvas').first().json.quiz_id }}",
+        "groupId": "={{ $('update — update: every field reaches Canvas').first().json.id }}",
+        "questionOrder": {
+          "questions": [
+            {
+              "id": 338
+            },
+            {
+              "id": 337
+            },
+            {
+              "id": 339
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create: a group with only a name; a question bank of another",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: a group with only a name; a question bank of another": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: one item per group of the quiz",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: one item per group of the quiz": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: one item per group of the quiz (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: one item per group of the quiz (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: a quiz without groups gives no items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: a quiz without groups gives no items": {
+      "main": [
+        [
+          {
+            "node": "update — update: every field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "reorder — reorder: listed questions move into the group in the given o",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "reorder — reorder: listed questions move into the group in the given o": {
+      "main": [
+        [
+          {
+            "node": "reorder — reorder: listed questions move into the group in the given o (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

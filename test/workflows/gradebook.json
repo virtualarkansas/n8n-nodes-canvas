@@ -1,0 +1,323 @@
+{
+  "name": "Canvas battery — gradebook",
+  "nodes": [
+    {
+      "id": "75a3361d-7e65-4256-81df-a4481275bac5",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "113ef739-1f21-422d-8252-4cfb65057ff8",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a5745070-02c3-4ede-9714-9788c9464d08",
+      "name": "applyScoreToUngraded — applyScoreToUngraded: gives the ungraded submissions of the ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradebook",
+        "operation": "applyScoreToUngraded",
+        "courseId": "313",
+        "assignmentIds": " 1202 , 1203, 1205 ",
+        "studentIds": "1305,1306",
+        "grade": "percent",
+        "percent": 50
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "577b256c-8b7d-475c-8929-db46a598d67f",
+      "name": "applyScoreToUngraded — applyScoreToUngraded: a fractional percent, and both options",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradebook",
+        "operation": "applyScoreToUngraded",
+        "courseId": "313",
+        "assignmentIds": "1203",
+        "studentIds": "1307",
+        "grade": "percent",
+        "percent": 87.5,
+        "options": {
+          "only_past_due": false,
+          "mark_as_missing": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3ce332de-6260-4be5-a1c0-8b5c6a92de26",
+      "name": "applyScoreToUngraded — applyScoreToUngraded: Excused excuses what is still ungrad",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradebook",
+        "operation": "applyScoreToUngraded",
+        "courseId": "313",
+        "assignmentIds": "1204,1202",
+        "studentIds": "1305,1306,1307",
+        "grade": "excused",
+        "percent": 30
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f38a0b8f-2f79-4da0-a51a-2a858bac6001",
+      "name": "updateFinalGradeOverrides — updateFinalGradeOverrides: sets the final grade overrides of",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradebook",
+        "operation": "updateFinalGradeOverrides",
+        "courseId": "313",
+        "overrideScores": {
+          "score": [
+            {
+              "student_id": "1305",
+              "override_score": 91.5
+            },
+            {
+              "student_id": " 1306 ",
+              "override_score": 0
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3c95a68f-92ce-4f1e-8245-a7118ef3fa1d",
+      "name": "updateFinalGradeOverrides — updateFinalGradeOverrides: Remove Override brings the calc",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradebook",
+        "operation": "updateFinalGradeOverrides",
+        "courseId": "313",
+        "overrideScores": {
+          "score": [
+            {
+              "student_id": "1305",
+              "override_score": 55,
+              "remove": true
+            },
+            {
+              "student_id": "1307",
+              "override_score": 100,
+              "remove": false
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ba7e4e4e-3894-4f26-8184-3eeb5465b85d",
+      "name": "updateFinalGradeOverrides — updateFinalGradeOverrides: students who are not in the cours",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradebook",
+        "operation": "updateFinalGradeOverrides",
+        "courseId": "313",
+        "overrideScores": {
+          "score": [
+            {
+              "student_id": "11",
+              "override_score": 10
+            },
+            {
+              "student_id": "sis_user_id:nobody",
+              "override_score": 20
+            },
+            {
+              "student_id": "1306",
+              "override_score": 33.3
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "applyScoreToUngraded — applyScoreToUngraded: gives the ungraded submissions of the ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "applyScoreToUngraded — applyScoreToUngraded: gives the ungraded submissions of the ": {
+      "main": [
+        [
+          {
+            "node": "applyScoreToUngraded — applyScoreToUngraded: a fractional percent, and both options",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "applyScoreToUngraded — applyScoreToUngraded: a fractional percent, and both options": {
+      "main": [
+        [
+          {
+            "node": "applyScoreToUngraded — applyScoreToUngraded: Excused excuses what is still ungrad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "applyScoreToUngraded — applyScoreToUngraded: Excused excuses what is still ungrad": {
+      "main": [
+        [
+          {
+            "node": "updateFinalGradeOverrides — updateFinalGradeOverrides: sets the final grade overrides of",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateFinalGradeOverrides — updateFinalGradeOverrides: sets the final grade overrides of": {
+      "main": [
+        [
+          {
+            "node": "updateFinalGradeOverrides — updateFinalGradeOverrides: Remove Override brings the calc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateFinalGradeOverrides — updateFinalGradeOverrides: Remove Override brings the calc": {
+      "main": [
+        [
+          {
+            "node": "updateFinalGradeOverrides — updateFinalGradeOverrides: students who are not in the cours",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

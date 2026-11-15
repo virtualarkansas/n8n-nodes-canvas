@@ -1,0 +1,207 @@
+{
+  "name": "Canvas battery — apiTokenScope",
+  "nodes": [
+    {
+      "id": "163ebf99-cbbb-45c0-babc-75746aee0219",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "f4eb89aa-b42d-4adf-947b-a87bbad21bb4",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ddfc6c30-d2f1-4afc-850c-9b57fbb4a64e",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "4ca799f6-d2d4-4ad7-86a2-e384f6a15c96",
+      "name": "getAll — getAll: Return All lists every scope Canvas knows, one item ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiTokenScope",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "returnAll": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "29664755-a04b-4b95-b7b9-aa808be21a88",
+      "name": "getAll — getAll: Limit is honoured (default 50), also with the accoun",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiTokenScope",
+        "operation": "getAll",
+        "accountId": "self"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9ff03a78-28b3-46ce-81d0-870c19bf8951",
+      "name": "getAll — getAll: Limit is honoured (default 50), also with the accoun (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiTokenScope",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "returnAll": false,
+        "limit": 250
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9e8e35f1-a867-4599-ba32-982c5740bea7",
+      "name": "getAll — getAll: grouped by resource the result is one item with a li",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "apiTokenScope",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "returnAll": true,
+        "options": {
+          "group_by": "resource_name"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Return All lists every scope Canvas knows, one item ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Return All lists every scope Canvas knows, one item ": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Limit is honoured (default 50), also with the accoun",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Limit is honoured (default 50), also with the accoun": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Limit is honoured (default 50), also with the accoun (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Limit is honoured (default 50), also with the accoun (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: grouped by resource the result is one item with a li",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

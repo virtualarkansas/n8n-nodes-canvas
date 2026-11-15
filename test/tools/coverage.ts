@@ -43,10 +43,14 @@ interface Row {
 	route: boolean;
 }
 
+/** Operations whose path is whatever the user enters: there is no route to audit. */
+const FREE_FORM = new Set(['apiRequest.request']);
+const freeForm = (row: { resource: string; operation: string }): boolean => FREE_FORM.has(`${row.resource}.${row.operation}`);
+
 const rows: Row[] = listOperations().map((op) => {
 	const mine = records.filter((r) => r.resource === op.resource && r.operation === op.operation);
 	let route = true;
-	for (const variant of paramVariants(op)) {
+	for (const variant of freeForm(op) ? [] : paramVariants(op)) {
 		try {
 			const request = buildRequestFor(op.resource, op.operation, variant.params);
 			if (!findRoute(request.method, request.endpoint.split('?')[0])) route = false;
@@ -96,7 +100,7 @@ for (const [resource, list] of [...byResource].sort(([a], [b]) => a.localeCompar
 	lines.push(`## ${resource}`, '', '| Operation | Status | Runs | Error runs | Route | Note |', '|---|---|---:|---:|---|---|');
 	for (const row of list.sort((a, b) => a.operation.localeCompare(b.operation))) {
 		lines.push(
-			`| ${row.operation} | ${status(row)} | ${row.success} | ${row.errors + row.failed} | ${row.route ? 'ok' : 'MISSING'} | ${row.skipped ?? ''} |`,
+			`| ${row.operation} | ${status(row)} | ${row.success} | ${row.errors + row.failed} | ${freeForm(row) ? 'any path' : row.route ? 'ok' : 'MISSING'} | ${row.skipped ?? ''} |`,
 		);
 	}
 	lines.push('');

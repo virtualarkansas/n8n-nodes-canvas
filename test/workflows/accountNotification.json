@@ -1,0 +1,545 @@
+{
+  "name": "Canvas battery — accountNotification",
+  "nodes": [
+    {
+      "id": "a7d3cc22-9083-4f18-b29a-def526897241",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "315579c6-8157-4ea4-b59e-bd65e7444b51",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "87333c58-0542-4b2b-ad0e-3be44b5466a9",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "706bd28d-dc0d-474b-9c17-624f622cf9dd",
+      "name": "create — create: every optional field reaches Canvas (roles by name)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountNotification",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "subject": "=Battery Notice Ünïcødé 通知 \"quoted\" & <b>tags</b> 📣 {{ $execution.id }}-1",
+        "message": "<p>Message with <strong>HTML</strong>, an &amp; and emoji 🎓</p>",
+        "startAt": "2026-11-15T12:33:01Z",
+        "endAt": "2026-11-17T14:33:01Z",
+        "additionalFields": {
+          "icon": "calendar",
+          "roles": "AccountAdmin, TeacherEnrollment",
+          "send_message": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ff236229-c029-4d8c-9d2f-4bd76eef65e4",
+      "name": "create — create: without optional fields the notification is for ever",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountNotification",
+        "operation": "create",
+        "accountId": "self",
+        "subject": "=Battery minimal {{ $execution.id }}-5",
+        "message": "Minimal",
+        "startAt": "2026-12-06T10:33:03Z",
+        "endAt": "2026-12-06T11:33:03Z"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "157c3ee3-8059-4875-b653-de2f1642cd6f",
+      "name": "get — get: returns a notification that is currently shown to the u",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountNotification",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "notificationId": "={{ $('create — create: every optional field reaches Canvas (roles by name)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "df6bb012-a8ee-4c27-95a4-10ce1d43a26c",
+      "name": "getAll — getAll: current notifications by default; past and future on",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountNotification",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cdb56882-526d-4287-8832-e62283fa199f",
+      "name": "getAll — getAll: current notifications by default; past and future on (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountNotification",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "options": {
+          "include_past": true,
+          "show_is_closed": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4e63af73-5e9b-4d1e-b5cd-80ee1461789c",
+      "name": "getAll — getAll: current notifications by default; past and future on (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountNotification",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "options": {
+          "include_all": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "31f4c93e-8aec-44a4-8d89-7d295ede0d7d",
+      "name": "getAll — getAll: Include All on a sub-account lists its own notific",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountNotification",
+        "operation": "getAll",
+        "accountId": "105",
+        "options": {
+          "include_all": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d3344e6b-c64d-46df-8228-07d5b087872e",
+      "name": "update — update: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountNotification",
+        "operation": "update",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "notificationId": "={{ $('create — create: without optional fields the notification is for ever').first().json.id }}",
+        "message": "<p>Second <em>version</em> with \"quotes\" &amp; 🎓</p>",
+        "updateFields": {
+          "subject": "=Battery updated — عنوان جديد {{ $execution.id }}-9",
+          "start_at": "2026-12-10T14:33:12Z",
+          "end_at": "2026-12-14T18:33:12Z",
+          "icon": "error",
+          "roles": "StudentEnrollment,1",
+          "send_message": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "619ab99e-7690-42d5-8f32-9f45a3288b10",
+      "name": "update — update: Canvas replaces the roles on every update, so leavin",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountNotification",
+        "operation": "update",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "notificationId": "={{ $('update — update: every optional field reaches Canvas').first().json.id }}",
+        "message": "Fourth version",
+        "updateFields": {
+          "icon": "information"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "63443840-5e4d-48c0-8ce8-c2de803c76d8",
+      "name": "close — close: dismisses the notification for the current user only",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountNotification",
+        "operation": "close",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "notificationId": "={{ $('get — get: returns a notification that is currently shown to the u').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "29e6de72-4190-4f6c-bd35-528e27af1749",
+      "name": "close — close: with Remove an admin deletes the notification for e",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountNotification",
+        "operation": "close",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "notificationId": "={{ $('close — close: dismisses the notification for the current user only').first().json.id }}",
+        "options": {
+          "remove": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "80643aad-2d30-4a52-ab8c-832743c9a2ba",
+      "name": "close — close: with Remove an admin deletes the notification for e (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountNotification",
+        "operation": "close",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "notificationId": "={{ $('close — close: with Remove an admin deletes the notification for e').first().json.id }}",
+        "options": {
+          "remove": true
+        },
+        "errorHandling": {
+          "onError": "continueWithError"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field reaches Canvas (roles by name)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas (roles by name)": {
+      "main": [
+        [
+          {
+            "node": "create — create: without optional fields the notification is for ever",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: without optional fields the notification is for ever": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns a notification that is currently shown to the u",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns a notification that is currently shown to the u": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: current notifications by default; past and future on",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: current notifications by default; past and future on": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: current notifications by default; past and future on (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: current notifications by default; past and future on (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: current notifications by default; past and future on (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: current notifications by default; past and future on (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Include All on a sub-account lists its own notific",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Include All on a sub-account lists its own notific": {
+      "main": [
+        [
+          {
+            "node": "update — update: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: Canvas replaces the roles on every update, so leavin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Canvas replaces the roles on every update, so leavin": {
+      "main": [
+        [
+          {
+            "node": "close — close: dismisses the notification for the current user only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "close — close: dismisses the notification for the current user only": {
+      "main": [
+        [
+          {
+            "node": "close — close: with Remove an admin deletes the notification for e",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "close — close: with Remove an admin deletes the notification for e": {
+      "main": [
+        [
+          {
+            "node": "close — close: with Remove an admin deletes the notification for e (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -1,0 +1,203 @@
+{
+  "name": "Canvas battery — brandConfig",
+  "nodes": [
+    {
+      "id": "c8ae1e05-2c39-4bf7-9d93-692cae07bbe4",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "beb87ce3-2f28-4b8a-bb23-04195a4b3f97",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "68e1a2ae-3b60-4177-a3a0-b15a002c705e",
+      "name": "share — share: a brand config gets a name in an account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "brandConfig",
+        "operation": "share",
+        "accountId": "114",
+        "name": "=Crimson & \"Gold\" — ünï 主題 {{ $execution.id }}-2",
+        "brandConfigMd5": " 3f38c01c65835e7de842d709a89ec3e8 "
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1ae91a6b-c3df-44fe-8462-77d5291a2f3c",
+      "name": "updateShared — updateShared: the name, the brand config, or both",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "brandConfig",
+        "operation": "updateShared",
+        "accountId": "={{ $('share — share: a brand config gets a name in an account').first().json.account_id }}",
+        "sharedBrandConfigId": "={{ $('share — share: a brand config gets a name in an account').first().json.id }}",
+        "updateFields": {
+          "name": "=Renamed theme {{ $execution.id }}-5"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "022bd285-ef8c-4ff1-94f8-e8a75a5a61eb",
+      "name": "updateShared — updateShared: the name, the brand config, or both (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "brandConfig",
+        "operation": "updateShared",
+        "accountId": "={{ $('updateShared — updateShared: the name, the brand config, or both').first().json.account_id }}",
+        "sharedBrandConfigId": "={{ $('updateShared — updateShared: the name, the brand config, or both').first().json.id }}",
+        "updateFields": {
+          "brand_config_md5": "7845907c6e76db998e5f24d63aca97b5"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "367c7bcf-113e-4398-b86f-d8a162ac3958",
+      "name": "unshare — unshare: removes the shared theme, not the brand config",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "brandConfig",
+        "operation": "unshare",
+        "sharedBrandConfigId": "={{ $('updateShared — updateShared: the name, the brand config, or both (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "share — share: a brand config gets a name in an account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "share — share: a brand config gets a name in an account": {
+      "main": [
+        [
+          {
+            "node": "updateShared — updateShared: the name, the brand config, or both",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateShared — updateShared: the name, the brand config, or both": {
+      "main": [
+        [
+          {
+            "node": "updateShared — updateShared: the name, the brand config, or both (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateShared — updateShared: the name, the brand config, or both (2)": {
+      "main": [
+        [
+          {
+            "node": "unshare — unshare: removes the shared theme, not the brand config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

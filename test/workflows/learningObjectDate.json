@@ -1,0 +1,515 @@
+{
+  "name": "Canvas battery — learningObjectDate",
+  "nodes": [
+    {
+      "id": "e7ac7c83-b913-4f01-84b1-2dd8f8683187",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "bbda0137-e06e-4065-beb0-afdcb2aa5625",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "e196bc86-e8a1-44df-a1fc-e2f98ad8a221",
+      "name": "get — get: reads the dates of every kind of item",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "learningObjectDate",
+        "operation": "get",
+        "courseId": "337",
+        "objectType": "assignment",
+        "objectId": "1218"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "514324bc-59c2-424f-a218-726fb7ab7540",
+      "name": "get — get: reads the dates of every kind of item (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "learningObjectDate",
+        "operation": "get",
+        "courseId": "337",
+        "objectType": "quiz",
+        "objectId": "155"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "00daefca-5b8e-40cd-9de3-dde3ee9ec6b1",
+      "name": "get — get: reads the dates of every kind of item (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "learningObjectDate",
+        "operation": "get",
+        "courseId": "337",
+        "objectType": "discussionTopic",
+        "objectId": "392"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "64ff12e3-de7b-447d-8aca-93431dba7802",
+      "name": "get — get: reads the dates of every kind of item (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "learningObjectDate",
+        "operation": "get",
+        "courseId": "337",
+        "objectType": "page",
+        "objectId": "=dated-page-{{ $execution.id }}-12"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b2fb4cd7-0167-42a7-8a59-64b9b81bd7c2",
+      "name": "get — get: reads the dates of every kind of item (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "learningObjectDate",
+        "operation": "get",
+        "courseId": "337",
+        "objectType": "module",
+        "objectId": "237"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f3ef14ea-eb27-476c-ae33-3a9940e4272e",
+      "name": "update — update: sets dates and creates one override per section; get",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "learningObjectDate",
+        "operation": "update",
+        "courseId": "337",
+        "objectType": "assignment",
+        "objectId": "={{ $('get — get: reads the dates of every kind of item').first().json.id }}",
+        "updateFields": {
+          "due_at": "2031-03-15T23:59:00Z",
+          "unlock_at": "2031-03-01T08:00:00Z",
+          "lock_at": "2031-05-31T23:59:00Z",
+          "only_visible_to_overrides": false,
+          "assignment_overrides": "[{\"course_section_id\":423,\"due_at\":\"2031-04-01T23:59:00Z\"},{\"course_section_id\":424,\"due_at\":\"2031-04-02T23:59:00Z\"},{\"course_section_id\":425,\"due_at\":\"2031-04-03T23:59:00Z\"},{\"course_section_id\":426,\"due_at\":\"2031-04-04T23:59:00Z\"},{\"course_section_id\":427,\"due_at\":\"2031-04-05T23:59:00Z\"},{\"course_section_id\":428,\"due_at\":\"2031-04-06T23:59:00Z\"},{\"course_section_id\":429,\"due_at\":\"2031-04-07T23:59:00Z\"},{\"course_section_id\":430,\"due_at\":\"2031-04-08T23:59:00Z\"},{\"course_section_id\":431,\"due_at\":\"2031-04-09T23:59:00Z\"},{\"course_section_id\":432,\"due_at\":\"2031-04-10T23:59:00Z\"},{\"course_section_id\":433,\"due_at\":\"2031-04-11T23:59:00Z\"},{\"course_section_id\":434,\"due_at\":\"2031-04-12T23:59:00Z\"},{\"course_section_id\":435,\"due_at\":\"2031-04-13T23:59:00Z\"},{\"course_section_id\":436,\"due_at\":\"2031-04-14T23:59:00Z\"}]"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9215c72b-4119-4a8a-a5a7-3058a7213733",
+      "name": "update — update: an override list replaces the old one, and student o",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "learningObjectDate",
+        "operation": "update",
+        "courseId": "337",
+        "objectType": "assignment",
+        "objectId": "={{ $('update — update: sets dates and creates one override per section; get').first().json.id }}",
+        "updateFields": {
+          "assignment_overrides": [
+            {
+              "id": 81,
+              "due_at": "2031-06-01T23:59:00Z"
+            },
+            {
+              "student_ids": [
+                1359,
+                1360
+              ],
+              "title": "Two students",
+              "due_at": "2031-06-15T23:59:00Z"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e256d0d6-1706-4a19-8194-2426360882d8",
+      "name": "update — update: clears dates and removes all overrides",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "learningObjectDate",
+        "operation": "update",
+        "courseId": "337",
+        "objectType": "assignment",
+        "objectId": "={{ $('update — update: an override list replaces the old one, and student o').first().json.id }}",
+        "updateFields": {
+          "clear": [
+            "due_at",
+            "unlock_at",
+            "lock_at"
+          ],
+          "assignment_overrides": "[]"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "693b14bb-1d8b-4fbd-a99a-2c1a68d7d15d",
+      "name": "update — update: works for quizzes, discussions and pages",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "learningObjectDate",
+        "operation": "update",
+        "courseId": "337",
+        "objectType": "quiz",
+        "objectId": "={{ $('get — get: reads the dates of every kind of item (2)').first().json.id }}",
+        "updateFields": {
+          "due_at": "2031-07-01T12:00:00Z",
+          "lock_at": "2031-07-02T12:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "50c3d4eb-4326-4dbd-bee8-4f97a5ac0b41",
+      "name": "update — update: works for quizzes, discussions and pages (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "learningObjectDate",
+        "operation": "update",
+        "courseId": "337",
+        "objectType": "discussionTopic",
+        "objectId": "={{ $('get — get: reads the dates of every kind of item (3)').first().json.id }}",
+        "updateFields": {
+          "unlock_at": "2031-01-10T08:00:00Z",
+          "lock_at": "2031-12-10T08:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "860fa265-f8df-4c5d-b814-32129db3197d",
+      "name": "update — update: works for quizzes, discussions and pages (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "learningObjectDate",
+        "operation": "update",
+        "courseId": "337",
+        "objectType": "page",
+        "objectId": "=dated-page-{{ $execution.id }}-12",
+        "updateFields": {
+          "only_visible_to_overrides": true,
+          "assignment_overrides": [
+            {
+              "course_section_id": 423,
+              "unlock_at": "2031-02-01T08:00:00Z"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "get — get: reads the dates of every kind of item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: reads the dates of every kind of item": {
+      "main": [
+        [
+          {
+            "node": "get — get: reads the dates of every kind of item (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: reads the dates of every kind of item (2)": {
+      "main": [
+        [
+          {
+            "node": "get — get: reads the dates of every kind of item (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: reads the dates of every kind of item (3)": {
+      "main": [
+        [
+          {
+            "node": "get — get: reads the dates of every kind of item (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: reads the dates of every kind of item (4)": {
+      "main": [
+        [
+          {
+            "node": "get — get: reads the dates of every kind of item (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: reads the dates of every kind of item (5)": {
+      "main": [
+        [
+          {
+            "node": "update — update: sets dates and creates one override per section; get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: sets dates and creates one override per section; get": {
+      "main": [
+        [
+          {
+            "node": "update — update: an override list replaces the old one, and student o",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: an override list replaces the old one, and student o": {
+      "main": [
+        [
+          {
+            "node": "update — update: clears dates and removes all overrides",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: clears dates and removes all overrides": {
+      "main": [
+        [
+          {
+            "node": "update — update: works for quizzes, discussions and pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: works for quizzes, discussions and pages": {
+      "main": [
+        [
+          {
+            "node": "update — update: works for quizzes, discussions and pages (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: works for quizzes, discussions and pages (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: works for quizzes, discussions and pages (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

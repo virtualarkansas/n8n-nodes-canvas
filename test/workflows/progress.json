@@ -1,0 +1,772 @@
+{
+  "name": "Canvas battery — progress",
+  "nodes": [
+    {
+      "id": "f4499919-85fd-423d-a6cb-ee7c95602fc4",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "aa61317a-859a-47a1-b722-6eafdae155b2",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "99e5fa03-3639-4670-ab80-de9b94bd95a5",
+      "name": "get — create (course copy): copies everything and shifts the dates",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "562"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7c01347e-c0f6-42ce-af14-5c75679c8bc9",
+      "name": "get — create (course copy): Select copies only the chosen object",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "563"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "440227ee-3c72-42e0-893c-c4d1280d67dc",
+      "name": "get — create (course copy): module insertion, assignment group, re",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "564"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5b4d22ee-fcf9-47a2-bec1-878ff2b30f60",
+      "name": "get — selective import: wait for the selection, list the content, ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "565"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d314b5c2-a088-4e6a-8d8d-69f7c8c708b8",
+      "name": "get — create (Canvas cartridge): imports a finished content export",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "566"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1b4a596b-4ec3-4e2f-b3a9-fe74a044c10b",
+      "name": "get — create (ZIP file): announces an upload, and unzips the file ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "567"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "353982f0-7c6c-428f-b8b9-3d352b99eee3",
+      "name": "get — create (account): a cartridge import into an account, by fil",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "570"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "17c70ed6-78c5-4022-bf4f-b91075a5ced8",
+      "name": "get — bulkEnroll: enrolls every user in every course as a student ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "628"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fba4932d-fa16-45ac-b3fd-ee93bc9c93ad",
+      "name": "get — get: follows a background job from queued to completed",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "724"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a902e741-9aef-414f-8742-1ade61f982ac",
+      "name": "cancel — cancel: marks the job as failed and stores the message",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "cancel",
+        "progressId": "725",
+        "options": {
+          "message": "Cancelled by the battery – \"quoted\" & <b>tags</b> 🛑"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1c47f016-c89f-4aa1-9cf7-fcced0a0e126",
+      "name": "cancel — cancel: without a message, on a job nothing touches any more",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "cancel",
+        "progressId": "726"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f2539f31-a586-438c-bcc7-fc69eef927ea",
+      "name": "get — getLti: the progress of an LTI score upload, readable only w",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "729"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "02dae866-de8e-418d-b59c-02e3957fb551",
+      "name": "get — create (course, Common Cartridge): exports the whole course;",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "738"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "871d9663-1d7c-4b16-96f1-a50c914c76ba",
+      "name": "get — create (course, Common Cartridge): every Select field limits",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "739"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9ff5c301-a186-493a-b12a-d123d69fc5b9",
+      "name": "get — create (course, QTI): exports quizzes, all of them or the se",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "740"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4f4e358b-8bea-428a-aaf7-0297ccfaf38d",
+      "name": "get — create (course, QTI): exports quizzes, all of them or the se (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "741"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bb8bde71-1d1f-4fc3-9435-b6afda058a39",
+      "name": "get — create (course, ZIP): exports files, all of them, selected f",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "742"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b82cf8ac-bf55-40f6-8952-358ec7a5b839",
+      "name": "get — create (course, ZIP): exports files, all of them, selected f (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "743"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "803795ff-c844-4eeb-9274-5751ae9ae4e1",
+      "name": "get — create (course, ZIP): exports files, all of them, selected f (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "744"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c4c075e1-716d-4076-8358-69ea0fc9e39e",
+      "name": "get — create (group): zips the files of a group",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "progress",
+        "operation": "get",
+        "progressId": "745"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "get — create (course copy): copies everything and shifts the dates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course copy): copies everything and shifts the dates": {
+      "main": [
+        [
+          {
+            "node": "get — create (course copy): Select copies only the chosen object",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course copy): Select copies only the chosen object": {
+      "main": [
+        [
+          {
+            "node": "get — create (course copy): module insertion, assignment group, re",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course copy): module insertion, assignment group, re": {
+      "main": [
+        [
+          {
+            "node": "get — selective import: wait for the selection, list the content, ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — selective import: wait for the selection, list the content, ": {
+      "main": [
+        [
+          {
+            "node": "get — create (Canvas cartridge): imports a finished content export",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (Canvas cartridge): imports a finished content export": {
+      "main": [
+        [
+          {
+            "node": "get — create (ZIP file): announces an upload, and unzips the file ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (ZIP file): announces an upload, and unzips the file ": {
+      "main": [
+        [
+          {
+            "node": "get — create (account): a cartridge import into an account, by fil",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (account): a cartridge import into an account, by fil": {
+      "main": [
+        [
+          {
+            "node": "get — bulkEnroll: enrolls every user in every course as a student ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — bulkEnroll: enrolls every user in every course as a student ": {
+      "main": [
+        [
+          {
+            "node": "get — get: follows a background job from queued to completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: follows a background job from queued to completed": {
+      "main": [
+        [
+          {
+            "node": "cancel — cancel: marks the job as failed and stores the message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cancel — cancel: marks the job as failed and stores the message": {
+      "main": [
+        [
+          {
+            "node": "cancel — cancel: without a message, on a job nothing touches any more",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cancel — cancel: without a message, on a job nothing touches any more": {
+      "main": [
+        [
+          {
+            "node": "get — getLti: the progress of an LTI score upload, readable only w",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — getLti: the progress of an LTI score upload, readable only w": {
+      "main": [
+        [
+          {
+            "node": "get — create (course, Common Cartridge): exports the whole course;",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course, Common Cartridge): exports the whole course;": {
+      "main": [
+        [
+          {
+            "node": "get — create (course, Common Cartridge): every Select field limits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course, Common Cartridge): every Select field limits": {
+      "main": [
+        [
+          {
+            "node": "get — create (course, QTI): exports quizzes, all of them or the se",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course, QTI): exports quizzes, all of them or the se": {
+      "main": [
+        [
+          {
+            "node": "get — create (course, QTI): exports quizzes, all of them or the se (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course, QTI): exports quizzes, all of them or the se (2)": {
+      "main": [
+        [
+          {
+            "node": "get — create (course, ZIP): exports files, all of them, selected f",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course, ZIP): exports files, all of them, selected f": {
+      "main": [
+        [
+          {
+            "node": "get — create (course, ZIP): exports files, all of them, selected f (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course, ZIP): exports files, all of them, selected f (2)": {
+      "main": [
+        [
+          {
+            "node": "get — create (course, ZIP): exports files, all of them, selected f (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course, ZIP): exports files, all of them, selected f (3)": {
+      "main": [
+        [
+          {
+            "node": "get — create (group): zips the files of a group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

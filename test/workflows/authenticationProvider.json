@@ -1,0 +1,1429 @@
+{
+  "name": "Canvas battery — authenticationProvider",
+  "nodes": [
+    {
+      "id": "7522e12e-9d9d-4fff-ab18-f330ae6a3e88",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "db33cd66-ff2f-4cab-b90d-61cac2095689",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "12891e28-f308-4676-b0be-e3ca4a64438c",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            },
+            {
+              "id": "e39dbd8d-bca5-4ffa-9da2-740633d6beee",
+              "name": "authenticationProviderId",
+              "value": "3",
+              "type": "string"
+            },
+            {
+              "id": "96e38fac-b5b5-4f68-a2bc-5bdc29ab4f19",
+              "name": "accountRubricId",
+              "value": "2",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "330ad4bc-e64f-4ad7-9b3f-5732aaac7bd1",
+      "name": "getAll — getAll: lists the active providers of the account; Limit and",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "returnAll": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f6e13228-e82d-4d63-ad97-09f1e4a590a1",
+      "name": "getAll — getAll: lists the active providers of the account; Limit and (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "getAll",
+        "accountId": "self",
+        "returnAll": false,
+        "limit": 2
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "13f3e2f2-3e54-4214-af6f-2df18f17c717",
+      "name": "getAll — getAll: lists the active providers of the account; Limit and (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b7e44f49-9286-47cc-8a61-785b6ef6375f",
+      "name": "get — get: by ID and by provider type; a deleted provider is not f",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "providerId": "={{ $('Config').first().json.authenticationProviderId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d38b8bf1-fbfb-4650-9f39-9e14a5148406",
+      "name": "getSsoSettings — getSsoSettings: returns the account-level login settings",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "getSsoSettings",
+        "accountId": "={{ $('Config').first().json.accountId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d4212f7d-180b-40bc-b16a-1370997c509d",
+      "name": "create — create (SAML): every setting reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "authType": "saml",
+        "additionalFields": {
+          "idp_entity_id": "https://idp.n8nbat.example.edu/saml",
+          "log_in_url": "https://idp.n8nbat.example.edu/sso?a=1&b=2",
+          "log_out_url": "https://idp.n8nbat.example.edu/slo",
+          "certificate_fingerprint": "AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01",
+          "identifier_format": "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
+          "requested_authn_context": "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
+          "sig_alg": "RSA-SHA1",
+          "login_attribute": "eduPersonPrincipalName",
+          "strip_domain_from_login_attribute": true,
+          "parent_registration": false,
+          "jit_provisioning": true,
+          "mfa_required": true,
+          "otp_via_sms": false,
+          "skip_internal_mfa": false,
+          "federated_attributes": "{\"email\":\"mail\",\"display_name\":{\"attribute\":\"displayName\",\"provisioning_only\":true}}"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ef6643c0-5a8b-44d7-997f-f8b4e58fb2c6",
+      "name": "create — create (apple): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "authType": "apple",
+        "additionalFields": {
+          "client_id": "com.example.n8nbat",
+          "client_secret": "s3cret",
+          "login_attribute": "sub",
+          "jit_provisioning": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "df38788c-962d-48e0-836d-ac9146a7021d",
+      "name": "delete — create (apple): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "delete",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "={{ $('create — create (apple): its settings reach Canvas').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "007136b9-987d-4274-a0c3-986fd00ec063",
+      "name": "create — create (cas): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "authType": "cas",
+        "additionalFields": {
+          "auth_base": "https://cas.n8nbat.example.edu/cas",
+          "log_in_url": "https://cas.n8nbat.example.edu/cas/login",
+          "jit_provisioning": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7eaf7d69-592c-4f55-8857-2d67a8f63d3c",
+      "name": "delete — create (cas): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "delete",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "={{ $('create — create (cas): its settings reach Canvas').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "76d1e198-c4e5-40f8-8045-86a7821d9397",
+      "name": "create — create (clever): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "authType": "clever",
+        "additionalFields": {
+          "client_id": "n8nbat-clever",
+          "client_secret": "s3cret",
+          "district_id": "D-1",
+          "login_attribute": "sis_id"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "303b9dc9-5d24-4f86-8a0e-c7b7c803493f",
+      "name": "delete — create (clever): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "delete",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "={{ $('create — create (clever): its settings reach Canvas').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ac9919b1-ef3d-45c0-85f5-040e25ef7249",
+      "name": "create — create (facebook): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "authType": "facebook",
+        "additionalFields": {
+          "app_id": "1234567890",
+          "app_secret": "s3cret",
+          "login_attribute": "email"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "226d1c17-c165-489e-b0d3-6e03ce04c588",
+      "name": "delete — create (facebook): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "delete",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "={{ $('create — create (facebook): its settings reach Canvas').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4e164f87-822b-433c-bc7e-61bba73ee909",
+      "name": "create — create (github): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "authType": "github",
+        "additionalFields": {
+          "domain": "github.n8nbat.example.edu",
+          "client_id": "n8nbat-gh",
+          "client_secret": "s3cret",
+          "login_attribute": "login"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a8da8519-f7e4-472d-9450-9417a3bd7cc0",
+      "name": "delete — create (github): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "delete",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "={{ $('create — create (github): its settings reach Canvas').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "825a4c84-dfc5-4a37-a1ea-2c58a01a6763",
+      "name": "create — create (google): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "authType": "google",
+        "additionalFields": {
+          "client_id": "n8nbat-google",
+          "client_secret": "s3cret",
+          "hosted_domain": "example.edu",
+          "login_attribute": "email"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5bdf1dd5-bc9c-42a4-bf78-5d640dda7571",
+      "name": "delete — create (google): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "delete",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "={{ $('create — create (google): its settings reach Canvas').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2b9d3a8a-cfe5-4dd6-9669-4912c9700a35",
+      "name": "create — create (linkedin): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "authType": "linkedin",
+        "additionalFields": {
+          "client_id": "n8nbat-li",
+          "client_secret": "s3cret",
+          "login_attribute": "emailAddress"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "aa008b7e-8883-45a0-85e0-0c22225d0760",
+      "name": "delete — create (linkedin): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "delete",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "={{ $('create — create (linkedin): its settings reach Canvas').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "de51a01b-5e0b-454b-8e96-84924f533013",
+      "name": "create — create (microsoft): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "authType": "microsoft",
+        "additionalFields": {
+          "application_id": "={{ $execution.id }}-3333-4444-555555555555",
+          "application_secret": "s3cret",
+          "tenant": "common",
+          "login_attribute": "tid+oid"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d9862cba-685d-44dd-9942-4c55eba01a68",
+      "name": "delete — create (microsoft): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "delete",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "={{ $('create — create (microsoft): its settings reach Canvas').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4c9c362c-526f-4927-91aa-ca981cd558a1",
+      "name": "create — create (saml_idp_discovery): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "authType": "saml_idp_discovery",
+        "additionalFields": {
+          "discovery_service_url": "https://discovery.n8nbat.example.edu/ds"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d44638cc-03ff-40bf-9a43-db9ec577bf12",
+      "name": "delete — create (saml_idp_discovery): its settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "delete",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "={{ $('create — create (saml_idp_discovery): its settings reach Canvas').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f7c41048-1b29-48a2-be47-1f54aff302e7",
+      "name": "create — create: Position inserts the provider into the list",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "authType": "cas",
+        "additionalFields": {
+          "auth_base": "https://cas2.n8nbat.example.edu/cas",
+          "position": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6a70243f-e7ae-49d4-a4b2-854edb93f53b",
+      "name": "update — update (SAML): changed settings reach Canvas, the rest stays",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "update",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "={{ $('create — create (SAML): every setting reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "idp_entity_id": "https://idp2.n8nbat.example.edu/saml",
+          "log_in_url": "https://idp2.n8nbat.example.edu/sso",
+          "sig_alg": "RSA-SHA256",
+          "jit_provisioning": false,
+          "mfa_required": false,
+          "otp_via_sms": true,
+          "skip_internal_mfa": true,
+          "login_attribute": "NameID",
+          "strip_domain_from_login_attribute": false,
+          "federated_attributes": "{\"email\": \"emailAddress\", \"locale\": {\"attribute\": \"lang\", \"provisioning_only\": true}}"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "640ebd1a-d24c-4847-a49e-30b67df4361a",
+      "name": "update — update (OpenID Connect and LDAP): settings reach Canvas; pro",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "update",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "openid_connect",
+        "updateFields": {
+          "scope": "email",
+          "userinfo_endpoint": "https://oidc.n8nbat.example.edu/userinfo2",
+          "token_endpoint_auth_method": "client_secret_post",
+          "client_secret": "another-s3cret"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4b876801-077b-4437-8dfd-2812410cbf31",
+      "name": "update — update: Position moves the provider",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "update",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "21",
+        "updateFields": {
+          "position": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3b272601-02da-4992-a9ed-97cdb8ca1971",
+      "name": "delete — delete: removes the provider from the list",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "delete",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "={{ $('update — update: Position moves the provider').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6157963c-3a3f-4ee1-99a9-f5027aad5211",
+      "name": "delete — restore: brings a deleted provider back with its settings; a",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "delete",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "={{ $('update — update (SAML): changed settings reach Canvas, the rest stays').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6f7636eb-adf6-46ab-9999-faf58f10e9e6",
+      "name": "restore — restore: brings a deleted provider back with its settings; a",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "restore",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "providerId": "={{ $('delete — restore: brings a deleted provider back with its settings; a').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1afadf3f-afd1-4527-bc70-4a71ba2800cb",
+      "name": "updateSsoSettings — updateSsoSettings: every setting reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "updateSsoSettings",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "ssoSettings": {
+          "auth_discovery_url": "https://discovery.n8nbat.example.edu/choose?x=1&y=2",
+          "change_password_url": "https://idp.n8nbat.example.edu/password",
+          "login_handle_name": "Schüler-ID 学号",
+          "login_help_url": "https://help.n8nbat.example.edu/login",
+          "unknown_user_url": "https://idp.n8nbat.example.edu/unknown"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ee4b6176-54d0-4244-91f9-7ea6965a5c5b",
+      "name": "updateSsoSettings — updateSsoSettings: settings left out stay, settings sent emp",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "updateSsoSettings",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "ssoSettings": {
+          "auth_discovery_url": "",
+          "login_handle_name": "Login"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0545ad9f-bf90-49b5-8b8b-e52602d5dc85",
+      "name": "updateSsoSettings — updateSsoSettings: settings left out stay, settings sent emp (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationProvider",
+        "operation": "updateSsoSettings",
+        "accountId": "={{ $('Config').first().json.accountRubricId }}",
+        "ssoSettings": {
+          "change_password_url": "",
+          "login_handle_name": "",
+          "login_help_url": "",
+          "unknown_user_url": ""
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the active providers of the account; Limit and",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the active providers of the account; Limit and": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the active providers of the account; Limit and (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the active providers of the account; Limit and (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the active providers of the account; Limit and (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the active providers of the account; Limit and (3)": {
+      "main": [
+        [
+          {
+            "node": "get — get: by ID and by provider type; a deleted provider is not f",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: by ID and by provider type; a deleted provider is not f": {
+      "main": [
+        [
+          {
+            "node": "getSsoSettings — getSsoSettings: returns the account-level login settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSsoSettings — getSsoSettings: returns the account-level login settings": {
+      "main": [
+        [
+          {
+            "node": "create — create (SAML): every setting reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (SAML): every setting reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create (apple): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (apple): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "delete — create (apple): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — create (apple): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create (cas): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (cas): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "delete — create (cas): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — create (cas): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create (clever): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (clever): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "delete — create (clever): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — create (clever): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create (facebook): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (facebook): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "delete — create (facebook): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — create (facebook): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create (github): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (github): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "delete — create (github): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — create (github): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create (google): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (google): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "delete — create (google): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — create (google): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create (linkedin): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (linkedin): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "delete — create (linkedin): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — create (linkedin): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create (microsoft): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (microsoft): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "delete — create (microsoft): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — create (microsoft): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create (saml_idp_discovery): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (saml_idp_discovery): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "delete — create (saml_idp_discovery): its settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — create (saml_idp_discovery): its settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create: Position inserts the provider into the list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: Position inserts the provider into the list": {
+      "main": [
+        [
+          {
+            "node": "update — update (SAML): changed settings reach Canvas, the rest stays",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update (SAML): changed settings reach Canvas, the rest stays": {
+      "main": [
+        [
+          {
+            "node": "update — update (OpenID Connect and LDAP): settings reach Canvas; pro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update (OpenID Connect and LDAP): settings reach Canvas; pro": {
+      "main": [
+        [
+          {
+            "node": "update — update: Position moves the provider",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Position moves the provider": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes the provider from the list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — delete: removes the provider from the list": {
+      "main": [
+        [
+          {
+            "node": "delete — restore: brings a deleted provider back with its settings; a",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — restore: brings a deleted provider back with its settings; a": {
+      "main": [
+        [
+          {
+            "node": "restore — restore: brings a deleted provider back with its settings; a",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "restore — restore: brings a deleted provider back with its settings; a": {
+      "main": [
+        [
+          {
+            "node": "updateSsoSettings — updateSsoSettings: every setting reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateSsoSettings — updateSsoSettings: every setting reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "updateSsoSettings — updateSsoSettings: settings left out stay, settings sent emp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateSsoSettings — updateSsoSettings: settings left out stay, settings sent emp": {
+      "main": [
+        [
+          {
+            "node": "updateSsoSettings — updateSsoSettings: settings left out stay, settings sent emp (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

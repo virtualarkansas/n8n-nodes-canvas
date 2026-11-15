@@ -1,0 +1,340 @@
+{
+  "name": "Canvas battery — liveAssessment",
+  "nodes": [
+    {
+      "id": "0e73bdd5-1189-4e3c-b76e-703550c3593d",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "38fd73dc-320b-46b2-aa8e-5220038d4d02",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "917770a1-8dd2-4474-81a0-38e9d8fdbcaf",
+      "name": "create — create: makes an assessment, and finds it again by key inste",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "liveAssessment",
+        "operation": "create",
+        "courseId": "337",
+        "key": "battery-1794752805835",
+        "title": "Exit ticket — Tuesday \"review\""
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "da40296f-d1f0-424f-9750-b5863ff3e400",
+      "name": "create — create: makes an assessment, and finds it again by key inste (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "liveAssessment",
+        "operation": "create",
+        "courseId": "337",
+        "key": "battery-1794752805835",
+        "title": "Different title"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f19bcbf8-848d-49d2-b05d-fe3d084835a2",
+      "name": "create — create: aligned with a learning outcome",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "liveAssessment",
+        "operation": "create",
+        "courseId": "337",
+        "key": "battery-1794752805835-outcome",
+        "title": "Aligned",
+        "additionalFields": {
+          "outcome_id": "63"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "237f68f9-765d-4a82-bba2-cf97a0f493b1",
+      "name": "getAll — getAll: lists the assessments of the course as separate item",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "liveAssessment",
+        "operation": "getAll",
+        "courseId": "337",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2c33f56d-57d7-4ff0-af1e-c0e8f6e3ea10",
+      "name": "createResults — createResults and getResults: records pass/fail per student ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "liveAssessment",
+        "operation": "createResults",
+        "courseId": "337",
+        "assessmentId": "={{ $('getAll — getAll: lists the assessments of the course as separate item').first().json.id }}",
+        "results": {
+          "result": [
+            {
+              "user_id": "1359",
+              "passed": true,
+              "assessed_at": "2026-05-26T13:05:40Z"
+            },
+            {
+              "user_id": "1360",
+              "passed": false,
+              "assessed_at": "2026-05-26T14:57:23Z"
+            },
+            {
+              "user_id": "1361",
+              "passed": true
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7c137252-0734-4356-b1fd-ad62c3842559",
+      "name": "getResults — createResults and getResults: records pass/fail per student ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "liveAssessment",
+        "operation": "getResults",
+        "courseId": "337",
+        "assessmentId": "={{ $('getAll — getAll: lists the assessments of the course as separate item').first().json.id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "60a9cc83-8f83-4fb1-8e03-ae1d5d96122c",
+      "name": "getResults — createResults and getResults: records pass/fail per student  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "liveAssessment",
+        "operation": "getResults",
+        "courseId": "337",
+        "assessmentId": "={{ $('getAll — getAll: lists the assessments of the course as separate item').first().json.id }}",
+        "options": {
+          "user_id": "1360"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: makes an assessment, and finds it again by key inste",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: makes an assessment, and finds it again by key inste": {
+      "main": [
+        [
+          {
+            "node": "create — create: makes an assessment, and finds it again by key inste (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: makes an assessment, and finds it again by key inste (2)": {
+      "main": [
+        [
+          {
+            "node": "create — create: aligned with a learning outcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: aligned with a learning outcome": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the assessments of the course as separate item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the assessments of the course as separate item": {
+      "main": [
+        [
+          {
+            "node": "createResults — createResults and getResults: records pass/fail per student ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createResults — createResults and getResults: records pass/fail per student ": {
+      "main": [
+        [
+          {
+            "node": "getResults — createResults and getResults: records pass/fail per student ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getResults — createResults and getResults: records pass/fail per student ": {
+      "main": [
+        [
+          {
+            "node": "getResults — createResults and getResults: records pass/fail per student  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

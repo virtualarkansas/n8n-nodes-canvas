@@ -1,0 +1,280 @@
+{
+  "name": "Canvas battery — announcementExternalFeed",
+  "nodes": [
+    {
+      "id": "31b9ba32-abd1-44da-8080-ff52a6328926",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "4c25e466-e457-486d-8ace-7d8e68d72bb9",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f636c083-e54e-49e3-9f64-0d4a73ce8404",
+      "name": "create — create: only a URL; each verbosity, one feed per input item;",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcementExternalFeed",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "113",
+        "url": "=https://example.com/feeds/plain-{{ $execution.id }}-2.xml"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "51dd70d8-19ff-4299-bab1-d75e3798d374",
+      "name": "create — create: only a URL; each verbosity, one feed per input item; (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcementExternalFeed",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "113",
+        "url": "=example.org/rss-{{ $execution.id }}-6"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "052c6e38-ce91-4a0c-80f0-579f214f7ea0",
+      "name": "getAll — getAll: pages through more feeds than one page holds",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcementExternalFeed",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "114"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "637a6cfc-721b-47a0-995d-4526f29e9d5c",
+      "name": "getAll — getAll: pages through more feeds than one page holds (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcementExternalFeed",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "114",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "548f8ea8-98c5-4095-84f9-565f5d7927c6",
+      "name": "getAll — getAll: pages through more feeds than one page holds (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcementExternalFeed",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "114",
+        "pagination": {
+          "perPage": 3,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "119afe75-8d3b-43ed-a703-d1d4cbede184",
+      "name": "getAll — group context: create, list and delete as a member of the gr",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "announcementExternalFeed",
+        "operation": "getAll",
+        "contextType": "group",
+        "groupId": "55"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: only a URL; each verbosity, one feed per input item;",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: only a URL; each verbosity, one feed per input item;": {
+      "main": [
+        [
+          {
+            "node": "create — create: only a URL; each verbosity, one feed per input item; (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: only a URL; each verbosity, one feed per input item; (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more feeds than one page holds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more feeds than one page holds": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more feeds than one page holds (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more feeds than one page holds (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more feeds than one page holds (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more feeds than one page holds (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — group context: create, list and delete as a member of the gr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

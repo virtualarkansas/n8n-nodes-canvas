@@ -1,0 +1,1237 @@
+{
+  "name": "Canvas battery — accountReport",
+  "nodes": [
+    {
+      "id": "0665b9cf-727d-45f5-ab99-a4c3d7eee573",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "06a8665d-3f11-4391-a44a-e94092d13d0b",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fa865d23-e0cf-41c3-8fc2-6976f94a5b21",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            },
+            {
+              "id": "248130d8-1f9d-4fff-925c-b3b901ad12c9",
+              "name": "subAccountId",
+              "value": "3",
+              "type": "string"
+            },
+            {
+              "id": "c864b9e6-009b-44fa-aae3-fbf59d38bc79",
+              "name": "deepSubAccountId",
+              "value": "5",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "becafb99-ec33-449e-acc7-d686487129d5",
+      "name": "listAvailable — listAvailable: lists every report type with its parameters",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "listAvailable",
+        "accountId": "={{ $('Config').first().json.accountId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1649d1e8-7a1b-4458-9654-97d2201f2fa2",
+      "name": "listAvailable — listAvailable: includes the HTML description and parameter f",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "listAvailable",
+        "accountId": "sis_account_id:SCH-RHS",
+        "options": {
+          "include": [
+            "description_html",
+            "parameters_html"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "85616c91-7f6f-4475-8e85-6a2abcbf35ff",
+      "name": "create — create: provisioning report with every file switched on; the",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.subAccountId }}",
+        "reportType": "provisioning_csv",
+        "additionalFields": {
+          "accounts": true,
+          "admins": true,
+          "courses": true,
+          "created_by_sis": false,
+          "enrollment_filter": [
+            "StudentEnrollment",
+            "TeacherEnrollment"
+          ],
+          "enrollment_states": [
+            "active",
+            "invited"
+          ],
+          "enrollment_term_id": "6",
+          "enrollments": true,
+          "group_categories": true,
+          "group_membership": true,
+          "groups": true,
+          "include_deleted": true,
+          "sections": true,
+          "skip_message": true,
+          "terms": true,
+          "user_observers": true,
+          "users": true,
+          "xlist": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "69e1f97f-3261-49bd-988b-d9d6d2894313",
+      "name": "get — create: provisioning report with every file switched on; the",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.subAccountId }}",
+        "reportType": "provisioning_csv",
+        "reportId": "={{ $('create — create: provisioning report with every file switched on; the').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6726785b-89c0-4274-a76a-66f5b93ab2b3",
+      "name": "create — create: a single-file report is a plain CSV; SIS term IDs ar",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "provisioning_csv",
+        "additionalFields": {
+          "users": true,
+          "enrollment_term_id": "sis_term_id:TERM-2026-FA",
+          "skip_message": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5a8285b2-0914-409c-b1ca-b9b5f19408ea",
+      "name": "get — create: a single-file report is a plain CSV; SIS term IDs ar",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "provisioning_csv",
+        "reportId": "={{ $('create — create: a single-file report is a plain CSV; SIS term IDs ar').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0930336b-43e0-4c76-8d5c-4c753b289634",
+      "name": "create — create: date range, course and enrollment-state parameters (",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "students_with_no_submissions_csv",
+        "additionalFields": {
+          "course_id": "1",
+          "start_at": "2026-11-01T00:00:00Z",
+          "end_at": "2026-11-10T00:00:00Z",
+          "include_enrollment_state": true,
+          "enrollment_state": [
+            "active",
+            "invited"
+          ],
+          "skip_message": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e0df2fff-b753-4480-8ce4-1dadcef85cc1",
+      "name": "get — create: date range, course and enrollment-state parameters (",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "students_with_no_submissions_csv",
+        "reportId": "={{ $('create — create: date range, course and enrollment-state parameters (').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4e987f91-81a7-4850-a59c-ef349a1daf8e",
+      "name": "create — create: the remaining parameters and free-form Other Parame",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "outcome_results_csv",
+        "additionalFields": {
+          "order": "courses",
+          "include_deleted": true,
+          "enrollment_term_id": "6"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7e61209d-3e8a-4824-bb0f-8f6a215a063b",
+      "name": "create — create: the remaining parameters and free-form Other Parame (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "user_access_tokens_csv",
+        "additionalFields": {
+          "exclude_deleted_and_expired": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1d9a6683-afa6-4531-b124-81fc43426434",
+      "name": "create — create: the remaining parameters and free-form Other Parame (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "eportfolio_report_csv",
+        "additionalFields": {
+          "no_enrollments": true,
+          "include_deleted": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "83ccbe08-94e3-4aac-9fb0-33cfb3fba500",
+      "name": "create — create: the remaining parameters and free-form Other Parame (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "zero_activity_csv",
+        "additionalFields": {
+          "extra_parameters": "{\"start_at\": \"2026-10-01\", \"course_id\": \"1\"}"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0b48fdf5-99a0-4ab2-bae5-444dac71483d",
+      "name": "create — create: without parameters the report runs with its defaults",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.subAccountId }}",
+        "reportType": "unpublished_courses_csv"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0aa0852a-f239-456f-9dff-2057306293b0",
+      "name": "get — create: without parameters the report runs with its defaults",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.subAccountId }}",
+        "reportType": "unpublished_courses_csv",
+        "reportId": "={{ $('create — create: without parameters the report runs with its defaults').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ad639f7b-5da0-4496-bb43-46c1d8f30af7",
+      "name": "get — create: starting the same report again while it runs is a 40",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "provisioning_csv",
+        "reportId": "40"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "55950061-b205-42ba-818e-38e70f100257",
+      "name": "create — waitForCompletion: returns the finished report with its file",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "provisioning_csv",
+        "additionalFields": {
+          "users": true,
+          "courses": true,
+          "skip_message": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "44ff5956-266b-4174-b84e-676b7613c84f",
+      "name": "waitForCompletion — waitForCompletion: returns the finished report with its file",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "waitForCompletion",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "provisioning_csv",
+        "reportId": "={{ $('create — waitForCompletion: returns the finished report with its file').first().json.id }}",
+        "pollInterval": 2,
+        "timeout": 300
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5399174e-ad0b-45af-a195-2ba7833e2ff9",
+      "name": "waitForCompletion — waitForCompletion: returns the finished report with its file (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "waitForCompletion",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "provisioning_csv",
+        "reportId": "={{ $('waitForCompletion — waitForCompletion: returns the finished report with its file').first().json.id }}",
+        "pollInterval": 30
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "db4e542b-205b-4333-b9e2-dcb96de11a3e",
+      "name": "waitForCompletion — waitForCompletion: returns the finished report with its file (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "waitForCompletion",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "provisioning_csv",
+        "reportId": "={{ $('waitForCompletion — waitForCompletion: returns the finished report with its file (2)').first().json.id }}",
+        "downloadFile": true,
+        "binaryPropertyName": "report"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e3892427-bb5a-4dfb-a362-2345a967f4b7",
+      "name": "get — waitForCompletion: returns the finished report with its file",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "provisioning_csv",
+        "reportId": "={{ $('waitForCompletion — waitForCompletion: returns the finished report with its file (3)').first().json.id }}",
+        "downloadFile": true,
+        "binaryPropertyName": "report"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f27065bf-eedf-4223-ae2e-24321fef31f4",
+      "name": "waitForCompletion — waitForCompletion: returns the finished report with its file (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "waitForCompletion",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "provisioning_csv",
+        "reportId": "42",
+        "downloadFile": true,
+        "pollInterval": 2
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9201cfbd-f224-4f63-8893-741e71f05738",
+      "name": "get — get: returns the report with its file once complete; several",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "unused_courses_csv",
+        "reportId": "43"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b300616c-e96f-429f-a418-80ec7c145634",
+      "name": "getAll — getAll: lists the runs of one report type, newest first, acr",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.subAccountId }}",
+        "reportType": "lti_report_csv",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "69c82cf4-9273-45a8-a4e2-0f2abfab2b81",
+      "name": "getAll — getAll: lists the runs of one report type, newest first, acr (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.subAccountId }}",
+        "reportType": "lti_report_csv"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3933e9a9-53ae-4087-8a1f-65dd05501e98",
+      "name": "getAll — getAll: lists the runs of one report type, newest first, acr (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.subAccountId }}",
+        "reportType": "lti_report_csv",
+        "pagination": {
+          "perPage": 5,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f6673b83-e456-46cb-b98b-0c3742ce745f",
+      "name": "getAll — getAll: a report type that never ran yields no items",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.deepSubAccountId }}",
+        "reportType": "mgp_grade_export_csv"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b7abdf9e-334a-4dc6-a710-ccc2c772609e",
+      "name": "abort — abort: stops a running report without deleting it",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "abort",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "reportType": "provisioning_csv",
+        "reportId": "56"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "77208d17-b8ef-40f1-9220-7e8d14ebcaf9",
+      "name": "get — delete: removes a finished report",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.subAccountId }}",
+        "reportType": "public_courses_csv",
+        "reportId": "57"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d81043dc-7c48-4b13-aa4c-596894e35f5c",
+      "name": "delete — delete: removes a finished report",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountReport",
+        "operation": "delete",
+        "accountId": "={{ $('Config').first().json.subAccountId }}",
+        "reportType": "public_courses_csv",
+        "reportId": "={{ $('get — delete: removes a finished report').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "listAvailable — listAvailable: lists every report type with its parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listAvailable — listAvailable: lists every report type with its parameters": {
+      "main": [
+        [
+          {
+            "node": "listAvailable — listAvailable: includes the HTML description and parameter f",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listAvailable — listAvailable: includes the HTML description and parameter f": {
+      "main": [
+        [
+          {
+            "node": "create — create: provisioning report with every file switched on; the",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: provisioning report with every file switched on; the": {
+      "main": [
+        [
+          {
+            "node": "get — create: provisioning report with every file switched on; the",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: provisioning report with every file switched on; the": {
+      "main": [
+        [
+          {
+            "node": "create — create: a single-file report is a plain CSV; SIS term IDs ar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: a single-file report is a plain CSV; SIS term IDs ar": {
+      "main": [
+        [
+          {
+            "node": "get — create: a single-file report is a plain CSV; SIS term IDs ar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: a single-file report is a plain CSV; SIS term IDs ar": {
+      "main": [
+        [
+          {
+            "node": "create — create: date range, course and enrollment-state parameters (",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: date range, course and enrollment-state parameters (": {
+      "main": [
+        [
+          {
+            "node": "get — create: date range, course and enrollment-state parameters (",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: date range, course and enrollment-state parameters (": {
+      "main": [
+        [
+          {
+            "node": "create — create: the remaining parameters and free-form Other Parame",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: the remaining parameters and free-form Other Parame": {
+      "main": [
+        [
+          {
+            "node": "create — create: the remaining parameters and free-form Other Parame (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: the remaining parameters and free-form Other Parame (2)": {
+      "main": [
+        [
+          {
+            "node": "create — create: the remaining parameters and free-form Other Parame (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: the remaining parameters and free-form Other Parame (3)": {
+      "main": [
+        [
+          {
+            "node": "create — create: the remaining parameters and free-form Other Parame (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: the remaining parameters and free-form Other Parame (4)": {
+      "main": [
+        [
+          {
+            "node": "create — create: without parameters the report runs with its defaults",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: without parameters the report runs with its defaults": {
+      "main": [
+        [
+          {
+            "node": "get — create: without parameters the report runs with its defaults",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: without parameters the report runs with its defaults": {
+      "main": [
+        [
+          {
+            "node": "get — create: starting the same report again while it runs is a 40",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create: starting the same report again while it runs is a 40": {
+      "main": [
+        [
+          {
+            "node": "create — waitForCompletion: returns the finished report with its file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — waitForCompletion: returns the finished report with its file": {
+      "main": [
+        [
+          {
+            "node": "waitForCompletion — waitForCompletion: returns the finished report with its file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "waitForCompletion — waitForCompletion: returns the finished report with its file": {
+      "main": [
+        [
+          {
+            "node": "waitForCompletion — waitForCompletion: returns the finished report with its file (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "waitForCompletion — waitForCompletion: returns the finished report with its file (2)": {
+      "main": [
+        [
+          {
+            "node": "waitForCompletion — waitForCompletion: returns the finished report with its file (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "waitForCompletion — waitForCompletion: returns the finished report with its file (3)": {
+      "main": [
+        [
+          {
+            "node": "get — waitForCompletion: returns the finished report with its file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — waitForCompletion: returns the finished report with its file": {
+      "main": [
+        [
+          {
+            "node": "waitForCompletion — waitForCompletion: returns the finished report with its file (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "waitForCompletion — waitForCompletion: returns the finished report with its file (4)": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns the report with its file once complete; several",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns the report with its file once complete; several": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the runs of one report type, newest first, acr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the runs of one report type, newest first, acr": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the runs of one report type, newest first, acr (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the runs of one report type, newest first, acr (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the runs of one report type, newest first, acr (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the runs of one report type, newest first, acr (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: a report type that never ran yields no items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: a report type that never ran yields no items": {
+      "main": [
+        [
+          {
+            "node": "abort — abort: stops a running report without deleting it",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "abort — abort: stops a running report without deleting it": {
+      "main": [
+        [
+          {
+            "node": "get — delete: removes a finished report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — delete: removes a finished report": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes a finished report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

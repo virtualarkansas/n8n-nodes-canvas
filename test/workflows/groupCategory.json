@@ -1,0 +1,1379 @@
+{
+  "name": "Canvas battery — groupCategory",
+  "nodes": [
+    {
+      "id": "5d164e93-fb44-422e-95e7-0966840151b3",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "99c2aca4-d5b1-40c6-8d9c-e41273d1b011",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "7f1aae9e-bb1e-482c-bbba-ad37fe84ba14",
+      "name": "create — create (course): every optional field",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "create",
+        "context": "course",
+        "courseId": "109",
+        "name": "=Project teams \"A&B\" <i>ünï</i> 組 {{ $execution.id }}-2",
+        "additionalFields": {
+          "auto_leader": "random",
+          "create_group_count": 3,
+          "group_limit": 4,
+          "non_collaborative": false,
+          "self_signup": "enabled",
+          "sis_group_category_id": "=SBX-GC-{{ $execution.id }}-3"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "129dfa1f-7190-4ef1-b2a0-e8f636b67324",
+      "name": "create — create (course): the other values of Self Signup and Auto Le",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "create",
+        "context": "course",
+        "courseId": "={{ $('create — create (course): every optional field').first().json.course_id }}",
+        "name": "=Section teams {{ $execution.id }}-4",
+        "additionalFields": {
+          "self_signup": "restricted",
+          "auto_leader": "first"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3257e8d4-b991-4042-a5b8-70ac487dd2c7",
+      "name": "create — create (course): the other values of Self Signup and Auto Le (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "create",
+        "context": "course",
+        "courseId": "={{ $('create — create (course): the other values of Self Signup and Auto Le').first().json.course_id }}",
+        "name": "=Teacher-made teams {{ $execution.id }}-5",
+        "additionalFields": {
+          "self_signup": ""
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a978994f-cab9-468f-9802-87af077afe7d",
+      "name": "create — create (course): Create Group Count without self sign-up a",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "create",
+        "context": "course",
+        "courseId": "={{ $('create — create (course): the other values of Self Signup and Auto Le (2)').first().json.course_id }}",
+        "name": "=Random teams {{ $execution.id }}-6",
+        "additionalFields": {
+          "create_group_count": 5
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "492e9418-3691-4b21-8d5c-973089e20454",
+      "name": "create — create (account): a category in the batterys sub-account; s",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "create",
+        "context": "account",
+        "accountId": "25",
+        "name": "=Committees {{ $execution.id }}-7"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "161431d5-9818-4a6c-86b1-e8be86a09542",
+      "name": "get — get: by ID and by SIS ID",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "get",
+        "groupCategoryId": "=sis_group_category_id:SBX-GC-{{ $execution.id }}-3"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dea8381f-e38c-4559-aec7-bf557840ec76",
+      "name": "getAll — getAll (course): pages are followed and capped as configured",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "342"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9ab0a280-22da-494c-a9bd-b2150a9e63f0",
+      "name": "getAll — getAll (course): pages are followed and capped as configured (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "={{ $('getAll — getAll (course): pages are followed and capped as configured').first().json.course_id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0668c8eb-30e1-4d15-97ae-2a06069c63f2",
+      "name": "getAll — getAll (course): pages are followed and capped as configured (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "={{ $('getAll — getAll (course): pages are followed and capped as configured (2)').first().json.course_id }}",
+        "pagination": {
+          "perPage": 3,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "eea09963-4f61-4ba9-9795-359c6785dc4a",
+      "name": "getAll — getAll (course): pages are followed and capped as configured (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "={{ $('getAll — getAll (course): pages are followed and capped as configured (3)').first().json.course_id }}",
+        "pagination": {
+          "perPage": 5,
+          "maxPages": 0
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "937d7c2a-2f48-4f37-a057-ad1f65080b28",
+      "name": "getAll — getAll: Collaboration State, and the account context",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "={{ $('getAll — getAll (course): pages are followed and capped as configured (4)').first().json.course_id }}",
+        "options": {
+          "collaboration_state": "collaborative"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "26154cf0-1a9c-420e-86a1-99fd4321a113",
+      "name": "getAll — getAll: Collaboration State, and the account context (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "={{ $('getAll — getAll: Collaboration State, and the account context').first().json.course_id }}",
+        "options": {
+          "collaboration_state": "all"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1d9c1181-98da-41e4-86a4-a4e1a2c0bb63",
+      "name": "getAll — getAll: Collaboration State, and the account context (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "={{ $('getAll — getAll: Collaboration State, and the account context (2)').first().json.course_id }}",
+        "options": {
+          "collaboration_state": "non_collaborative"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2079e5a0-30ca-42cf-ba2d-4c7113570079",
+      "name": "getAll — getAll: Collaboration State, and the account context (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "getAll",
+        "context": "account",
+        "accountId": "={{ $('create — create (account): a category in the batterys sub-account; s').first().json.account_id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0017e27e-05e1-4847-b8fb-1814c984cf37",
+      "name": "update — update: Canvas clears the settings that are not sent again",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "update",
+        "groupCategoryId": "={{ $('get — get: by ID and by SIS ID').first().json.id }}",
+        "updateFields": {
+          "name": "=Project teams (renamed) {{ $execution.id }}-9",
+          "self_signup": "restricted",
+          "auto_leader": "first",
+          "group_limit": 6,
+          "sis_group_category_id": "=SBX-GC-{{ $execution.id }}-3-B"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7a782aaf-7ef8-4eaa-b23a-0abeb00f7c64",
+      "name": "update — update: Canvas clears the settings that are not sent again (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "update",
+        "groupCategoryId": "={{ $('update — update: Canvas clears the settings that are not sent again').first().json.id }}",
+        "updateFields": {
+          "name": "=Project teams (renamed) {{ $execution.id }}-9 again"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a6da1488-9ba5-4604-83ac-0c6efe84ddcb",
+      "name": "update — update: Create Group Count adds groups",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "update",
+        "groupCategoryId": "={{ $('update — update: Canvas clears the settings that are not sent again (2)').first().json.id }}",
+        "updateFields": {
+          "self_signup": "enabled",
+          "create_group_count": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6db09c6a-618b-4da7-913e-05b4c3e91d3f",
+      "name": "export — export: one item with the CSV text Canvas produces, every st",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "export",
+        "groupCategoryId": "95"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f087e86b-ce87-49dc-83cc-b231e08bc9f0",
+      "name": "listGroups — listGroups: a category with more groups than a default run r",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "listGroups",
+        "groupCategoryId": "96",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6255a731-19eb-4048-970e-baa61959c715",
+      "name": "listGroups — listGroups: a category with more groups than a default run r (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "listGroups",
+        "groupCategoryId": "={{ $('listGroups — listGroups: a category with more groups than a default run r').first().json.group_category_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "48088b39-304f-4358-9847-c16cc231fc47",
+      "name": "listGroups — listGroups: a category with more groups than a default run r (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "listGroups",
+        "groupCategoryId": "={{ $('listGroups — listGroups: a category with more groups than a default run r (2)').first().json.group_category_id }}",
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0764efdc-9803-4f38-8b87-c2a0dd5caa78",
+      "name": "listGroups — listGroups: a category with more groups than a default run r (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "listGroups",
+        "groupCategoryId": "={{ $('getAll — getAll: Collaboration State, and the account context (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a84e8bcc-1a96-4060-90ea-565b8d6de2f6",
+      "name": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "listUsers",
+        "groupCategoryId": "98",
+        "options": {
+          "unassigned": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ac30fb11-2b7a-479e-9827-d902ec88c91d",
+      "name": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "listUsers",
+        "groupCategoryId": "98",
+        "options": {
+          "unassigned": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "de86296a-0235-4358-9602-d566fdb830e9",
+      "name": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "listUsers",
+        "groupCategoryId": "98",
+        "options": {
+          "unassigned": true
+        },
+        "pagination": {
+          "perPage": 9,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6506eb92-9fe1-4c9d-9e9e-cc25e5d874e8",
+      "name": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "listUsers",
+        "groupCategoryId": "98",
+        "options": {
+          "unassigned": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "547d7a3e-2d8e-49bf-a424-9e130d30ca7b",
+      "name": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "listUsers",
+        "groupCategoryId": "98",
+        "options": {
+          "unassigned": true,
+          "search_term": "Ñandú"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cd892406-29ff-4ac2-946d-385ca4debaf6",
+      "name": "assignUnassignedMembers — listUsers + assignUnassignedMembers (sync): unassigned stude",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "assignUnassignedMembers",
+        "groupCategoryId": "98",
+        "options": {
+          "sync": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f9ec02e6-1495-4650-a6af-e8dd0703e1f1",
+      "name": "assignUnassignedMembers — assignUnassignedMembers (default): Canvas works in the backg",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "assignUnassignedMembers",
+        "groupCategoryId": "101"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2c7a2559-813a-4791-a216-0bdf5026f7a5",
+      "name": "import — import: rows Canvas cannot use are skipped without an error;",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "import",
+        "groupCategoryId": "102",
+        "fileSource": "text",
+        "fileContent": "canvas_user_id;group_name\n997;Semicolon team"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1f4920d1-bce1-4f46-b905-f4a9f0e091d4",
+      "name": "delete — delete: removes the category and its groups",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "delete",
+        "groupCategoryId": "={{ $('update — update: Create Group Count adds groups').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7efbeb6e-41d8-4690-8a41-64baa2388f1f",
+      "name": "import — import: rows Canvas cannot use are skipped without an error; (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "import",
+        "groupCategoryId": "102",
+        "fileSource": "text",
+        "fileContent": "canvas_user_id,group_name\n997,\"never closed"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "81423f5f-d7cf-47aa-9858-926a5487056b",
+      "name": "bulkManageDifferentiationTags — bulkManageDifferentiationTags: a new tag set with its tags i",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "groupCategory",
+        "operation": "bulkManageDifferentiationTags",
+        "courseId": "361",
+        "tagSetName": "=Reading level \"A&B\" ünï 読解 {{ $execution.id }}-6",
+        "tagsToCreate": {
+          "tags": [
+            {
+              "name": "Above \"grade\" level"
+            },
+            {
+              "name": "On level"
+            },
+            {
+              "name": "Needs support — 支援"
+            },
+            {
+              "name": "  "
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create (course): every optional field",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (course): every optional field": {
+      "main": [
+        [
+          {
+            "node": "create — create (course): the other values of Self Signup and Auto Le",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (course): the other values of Self Signup and Auto Le": {
+      "main": [
+        [
+          {
+            "node": "create — create (course): the other values of Self Signup and Auto Le (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (course): the other values of Self Signup and Auto Le (2)": {
+      "main": [
+        [
+          {
+            "node": "create — create (course): Create Group Count without self sign-up a",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (course): Create Group Count without self sign-up a": {
+      "main": [
+        [
+          {
+            "node": "create — create (account): a category in the batterys sub-account; s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (account): a category in the batterys sub-account; s": {
+      "main": [
+        [
+          {
+            "node": "get — get: by ID and by SIS ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: by ID and by SIS ID": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (course): pages are followed and capped as configured",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (course): pages are followed and capped as configured": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (course): pages are followed and capped as configured (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (course): pages are followed and capped as configured (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (course): pages are followed and capped as configured (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (course): pages are followed and capped as configured (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (course): pages are followed and capped as configured (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (course): pages are followed and capped as configured (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Collaboration State, and the account context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Collaboration State, and the account context": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Collaboration State, and the account context (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Collaboration State, and the account context (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Collaboration State, and the account context (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Collaboration State, and the account context (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Collaboration State, and the account context (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Collaboration State, and the account context (4)": {
+      "main": [
+        [
+          {
+            "node": "update — update: Canvas clears the settings that are not sent again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Canvas clears the settings that are not sent again": {
+      "main": [
+        [
+          {
+            "node": "update — update: Canvas clears the settings that are not sent again (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Canvas clears the settings that are not sent again (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: Create Group Count adds groups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Create Group Count adds groups": {
+      "main": [
+        [
+          {
+            "node": "export — export: one item with the CSV text Canvas produces, every st",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "export — export: one item with the CSV text Canvas produces, every st": {
+      "main": [
+        [
+          {
+            "node": "listGroups — listGroups: a category with more groups than a default run r",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listGroups — listGroups: a category with more groups than a default run r": {
+      "main": [
+        [
+          {
+            "node": "listGroups — listGroups: a category with more groups than a default run r (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listGroups — listGroups: a category with more groups than a default run r (2)": {
+      "main": [
+        [
+          {
+            "node": "listGroups — listGroups: a category with more groups than a default run r (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listGroups — listGroups: a category with more groups than a default run r (3)": {
+      "main": [
+        [
+          {
+            "node": "listGroups — listGroups: a category with more groups than a default run r (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listGroups — listGroups: a category with more groups than a default run r (4)": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (2)": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (3)": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (4)": {
+      "main": [
+        [
+          {
+            "node": "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listUsers — listUsers + assignUnassignedMembers (sync): unassigned stude (5)": {
+      "main": [
+        [
+          {
+            "node": "assignUnassignedMembers — listUsers + assignUnassignedMembers (sync): unassigned stude",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "assignUnassignedMembers — listUsers + assignUnassignedMembers (sync): unassigned stude": {
+      "main": [
+        [
+          {
+            "node": "assignUnassignedMembers — assignUnassignedMembers (default): Canvas works in the backg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "assignUnassignedMembers — assignUnassignedMembers (default): Canvas works in the backg": {
+      "main": [
+        [
+          {
+            "node": "import — import: rows Canvas cannot use are skipped without an error;",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "import — import: rows Canvas cannot use are skipped without an error;": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes the category and its groups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — delete: removes the category and its groups": {
+      "main": [
+        [
+          {
+            "node": "import — import: rows Canvas cannot use are skipped without an error; (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "import — import: rows Canvas cannot use are skipped without an error; (2)": {
+      "main": [
+        [
+          {
+            "node": "bulkManageDifferentiationTags — bulkManageDifferentiationTags: a new tag set with its tags i",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

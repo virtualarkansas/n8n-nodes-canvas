@@ -1,0 +1,413 @@
+{
+  "name": "Canvas battery — commMessage",
+  "nodes": [
+    {
+      "id": "10b520d1-42c4-42ed-9c3a-b21c2477ef14",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "760bf6e2-b117-448d-b59c-4fe1c44eb6fe",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b5501df9-6129-4022-9fe9-3253509f9b29",
+              "name": "adminUserId",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "0be359c4-b693-4954-8378-be5e14a77e44",
+      "name": "getAll — getAll: Return All follows the pages, the default stops at 5",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "commMessage",
+        "operation": "getAll",
+        "userId": "635",
+        "returnAll": true,
+        "options": {
+          "end_time": "2026-11-15T14:25:44Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "34e57e58-e48d-430c-a0c6-79af49002192",
+      "name": "getAll — getAll: Return All follows the pages, the default stops at 5 (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "commMessage",
+        "operation": "getAll",
+        "userId": "635",
+        "options": {
+          "end_time": "2026-11-15T14:25:44Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f1167aaf-a1a1-4e66-8f59-8d5a281949b8",
+      "name": "getAll — getAll: Return All follows the pages, the default stops at 5 (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "commMessage",
+        "operation": "getAll",
+        "userId": "635",
+        "returnAll": false,
+        "limit": 7,
+        "options": {
+          "end_time": "2026-11-15T14:25:44Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4fe0f7b3-020e-4dc4-9dda-eda1c474ae8a",
+      "name": "getAll — getAll: Return All follows the pages, the default stops at 5 (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "commMessage",
+        "operation": "getAll",
+        "userId": "635",
+        "returnAll": false,
+        "limit": 103,
+        "options": {
+          "end_time": "2026-11-15T14:25:44Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "71ecf3ff-7a6f-4291-b2f4-b884070b32d0",
+      "name": "getAll — getAll: without a time range the newest messages come first",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "commMessage",
+        "operation": "getAll",
+        "userId": "635",
+        "limit": 10
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1e54ac96-da60-4daf-895c-9be782bd88a6",
+      "name": "getAll — getAll: Start Time and End Time bound the result",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "commMessage",
+        "operation": "getAll",
+        "userId": "635",
+        "returnAll": true,
+        "options": {
+          "start_time": "2026-11-15T14:18:57Z",
+          "end_time": "2026-11-15T14:25:03Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f183a48e-df5c-4d1d-94ac-4a6d526f7085",
+      "name": "getAll — getAll: Start Time and End Time bound the result (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "commMessage",
+        "operation": "getAll",
+        "userId": "635",
+        "returnAll": true,
+        "options": {
+          "start_time": "2026-11-15T14:18:57Z",
+          "end_time": "2026-11-15T14:25:44Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3f505565-0637-4c67-905e-e52180c52a32",
+      "name": "getAll — getAll: Start Time and End Time bound the result (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "commMessage",
+        "operation": "getAll",
+        "userId": "635",
+        "returnAll": true,
+        "options": {
+          "start_time": "2040-01-01T00:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1cc33b93-9eee-47bb-8830-912801cc89d3",
+      "name": "getAll — getAll: a user without any notifications yields no items",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "commMessage",
+        "operation": "getAll",
+        "userId": "={{ $('Config').first().json.adminUserId }}",
+        "returnAll": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Return All follows the pages, the default stops at 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Return All follows the pages, the default stops at 5": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Return All follows the pages, the default stops at 5 (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Return All follows the pages, the default stops at 5 (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Return All follows the pages, the default stops at 5 (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Return All follows the pages, the default stops at 5 (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Return All follows the pages, the default stops at 5 (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Return All follows the pages, the default stops at 5 (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: without a time range the newest messages come first",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: without a time range the newest messages come first": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Start Time and End Time bound the result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Start Time and End Time bound the result": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Start Time and End Time bound the result (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Start Time and End Time bound the result (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: Start Time and End Time bound the result (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: Start Time and End Time bound the result (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: a user without any notifications yields no items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

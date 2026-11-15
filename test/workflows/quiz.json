@@ -1,0 +1,1114 @@
+{
+  "name": "Canvas battery — quiz",
+  "nodes": [
+    {
+      "id": "73ff55bf-508a-4913-9890-b639c950b2f8",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "c685925f-eb6c-4e27-8bb9-4f7985db8d4b",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "1578d4f8-5c94-4396-8bd9-6497410d62f6",
+      "name": "create — create: every optional field of a graded quiz reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "create",
+        "courseId": "119",
+        "title": "=Battery quiz Ünïcødé 测验 \"quoted\" & <b>tags</b> 🧪 {{ $execution.id }}-1",
+        "additionalFields": {
+          "access_code": "open sesame & \"more\"",
+          "allowed_attempts": 3,
+          "assignment_group_id": "346",
+          "cant_go_back": true,
+          "description": "<p>Read <strong>chapter 3</strong> first — ¿listo? 日本語</p>",
+          "due_at": "2031-01-15T12:00:00Z",
+          "hide_results": "until_after_last_attempt",
+          "ip_filter": "192.168.0.0/16,10.1.2.3",
+          "lock_at": "2031-02-15T12:00:00Z",
+          "lockdown_browser_monitor_data": "monitor-settings",
+          "one_question_at_a_time": true,
+          "only_visible_to_overrides": false,
+          "published": true,
+          "quiz_type": "assignment",
+          "require_lockdown_browser": true,
+          "require_lockdown_browser_monitor": true,
+          "scoring_policy": "keep_average",
+          "shuffle_answers": true,
+          "time_limit": 45,
+          "unlock_at": "2031-01-01T12:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0be5879d-7fdd-4351-bfc7-fc0fdc9fb524",
+      "name": "create — create: answer-visibility options and survey-only options re",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "create",
+        "courseId": "119",
+        "title": "=Battery survey {{ $execution.id }}-3",
+        "additionalFields": {
+          "allowed_attempts": 2,
+          "anonymous_submissions": true,
+          "hide_correct_answers_at": "2031-03-15T12:00:00Z",
+          "hide_results": "",
+          "one_time_results": true,
+          "points_possible": 7,
+          "quiz_type": "graded_survey",
+          "scoring_policy": "keep_latest",
+          "show_correct_answers": true,
+          "show_correct_answers_at": "2031-02-20T12:00:00Z",
+          "show_correct_answers_last_attempt": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b35d9e1b-cbba-47dd-90a6-f2d7df7d98e7",
+      "name": "create — create: a time limit of 0 means no time limit (Canvas itse",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "create",
+        "courseId": "119",
+        "title": "=No limit {{ $execution.id }}-4",
+        "additionalFields": {
+          "time_limit": 0,
+          "quiz_type": "practice_quiz",
+          "allowed_attempts": -1,
+          "scoring_policy": "keep_latest"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e7829b79-0bd8-4ee9-be27-4a037851c58f",
+      "name": "create — create: Canvas silently drops options that need more than on",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "create",
+        "courseId": "119",
+        "title": "=Single attempt {{ $execution.id }}-5",
+        "additionalFields": {
+          "allowed_attempts": 1,
+          "hide_results": "until_after_last_attempt",
+          "scoring_policy": "keep_latest",
+          "show_correct_answers_last_attempt": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "481335a1-1480-47c4-80ab-88a180a29770",
+      "name": "get — get: returns the quiz; numeric IDs from expressions and SIS ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "get",
+        "courseId": "sis_course_id:BATTERY-QUIZZES",
+        "quizId": " 141 "
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fbc6037e-fd58-4f96-8abe-0a7b82d407e1",
+      "name": "update — update: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "update",
+        "courseId": "119",
+        "quizId": "={{ $('get — get: returns the quiz; numeric IDs from expressions and SIS ').first().json.id }}",
+        "updateFields": {
+          "access_code": "changed",
+          "allowed_attempts": 5,
+          "cant_go_back": false,
+          "description": "<p>Second version</p>",
+          "due_at": "2032-01-15T12:00:00Z",
+          "hide_results": "always",
+          "ip_filter": "10.0.0.0/8",
+          "lock_at": "2032-02-15T12:00:00Z",
+          "lockdown_browser_monitor_data": "changed",
+          "notify_of_update": false,
+          "one_question_at_a_time": false,
+          "published": false,
+          "quiz_type": "practice_quiz",
+          "scoring_policy": "keep_highest",
+          "shuffle_answers": false,
+          "time_limit": 90,
+          "title": "=Battery quiz Ünïcødé 测验 \"quoted\" & <b>tags</b> 🧪 {{ $execution.id }}-1 (renamed)",
+          "unlock_at": "2032-01-01T12:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "77b4d390-1554-41fd-965b-3987af249b26",
+      "name": "update — update: the remaining fields, clearing values, and 0 = no t",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "update",
+        "courseId": "119",
+        "quizId": "={{ $('update — update: every optional field reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "access_code": "",
+          "allowed_attempts": 2,
+          "anonymous_submissions": true,
+          "assignment_group_id": "346",
+          "due_at": "",
+          "hide_correct_answers_at": "2032-06-01T00:00:00Z",
+          "hide_results": "",
+          "ip_filter": "",
+          "lock_at": "",
+          "one_time_results": true,
+          "only_visible_to_overrides": true,
+          "points_possible": 12,
+          "quiz_type": "graded_survey",
+          "require_lockdown_browser": false,
+          "require_lockdown_browser_monitor": false,
+          "show_correct_answers": true,
+          "show_correct_answers_at": "2032-05-01T00:00:00Z",
+          "show_correct_answers_last_attempt": true,
+          "time_limit": 0,
+          "unlock_at": ""
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ee8d7837-6eb3-46dc-af37-83dc29dab641",
+      "name": "getAll — getAll: pages through a course with more quizzes than one pa",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "getAll",
+        "courseId": "122"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "95936fa6-4bd5-4ed4-b115-afc23fbef306",
+      "name": "getAll — getAll: pages through a course with more quizzes than one pa (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "getAll",
+        "courseId": "122",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9b96fcd5-3287-48d6-9a1f-a01f1af8ce25",
+      "name": "getAll — getAll: pages through a course with more quizzes than one pa (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "getAll",
+        "courseId": "122",
+        "pagination": {
+          "perPage": 7,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "50520cc8-d196-4676-bb38-129006fcff7b",
+      "name": "getAll — getAll: search term filters by title; students only get publ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "getAll",
+        "courseId": "122",
+        "options": {
+          "search_term": "Zellbiologie"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "17cd5217-545e-4a4f-a721-a52c95db072c",
+      "name": "getAll — getAll: search term filters by title; students only get publ (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "getAll",
+        "courseId": "122",
+        "options": {
+          "search_term": "no quiz has this title zzzz"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6f53103d-b03c-493c-8fc1-8180f234c6cb",
+      "name": "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "getAllWithNewQuizzes",
+        "courseId": "122",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3711f120-8aac-40fb-936d-f51145614721",
+      "name": "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "getAllWithNewQuizzes",
+        "courseId": "122"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8b04f5fa-1f39-4100-aba8-f203130d36dd",
+      "name": "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "getAllWithNewQuizzes",
+        "courseId": "122",
+        "options": {
+          "search_term": "Zellbiologie"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a2e55f46-5520-4421-93a7-d3135751e9b3",
+      "name": "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "getAllWithNewQuizzes",
+        "courseId": "122",
+        "options": {
+          "search_term": "no quiz has this title zzzz"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "64209517-68b0-4b38-864d-eb4a5acde53e",
+      "name": "reorder — reorder: questions and groups take the given order",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "reorder",
+        "courseId": "119",
+        "quizId": "145",
+        "orderItems": {
+          "items": [
+            {
+              "id": 308,
+              "type": "question"
+            },
+            {
+              "id": "22",
+              "type": "group"
+            },
+            {
+              "id": " 306 ",
+              "type": "question"
+            },
+            {
+              "id": 307,
+              "type": "question"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "08b3f75f-a7bd-4b57-81f7-79b4cd844aac",
+      "name": "validateAccessCode — validateAccessCode: tells a right code from a wrong one",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "validateAccessCode",
+        "courseId": "119",
+        "quizId": "146",
+        "accessCode": "p@ss \"word\" & more"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "deb9bf4e-376d-4b0c-b307-df62e5ed3dd8",
+      "name": "validateAccessCode — validateAccessCode: tells a right code from a wrong one (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "validateAccessCode",
+        "courseId": "119",
+        "quizId": "146",
+        "accessCode": "P@SS \"WORD\" & MORE"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3cb5dcea-5a40-4a62-be4e-f2d270982db6",
+      "name": "validateAccessCode — validateAccessCode: tells a right code from a wrong one (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "validateAccessCode",
+        "courseId": "119",
+        "quizId": "={{ $('create — create: answer-visibility options and survey-only options re').first().json.id }}",
+        "accessCode": "anything"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a21d032d-fade-44c0-b03f-a56cbe60adff",
+      "name": "getSubmissionUsers — getSubmissionUsers: all students, those who submitted and th",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "getSubmissionUsers",
+        "courseId": "119",
+        "quizId": "147",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fa7e6ba9-0a35-4bb3-a0db-ba13910d40d0",
+      "name": "getSubmissionUsers — getSubmissionUsers: all students, those who submitted and th (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "getSubmissionUsers",
+        "courseId": "119",
+        "quizId": "147",
+        "submitted": "true"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c05d6413-d037-4852-8482-26307eb5f64b",
+      "name": "getSubmissionUsers — getSubmissionUsers: all students, those who submitted and th (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "getSubmissionUsers",
+        "courseId": "119",
+        "quizId": "147",
+        "submitted": "false"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b3f293c0-14d2-4972-b45a-11995f819f03",
+      "name": "getSubmissionUsers — getSubmissionUsers: one user per item even when paged one by",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "getSubmissionUsers",
+        "courseId": "119",
+        "quizId": "147",
+        "pagination": {
+          "perPage": 1,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "db90ed36-d461-47ee-9ea9-565b9a6ebed4",
+      "name": "delete — delete: removes the quiz and returns it",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quiz",
+        "operation": "delete",
+        "courseId": "119",
+        "quizId": "={{ $('update — update: the remaining fields, clearing values, and 0 = no t').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field of a graded quiz reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field of a graded quiz reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create: answer-visibility options and survey-only options re",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: answer-visibility options and survey-only options re": {
+      "main": [
+        [
+          {
+            "node": "create — create: a time limit of 0 means no time limit (Canvas itse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: a time limit of 0 means no time limit (Canvas itse": {
+      "main": [
+        [
+          {
+            "node": "create — create: Canvas silently drops options that need more than on",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: Canvas silently drops options that need more than on": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns the quiz; numeric IDs from expressions and SIS ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns the quiz; numeric IDs from expressions and SIS ": {
+      "main": [
+        [
+          {
+            "node": "update — update: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: the remaining fields, clearing values, and 0 = no t",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: the remaining fields, clearing values, and 0 = no t": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through a course with more quizzes than one pa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through a course with more quizzes than one pa": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through a course with more quizzes than one pa (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through a course with more quizzes than one pa (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through a course with more quizzes than one pa (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through a course with more quizzes than one pa (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search term filters by title; students only get publ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search term filters by title; students only get publ": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: search term filters by title; students only get publ (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: search term filters by title; students only get publ (2)": {
+      "main": [
+        [
+          {
+            "node": "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q": {
+      "main": [
+        [
+          {
+            "node": "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q (2)": {
+      "main": [
+        [
+          {
+            "node": "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q (3)": {
+      "main": [
+        [
+          {
+            "node": "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllWithNewQuizzes — getAllWithNewQuizzes: the combined list of classic and New Q (4)": {
+      "main": [
+        [
+          {
+            "node": "reorder — reorder: questions and groups take the given order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "reorder — reorder: questions and groups take the given order": {
+      "main": [
+        [
+          {
+            "node": "validateAccessCode — validateAccessCode: tells a right code from a wrong one",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validateAccessCode — validateAccessCode: tells a right code from a wrong one": {
+      "main": [
+        [
+          {
+            "node": "validateAccessCode — validateAccessCode: tells a right code from a wrong one (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validateAccessCode — validateAccessCode: tells a right code from a wrong one (2)": {
+      "main": [
+        [
+          {
+            "node": "validateAccessCode — validateAccessCode: tells a right code from a wrong one (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validateAccessCode — validateAccessCode: tells a right code from a wrong one (3)": {
+      "main": [
+        [
+          {
+            "node": "getSubmissionUsers — getSubmissionUsers: all students, those who submitted and th",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSubmissionUsers — getSubmissionUsers: all students, those who submitted and th": {
+      "main": [
+        [
+          {
+            "node": "getSubmissionUsers — getSubmissionUsers: all students, those who submitted and th (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSubmissionUsers — getSubmissionUsers: all students, those who submitted and th (2)": {
+      "main": [
+        [
+          {
+            "node": "getSubmissionUsers — getSubmissionUsers: all students, those who submitted and th (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSubmissionUsers — getSubmissionUsers: all students, those who submitted and th (3)": {
+      "main": [
+        [
+          {
+            "node": "getSubmissionUsers — getSubmissionUsers: one user per item even when paged one by",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSubmissionUsers — getSubmissionUsers: one user per item even when paged one by": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes the quiz and returns it",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

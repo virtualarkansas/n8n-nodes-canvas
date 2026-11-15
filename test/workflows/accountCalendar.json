@@ -1,0 +1,679 @@
+{
+  "name": "Canvas battery — accountCalendar",
+  "nodes": [
+    {
+      "id": "babe833e-c7da-4186-85f1-e93d2abf5545",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "090af9ad-e51f-467c-9aff-beeaa751a613",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f891e99-9e81-4214-8ab9-31d04f883172",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "2681f173-e3ed-473d-906c-a505688c87a0",
+      "name": "get — get: returns the calendar settings of an account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "get",
+        "accountId": "90"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c0f0e1c6-813d-477a-9219-f2378740ea20",
+      "name": "update — update: both settings reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "update",
+        "accountId": "={{ $('get — get: returns the calendar settings of an account').first().json.id }}",
+        "updateFields": {
+          "visible": true,
+          "auto_subscribe": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "eceecde3-9c6b-44da-98e6-f5d75f6a8f85",
+      "name": "update — update: a single setting leaves the other untouched, and fal",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "update",
+        "accountId": "={{ $('update — update: both settings reach Canvas').first().json.id }}",
+        "updateFields": {
+          "auto_subscribe": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ea05fa8c-9716-4d01-850e-0c27c17ba0c7",
+      "name": "update — update: a single setting leaves the other untouched, and fal (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "update",
+        "accountId": "91",
+        "updateFields": {
+          "visible": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d7265612-ca45-4060-af31-c54dc8681cf5",
+      "name": "update — update: a single setting leaves the other untouched, and fal (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "update",
+        "accountId": "={{ $('update — update: a single setting leaves the other untouched, and fal (2)').first().json.id }}",
+        "updateFields": {
+          "visible": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6619ba97-81ec-4cf0-8ce3-c29a5d6e0b56",
+      "name": "updateMany — updateMany: updates several calendars from JSON text",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "updateMany",
+        "accountId": "={{ $('update — update: a single setting leaves the other untouched, and fal').first().json.id }}",
+        "calendars": "[\n  {\n    \"id\": 91,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 92,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 93,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 94,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 95,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 96,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 97,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 98,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 99,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 100,\n    \"visible\": true,\n    \"auto_subscribe\": false\n  },\n  {\n    \"id\": 101,\n    \"visible\": true,\n    \"auto_subscribe\": true\n  },\n  {\n    \"id\": 102,\n    \"visible\": false,\n    \"auto_subscribe\": false\n  }\n]"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7010217e-64f6-47c5-bd05-8ee8cbdc619b",
+      "name": "updateMany — updateMany: only the given keys change, and string IDs are a",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "updateMany",
+        "accountId": "={{ $('update — update: a single setting leaves the other untouched, and fal').first().json.id }}",
+        "calendars": "[{\"id\":\"91\",\"auto_subscribe\":false},{\"id\":\"92\",\"visible\":true}]"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c83a6870-3d6d-4730-8069-a289ddc53728",
+      "name": "countVisible — countVisible: counts the visible calendars of an account and",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "countVisible",
+        "accountId": "={{ $('update — update: a single setting leaves the other untouched, and fal').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ad05af67-6f0b-4a50-b0c0-d85af8fda39f",
+      "name": "getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "getAllForAccount",
+        "accountId": "={{ $('update — update: a single setting leaves the other untouched, and fal').first().json.id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8f476c8a-5df4-4030-b3f3-38224b7b3f07",
+      "name": "getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "getAllForAccount",
+        "accountId": "={{ $('getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3f5e3caf-7c37-4018-8afc-da61232e5c73",
+      "name": "getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "getAllForAccount",
+        "accountId": "={{ $('getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h (2)').first().json.id }}",
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b6e9af0c-2f66-486c-ba93-fc7f901439dc",
+      "name": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "getAllForAccount",
+        "accountId": "={{ $('getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h (3)').first().json.id }}",
+        "options": {
+          "filter": "hidden"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7ff03e10-cf64-4d21-bdeb-6487590dee80",
+      "name": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "getAllForAccount",
+        "accountId": "={{ $('getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h (3)').first().json.id }}",
+        "options": {
+          "filter": "visible"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "64dc04ad-1e56-4af5-9f2c-4b89a6f73c7f",
+      "name": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "getAllForAccount",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "options": {
+          "search_term": "=CalBat-{{ $execution.id }}-1 Child 0",
+          "filter": "visible"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "514f54f7-505f-4cc2-a29b-a618a0496330",
+      "name": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "getAllForAccount",
+        "accountId": "={{ $('getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h (3)').first().json.id }}",
+        "options": {
+          "search_term": "& \"quotes\" 🎒"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "38875741-7ce6-4bf5-9ef8-07e9aebbf567",
+      "name": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accountCalendar",
+        "operation": "getAllForAccount",
+        "accountId": "={{ $('getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h (3)').first().json.id }}",
+        "options": {
+          "search_term": "zzz-no-such-calendar"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns the calendar settings of an account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns the calendar settings of an account": {
+      "main": [
+        [
+          {
+            "node": "update — update: both settings reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: both settings reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: a single setting leaves the other untouched, and fal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: a single setting leaves the other untouched, and fal": {
+      "main": [
+        [
+          {
+            "node": "update — update: a single setting leaves the other untouched, and fal (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: a single setting leaves the other untouched, and fal (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: a single setting leaves the other untouched, and fal (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: a single setting leaves the other untouched, and fal (3)": {
+      "main": [
+        [
+          {
+            "node": "updateMany — updateMany: updates several calendars from JSON text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateMany — updateMany: updates several calendars from JSON text": {
+      "main": [
+        [
+          {
+            "node": "updateMany — updateMany: only the given keys change, and string IDs are a",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateMany — updateMany: only the given keys change, and string IDs are a": {
+      "main": [
+        [
+          {
+            "node": "countVisible — countVisible: counts the visible calendars of an account and",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "countVisible — countVisible: counts the visible calendars of an account and": {
+      "main": [
+        [
+          {
+            "node": "getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h": {
+      "main": [
+        [
+          {
+            "node": "getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h (2)": {
+      "main": [
+        [
+          {
+            "node": "getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForAccount — getAllForAccount: the account and its direct sub-accounts, h (3)": {
+      "main": [
+        [
+          {
+            "node": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi": {
+      "main": [
+        [
+          {
+            "node": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (2)": {
+      "main": [
+        [
+          {
+            "node": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (3)": {
+      "main": [
+        [
+          {
+            "node": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (4)": {
+      "main": [
+        [
+          {
+            "node": "getAllForAccount — getAllForAccount: filters by visibility and by name (searchi (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

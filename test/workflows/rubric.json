@@ -1,0 +1,1461 @@
+{
+  "name": "Canvas battery — rubric",
+  "nodes": [
+    {
+      "id": "5697d88c-18ff-4c19-825a-dc139506b314",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "8672cd13-05ee-4f93-b774-cd3d79fb0b37",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "515f757a-f53b-4ff4-9c29-2c102978ba82",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "6c129c4b-2542-407b-8c74-3c49369a7c17",
+      "name": "getImportTemplate — getImportTemplate: one item with the CSV text of the templat",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "getImportTemplate"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0cf1bdf6-4b0b-447d-9270-4a9398e3c04d",
+      "name": "getImportStatus — import (course): several rubrics in one file; the import rec",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "getImportStatus",
+        "context": "course",
+        "courseId": "=sis_course_id:GRD-rubric-import-{{ $execution.id }}-2"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bdd8672f-6a60-458a-8f67-1a3b21c6825a",
+      "name": "get — import (course): several rubrics in one file; the import rec",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "get",
+        "context": "course",
+        "courseId": "={{ $('getImportStatus — import (course): several rubrics in one file; the import rec').first().json.course_id }}",
+        "rubricId": "42"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "21fbfb73-ae8d-4f4b-9a20-a96397e2a0c5",
+      "name": "getAll — import (course): several rubrics in one file; the import rec",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "={{ $('getImportStatus — import (course): several rubrics in one file; the import rec').first().json.course_id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8f0bcb93-724a-4a55-af9c-a27a6ade2061",
+      "name": "getImportStatus — import (account): rubrics for a whole account; one import pe",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "getImportStatus",
+        "context": "account",
+        "accountId": "84",
+        "importId": "latest"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cc046cbe-284f-42bd-ac82-21bf87061758",
+      "name": "import — import: what Canvas reports for files it can only partly use",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "import",
+        "context": "course",
+        "courseId": "={{ $('getImportStatus — import (course): several rubrics in one file; the import rec').first().json.course_id }}",
+        "csvData": "=Rubric Name,Criteria Name,Criteria Description,Criteria Enable Range,Rating Name,Rating Description,Rating Points,Rating Name,Rating Description,Rating Points,Rating Name,Rating Description,Rating Points\nPartly imported {{ $execution.id }}-10,Criterion,,false,Yes,,1,No,,0\nNo criterion name,,Described,false,Yes,,1,No,,0\nNo ratings,Lonely criterion,,false"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f6660e30-e7c8-4ca4-9c5e-cf6388c1b2b6",
+      "name": "getImportStatus — import: what Canvas reports for files it can only partly use",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "getImportStatus",
+        "context": "course",
+        "courseId": "={{ $('import — import: what Canvas reports for files it can only partly use').first().json.course_id }}",
+        "importId": "13"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a878b5ab-ac0f-4408-a186-60e4c0d094b1",
+      "name": "import — import: what Canvas reports for files it can only partly use (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "import",
+        "context": "course",
+        "courseId": "={{ $('getImportStatus — import: what Canvas reports for files it can only partly use').first().json.course_id }}",
+        "csvData": "Rubric Name,Criteria Name,Criteria Description,Criteria Enable Range,Rating Name,Rating Description,Rating Points,Rating Name,Rating Description,Rating Points,Rating Name,Rating Description,Rating Points"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5e742b43-0414-4819-97a9-7205738d0b3b",
+      "name": "getImportStatus — import: what Canvas reports for files it can only partly use (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "getImportStatus",
+        "context": "course",
+        "courseId": "={{ $('import — import: what Canvas reports for files it can only partly use (2)').first().json.course_id }}",
+        "importId": "14"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8ade1502-c34d-4ab1-83bc-71eb68fb1a65",
+      "name": "import — import: what Canvas reports for files it can only partly use (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "import",
+        "context": "course",
+        "courseId": "={{ $('getImportStatus — import: what Canvas reports for files it can only partly use (2)').first().json.course_id }}",
+        "csvData": "name,points\nSomething,3"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6952ca6c-2a58-4217-885c-1556d86d44ca",
+      "name": "getImportStatus — import: what Canvas reports for files it can only partly use (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "getImportStatus",
+        "context": "course",
+        "courseId": "={{ $('import — import: what Canvas reports for files it can only partly use (3)').first().json.course_id }}",
+        "importId": "15"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "62b29566-acab-4af9-bbda-7a89f0477a8c",
+      "name": "import — import: what Canvas reports for files it can only partly use (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "import",
+        "context": "course",
+        "courseId": "={{ $('getImportStatus — import: what Canvas reports for files it can only partly use (3)').first().json.course_id }}",
+        "csvData": "Rubric Name,Criteria Name,Criteria Description,Criteria Enable Range,Rating Name,Rating Description,Rating Points,Rating Name,Rating Description,Rating Points,Rating Name,Rating Description,Rating Points\nBroken \"quoted\" rubric,Criterion,,false,Yes,,1"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9e3d00b6-4372-406c-8ab8-71e3ebd40633",
+      "name": "listImportedRubrics — errors: nothing to import, missing rights, unknown imports",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "listImportedRubrics",
+        "context": "course",
+        "courseId": "={{ $('import — import: what Canvas reports for files it can only partly use (4)').first().json.course_id }}",
+        "importId": "99999999"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8dc8a5c4-94aa-405a-8171-2910038d36b1",
+      "name": "create — create: criteria with and without ratings, bookmarked in the",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "create",
+        "courseId": "359",
+        "title": "=Rübric \"quoted\" & <b>tags</b> 评分 📝 {{ $execution.id }}-1",
+        "criteria": {
+          "criterion": [
+            {
+              "description": "Thesis — \"clear\" & <focused>",
+              "long_description": "States a claim",
+              "points": 5
+            },
+            {
+              "description": "Evidence 证据",
+              "long_description": "Uses sources",
+              "points": 0,
+              "criterion_use_range": true,
+              "ratings": {
+                "rating": [
+                  {
+                    "description": "Developing",
+                    "long_description": "Some sources",
+                    "points": 6
+                  },
+                  {
+                    "description": "Excellent ✨",
+                    "long_description": "Many good sources",
+                    "points": 10
+                  },
+                  {
+                    "description": "Missing",
+                    "points": 0
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "free_form_criterion_comments": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cc9aff21-1866-4bab-868b-95a575c0ac1f",
+      "name": "create — create: with a SIS course ID the association has to be given",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "create",
+        "courseId": "=sis_course_id:GRD-rubrics-{{ $execution.id }}-2",
+        "title": "=Via SIS course ID {{ $execution.id }}-9",
+        "criteria": {
+          "criterion": [
+            {
+              "description": "x",
+              "points": 1
+            }
+          ]
+        },
+        "additionalFields": {
+          "rubric_association_association_id": "359",
+          "rubric_association_association_type": "Course"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fae436f3-befe-4266-bae6-db21363cd1e6",
+      "name": "getAll — getAll: course context returns every rubric exactly once, ac",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "359"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f3ea4d0a-3005-414f-adcb-709b8cdd1dd7",
+      "name": "getAll — getAll: course context returns every rubric exactly once, ac (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "getAll",
+        "context": "course",
+        "courseId": "=sis_course_id:GRD-rubrics-{{ $execution.id }}-2",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "46bc9bbc-89ed-47b3-b8df-ae0371107a93",
+      "name": "getAll — getAll: account context lists the rubrics of the account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "getAll",
+        "context": "account",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e22ef0f0-8527-44ee-8386-f1cf954f001a",
+      "name": "getAll — get / getUsedLocations: account context serves rubrics that ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "getAll",
+        "context": "account",
+        "accountId": "86"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8a4fd075-ed3c-4812-9826-37364448893c",
+      "name": "get — get / getUsedLocations: account context serves rubrics that ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "get",
+        "context": "account",
+        "accountId": "86",
+        "rubricId": "={{ $('getAll — get / getUsedLocations: account context serves rubrics that ').first().json.id }}",
+        "options": {
+          "include_associations": "account_associations"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "878846ea-2c55-49eb-a863-62e010ef3c45",
+      "name": "createAssociation — get / getUsedLocations: account context serves rubrics that ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "createAssociation",
+        "courseId": "360",
+        "rubricId": "={{ $('get — get / getUsedLocations: account context serves rubrics that ').first().json.id }}",
+        "associationType": "Assignment",
+        "associationId": "1235"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8771f778-28d8-4964-8857-e70d650b940a",
+      "name": "getUsedLocations — get / getUsedLocations: account context serves rubrics that ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "getUsedLocations",
+        "context": "account",
+        "accountId": "86",
+        "rubricId": "={{ $('get — get / getUsedLocations: account context serves rubrics that ').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "647b3d12-8417-4a6b-af46-9f1d989e3e6a",
+      "name": "createAssociation — createAssociation: attaches the rubric to an assignment with",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "createAssociation",
+        "courseId": "359",
+        "rubricId": "={{ $('getAll — getAll: course context returns every rubric exactly once, ac (2)').first().json.id }}",
+        "associationType": "Assignment",
+        "associationId": "1232",
+        "additionalFields": {
+          "bookmarked": false,
+          "hide_score_total": true,
+          "purpose": "grading",
+          "title": "Essay rubric \"A\"",
+          "use_for_grading": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "21926dbb-ea5a-4098-9bfa-a2bf5781ae55",
+      "name": "get — get: includes one kind of associations and one kind of asses",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "get",
+        "context": "course",
+        "courseId": "359",
+        "rubricId": "={{ $('getAll — getAll: course context returns every rubric exactly once, ac (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0e855004-32d1-4f49-a48b-b30fb5250b2b",
+      "name": "get — get: includes one kind of associations and one kind of asses (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "get",
+        "context": "course",
+        "courseId": "359",
+        "rubricId": "={{ $('get — get: includes one kind of associations and one kind of asses').first().json.id }}",
+        "options": {
+          "include_associations": "course_associations",
+          "include_assessments": "none"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2d588588-dbbc-4f46-897e-0ff7e2dcf09c",
+      "name": "getUsedLocations — getUsedLocations: lists the course with the assignments that",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "getUsedLocations",
+        "context": "course",
+        "courseId": "359",
+        "rubricId": "={{ $('get — get: includes one kind of associations and one kind of asses (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1bfb4bf5-1d33-4c29-ba65-5a561aee10c4",
+      "name": "getUsedLocations — getUsedLocations: lists the course with the assignments that (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "getUsedLocations",
+        "context": "course",
+        "courseId": "359",
+        "rubricId": "51"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "33b270d8-ef2d-415a-b71b-ef8d8ef76eca",
+      "name": "updateAssociation — updateAssociation: every option reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "updateAssociation",
+        "courseId": "359",
+        "rubricAssociationId": "69",
+        "updateFields": {
+          "bookmarked": true,
+          "hide_score_total": false,
+          "purpose": "grading",
+          "title": "Renamed association",
+          "use_for_grading": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5e36a6c1-930f-4034-9596-8dd6d585929c",
+      "name": "get — createAssessment: assesses students against the rubric and g",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "get",
+        "context": "course",
+        "courseId": "359",
+        "rubricId": "={{ $('get — get: includes one kind of associations and one kind of asses (2)').first().json.id }}",
+        "options": {
+          "include_assessments": "assessments",
+          "style": "comments_only"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "afa3d774-04e3-4ed8-8907-274075372bea",
+      "name": "deleteAssessment — deleteAssessment: removes the assessment",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "deleteAssessment",
+        "courseId": "359",
+        "rubricAssociationId": "69",
+        "rubricAssessmentId": 318
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1c338b7d-4eca-48f1-975c-19a2f8df5058",
+      "name": "update — update: replaces the title and criteria, keeps criterion IDs",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "update",
+        "courseId": "359",
+        "rubricId": "={{ $('get — createAssessment: assesses students against the rubric and g').first().json.id }}",
+        "title": "=Rübric \"quoted\" & <b>tags</b> 评分 📝 {{ $execution.id }}-1 (v2)",
+        "criteria": {
+          "criterion": [
+            {
+              "id": "_8403",
+              "description": "Thesis (reworded)",
+              "points": 8
+            },
+            {
+              "description": "Mechanics",
+              "points": 0,
+              "ratings": {
+                "rating": [
+                  {
+                    "description": "Clean",
+                    "points": 4
+                  },
+                  {
+                    "description": "Messy",
+                    "points": 1
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {
+          "free_form_criterion_comments": false,
+          "rubric_association_id": "69",
+          "rubric_association_association_id": "1232",
+          "rubric_association_association_type": "Assignment",
+          "rubric_association_purpose": "grading",
+          "rubric_association_use_for_grading": true,
+          "rubric_association_hide_score_total": true,
+          "skip_updating_points_possible": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3afb45ad-77e3-4db5-8986-ff6a13479942",
+      "name": "update — update: a rubric used by more than one assignment is not cha",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "update",
+        "courseId": "359",
+        "rubricId": "={{ $('get — createAssessment: assesses students against the rubric and g').first().json.id }}",
+        "title": "Changed copy",
+        "criteria": {
+          "criterion": [
+            {
+              "description": "Brand new",
+              "points": 3
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "61d7eb02-42fd-4bc0-b911-ed1c87d0c5a2",
+      "name": "deleteAssociation — deleteAssociation: detaches the rubric from the assignment",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "deleteAssociation",
+        "courseId": "359",
+        "rubricAssociationId": "={{ $('deleteAssessment — deleteAssessment: removes the assessment').first().json.rubric_association_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b4f56ab4-6079-4e18-ad41-68f7035db5e6",
+      "name": "delete — delete: removes the rubric from the course",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "rubric",
+        "operation": "delete",
+        "courseId": "359",
+        "rubricId": "={{ $('get — createAssessment: assesses students against the rubric and g').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getImportTemplate — getImportTemplate: one item with the CSV text of the templat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getImportTemplate — getImportTemplate: one item with the CSV text of the templat": {
+      "main": [
+        [
+          {
+            "node": "getImportStatus — import (course): several rubrics in one file; the import rec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getImportStatus — import (course): several rubrics in one file; the import rec": {
+      "main": [
+        [
+          {
+            "node": "get — import (course): several rubrics in one file; the import rec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — import (course): several rubrics in one file; the import rec": {
+      "main": [
+        [
+          {
+            "node": "getAll — import (course): several rubrics in one file; the import rec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — import (course): several rubrics in one file; the import rec": {
+      "main": [
+        [
+          {
+            "node": "getImportStatus — import (account): rubrics for a whole account; one import pe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getImportStatus — import (account): rubrics for a whole account; one import pe": {
+      "main": [
+        [
+          {
+            "node": "import — import: what Canvas reports for files it can only partly use",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "import — import: what Canvas reports for files it can only partly use": {
+      "main": [
+        [
+          {
+            "node": "getImportStatus — import: what Canvas reports for files it can only partly use",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getImportStatus — import: what Canvas reports for files it can only partly use": {
+      "main": [
+        [
+          {
+            "node": "import — import: what Canvas reports for files it can only partly use (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "import — import: what Canvas reports for files it can only partly use (2)": {
+      "main": [
+        [
+          {
+            "node": "getImportStatus — import: what Canvas reports for files it can only partly use (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getImportStatus — import: what Canvas reports for files it can only partly use (2)": {
+      "main": [
+        [
+          {
+            "node": "import — import: what Canvas reports for files it can only partly use (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "import — import: what Canvas reports for files it can only partly use (3)": {
+      "main": [
+        [
+          {
+            "node": "getImportStatus — import: what Canvas reports for files it can only partly use (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getImportStatus — import: what Canvas reports for files it can only partly use (3)": {
+      "main": [
+        [
+          {
+            "node": "import — import: what Canvas reports for files it can only partly use (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "import — import: what Canvas reports for files it can only partly use (4)": {
+      "main": [
+        [
+          {
+            "node": "listImportedRubrics — errors: nothing to import, missing rights, unknown imports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listImportedRubrics — errors: nothing to import, missing rights, unknown imports": {
+      "main": [
+        [
+          {
+            "node": "create — create: criteria with and without ratings, bookmarked in the",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: criteria with and without ratings, bookmarked in the": {
+      "main": [
+        [
+          {
+            "node": "create — create: with a SIS course ID the association has to be given",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: with a SIS course ID the association has to be given": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: course context returns every rubric exactly once, ac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: course context returns every rubric exactly once, ac": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: course context returns every rubric exactly once, ac (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: course context returns every rubric exactly once, ac (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: account context lists the rubrics of the account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: account context lists the rubrics of the account": {
+      "main": [
+        [
+          {
+            "node": "getAll — get / getUsedLocations: account context serves rubrics that ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — get / getUsedLocations: account context serves rubrics that ": {
+      "main": [
+        [
+          {
+            "node": "get — get / getUsedLocations: account context serves rubrics that ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get / getUsedLocations: account context serves rubrics that ": {
+      "main": [
+        [
+          {
+            "node": "createAssociation — get / getUsedLocations: account context serves rubrics that ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createAssociation — get / getUsedLocations: account context serves rubrics that ": {
+      "main": [
+        [
+          {
+            "node": "getUsedLocations — get / getUsedLocations: account context serves rubrics that ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getUsedLocations — get / getUsedLocations: account context serves rubrics that ": {
+      "main": [
+        [
+          {
+            "node": "createAssociation — createAssociation: attaches the rubric to an assignment with",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createAssociation — createAssociation: attaches the rubric to an assignment with": {
+      "main": [
+        [
+          {
+            "node": "get — get: includes one kind of associations and one kind of asses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: includes one kind of associations and one kind of asses": {
+      "main": [
+        [
+          {
+            "node": "get — get: includes one kind of associations and one kind of asses (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: includes one kind of associations and one kind of asses (2)": {
+      "main": [
+        [
+          {
+            "node": "getUsedLocations — getUsedLocations: lists the course with the assignments that",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getUsedLocations — getUsedLocations: lists the course with the assignments that": {
+      "main": [
+        [
+          {
+            "node": "getUsedLocations — getUsedLocations: lists the course with the assignments that (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getUsedLocations — getUsedLocations: lists the course with the assignments that (2)": {
+      "main": [
+        [
+          {
+            "node": "updateAssociation — updateAssociation: every option reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateAssociation — updateAssociation: every option reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "get — createAssessment: assesses students against the rubric and g",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — createAssessment: assesses students against the rubric and g": {
+      "main": [
+        [
+          {
+            "node": "deleteAssessment — deleteAssessment: removes the assessment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deleteAssessment — deleteAssessment: removes the assessment": {
+      "main": [
+        [
+          {
+            "node": "update — update: replaces the title and criteria, keeps criterion IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: replaces the title and criteria, keeps criterion IDs": {
+      "main": [
+        [
+          {
+            "node": "update — update: a rubric used by more than one assignment is not cha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: a rubric used by more than one assignment is not cha": {
+      "main": [
+        [
+          {
+            "node": "deleteAssociation — deleteAssociation: detaches the rubric from the assignment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deleteAssociation — deleteAssociation: detaches the rubric from the assignment": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes the rubric from the course",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

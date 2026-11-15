@@ -1,0 +1,741 @@
+{
+  "name": "Canvas battery — role",
+  "nodes": [
+    {
+      "id": "2e40560f-c3b0-4745-985d-deac876e20fa",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "9fac108a-04c4-4a06-9478-85dbdb28e2be",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2932230b-0ace-4494-828e-5add1b171a7a",
+              "name": "customRoleId",
+              "value": "17",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "6d4d832a-23de-447b-9df9-a94ee0530817",
+      "name": "create — create: an account role with every optional field; permissio",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "create",
+        "accountId": "87",
+        "label": "=RoleBat-{{ $execution.id }}-1 Ünïcødé 角色 \"quoted\" & <b>tags</b> 🎭",
+        "additionalFields": {
+          "base_role_type": "AccountMembership",
+          "permissions": "{\"read_reports\":{\"explicit\":true,\"enabled\":true,\"locked\":true},\"manage_account_settings\":{\"explicit\":true,\"enabled\":true,\"applies_to_self\":false,\"applies_to_descendants\":true},\"manage_sis\":{\"explicit\":true,\"enabled\":true},\"view_statistics\":{\"explicit\":true,\"enabled\":false}}"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6869e2ad-851b-4ef5-8765-b4484df52e1f",
+      "name": "create — create: without optional fields Canvas makes an account role",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "create",
+        "accountId": "87",
+        "label": "=RoleBat-{{ $execution.id }}-1 minimal"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a89e9a96-672e-425a-8763-5e97c9ce94b4",
+      "name": "get — get: returns a role with its permissions; inherited and buil",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "get",
+        "accountId": "87",
+        "roleId": "={{ $('create — create: an account role with every optional field; permissio').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "67f7b315-4c9a-46c8-8643-29377600962c",
+      "name": "getAll — getAll: active roles of the account by default (built-in rol",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "getAll",
+        "accountId": "87",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7ac1dcdb-54fe-4cd5-87f2-0954eeb9edae",
+      "name": "getAll — getAll: inherited roles and inactive roles on request, acros",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "getAll",
+        "accountId": "87",
+        "options": {
+          "show_inherited": true,
+          "state": [
+            "active",
+            "inactive"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3cfcf2a3-7e6d-489d-8763-d4ecaec8896b",
+      "name": "getAll — getAll: inherited roles and inactive roles on request, acros (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "getAll",
+        "accountId": "87",
+        "options": {
+          "show_inherited": true,
+          "state": [
+            "inactive"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "57b3290f-8e0a-42c6-8f82-00de20a60726",
+      "name": "getAll — getAll: inherited roles and inactive roles on request, acros (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "getAll",
+        "accountId": "87",
+        "options": {
+          "show_inherited": true,
+          "state": [
+            "active",
+            "inactive"
+          ]
+        },
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6a464921-0555-4b19-96af-698cd96065e5",
+      "name": "getAll — getAll: inherited roles and inactive roles on request, acros (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "getAll",
+        "accountId": "87",
+        "options": {
+          "show_inherited": true,
+          "state": [
+            "active",
+            "inactive"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5ba42359-cbc5-4f6f-b3a3-19b51891f017",
+      "name": "getAll — getAll: the seeded root account roles, and a teacher is refu",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "getAll",
+        "accountId": "self",
+        "options": {
+          "show_inherited": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "eb5eab2e-03fb-445e-ab8d-c69e207b664b",
+      "name": "getPermissions — getPermissions: lists the assignable permissions, one item p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "getPermissions",
+        "accountId": "87",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0308b4f4-10d4-41c0-85c2-7cfac1aace54",
+      "name": "getPermissions — getPermissions: lists the assignable permissions, one item p (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "getPermissions",
+        "accountId": "87"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0797742e-0224-4cba-999f-c6f49355c26f",
+      "name": "getPermissions — getPermissions: the search term narrows the list",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "getPermissions",
+        "accountId": "87",
+        "options": {
+          "search_term": "_sis"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d57221d6-72c7-403e-be0c-79e7f28574a8",
+      "name": "getPermissions — getPermissions: the search term narrows the list (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "getPermissions",
+        "accountId": "87",
+        "options": {
+          "search_term": "zzz-no-such-permission"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1c5fc434-e4de-440b-b7d3-89173ed31128",
+      "name": "update — update: label and permissions reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "update",
+        "accountId": "87",
+        "roleId": "={{ $('get — get: returns a role with its permissions; inherited and buil').first().json.id }}",
+        "updateFields": {
+          "label": "=RoleBat-{{ $execution.id }}-1 Ünïcødé 角色 \"quoted\" & <b>tags</b> 🎭 (renamed)",
+          "permissions": "{\"read_reports\":{\"explicit\":true,\"enabled\":false,\"locked\":false},\"manage_account_settings\":{\"explicit\":false},\"read_course_list\":{\"explicit\":true,\"enabled\":true,\"applies_to_self\":true,\"applies_to_descendants\":false}}"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9259d654-8070-45ef-b547-8182c98c4ed3",
+      "name": "update — update: an override for an inherited role is stored in this ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "update",
+        "accountId": "87",
+        "roleId": "={{ $('Config').first().json.customRoleId }}",
+        "updateFields": {
+          "permissions": "{\"read_forum\":{\"explicit\":true,\"enabled\":false}}"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e026052d-ec7a-4106-8a04-905765995ade",
+      "name": "deactivate — deactivate: hides a custom role; built-in, inactive and unkn",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "deactivate",
+        "accountId": "87",
+        "roleId": "={{ $('update — update: label and permissions reach Canvas').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "594995c6-0c9f-49b2-82fa-11bd8a13a749",
+      "name": "activate — activate: brings an inactive role back; an active role is re",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "role",
+        "operation": "activate",
+        "accountId": "87",
+        "roleId": "={{ $('deactivate — deactivate: hides a custom role; built-in, inactive and unkn').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: an account role with every optional field; permissio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: an account role with every optional field; permissio": {
+      "main": [
+        [
+          {
+            "node": "create — create: without optional fields Canvas makes an account role",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: without optional fields Canvas makes an account role": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns a role with its permissions; inherited and buil",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns a role with its permissions; inherited and buil": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: active roles of the account by default (built-in rol",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: active roles of the account by default (built-in rol": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: inherited roles and inactive roles on request, acros",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: inherited roles and inactive roles on request, acros": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: inherited roles and inactive roles on request, acros (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: inherited roles and inactive roles on request, acros (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: inherited roles and inactive roles on request, acros (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: inherited roles and inactive roles on request, acros (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: inherited roles and inactive roles on request, acros (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: inherited roles and inactive roles on request, acros (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: the seeded root account roles, and a teacher is refu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: the seeded root account roles, and a teacher is refu": {
+      "main": [
+        [
+          {
+            "node": "getPermissions — getPermissions: lists the assignable permissions, one item p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getPermissions — getPermissions: lists the assignable permissions, one item p": {
+      "main": [
+        [
+          {
+            "node": "getPermissions — getPermissions: lists the assignable permissions, one item p (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getPermissions — getPermissions: lists the assignable permissions, one item p (2)": {
+      "main": [
+        [
+          {
+            "node": "getPermissions — getPermissions: the search term narrows the list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getPermissions — getPermissions: the search term narrows the list": {
+      "main": [
+        [
+          {
+            "node": "getPermissions — getPermissions: the search term narrows the list (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getPermissions — getPermissions: the search term narrows the list (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: label and permissions reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: label and permissions reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: an override for an inherited role is stored in this ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: an override for an inherited role is stored in this ": {
+      "main": [
+        [
+          {
+            "node": "deactivate — deactivate: hides a custom role; built-in, inactive and unkn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deactivate — deactivate: hides a custom role; built-in, inactive and unkn": {
+      "main": [
+        [
+          {
+            "node": "activate — activate: brings an inactive role back; an active role is re",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

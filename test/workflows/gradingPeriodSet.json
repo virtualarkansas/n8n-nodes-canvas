@@ -1,0 +1,378 @@
+{
+  "name": "Canvas battery — gradingPeriodSet",
+  "nodes": [
+    {
+      "id": "2587a16f-aa5d-41ae-aa90-95efd7933817",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "00f736a3-c576-4a7f-bfad-bbe6acb99af7",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1563202e-2c16-4c88-90eb-8d6a42a8945f",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            },
+            {
+              "id": "e001446d-bc10-4fa1-b596-f8badccf0b41",
+              "name": "subAccountId",
+              "value": "3",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "8797ac04-b838-4389-9fbe-31bb083f0417",
+      "name": "create — create: every optional field reaches Canvas, terms included",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingPeriodSet",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "title": "=Sét \"quoted\" & <i>tags</i> 学期 🗓️ {{ $execution.id }}-1",
+        "additionalFields": {
+          "display_totals_for_all_grading_periods": true,
+          "enrollment_term_ids": "49, 50",
+          "weighted": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "18e76c3b-fa02-4aa6-8653-218013f1e943",
+      "name": "getAll — getAll: returns the sets themselves (not Canvas wrapper), a",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingPeriodSet",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "79b3e4f0-b881-4cbd-a8a7-ae0eb4d483b0",
+      "name": "getAll — getAll: returns the sets themselves (not Canvas wrapper), a (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingPeriodSet",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "pagination": {
+          "perPage": 3,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8aea2cea-7ccc-43ac-921d-d7d9c22c8435",
+      "name": "getAll — getAll: returns the sets themselves (not Canvas wrapper), a (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingPeriodSet",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5fd4b3b8-51fb-4a89-94d8-39063fc37ffd",
+      "name": "getAll — getAll: a sub-account lists the sets of its root account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingPeriodSet",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.subAccountId }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6c53b463-e6ef-4a46-93be-7f909d87afd8",
+      "name": "update — update: every field reaches Canvas and the term list replace",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingPeriodSet",
+        "operation": "update",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "gradingPeriodSetId": "={{ $('create — create: every optional field reaches Canvas, terms included').first().json.id }}",
+        "enrollmentTermIds": "49,51",
+        "updateFields": {
+          "title": "=Sét \"quoted\" & <i>tags</i> 学期 🗓️ {{ $execution.id }}-1 (renamed)",
+          "weighted": false,
+          "display_totals_for_all_grading_periods": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d66c8291-42a5-4bf4-8372-250c0ee23a24",
+      "name": "update — update: an empty term list detaches every term (Canvas repla",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingPeriodSet",
+        "operation": "update",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "gradingPeriodSetId": "={{ $('create — create: every optional field reaches Canvas, terms included').first().json.id }}",
+        "updateFields": {
+          "weighted": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "01aa468d-c05e-4b1f-8ff2-8d9f6de8fd27",
+      "name": "delete — delete: removes the set and frees its terms",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "gradingPeriodSet",
+        "operation": "delete",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "gradingPeriodSetId": "={{ $('create — create: every optional field reaches Canvas, terms included').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field reaches Canvas, terms included",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas, terms included": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: returns the sets themselves (not Canvas wrapper), a",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: returns the sets themselves (not Canvas wrapper), a": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: returns the sets themselves (not Canvas wrapper), a (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: returns the sets themselves (not Canvas wrapper), a (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: returns the sets themselves (not Canvas wrapper), a (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: returns the sets themselves (not Canvas wrapper), a (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: a sub-account lists the sets of its root account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: a sub-account lists the sets of its root account": {
+      "main": [
+        [
+          {
+            "node": "update — update: every field reaches Canvas and the term list replace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every field reaches Canvas and the term list replace": {
+      "main": [
+        [
+          {
+            "node": "update — update: an empty term list detaches every term (Canvas repla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: an empty term list detaches every term (Canvas repla": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes the set and frees its terms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

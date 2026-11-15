@@ -1,0 +1,619 @@
+{
+  "name": "Canvas battery — peerReview",
+  "nodes": [
+    {
+      "id": "f121a938-1259-42c2-859d-99fc2058fcca",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "c31505dc-145f-4172-871a-563cd95269d1",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "9868093b-e9e2-4f09-b857-e98ed55ec4e2",
+      "name": "getAll — getAll: an assignment without peer reviews yields no items",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "peerReview",
+        "operation": "getAll",
+        "courseId": "111",
+        "assignmentId": "702"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "193e7d79-da9e-49db-af62-dceedcc9170c",
+      "name": "create — create: assigns a reviewer to a submission",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "peerReview",
+        "operation": "create",
+        "courseId": "111",
+        "assignmentId": "702",
+        "submissionId": "25627",
+        "reviewerUserId": "740"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "03681e9a-b03f-4915-888f-1109c62f1ad1",
+      "name": "getAll — getAll: lists the reviews of the assignment, with includes",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "peerReview",
+        "operation": "getAll",
+        "courseId": "111",
+        "assignmentId": "702",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f9059a96-8631-45a0-8369-afd8dbafa2c7",
+      "name": "getAll — getAll: lists the reviews of the assignment, with includes (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "peerReview",
+        "operation": "getAll",
+        "courseId": "111",
+        "assignmentId": "702",
+        "options": {
+          "include": [
+            "submission_comments",
+            "user"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "097612b1-cafa-44dc-b756-8bda046bdd8a",
+      "name": "getAll — getAll: submission ID narrows the list to one submission",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "peerReview",
+        "operation": "getAll",
+        "courseId": "111",
+        "assignmentId": "702",
+        "options": {
+          "submission_id": "25626"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e7fe0257-7c69-4bfb-b746-4f02e114d1c4",
+      "name": "delete — delete: removes one reviewer from a submission",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "peerReview",
+        "operation": "delete",
+        "courseId": "111",
+        "assignmentId": "702",
+        "submissionId": "25627",
+        "reviewerUserId": "={{ $('getAll — getAll: lists the reviews of the assignment, with includes (2)').first().json.user_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5a980cf9-982b-4085-a5b2-f98c923c9b22",
+      "name": "getAll — section context: reviews are created, listed and deleted thr",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "peerReview",
+        "operation": "getAll",
+        "contextType": "section",
+        "sectionId": "218",
+        "assignmentId": "702",
+        "options": {
+          "include": [
+            "submission_comments",
+            "user"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "856cf457-e054-4246-893c-4f13980fff75",
+      "name": "getAll — section context: reviews are created, listed and deleted thr (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "peerReview",
+        "operation": "getAll",
+        "contextType": "section",
+        "sectionId": "218",
+        "assignmentId": "702",
+        "options": {
+          "submission_id": "25627"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "084fe0a1-fe4b-4266-b3c5-ae44c819a850",
+      "name": "getAll — section context: reviews are created, listed and deleted thr (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "peerReview",
+        "operation": "getAll",
+        "contextType": "section",
+        "sectionId": "218",
+        "assignmentId": "702",
+        "options": {
+          "submission_id": "25625"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2e180e32-e2f7-4ad1-9085-89dccef48c20",
+      "name": "delete — section context: reviews are created, listed and deleted thr",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "peerReview",
+        "operation": "delete",
+        "contextType": "section",
+        "sectionId": "218",
+        "assignmentId": "702",
+        "submissionId": "25627",
+        "reviewerUserId": "740"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2b957d28-c18d-4755-9d85-a7e254ce9a01",
+      "name": "getAll — section context: reviews are created, listed and deleted thr (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "peerReview",
+        "operation": "getAll",
+        "contextType": "section",
+        "sectionId": "221",
+        "assignmentId": "702",
+        "options": {
+          "include": [
+            "submission_comments",
+            "user"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f6bf3cde-c0d1-4503-ba02-4707c4d69714",
+      "name": "getAll — section context: reviews are created, listed and deleted thr (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "peerReview",
+        "operation": "getAll",
+        "contextType": "section",
+        "sectionId": "221",
+        "assignmentId": "702",
+        "options": {
+          "submission_id": "25627"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9f846f9c-867b-4be0-86be-06bce052e109",
+      "name": "getAll — section context: reviews are created, listed and deleted thr (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "peerReview",
+        "operation": "getAll",
+        "contextType": "section",
+        "sectionId": "221",
+        "assignmentId": "702",
+        "options": {
+          "submission_id": "25625"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "42fd243b-57c7-4c24-98aa-144bbd6bb809",
+      "name": "delete — section context: reviews are created, listed and deleted thr (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "peerReview",
+        "operation": "delete",
+        "contextType": "section",
+        "sectionId": "221",
+        "assignmentId": "702",
+        "submissionId": "25627",
+        "reviewerUserId": "740"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: an assignment without peer reviews yields no items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: an assignment without peer reviews yields no items": {
+      "main": [
+        [
+          {
+            "node": "create — create: assigns a reviewer to a submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: assigns a reviewer to a submission": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the reviews of the assignment, with includes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the reviews of the assignment, with includes": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the reviews of the assignment, with includes (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the reviews of the assignment, with includes (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: submission ID narrows the list to one submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: submission ID narrows the list to one submission": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes one reviewer from a submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — delete: removes one reviewer from a submission": {
+      "main": [
+        [
+          {
+            "node": "getAll — section context: reviews are created, listed and deleted thr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — section context: reviews are created, listed and deleted thr": {
+      "main": [
+        [
+          {
+            "node": "getAll — section context: reviews are created, listed and deleted thr (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — section context: reviews are created, listed and deleted thr (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — section context: reviews are created, listed and deleted thr (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — section context: reviews are created, listed and deleted thr (3)": {
+      "main": [
+        [
+          {
+            "node": "delete — section context: reviews are created, listed and deleted thr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — section context: reviews are created, listed and deleted thr": {
+      "main": [
+        [
+          {
+            "node": "getAll — section context: reviews are created, listed and deleted thr (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — section context: reviews are created, listed and deleted thr (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — section context: reviews are created, listed and deleted thr (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — section context: reviews are created, listed and deleted thr (5)": {
+      "main": [
+        [
+          {
+            "node": "getAll — section context: reviews are created, listed and deleted thr (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — section context: reviews are created, listed and deleted thr (6)": {
+      "main": [
+        [
+          {
+            "node": "delete — section context: reviews are created, listed and deleted thr (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

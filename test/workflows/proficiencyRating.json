@@ -1,0 +1,210 @@
+{
+  "name": "Canvas battery — proficiencyRating",
+  "nodes": [
+    {
+      "id": "a7f13b42-0bb3-45ec-a7b5-1f4dd9d3c66d",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "79bcb0b7-398c-46ac-8a57-01dd11e2bdac",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "6022f6b8-f76a-46a2-9227-f45432a3f568",
+      "name": "get — get: an account or course without ratings of its own shows t",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "proficiencyRating",
+        "operation": "get",
+        "context": "account",
+        "accountId": "111"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2e84564c-5872-428c-85f3-f80ce196f59f",
+      "name": "set — set: account context, with colors as the color picker delive",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "proficiencyRating",
+        "operation": "set",
+        "context": "account",
+        "accountId": "111",
+        "ratings": {
+          "rating": [
+            {
+              "description": "Exceeds ✨ \"expectations\" & more",
+              "points": 10,
+              "mastery": false,
+              "color": "#00AA11"
+            },
+            {
+              "description": "Meets",
+              "points": 7.5,
+              "mastery": true,
+              "color": "#0b874b"
+            },
+            {
+              "description": "Approaching",
+              "points": 4,
+              "mastery": false,
+              "color": "FAB901"
+            },
+            {
+              "description": "Not yet 还没有",
+              "points": 0,
+              "mastery": false,
+              "color": "#E0061F"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "89f579ca-6d62-4a1b-a785-9dbaa72826b2",
+      "name": "set — set: a second call replaces all ratings",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "proficiencyRating",
+        "operation": "set",
+        "context": "course",
+        "courseId": "409",
+        "ratings": {
+          "rating": [
+            {
+              "description": "A",
+              "points": 5,
+              "mastery": false,
+              "color": "#111111"
+            },
+            {
+              "description": "B",
+              "points": 3,
+              "mastery": true,
+              "color": "#222222"
+            },
+            {
+              "description": "C",
+              "points": 1,
+              "mastery": false,
+              "color": "#333333"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "get — get: an account or course without ratings of its own shows t",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: an account or course without ratings of its own shows t": {
+      "main": [
+        [
+          {
+            "node": "set — set: account context, with colors as the color picker delive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set — set: account context, with colors as the color picker delive": {
+      "main": [
+        [
+          {
+            "node": "set — set: a second call replaces all ratings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

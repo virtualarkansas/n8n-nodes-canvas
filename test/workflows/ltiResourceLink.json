@@ -1,0 +1,569 @@
+{
+  "name": "Canvas battery — ltiResourceLink",
+  "nodes": [
+    {
+      "id": "4928497c-7985-47bc-9da8-e66e5382add5",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "831f4136-0bd0-477b-8c8c-db2830122ceb",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1aa91244-7f80-4747-b757-1526d4ee3114",
+              "name": "emptyCourseId",
+              "value": "3",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "037489ca-a7f9-45d9-b18e-9167dc67d675",
+      "name": "create — create: URL, title and custom parameters reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "ltiResourceLink",
+        "operation": "create",
+        "courseId": "393",
+        "url": "https://reslink-2a6530c2.lti.example.com/launch/chapter/1?lang=sv&mode=a b",
+        "additionalFields": {
+          "title": "Kapitel 1 – Ünïcødé \"quoted\" & <b>tags</b> 📚",
+          "custom": "{\"chapter\": \"1\", \"note\": \"värde with spaces & symbols\", \"variable\": \"$Canvas.user.id\"}"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b07ef75d-904d-4ea1-8802-6a51d38277ba",
+      "name": "create — create: only a URL",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "ltiResourceLink",
+        "operation": "create",
+        "courseId": "393",
+        "url": "https://reslink-2a6530c2.lti.example.com/launch/minimal",
+        "additionalFields": {
+          "custom": "{}"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ba67249f-207c-4cc2-a507-936cdcf914d2",
+      "name": "bulkCreate — bulkCreate: creates every link of the array, or none when on",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "ltiResourceLink",
+        "operation": "bulkCreate",
+        "courseId": "393",
+        "resourceLinks": "[{\"url\":\"https://reslink-2a6530c2.lti.example.com/launch/bulk/1\",\"title\":\"Bulk 1\",\"custom\":{\"n\":\"1\"}},{\"url\":\"https://reslink-2a6530c2.lti.example.com/launch/bulk/2\",\"title\":\"Bulk 2 – 第二\"},{\"url\":\"https://reslink-2a6530c2.lti.example.com/launch/bulk/3\"}]"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0853c745-0c6c-4890-9853-0e03d0078f57",
+      "name": "update — update: URL, custom parameters and tool",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "ltiResourceLink",
+        "operation": "update",
+        "courseId": "393",
+        "resourceLinkId": "=lookup_uuid:{{ $execution.id }}-45cc-8981-cecc7b27df9e",
+        "updateFields": {
+          "url": "https://reslink-2a6530c2.lti.example.com/launch/chapter/2",
+          "custom": "{\"chapter\": \"2\"}",
+          "context_external_tool_id": "91"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "17d63c6c-341d-44b0-b75b-ce6f12760f13",
+      "name": "getAll — getAll: every link of a course with many links, exactly once",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "ltiResourceLink",
+        "operation": "getAll",
+        "courseId": "393"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e37d5f01-1f09-4bba-90b9-169a0b0919d6",
+      "name": "getAll — getAll: every link of a course with many links, exactly once (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "ltiResourceLink",
+        "operation": "getAll",
+        "courseId": "393",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "37e171b0-ae92-40d7-83db-d0d92d635ca2",
+      "name": "getAll — getAll: every link of a course with many links, exactly once (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "ltiResourceLink",
+        "operation": "getAll",
+        "courseId": "393",
+        "pagination": {
+          "perPage": 7,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "daa000c4-e128-47ba-afe1-984fd887fd25",
+      "name": "delete — delete: only links that are not tied to content can be delet",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "ltiResourceLink",
+        "operation": "delete",
+        "courseId": "393",
+        "resourceLinkId": "=resource_link_uuid:{{ $execution.id }}-40b2-abe8-40ffb300b1e3"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "976d75e7-1e93-40df-880d-5fe46f178deb",
+      "name": "get — include deleted: off (even explicitly) hides deleted links, ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "ltiResourceLink",
+        "operation": "get",
+        "courseId": "393",
+        "resourceLinkId": "={{ $('delete — delete: only links that are not tied to content can be delet').first().json.id }}",
+        "options": {
+          "include_deleted": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bf9c0ba6-12e4-45ff-bbea-ea61ba86fdaa",
+      "name": "getAll — include deleted: off (even explicitly) hides deleted links, ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "ltiResourceLink",
+        "operation": "getAll",
+        "courseId": "393",
+        "options": {
+          "include_deleted": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5dadabc6-def1-4d07-858f-1695f117225b",
+      "name": "getAll — include deleted: off (even explicitly) hides deleted links,  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "ltiResourceLink",
+        "operation": "getAll",
+        "courseId": "393",
+        "options": {
+          "include_deleted": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "332a0889-63c4-402f-bd94-55741773f684",
+      "name": "update — include deleted: off (even explicitly) hides deleted links, ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "ltiResourceLink",
+        "operation": "update",
+        "courseId": "393",
+        "resourceLinkId": "={{ $('getAll — include deleted: off (even explicitly) hides deleted links,  (2)').first().json.id }}",
+        "updateFields": {
+          "custom": "{\"chapter\": \"3\"}",
+          "include_deleted": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b775bf55-e47a-41d5-8d6f-5dc37aac942b",
+      "name": "getAll — errors: students may not read resource links; a course witho",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "ltiResourceLink",
+        "operation": "getAll",
+        "courseId": "={{ $('Config').first().json.emptyCourseId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: URL, title and custom parameters reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: URL, title and custom parameters reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create: only a URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: only a URL": {
+      "main": [
+        [
+          {
+            "node": "bulkCreate — bulkCreate: creates every link of the array, or none when on",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "bulkCreate — bulkCreate: creates every link of the array, or none when on": {
+      "main": [
+        [
+          {
+            "node": "update — update: URL, custom parameters and tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: URL, custom parameters and tool": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every link of a course with many links, exactly once",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every link of a course with many links, exactly once": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every link of a course with many links, exactly once (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every link of a course with many links, exactly once (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every link of a course with many links, exactly once (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every link of a course with many links, exactly once (3)": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: only links that are not tied to content can be delet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — delete: only links that are not tied to content can be delet": {
+      "main": [
+        [
+          {
+            "node": "get — include deleted: off (even explicitly) hides deleted links, ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — include deleted: off (even explicitly) hides deleted links, ": {
+      "main": [
+        [
+          {
+            "node": "getAll — include deleted: off (even explicitly) hides deleted links, ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — include deleted: off (even explicitly) hides deleted links, ": {
+      "main": [
+        [
+          {
+            "node": "getAll — include deleted: off (even explicitly) hides deleted links,  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — include deleted: off (even explicitly) hides deleted links,  (2)": {
+      "main": [
+        [
+          {
+            "node": "update — include deleted: off (even explicitly) hides deleted links, ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — include deleted: off (even explicitly) hides deleted links, ": {
+      "main": [
+        [
+          {
+            "node": "getAll — errors: students may not read resource links; a course witho",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

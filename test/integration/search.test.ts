@@ -351,19 +351,23 @@ describe('search', () => {
 				ownCourses.push(String((await canvas().post<Json>(`/api/v1/accounts/${fx('accountId')}/courses`, extra)).id));
 			}
 
-			catalogChanged = true;
-			await setCourseCatalog(true);
 			// Canvas runs several server processes and each notices the changed account setting on its
 			// own (within about a minute). A burst of parallel requests reaches all of them: wait until
-			// two bursts in a row are served by every process.
-			for (let good = 0, attempt = 0; good < 2; attempt++) {
-				const burst = await Promise.all(
-					Array.from({ length: 12 }, () => canvas().request('GET', `/api/v1/search/all_courses?search=${marker}`)),
-				);
-				good = burst.every((res) => res.status === 200) ? good + 1 : 0;
-				if (attempt > 90) throw new Error('The course catalog did not become available');
-				if (good === 0) await new Promise((resolve) => setTimeout(resolve, 2000));
-			}
+			// two bursts in a row are answered the same way by every process.
+			const everyProcessAnswers = async (status: number): Promise<void> => {
+				for (let good = 0, attempt = 0; good < 2; attempt++) {
+					const burst = await Promise.all(
+						Array.from({ length: 12 }, () => canvas().request('GET', `/api/v1/search/all_courses?search=${marker}`)),
+					);
+					good = burst.every((res) => res.status === status) ? good + 1 : 0;
+					if (attempt > 90) throw new Error(`Not every Canvas process answers ${status} for the course catalog`);
+					if (good === 0) await new Promise((resolve) => setTimeout(resolve, 2000));
+				}
+			};
+
+			catalogChanged = true;
+			await setCourseCatalog(true);
+			await everyProcessAnswers(200);
 			try {
 				// Canvas wraps every entry as { course: {...} }; the node outputs the course itself.
 				const courseIds = (items: Json[]): number[] => items.map((item) => ((item.course as Json | undefined) ?? item).id as number);
@@ -437,7 +441,8 @@ describe('search', () => {
 				await setCourseCatalog(false);
 				catalogChanged = false;
 			}
-			expect((await canvas().request('GET', '/api/v1/search/all_courses')).status).toBe(403);
+			// Switched off again, the catalog is refused (once every process has noticed).
+			await everyProcessAnswers(403);
 		});
 	});
 });

@@ -1,0 +1,2549 @@
+{
+  "name": "Canvas battery — account",
+  "nodes": [
+    {
+      "id": "06904dc6-c8f5-41e1-80b7-0ec4f9f3012b",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "a2ac4038-7ab2-47e1-b31c-6b4f916483c7",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "93ee9b9d-1b97-4b17-9004-474ba3136fe1",
+              "name": "subAccountId",
+              "value": "3",
+              "type": "string"
+            },
+            {
+              "id": "669008e5-fac4-4af3-b96f-99efabb90248",
+              "name": "deepSubAccountId",
+              "value": "5",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "04df8336-2127-4094-9764-fcfec4864f73",
+      "name": "getAll — getAll: an admin sees their accounts, with every include",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getAll",
+        "accountScope": "all",
+        "options": {
+          "include": [
+            "course_count",
+            "lti_guid",
+            "registration_settings",
+            "services",
+            "sub_account_count"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5042b0b0-b4d3-4e08-9029-4b24c345e4bf",
+      "name": "getAll — getAll: works without the new Accounts to List parameter (",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getAll"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2ddee0c8-58ac-4eb3-a39d-8072bf3a29e6",
+      "name": "getAll — getAll (manageable): returns the whole tree an admin manages",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getAll",
+        "accountScope": "manageable",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8bff7e02-01ae-4341-894c-1740b0f287cf",
+      "name": "getAll — getAll (manageable): returns the whole tree an admin manages (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getAll",
+        "accountScope": "manageable"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b788427b-3a4e-4af1-8610-65815388883c",
+      "name": "getAll — getAll (manageable): returns the whole tree an admin manages (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getAll",
+        "accountScope": "manageable",
+        "pagination": {
+          "perPage": 3,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "95949830-5149-494d-bfdd-94800bffc3a8",
+      "name": "getAll — getAll (courseCreation): lists where the user may create cou",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getAll",
+        "accountScope": "courseCreation",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a464f552-9dd2-400a-a86a-fca016d11748",
+      "name": "get — get: returns the account, with includes",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.subAccountId }}",
+        "options": {
+          "includes": [
+            "course_count",
+            "lti_guid",
+            "registration_settings",
+            "services",
+            "sub_account_count"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dd4da1b2-1a89-4c5c-a09e-08097078b468",
+      "name": "get — get: accepts self, SIS IDs, and numeric IDs arriving as nu",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "get",
+        "accountId": "self"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5428150d-f9b6-4a7f-b55f-f908995eb17f",
+      "name": "get — get: accepts self, SIS IDs, and numeric IDs arriving as nu (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "get",
+        "accountId": "sis_account_id:SCH-RHS"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3d67cefd-cec5-41b1-b1d6-2021b5602dc0",
+      "name": "getSubAccounts — getSubAccounts: direct children by default, sorted by name o",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getSubAccounts",
+        "accountId": "={{ $('get — get: accepts self, SIS IDs, and numeric IDs arriving as nu (2)').first().json.id }}",
+        "options": {
+          "order": "name",
+          "recursive": false,
+          "include": [
+            "course_count",
+            "sub_account_count"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ebab1401-c66c-400f-8986-7c08ac196d74",
+      "name": "getSubAccounts — getSubAccounts: recursive returns the whole tree, across pag",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getSubAccounts",
+        "accountId": "={{ $('get — get: accepts self, SIS IDs, and numeric IDs arriving as nu').first().json.id }}",
+        "options": {
+          "recursive": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0731e92c-09f7-4a0c-b5f3-201ee14114da",
+      "name": "getSubAccounts — getSubAccounts: recursive returns the whole tree, across pag (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getSubAccounts",
+        "accountId": "={{ $('get — get: accepts self, SIS IDs, and numeric IDs arriving as nu').first().json.id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "81d0df78-1b97-476f-8918-ab4e784befad",
+      "name": "getSubAccounts — getSubAccounts: recursive returns the whole tree, across pag (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getSubAccounts",
+        "accountId": "={{ $('get — get: accepts self, SIS IDs, and numeric IDs arriving as nu').first().json.id }}",
+        "options": {
+          "recursive": true
+        },
+        "pagination": {
+          "perPage": 2,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f1f6d1c9-44d9-4e1f-a85d-d6654cc614fc",
+      "name": "getSubAccounts — getSubAccounts: an account without children yields no items",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getSubAccounts",
+        "accountId": "={{ $('Config').first().json.deepSubAccountId }}",
+        "options": {
+          "recursive": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e32a98c4-7687-4253-b324-b2307ba760a1",
+      "name": "createSubAccount — createSubAccount: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "createSubAccount",
+        "accountId": "={{ $('get — get: accepts self, SIS IDs, and numeric IDs arriving as nu').first().json.id }}",
+        "name": "=Battery Sub-Account Ünïcødé 学校 \"quoted\" & <b>tags</b> {{ $execution.id }}-1",
+        "additionalFields": {
+          "default_group_storage_quota_mb": 61,
+          "default_storage_quota_mb": 777,
+          "default_user_storage_quota_mb": 62,
+          "sis_account_id": "=n8nbat_acct_{{ $execution.id }}-2"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "799c5023-a633-4e3b-a27d-745df964bc82",
+      "name": "createSubAccount — createSubAccount: nests under a sub-account given by SIS ID ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "createSubAccount",
+        "accountId": "=sis_account_id:n8nbat_acct_{{ $execution.id }}-2",
+        "name": "=Battery Child قسم 🎒 {{ $execution.id }}-4"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fafe59a8-d00d-41a2-a0fa-a12a765739a6",
+      "name": "update — update: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "update",
+        "accountId": "={{ $('createSubAccount — createSubAccount: nests under a sub-account given by SIS ID ').first().json.id }}",
+        "updateFields": {
+          "name": "=Battery Sub-Account Ünïcødé 学校 \"quoted\" & <b>tags</b> {{ $execution.id }}-1 (renamed)",
+          "default_time_zone": "Europe/Berlin",
+          "default_group_storage_quota_mb": 71,
+          "default_storage_quota_mb": 888,
+          "default_user_storage_quota_mb": 72,
+          "sis_account_id": "=n8nbat_acct_{{ $execution.id }}-2_v2",
+          "services": "{\"avatars\": true}",
+          "settings": "{\"restrict_student_past_view\":{\"value\":true,\"locked\":true},\"restrict_student_future_view\":{\"value\":true,\"locked\":false},\"lock_all_announcements\":{\"value\":true,\"locked\":true}}"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4896fb02-79e4-4683-8422-7e440a0be0f0",
+      "name": "update — update: moves a sub-account to another parent and can clear ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "update",
+        "accountId": "={{ $('update — update: every optional field reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "parent_account_id": "3",
+          "sis_account_id": ""
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f7997949-9a68-418d-8e42-52e1a8846556",
+      "name": "update — update: moves a sub-account to another parent and can clear  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "update",
+        "accountId": "={{ $('update — update: moves a sub-account to another parent and can clear ').first().json.id }}",
+        "updateFields": {
+          "parent_account_id": "=sis_account_id:n8nbat_acct_{{ $execution.id }}-2"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cf1601fd-c34a-4d69-acbe-11cbc53436ba",
+      "name": "update — update: sets, replaces with no template and clears the cou",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "update",
+        "accountId": "={{ $('createSubAccount — createSubAccount: every optional field reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "course_template_id": "277"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0b97cca9-4d85-4acd-ab54-7d2d20c50046",
+      "name": "update — update: sets, replaces with no template and clears the cou (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "update",
+        "accountId": "={{ $('update — update: sets, replaces with no template and clears the cou').first().json.id }}",
+        "updateFields": {
+          "course_template_id": "0"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "07b7b391-a401-4f81-bef7-ff38db7cf9f7",
+      "name": "update — update: sets, replaces with no template and clears the cou (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "update",
+        "accountId": "={{ $('update — update: sets, replaces with no template and clears the cou (2)').first().json.id }}",
+        "updateFields": {
+          "course_template_id": ""
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f5f71956-b2af-4f40-9e19-05cb269cb483",
+      "name": "getSettings — getSettings: returns the settings Canvas exposes (K5 mode se",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getSettings",
+        "accountId": "={{ $('update — update: moves a sub-account to another parent and can clear  (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4275d898-9000-411b-b4e6-a697f1164791",
+      "name": "update — getSettings: returns the settings Canvas exposes (K5 mode se",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "update",
+        "accountId": "={{ $('update — update: moves a sub-account to another parent and can clear  (2)').first().json.id }}",
+        "updateFields": {
+          "settings": "{\"enable_as_k5_account\": {\"value\": true}}"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e4c0d516-b480-4efd-92d8-1853c879ac16",
+      "name": "getPermissions — getPermissions: reports each requested permission for the to",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getPermissions",
+        "accountId": "={{ $('get — get: accepts self, SIS IDs, and numeric IDs arriving as nu').first().json.id }}",
+        "permissions": "manage_sis, become_user ,read_reports"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "da399af9-6ed7-4136-b44d-bda61897b2de",
+      "name": "getHelpLinks — getHelpLinks: returns the help menu of the root account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getHelpLinks",
+        "accountId": "={{ $('get — get: accepts self, SIS IDs, and numeric IDs arriving as nu').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "80d2df0c-214b-4cdc-97c0-58fd3ff9df10",
+      "name": "getTermsOfService — getTermsOfService: returns the terms of the root account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getTermsOfService",
+        "accountId": "self"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "823b08a8-10ab-40ce-87b1-b5ee3eb0d536",
+      "name": "getCourses — getCourses: default paging, everything, and a small page siz",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getTermsOfService — getTermsOfService: returns the terms of the root account').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4372717e-4bd0-4fbf-821b-e7fc68f194fc",
+      "name": "getCourses — getCourses: default paging, everything, and a small page siz (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: default paging, everything, and a small page siz').first().json.id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4af9a16b-c40a-4623-8992-39ddea73e4e3",
+      "name": "getCourses — getCourses: default paging, everything, and a small page siz (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: default paging, everything, and a small page siz (2)').first().json.id }}",
+        "pagination": {
+          "perPage": 7,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "203577fa-1b0c-4ad8-b24a-6b3b982c0d8b",
+      "name": "getCourses — getCourses: a sub-account includes the courses of its depart",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "sis_account_id:SCH-RHS",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "631d33b0-1008-439d-9259-f39cec99b88b",
+      "name": "getCourses — getCourses: filter published returns exactly what Canvas r",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: a sub-account includes the courses of its depart').first().json.id }}",
+        "filters": {
+          "published": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "41df6997-9e7d-46cb-9a0b-5272e604b34f",
+      "name": "getCourses — getCourses: filter unpublished returns exactly what Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter published returns exactly what Canvas r').first().json.id }}",
+        "filters": {
+          "published": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6b61784f-ba62-4d64-a6f7-4ccada67f1b0",
+      "name": "getCourses — getCourses: filter completed returns exactly what Canvas r",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter published returns exactly what Canvas r').first().json.id }}",
+        "filters": {
+          "completed": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "89fb1dfc-782d-4e5e-8036-39629270eb0d",
+      "name": "getCourses — getCourses: filter not completed returns exactly what Canv",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter published returns exactly what Canvas r').first().json.id }}",
+        "filters": {
+          "completed": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a4605102-c68a-42c1-8620-8bf5d9c4bb2f",
+      "name": "getCourses — getCourses: filter blueprint returns exactly what Canvas r",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter not completed returns exactly what Canv').first().json.id }}",
+        "filters": {
+          "blueprint": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d5147fca-eff6-4f06-b333-c7d9ef17103f",
+      "name": "getCourses — getCourses: filter not blueprint returns exactly what Canv",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter not completed returns exactly what Canv').first().json.id }}",
+        "filters": {
+          "blueprint": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "67c937bb-849b-4346-a053-b3880c5985d8",
+      "name": "getCourses — getCourses: filter blueprint associated returns exactly wh",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter not blueprint returns exactly what Canv').first().json.id }}",
+        "filters": {
+          "blueprint_associated": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cf879262-2df6-4f64-ae98-d0c51ccf10ca",
+      "name": "getCourses — getCourses: filter public returns exactly what Canvas retu",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter not blueprint returns exactly what Canv').first().json.id }}",
+        "filters": {
+          "public": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e7404ec1-4938-4804-adda-0e399f932e33",
+      "name": "getCourses — getCourses: filter not public returns exactly what Canvas ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter not blueprint returns exactly what Canv').first().json.id }}",
+        "filters": {
+          "public": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8a984730-aa93-4746-b55a-c60229770e54",
+      "name": "getCourses — getCourses: filter with enrollments returns exactly what C",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter not blueprint returns exactly what Canv').first().json.id }}",
+        "filters": {
+          "with_enrollments": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6ef6e0fb-ae50-4e24-adaf-1aeaaafe9581",
+      "name": "getCourses — getCourses: filter without enrollments returns exactly wha",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter with enrollments returns exactly what C').first().json.id }}",
+        "filters": {
+          "with_enrollments": false
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ac5850c6-b03d-4101-ab7f-f7300d070901",
+      "name": "getCourses — getCourses: filter states incl. deleted returns exactly wh",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter with enrollments returns exactly what C').first().json.id }}",
+        "filters": {
+          "state": [
+            "deleted",
+            "completed"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "74bc91a8-4c5e-4acb-bdcc-3e0fe15865db",
+      "name": "getCourses — getCourses: filter state all returns exactly what Canvas r",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter with enrollments returns exactly what C').first().json.id }}",
+        "filters": {
+          "state": [
+            "all"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fa613d63-ed52-4ba0-8563-663cbe465a5c",
+      "name": "getCourses — getCourses: filter term by ID returns exactly what Canvas ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter state all returns exactly what Canvas r').first().json.id }}",
+        "filters": {
+          "enrollment_term_id": "4"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f8b96e6c-7c95-4b5a-b01b-fecb4608bcdf",
+      "name": "getCourses — getCourses: filter term by SIS ID returns exactly what Can",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter state all returns exactly what Canvas r').first().json.id }}",
+        "filters": {
+          "enrollment_term_id": "sis_term_id:TERM-2026-FA"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "905241e8-bfad-41f0-b184-783a9e01dd28",
+      "name": "getCourses — getCourses: filter teachers returns exactly what Canvas re",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter term by SIS ID returns exactly what Can').first().json.id }}",
+        "filters": {
+          "by_teachers": "2, 10"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b9b55fa9-231e-4843-b461-62b98212597a",
+      "name": "getCourses — getCourses: filter sub-accounts returns exactly what Canva",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter teachers returns exactly what Canvas re').first().json.id }}",
+        "filters": {
+          "by_subaccounts": "4,12"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "802a6627-f06c-4439-a1ed-2691d2d0c0e9",
+      "name": "getCourses — getCourses: filter enrollment type returns exactly what Ca",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter sub-accounts returns exactly what Canva').first().json.id }}",
+        "filters": {
+          "enrollment_type": [
+            "designer",
+            "observer"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "eb469a55-e92b-494a-b816-b2d327991f00",
+      "name": "getCourses — getCourses: filter enrollment state returns exactly what C",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter enrollment type returns exactly what Ca').first().json.id }}",
+        "filters": {
+          "enrollment_workflow_state": [
+            "invited",
+            "completed"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b72cfeef-9c01-46bb-a30c-4bbfb1f1c24c",
+      "name": "getCourses — getCourses: filter search term (course) returns exactly wh",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter enrollment state returns exactly what C').first().json.id }}",
+        "filters": {
+          "search_term": "bio",
+          "search_by": "course"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8c0391cf-686d-4420-9306-186744f0bb29",
+      "name": "getCourses — getCourses: filter search term (teacher) returns exactly w",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter search term (course) returns exactly wh').first().json.id }}",
+        "filters": {
+          "search_term": "Marlowe",
+          "search_by": "teacher"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9dd48b39-ddf8-4073-8016-b284aa3570d9",
+      "name": "getCourses — getCourses: filter starts before returns exactly what Canv",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter search term (teacher) returns exactly w').first().json.id }}",
+        "filters": {
+          "starts_before": "2021-01-01T00:00:00Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4b8889b0-f5d2-4788-8f19-952e2e2c00d9",
+      "name": "getCourses — getCourses: filter ends after returns exactly what Canvas ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter search term (teacher) returns exactly w').first().json.id }}",
+        "filters": {
+          "ends_after": "2030-01-01T00:00:00Z"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c73d657f-5514-4e9e-beb8-0e76fda029eb",
+      "name": "getCourses — getCourses: filter combined returns exactly what Canvas re",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter search term (teacher) returns exactly w').first().json.id }}",
+        "filters": {
+          "published": true,
+          "with_enrollments": true,
+          "enrollment_term_id": "6",
+          "by_subaccounts": "3",
+          "enrollment_type": [
+            "teacher"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "197497a7-9ce0-4178-bc9b-b42c007ff721",
+      "name": "getCourses — getCourses: includes and sorting reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter ends after returns exactly what Canvas ').first().json.id }}",
+        "options": {
+          "include": [
+            "account_name",
+            "concluded",
+            "storage_quota_used_mb",
+            "syllabus_body",
+            "teachers",
+            "term",
+            "total_students"
+          ],
+          "sort": "course_name",
+          "order": "desc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b6c64d60-8ae1-4fd8-b3ff-489fc9fb3c2d",
+      "name": "getCourses — getCourses: includes and sorting reach Canvas (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter ends after returns exactly what Canvas ').first().json.id }}",
+        "options": {
+          "sort": "sis_course_id"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0c712ede-8c76-43ca-b91a-b174f3d14eb1",
+      "name": "getCourses — getCourses: an empty result is an empty output, and a too-sh",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getCourses",
+        "accountId": "={{ $('getCourses — getCourses: filter combined returns exactly what Canvas re').first().json.id }}",
+        "filters": {
+          "search_term": "zzz-no-such-course-zzz"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "529f126e-dd21-40ee-8f30-ea91a7e50313",
+      "name": "restoreUser — restoreUser: brings a deleted user and their login back",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "restoreUser",
+        "accountId": "={{ $('getCourses — getCourses: filter combined returns exactly what Canvas re').first().json.id }}",
+        "userId": "1256"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "df320a11-6df2-407d-bb3b-28b1ece21e7b",
+      "name": "deleteSubAccount — deleteSubAccount: removes empty sub-accounts, child before p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "deleteSubAccount",
+        "accountId": "={{ $('update — update: sets, replaces with no template and clears the cou (3)').first().json.id }}",
+        "subAccountId": "={{ $('update — getSettings: returns the settings Canvas exposes (K5 mode se').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d2efe481-d3b9-491b-9cfd-cff4db2ab4b6",
+      "name": "getManuallyCreatedCoursesAccount — getManuallyCreatedCoursesAccount: returns the sub-account fo",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        2200
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "account",
+        "operation": "getManuallyCreatedCoursesAccount"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: an admin sees their accounts, with every include",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: an admin sees their accounts, with every include": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: works without the new Accounts to List parameter (",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: works without the new Accounts to List parameter (": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (manageable): returns the whole tree an admin manages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (manageable): returns the whole tree an admin manages": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (manageable): returns the whole tree an admin manages (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (manageable): returns the whole tree an admin manages (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (manageable): returns the whole tree an admin manages (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (manageable): returns the whole tree an admin manages (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll (courseCreation): lists where the user may create cou",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll (courseCreation): lists where the user may create cou": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns the account, with includes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns the account, with includes": {
+      "main": [
+        [
+          {
+            "node": "get — get: accepts self, SIS IDs, and numeric IDs arriving as nu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: accepts self, SIS IDs, and numeric IDs arriving as nu": {
+      "main": [
+        [
+          {
+            "node": "get — get: accepts self, SIS IDs, and numeric IDs arriving as nu (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: accepts self, SIS IDs, and numeric IDs arriving as nu (2)": {
+      "main": [
+        [
+          {
+            "node": "getSubAccounts — getSubAccounts: direct children by default, sorted by name o",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSubAccounts — getSubAccounts: direct children by default, sorted by name o": {
+      "main": [
+        [
+          {
+            "node": "getSubAccounts — getSubAccounts: recursive returns the whole tree, across pag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSubAccounts — getSubAccounts: recursive returns the whole tree, across pag": {
+      "main": [
+        [
+          {
+            "node": "getSubAccounts — getSubAccounts: recursive returns the whole tree, across pag (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSubAccounts — getSubAccounts: recursive returns the whole tree, across pag (2)": {
+      "main": [
+        [
+          {
+            "node": "getSubAccounts — getSubAccounts: recursive returns the whole tree, across pag (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSubAccounts — getSubAccounts: recursive returns the whole tree, across pag (3)": {
+      "main": [
+        [
+          {
+            "node": "getSubAccounts — getSubAccounts: an account without children yields no items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSubAccounts — getSubAccounts: an account without children yields no items": {
+      "main": [
+        [
+          {
+            "node": "createSubAccount — createSubAccount: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createSubAccount — createSubAccount: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "createSubAccount — createSubAccount: nests under a sub-account given by SIS ID ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createSubAccount — createSubAccount: nests under a sub-account given by SIS ID ": {
+      "main": [
+        [
+          {
+            "node": "update — update: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: moves a sub-account to another parent and can clear ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: moves a sub-account to another parent and can clear ": {
+      "main": [
+        [
+          {
+            "node": "update — update: moves a sub-account to another parent and can clear  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: moves a sub-account to another parent and can clear  (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: sets, replaces with no template and clears the cou",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: sets, replaces with no template and clears the cou": {
+      "main": [
+        [
+          {
+            "node": "update — update: sets, replaces with no template and clears the cou (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: sets, replaces with no template and clears the cou (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: sets, replaces with no template and clears the cou (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: sets, replaces with no template and clears the cou (3)": {
+      "main": [
+        [
+          {
+            "node": "getSettings — getSettings: returns the settings Canvas exposes (K5 mode se",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSettings — getSettings: returns the settings Canvas exposes (K5 mode se": {
+      "main": [
+        [
+          {
+            "node": "update — getSettings: returns the settings Canvas exposes (K5 mode se",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — getSettings: returns the settings Canvas exposes (K5 mode se": {
+      "main": [
+        [
+          {
+            "node": "getPermissions — getPermissions: reports each requested permission for the to",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getPermissions — getPermissions: reports each requested permission for the to": {
+      "main": [
+        [
+          {
+            "node": "getHelpLinks — getHelpLinks: returns the help menu of the root account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getHelpLinks — getHelpLinks: returns the help menu of the root account": {
+      "main": [
+        [
+          {
+            "node": "getTermsOfService — getTermsOfService: returns the terms of the root account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getTermsOfService — getTermsOfService: returns the terms of the root account": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: default paging, everything, and a small page siz",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: default paging, everything, and a small page siz": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: default paging, everything, and a small page siz (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: default paging, everything, and a small page siz (2)": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: default paging, everything, and a small page siz (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: default paging, everything, and a small page siz (3)": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: a sub-account includes the courses of its depart",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: a sub-account includes the courses of its depart": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter published returns exactly what Canvas r",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter published returns exactly what Canvas r": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter unpublished returns exactly what Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter unpublished returns exactly what Canvas": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter completed returns exactly what Canvas r",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter completed returns exactly what Canvas r": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter not completed returns exactly what Canv",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter not completed returns exactly what Canv": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter blueprint returns exactly what Canvas r",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter blueprint returns exactly what Canvas r": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter not blueprint returns exactly what Canv",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter not blueprint returns exactly what Canv": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter blueprint associated returns exactly wh",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter blueprint associated returns exactly wh": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter public returns exactly what Canvas retu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter public returns exactly what Canvas retu": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter not public returns exactly what Canvas ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter not public returns exactly what Canvas ": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter with enrollments returns exactly what C",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter with enrollments returns exactly what C": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter without enrollments returns exactly wha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter without enrollments returns exactly wha": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter states incl. deleted returns exactly wh",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter states incl. deleted returns exactly wh": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter state all returns exactly what Canvas r",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter state all returns exactly what Canvas r": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter term by ID returns exactly what Canvas ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter term by ID returns exactly what Canvas ": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter term by SIS ID returns exactly what Can",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter term by SIS ID returns exactly what Can": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter teachers returns exactly what Canvas re",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter teachers returns exactly what Canvas re": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter sub-accounts returns exactly what Canva",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter sub-accounts returns exactly what Canva": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter enrollment type returns exactly what Ca",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter enrollment type returns exactly what Ca": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter enrollment state returns exactly what C",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter enrollment state returns exactly what C": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter search term (course) returns exactly wh",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter search term (course) returns exactly wh": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter search term (teacher) returns exactly w",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter search term (teacher) returns exactly w": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter starts before returns exactly what Canv",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter starts before returns exactly what Canv": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter ends after returns exactly what Canvas ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter ends after returns exactly what Canvas ": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: filter combined returns exactly what Canvas re",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: filter combined returns exactly what Canvas re": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: includes and sorting reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: includes and sorting reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: includes and sorting reach Canvas (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: includes and sorting reach Canvas (2)": {
+      "main": [
+        [
+          {
+            "node": "getCourses — getCourses: an empty result is an empty output, and a too-sh",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getCourses — getCourses: an empty result is an empty output, and a too-sh": {
+      "main": [
+        [
+          {
+            "node": "restoreUser — restoreUser: brings a deleted user and their login back",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "restoreUser — restoreUser: brings a deleted user and their login back": {
+      "main": [
+        [
+          {
+            "node": "deleteSubAccount — deleteSubAccount: removes empty sub-accounts, child before p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deleteSubAccount — deleteSubAccount: removes empty sub-accounts, child before p": {
+      "main": [
+        [
+          {
+            "node": "getManuallyCreatedCoursesAccount — getManuallyCreatedCoursesAccount: returns the sub-account fo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

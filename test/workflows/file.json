@@ -1,0 +1,2459 @@
+{
+  "name": "Canvas battery — file",
+  "nodes": [
+    {
+      "id": "452e51af-733f-48c0-8b34-a1b3a23c88c3",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "dc62eb68-51ee-406e-88ff-e8a5a0e83f36",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a2bc8c9c-1447-4526-bf68-5796de74fe63",
+              "name": "student2UserId",
+              "value": "6",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "49aa9062-3601-4843-8381-2decf7aed27d",
+      "name": "upload — upload from URL: waits for Canvas to fetch the file and retu",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "upload",
+        "contextType": "folder",
+        "folderId": "856",
+        "uploadSource": "url",
+        "fileUrl": "http://192.0.2.2:37605/data.bin",
+        "waitForCompletion": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cd2fcc25-c134-4cf8-bce5-ee6807ee50d7",
+      "name": "upload — upload from URL: options, and a URL whose file name needs de",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "upload",
+        "contextType": "course",
+        "courseId": "116",
+        "uploadSource": "url",
+        "fileUrl": "http://192.0.2.2:37605/hello.txt?token=abc",
+        "options": {
+          "content_type": "text/markdown",
+          "name": "From URL ünï.md",
+          "on_duplicate": "rename",
+          "parent_folder_path": "=uploads-{{ $execution.id }}-1/from url"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0a1196e3-5341-4edf-97fe-4fa254edbd06",
+      "name": "upload — upload from URL: options, and a URL whose file name needs de (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "upload",
+        "contextType": "folder",
+        "folderId": "={{ $('upload — upload from URL: waits for Canvas to fetch the file and retu').first().json.folder_id }}",
+        "uploadSource": "url",
+        "fileUrl": "http://192.0.2.2:37605/name%20with%20spaces%20%26%20%C3%BCn%C3%AF.txt"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2d84b435-3ecf-42c5-bf3f-cc2bda130578",
+      "name": "upload — upload from URL: without waiting the progress object is retu",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "upload",
+        "contextType": "group",
+        "groupId": "57",
+        "uploadSource": "url",
+        "fileUrl": "http://192.0.2.2:37605/hello.txt",
+        "waitForCompletion": false,
+        "options": {
+          "name": "=nowait-{{ $execution.id }}-6.txt"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1d5e07b3-bad1-4a97-90d5-c94e7b756f47",
+      "name": "initiateUpload — initiateUpload: returns what is needed to send the file, and",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "initiateUpload",
+        "contextType": "course",
+        "courseId": "116",
+        "fileName": "manual ünï.txt",
+        "options": {
+          "content_type": "text/plain",
+          "on_duplicate": "rename",
+          "parent_folder_path": "=uploads-{{ $execution.id }}-1/manual",
+          "size": 16
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6a629528-1acc-47c2-9a66-473ebddbe497",
+      "name": "initiateUpload — initiateUpload: folder, group and user contexts; a size over",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "initiateUpload",
+        "contextType": "folder",
+        "folderId": "={{ $('upload — upload from URL: options, and a URL whose file name needs de (2)').first().json.folder_id }}",
+        "fileName": "ticket.txt"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d08aaab1-b29c-4be2-bfd2-dc3ffd06fe9c",
+      "name": "initiateUpload — initiateUpload: folder, group and user contexts; a size over (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "initiateUpload",
+        "contextType": "group",
+        "groupId": "57",
+        "fileName": "ticket.txt"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "649f1509-0ea1-44aa-a49e-5a6e8a3829ea",
+      "name": "initiateUpload — initiateUpload: folder, group and user contexts; a size over (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "initiateUpload",
+        "contextType": "user",
+        "userId": "self",
+        "fileName": "ticket.txt"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5a5650b9-dccf-4582-9754-33d602d8c930",
+      "name": "get — get: returns the file, with includes",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "get",
+        "fileId": "1532"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c2a2b038-8b5e-422d-b3f9-0d78b10ee472",
+      "name": "get — get: within a course, a group or a user the file is only fou",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "116",
+        "fileId": "={{ $('get — get: returns the file, with includes').first().json.id }}",
+        "options": {
+          "include": [
+            "user"
+          ]
+        },
+        "errorHandling": {
+          "onError": "continueWithError"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "29d43f8a-d378-4683-92d9-b8bda1b0f021",
+      "name": "get — get: within a course, a group or a user the file is only fou (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "sis_course_id:W5682-D",
+        "fileId": "={{ $('get — get: within a course, a group or a user the file is only fou').first().json.id }}",
+        "errorHandling": {
+          "onError": "continueWithError"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "da1c1e3d-9828-4309-977c-80678043f585",
+      "name": "get — get: within a course, a group or a user the file is only fou (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "get",
+        "contextType": "group",
+        "groupId": "57",
+        "fileId": "1964",
+        "errorHandling": {
+          "onError": "continueWithError"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fa2ecee5-1c7d-41ed-9c78-ac4f6d92b516",
+      "name": "get — get: within a course, a group or a user the file is only fou (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "get",
+        "contextType": "user",
+        "userId": "={{ $('Config').first().json.student2UserId }}",
+        "fileId": "1965",
+        "errorHandling": {
+          "onError": "continueWithError"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6899ea93-eedd-408e-92fc-a0e914190ef1",
+      "name": "get — get: replacement chain course ID finds the file that repla",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "get",
+        "fileId": "1977",
+        "options": {
+          "replacement_chain_context_id": "116"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4e4ac0a6-4263-47c9-9bbb-4da21fcf369a",
+      "name": "getAll — getAll: pages through more than 100 files of a folder withou",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('get — get: within a course, a group or a user the file is only fou (2)').first().json.folder_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9f330279-a91b-4ec8-924c-23efb1bf374d",
+      "name": "getAll — getAll: pages through more than 100 files of a folder withou (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: pages through more than 100 files of a folder withou').first().json.folder_id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b1ddcf84-69e5-4d40-89a0-8b707158fcb4",
+      "name": "getAll — getAll: pages through more than 100 files of a folder withou (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: pages through more than 100 files of a folder withou (2)').first().json.folder_id }}",
+        "pagination": {
+          "perPage": 25,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "510bb831-5a86-46f1-b819-f5d7d4b99fef",
+      "name": "getAll — getAll: content type filters, search, sort, order, includes ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: pages through more than 100 files of a folder withou (3)').first().json.folder_id }}",
+        "options": {
+          "content_types": "image"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "14c74029-4d30-42e6-a28c-4cc5761ae542",
+      "name": "getAll — getAll: content type filters, search, sort, order, includes  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: content type filters, search, sort, order, includes ').first().json.folder_id }}",
+        "options": {
+          "content_types": "text/csv, image/png"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d3d912e7-0ce6-4ccf-a29e-530b6245a008",
+      "name": "getAll — getAll: content type filters, search, sort, order, includes  (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: content type filters, search, sort, order, includes  (2)').first().json.folder_id }}",
+        "options": {
+          "exclude_content_types": "text"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "27ed9433-4f49-4926-a48d-4de160915dc5",
+      "name": "getAll — getAll: content type filters, search, sort, order, includes  (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: content type filters, search, sort, order, includes  (3)').first().json.folder_id }}",
+        "options": {
+          "exclude_content_types": "text/csv,image"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4752ae25-e6bc-415c-be77-df1cd7c1d93d",
+      "name": "getAll — getAll: content type filters, search, sort, order, includes  (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: content type filters, search, sort, order, includes  (4)').first().json.folder_id }}",
+        "options": {
+          "search_term": "bulk-10"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bb03f8db-1ecd-420c-abf2-306940afbada",
+      "name": "getAll — getAll: content type filters, search, sort, order, includes  (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: content type filters, search, sort, order, includes  (5)').first().json.folder_id }}",
+        "options": {
+          "sort": "size",
+          "order": "desc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ba6c1510-72fe-438b-b72d-ddfd9d76f9df",
+      "name": "getAll — getAll: content type filters, search, sort, order, includes  (7)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: content type filters, search, sort, order, includes  (6)').first().json.folder_id }}",
+        "options": {
+          "sort": "name",
+          "order": "desc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9e415e0d-6bae-4dde-8749-f506aaa490eb",
+      "name": "getAll — getAll: content type filters, search, sort, order, includes  (8)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: content type filters, search, sort, order, includes  (7)').first().json.folder_id }}",
+        "options": {
+          "sort": "content_type",
+          "order": "asc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c3923159-7392-433d-aa15-c0e6b0ca96d2",
+      "name": "getAll — getAll: content type filters, search, sort, order, includes  (9)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: content type filters, search, sort, order, includes  (8)').first().json.folder_id }}",
+        "options": {
+          "sort": "created_at",
+          "order": "asc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d476010d-148e-4382-ac07-26dc5f70220e",
+      "name": "getAll — getAll: content type filters, search, sort, order, includes  (10)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: content type filters, search, sort, order, includes  (9)').first().json.folder_id }}",
+        "options": {
+          "sort": "updated_at",
+          "order": "desc"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cff1bfbb-1d72-4717-9d37-7a0f06feae9e",
+      "name": "getAll — getAll: content type filters, search, sort, order, includes  (11)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: content type filters, search, sort, order, includes  (10)').first().json.folder_id }}",
+        "options": {
+          "include": [
+            "usage_rights",
+            "user"
+          ],
+          "sort": "user",
+          "search_term": "bulk-001"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f590281a-f0a4-4310-9bf3-87dea27d59ea",
+      "name": "getAll — getAll: content type filters, search, sort, order, includes  (12)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: content type filters, search, sort, order, includes  (11)').first().json.folder_id }}",
+        "options": {
+          "only_names": true,
+          "search_term": "bulk-00"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "baa6bc87-9db0-49ab-b343-188110bbe03a",
+      "name": "getAll — getAll: content type filters, search, sort, order, includes  (13)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: content type filters, search, sort, order, includes  (12)').first().json.folder_id }}",
+        "options": {
+          "only_names": false,
+          "search_term": "bulk-00"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b430c759-3193-47f6-84b6-b5fff566a1d4",
+      "name": "getAll — getAll: content type filters, search, sort, order, includes  (14)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "folder",
+        "folderId": "={{ $('getAll — getAll: content type filters, search, sort, order, includes  (13)').first().json.folder_id }}",
+        "options": {
+          "search_term": "nothing is called like this zzz"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a3cf33cb-785d-4cf4-b0a4-71f1e04b6015",
+      "name": "getAll — getAll: course, group and user contexts",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "116",
+        "options": {
+          "search_term": "bulk-"
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fcd4f751-6514-47e6-82a4-2bcdcd8c8222",
+      "name": "getAll — getAll: course, group and user contexts (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "group",
+        "groupId": "57",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "21bb0824-5954-47be-aae5-d8e7d3a26e24",
+      "name": "getAll — getAll: course, group and user contexts (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getAll",
+        "contextType": "user",
+        "userId": "={{ $('Config').first().json.student2UserId }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d3e55353-5e4b-4983-aeb8-a3d12fbf049e",
+      "name": "update — update: every field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "update",
+        "fileId": "1980",
+        "updateFields": {
+          "hidden": true,
+          "lock_at": "2032-03-01T12:00:00Z",
+          "locked": false,
+          "name": "Nachher ünï \"quoted\" & more.txt",
+          "parent_folder_id": "856",
+          "unlock_at": "2032-01-15T12:00:00Z",
+          "visibility_level": "institution"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7f81a911-2162-4ee2-80f7-7e24ec1bd251",
+      "name": "update — update: every field reaches Canvas (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "update",
+        "fileId": "={{ $('update — update: every field reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "hidden": false,
+          "lock_at": "",
+          "locked": true,
+          "unlock_at": "",
+          "visibility_level": "inherit"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e2d69001-ef6c-4a17-9180-94a26deb73af",
+      "name": "update — update: a name collision is refused unless on duplicate sa",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "update",
+        "fileId": "1984",
+        "updateFields": {
+          "name": "taken.txt",
+          "on_duplicate": "rename"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0f997b9b-1138-45fd-ab6a-8fc785664ff4",
+      "name": "update — update: a name collision is refused unless on duplicate sa (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "update",
+        "fileId": "1985",
+        "updateFields": {
+          "name": "taken.txt",
+          "on_duplicate": "overwrite"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "931298ea-f685-4521-8645-85fba39bfc5b",
+      "name": "copy — copy: into another folder, into a group, and with every dupl",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "copy",
+        "fileId": "1986",
+        "destinationFolderId": "876",
+        "options": {
+          "on_duplicate": "rename"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5a6fde41-9c61-41ba-a22c-6d789ea30701",
+      "name": "copy — copy: into another folder, into a group, and with every dupl (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "copy",
+        "fileId": "1986",
+        "destinationFolderId": "={{ $('copy — copy: into another folder, into a group, and with every dupl').first().json.folder_id }}",
+        "options": {
+          "on_duplicate": "overwrite"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0c6fa5ce-4925-40fb-86af-3b9743d12540",
+      "name": "copy — copy: into another folder, into a group, and with every dupl (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "copy",
+        "fileId": "1986",
+        "destinationFolderId": "718",
+        "options": {
+          "on_duplicate": "rename"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "56294a98-66d2-4e45-869b-2b75ccfb66d1",
+      "name": "getPublicUrl — getPublicUrl: returns a URL that downloads the file without ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1320
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getPublicUrl",
+        "fileId": "1991"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b3f8e1dd-551a-4d8b-9c37-4d3323c4ff1b",
+      "name": "getPublicUrl — getPublicUrl: submission ID lets a grader reach a file a s",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getPublicUrl",
+        "fileId": "1992",
+        "options": {
+          "submission_id": "27900"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "67425392-0708-4f79-bc5b-60cc645c47e6",
+      "name": "getQuota — getQuota: course, group and user",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getQuota",
+        "contextType": "course",
+        "courseId": "116"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dc2c370a-ab26-4920-aca9-9ddbd1283897",
+      "name": "getQuota — getQuota: course, group and user (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getQuota",
+        "contextType": "group",
+        "groupId": "57"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "22a382cd-d990-4601-a465-39822cdc650f",
+      "name": "getQuota — getQuota: course, group and user (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "getQuota",
+        "contextType": "user",
+        "userId": "={{ $('Config').first().json.student2UserId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "21fddea6-1254-41c2-afd9-8deac1d2f373",
+      "name": "listLicenses — listLicenses: course, group and user",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "listLicenses",
+        "contextType": "course",
+        "courseId": "116"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2cf94496-0348-40ea-9c80-c79060ebc784",
+      "name": "listLicenses — listLicenses: course, group and user (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1540
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "listLicenses",
+        "contextType": "group",
+        "groupId": "57"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "313e3a53-f044-4062-a367-ba87482b804d",
+      "name": "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "setUsageRights",
+        "contextType": "course",
+        "courseId": "116",
+        "fileIds": " 1993 ",
+        "useJustification": "creative_commons",
+        "options": {
+          "legal_copyright": "(C) 2030 Battery ünï",
+          "license": "cc_by_sa",
+          "publish": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e1d31dfd-94a7-4da2-a4ae-4ed77e993458",
+      "name": "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "setUsageRights",
+        "contextType": "course",
+        "courseId": "116",
+        "folderIds": "877",
+        "useJustification": "own_copyright"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1412c9ad-b48c-4421-bd8e-6203e02eb941",
+      "name": "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "setUsageRights",
+        "contextType": "course",
+        "courseId": "116",
+        "fileIds": "1994",
+        "useJustification": "fair_use"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "443dedc3-8175-4319-928e-4a5ab19644b7",
+      "name": "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "setUsageRights",
+        "contextType": "course",
+        "courseId": "116",
+        "fileIds": "1994",
+        "useJustification": "public_domain"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "55898efc-c06e-4d70-908a-f54e87576274",
+      "name": "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "setUsageRights",
+        "contextType": "course",
+        "courseId": "116",
+        "fileIds": "1994",
+        "useJustification": "used_by_permission"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "aa65984f-7fe0-4927-80dc-e6fa96c0993e",
+      "name": "removeUsageRights — setUsageRights / removeUsageRights: by file and by folder, w",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1760
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "removeUsageRights",
+        "contextType": "course",
+        "courseId": "116",
+        "fileIds": "1993,1994"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a7bfebcf-7223-45e2-989b-95f9f54e26fb",
+      "name": "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "setUsageRights",
+        "contextType": "course",
+        "courseId": "116",
+        "fileIds": "1993",
+        "useJustification": "fair_use"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3fe53b98-19a4-4113-b81c-56222a47468f",
+      "name": "removeUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "removeUsageRights",
+        "contextType": "course",
+        "courseId": "116",
+        "folderIds": "877"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "205c896c-b6a8-4079-9e12-72436b855503",
+      "name": "setUsageRights — setUsageRights: group and user contexts; missing targets and",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "setUsageRights",
+        "contextType": "group",
+        "groupId": "57",
+        "fileIds": "1995",
+        "useJustification": "public_domain"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5baf6c34-680a-4f93-8cfc-51a1a8ae00cf",
+      "name": "removeUsageRights — setUsageRights: group and user contexts; missing targets and",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "removeUsageRights",
+        "contextType": "group",
+        "groupId": "57",
+        "fileIds": "1995"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7fc97935-c6f8-437c-b1a9-c242a47fd96a",
+      "name": "delete — delete: replace also destroys the stored content",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1980
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "delete",
+        "fileId": "1999",
+        "options": {
+          "replace": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "upload — upload from URL: waits for Canvas to fetch the file and retu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload — upload from URL: waits for Canvas to fetch the file and retu": {
+      "main": [
+        [
+          {
+            "node": "upload — upload from URL: options, and a URL whose file name needs de",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload — upload from URL: options, and a URL whose file name needs de": {
+      "main": [
+        [
+          {
+            "node": "upload — upload from URL: options, and a URL whose file name needs de (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload — upload from URL: options, and a URL whose file name needs de (2)": {
+      "main": [
+        [
+          {
+            "node": "upload — upload from URL: without waiting the progress object is retu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload — upload from URL: without waiting the progress object is retu": {
+      "main": [
+        [
+          {
+            "node": "initiateUpload — initiateUpload: returns what is needed to send the file, and",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "initiateUpload — initiateUpload: returns what is needed to send the file, and": {
+      "main": [
+        [
+          {
+            "node": "initiateUpload — initiateUpload: folder, group and user contexts; a size over",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "initiateUpload — initiateUpload: folder, group and user contexts; a size over": {
+      "main": [
+        [
+          {
+            "node": "initiateUpload — initiateUpload: folder, group and user contexts; a size over (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "initiateUpload — initiateUpload: folder, group and user contexts; a size over (2)": {
+      "main": [
+        [
+          {
+            "node": "initiateUpload — initiateUpload: folder, group and user contexts; a size over (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "initiateUpload — initiateUpload: folder, group and user contexts; a size over (3)": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns the file, with includes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns the file, with includes": {
+      "main": [
+        [
+          {
+            "node": "get — get: within a course, a group or a user the file is only fou",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: within a course, a group or a user the file is only fou": {
+      "main": [
+        [
+          {
+            "node": "get — get: within a course, a group or a user the file is only fou (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: within a course, a group or a user the file is only fou (2)": {
+      "main": [
+        [
+          {
+            "node": "get — get: within a course, a group or a user the file is only fou (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: within a course, a group or a user the file is only fou (3)": {
+      "main": [
+        [
+          {
+            "node": "get — get: within a course, a group or a user the file is only fou (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: within a course, a group or a user the file is only fou (4)": {
+      "main": [
+        [
+          {
+            "node": "get — get: replacement chain course ID finds the file that repla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: replacement chain course ID finds the file that repla": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more than 100 files of a folder withou",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more than 100 files of a folder withou": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more than 100 files of a folder withou (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more than 100 files of a folder withou (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more than 100 files of a folder withou (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more than 100 files of a folder withou (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: content type filters, search, sort, order, includes ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: content type filters, search, sort, order, includes ": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: content type filters, search, sort, order, includes  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: content type filters, search, sort, order, includes  (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: content type filters, search, sort, order, includes  (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: content type filters, search, sort, order, includes  (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: content type filters, search, sort, order, includes  (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: content type filters, search, sort, order, includes  (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: content type filters, search, sort, order, includes  (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: content type filters, search, sort, order, includes  (5)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: content type filters, search, sort, order, includes  (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: content type filters, search, sort, order, includes  (6)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: content type filters, search, sort, order, includes  (7)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: content type filters, search, sort, order, includes  (7)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: content type filters, search, sort, order, includes  (8)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: content type filters, search, sort, order, includes  (8)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: content type filters, search, sort, order, includes  (9)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: content type filters, search, sort, order, includes  (9)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: content type filters, search, sort, order, includes  (10)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: content type filters, search, sort, order, includes  (10)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: content type filters, search, sort, order, includes  (11)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: content type filters, search, sort, order, includes  (11)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: content type filters, search, sort, order, includes  (12)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: content type filters, search, sort, order, includes  (12)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: content type filters, search, sort, order, includes  (13)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: content type filters, search, sort, order, includes  (13)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: content type filters, search, sort, order, includes  (14)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: content type filters, search, sort, order, includes  (14)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: course, group and user contexts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: course, group and user contexts": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: course, group and user contexts (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: course, group and user contexts (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: course, group and user contexts (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: course, group and user contexts (3)": {
+      "main": [
+        [
+          {
+            "node": "update — update: every field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: every field reaches Canvas (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every field reaches Canvas (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: a name collision is refused unless on duplicate sa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: a name collision is refused unless on duplicate sa": {
+      "main": [
+        [
+          {
+            "node": "update — update: a name collision is refused unless on duplicate sa (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: a name collision is refused unless on duplicate sa (2)": {
+      "main": [
+        [
+          {
+            "node": "copy — copy: into another folder, into a group, and with every dupl",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "copy — copy: into another folder, into a group, and with every dupl": {
+      "main": [
+        [
+          {
+            "node": "copy — copy: into another folder, into a group, and with every dupl (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "copy — copy: into another folder, into a group, and with every dupl (2)": {
+      "main": [
+        [
+          {
+            "node": "copy — copy: into another folder, into a group, and with every dupl (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "copy — copy: into another folder, into a group, and with every dupl (3)": {
+      "main": [
+        [
+          {
+            "node": "getPublicUrl — getPublicUrl: returns a URL that downloads the file without ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getPublicUrl — getPublicUrl: returns a URL that downloads the file without ": {
+      "main": [
+        [
+          {
+            "node": "getPublicUrl — getPublicUrl: submission ID lets a grader reach a file a s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getPublicUrl — getPublicUrl: submission ID lets a grader reach a file a s": {
+      "main": [
+        [
+          {
+            "node": "getQuota — getQuota: course, group and user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getQuota — getQuota: course, group and user": {
+      "main": [
+        [
+          {
+            "node": "getQuota — getQuota: course, group and user (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getQuota — getQuota: course, group and user (2)": {
+      "main": [
+        [
+          {
+            "node": "getQuota — getQuota: course, group and user (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getQuota — getQuota: course, group and user (3)": {
+      "main": [
+        [
+          {
+            "node": "listLicenses — listLicenses: course, group and user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listLicenses — listLicenses: course, group and user": {
+      "main": [
+        [
+          {
+            "node": "listLicenses — listLicenses: course, group and user (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listLicenses — listLicenses: course, group and user (2)": {
+      "main": [
+        [
+          {
+            "node": "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w": {
+      "main": [
+        [
+          {
+            "node": "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (2)": {
+      "main": [
+        [
+          {
+            "node": "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (3)": {
+      "main": [
+        [
+          {
+            "node": "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (4)": {
+      "main": [
+        [
+          {
+            "node": "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (5)": {
+      "main": [
+        [
+          {
+            "node": "removeUsageRights — setUsageRights / removeUsageRights: by file and by folder, w",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "removeUsageRights — setUsageRights / removeUsageRights: by file and by folder, w": {
+      "main": [
+        [
+          {
+            "node": "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (6)": {
+      "main": [
+        [
+          {
+            "node": "removeUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "removeUsageRights — setUsageRights / removeUsageRights: by file and by folder, w (2)": {
+      "main": [
+        [
+          {
+            "node": "setUsageRights — setUsageRights: group and user contexts; missing targets and",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setUsageRights — setUsageRights: group and user contexts; missing targets and": {
+      "main": [
+        [
+          {
+            "node": "removeUsageRights — setUsageRights: group and user contexts; missing targets and",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "removeUsageRights — setUsageRights: group and user contexts; missing targets and": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: replace also destroys the stored content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

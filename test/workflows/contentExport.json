@@ -1,0 +1,1154 @@
+{
+  "name": "Canvas battery — contentExport",
+  "nodes": [
+    {
+      "id": "5c19aefd-404a-4797-8953-b6440048cb81",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "861d3ef8-4ed1-4c2b-b63b-093713b3ef7a",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9dfab924-dff5-41fa-8336-a615f90d6aec",
+              "name": "emptyCourseId",
+              "value": "3",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "1c1e640f-a814-4aa5-85be-523ce6259236",
+      "name": "create — create (course, Common Cartridge): exports the whole course;",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "426",
+        "exportType": "common_cartridge",
+        "additionalFields": {
+          "skip_notifications": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a6d28408-7f36-443a-aff9-4e0992f39b32",
+      "name": "get — create (course, Common Cartridge): exports the whole course;",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "={{ $('create — create (course, Common Cartridge): exports the whole course;').first().json.course_id }}",
+        "contentExportId": "={{ $('create — create (course, Common Cartridge): exports the whole course;').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "86752c38-9d86-43fc-a190-4f0a5ae34604",
+      "name": "create — create (course, Common Cartridge): every Select field limits",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "={{ $('get — create (course, Common Cartridge): exports the whole course;').first().json.course_id }}",
+        "exportType": "common_cartridge",
+        "additionalFields": {
+          "select_pages": "421",
+          "select_assignments": " 1328 ",
+          "select_quizzes": "169",
+          "select_discussion_topics": "425",
+          "select_announcements": "426",
+          "select_calendar_events": "521",
+          "select_files": "2205",
+          "select_attachments": "2205",
+          "select_folders": "962",
+          "select_modules": "249",
+          "select_module_items": "751",
+          "select_rubrics": "64",
+          "skip_notifications": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "67326964-8145-4817-a4e3-2ebfd98811e2",
+      "name": "get — create (course, Common Cartridge): every Select field limits",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "={{ $('create — create (course, Common Cartridge): every Select field limits').first().json.course_id }}",
+        "contentExportId": "={{ $('create — create (course, Common Cartridge): every Select field limits').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8fff1d8d-dc1c-4c00-9a2c-27a3f172116b",
+      "name": "create — create (course, QTI): exports quizzes, all of them or the se",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "={{ $('get — create (course, Common Cartridge): every Select field limits').first().json.course_id }}",
+        "exportType": "qti"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "91adf3c2-eaf8-4d13-80e9-0bf2b5f53e05",
+      "name": "get — create (course, QTI): exports quizzes, all of them or the se",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "={{ $('create — create (course, QTI): exports quizzes, all of them or the se').first().json.course_id }}",
+        "contentExportId": "={{ $('create — create (course, QTI): exports quizzes, all of them or the se').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "37c75df3-e737-4fe7-944c-5fd99c6bb013",
+      "name": "create — create (course, QTI): exports quizzes, all of them or the se (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "={{ $('get — create (course, QTI): exports quizzes, all of them or the se').first().json.course_id }}",
+        "exportType": "qti",
+        "additionalFields": {
+          "select_quizzes": "170"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a480bcfe-04e4-4b1c-b4a4-e340f094e635",
+      "name": "get — create (course, QTI): exports quizzes, all of them or the se (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "={{ $('create — create (course, QTI): exports quizzes, all of them or the se (2)').first().json.course_id }}",
+        "contentExportId": "={{ $('create — create (course, QTI): exports quizzes, all of them or the se (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bab240eb-7ef2-4545-94b7-8ae8e69fbdef",
+      "name": "create — create (course, ZIP): exports files, all of them, selected f",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "={{ $('get — create (course, QTI): exports quizzes, all of them or the se (2)').first().json.course_id }}",
+        "exportType": "zip"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4b1b0cce-ff38-4e23-b1bd-ae0622c00779",
+      "name": "get — create (course, ZIP): exports files, all of them, selected f",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "={{ $('create — create (course, ZIP): exports files, all of them, selected f').first().json.course_id }}",
+        "contentExportId": "={{ $('create — create (course, ZIP): exports files, all of them, selected f').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c361f57c-a3f3-4b8f-ab90-e2fb4a9917e1",
+      "name": "create — create (course, ZIP): exports files, all of them, selected f (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "={{ $('get — create (course, ZIP): exports files, all of them, selected f').first().json.course_id }}",
+        "exportType": "zip",
+        "additionalFields": {
+          "select_files": "2206"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dca5015a-291e-47ab-8df8-e43d6db4b1a2",
+      "name": "get — create (course, ZIP): exports files, all of them, selected f (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "={{ $('create — create (course, ZIP): exports files, all of them, selected f (2)').first().json.course_id }}",
+        "contentExportId": "={{ $('create — create (course, ZIP): exports files, all of them, selected f (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "317b7601-ffb4-4d6e-a527-94b92d76e8f0",
+      "name": "get — create (course, ZIP): exports files, all of them, selected f (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "={{ $('get — create (course, ZIP): exports files, all of them, selected f (2)').first().json.course_id }}",
+        "contentExportId": "83"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "68dac366-4c4d-40af-bf0c-160458c6f5b6",
+      "name": "create — create (group): zips the files of a group",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "create",
+        "contextType": "group",
+        "groupId": "404",
+        "exportType": "zip"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4d90d09d-b836-4584-9275-6e1a75280894",
+      "name": "get — create (group): zips the files of a group",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "get",
+        "contextType": "group",
+        "groupId": "404",
+        "contentExportId": "={{ $('create — create (group): zips the files of a group').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1b489fbd-1602-453a-acfd-2744281990b1",
+      "name": "getAll — create (group): zips the files of a group",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "getAll",
+        "contextType": "group",
+        "groupId": "404"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2bec4d1d-c251-4743-958a-1e8312f76e57",
+      "name": "getAll — create (user): a user zips their own files; nobody else can ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "getAll",
+        "contextType": "user",
+        "userId": "1447"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "aa8d6dd3-306e-4706-b524-9cae048f7fc9",
+      "name": "create — waitForCompletion: waits for the export; Download File attac",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "={{ $('get — create (course, ZIP): exports files, all of them, selected f (3)').first().json.course_id }}",
+        "exportType": "zip",
+        "additionalFields": {
+          "skip_notifications": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e7e2f108-bff9-4644-ac61-b227360d8502",
+      "name": "waitForCompletion — waitForCompletion: waits for the export; Download File attac",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "waitForCompletion",
+        "contextType": "course",
+        "courseId": "={{ $('create — waitForCompletion: waits for the export; Download File attac').first().json.course_id }}",
+        "contentExportId": "={{ $('create — waitForCompletion: waits for the export; Download File attac').first().json.id }}",
+        "pollInterval": 2,
+        "timeout": 300,
+        "downloadFile": true,
+        "binaryPropertyName": "archive"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d62421de-2fc0-466f-b466-5d82a5b4523c",
+      "name": "get — waitForCompletion: waits for the export; Download File attac",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "get",
+        "contextType": "course",
+        "courseId": "={{ $('waitForCompletion — waitForCompletion: waits for the export; Download File attac').first().json.course_id }}",
+        "contentExportId": "={{ $('waitForCompletion — waitForCompletion: waits for the export; Download File attac').first().json.id }}",
+        "downloadFile": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9cf5a53c-f362-40db-9cff-4e0f7c28894f",
+      "name": "waitForCompletion — waitForCompletion: waits for the export; Download File attac (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "waitForCompletion",
+        "contextType": "course",
+        "courseId": "={{ $('get — waitForCompletion: waits for the export; Download File attac').first().json.course_id }}",
+        "contentExportId": "={{ $('get — waitForCompletion: waits for the export; Download File attac').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ba416154-389c-4f5f-9ac7-c5ab3a37a994",
+      "name": "getAll — getAll: lists the exports of the course, newest first, and p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "={{ $('waitForCompletion — waitForCompletion: waits for the export; Download File attac (2)').first().json.course_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1b593752-f11b-4f28-9943-2a16dd901708",
+      "name": "getAll — getAll: lists the exports of the course, newest first, and p (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "={{ $('getAll — getAll: lists the exports of the course, newest first, and p').first().json.course_id }}",
+        "pagination": {
+          "perPage": 2,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bf6ad0cd-98e8-4082-90ab-970b2fc02092",
+      "name": "getAll — getAll: lists the exports of the course, newest first, and p (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "={{ $('getAll — getAll: lists the exports of the course, newest first, and p (2)').first().json.course_id }}",
+        "pagination": {
+          "returnAll": true,
+          "perPage": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "34efb33d-df77-4e17-a452-fdf64e9308f6",
+      "name": "getAll — getAll: lists the exports of the course, newest first, and p (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "={{ $('Config').first().json.emptyCourseId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cd4f5569-b49d-4364-855b-2518a9cabb94",
+      "name": "getContentList — getContentList: what a course contains, by type",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "getContentList",
+        "courseId": "={{ $('getAll — getAll: lists the exports of the course, newest first, and p (3)').first().json.course_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "edf6f2e1-33a9-4dfd-846b-6ec2c41b0b3e",
+      "name": "getContentList — getContentList: what a course contains, by type (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "getContentList",
+        "courseId": "={{ $('getAll — getAll: lists the exports of the course, newest first, and p (3)').first().json.course_id }}",
+        "options": {
+          "type": "wiki_pages"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "139d9a6d-21a2-4e2f-9fe4-740c35289dde",
+      "name": "getContentList — getContentList: what a course contains, by type (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "contentExport",
+        "operation": "getContentList",
+        "courseId": "={{ $('getAll — getAll: lists the exports of the course, newest first, and p (3)').first().json.course_id }}",
+        "options": {
+          "type": "attachments"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create (course, Common Cartridge): exports the whole course;",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (course, Common Cartridge): exports the whole course;": {
+      "main": [
+        [
+          {
+            "node": "get — create (course, Common Cartridge): exports the whole course;",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course, Common Cartridge): exports the whole course;": {
+      "main": [
+        [
+          {
+            "node": "create — create (course, Common Cartridge): every Select field limits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (course, Common Cartridge): every Select field limits": {
+      "main": [
+        [
+          {
+            "node": "get — create (course, Common Cartridge): every Select field limits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course, Common Cartridge): every Select field limits": {
+      "main": [
+        [
+          {
+            "node": "create — create (course, QTI): exports quizzes, all of them or the se",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (course, QTI): exports quizzes, all of them or the se": {
+      "main": [
+        [
+          {
+            "node": "get — create (course, QTI): exports quizzes, all of them or the se",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course, QTI): exports quizzes, all of them or the se": {
+      "main": [
+        [
+          {
+            "node": "create — create (course, QTI): exports quizzes, all of them or the se (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (course, QTI): exports quizzes, all of them or the se (2)": {
+      "main": [
+        [
+          {
+            "node": "get — create (course, QTI): exports quizzes, all of them or the se (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course, QTI): exports quizzes, all of them or the se (2)": {
+      "main": [
+        [
+          {
+            "node": "create — create (course, ZIP): exports files, all of them, selected f",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (course, ZIP): exports files, all of them, selected f": {
+      "main": [
+        [
+          {
+            "node": "get — create (course, ZIP): exports files, all of them, selected f",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course, ZIP): exports files, all of them, selected f": {
+      "main": [
+        [
+          {
+            "node": "create — create (course, ZIP): exports files, all of them, selected f (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (course, ZIP): exports files, all of them, selected f (2)": {
+      "main": [
+        [
+          {
+            "node": "get — create (course, ZIP): exports files, all of them, selected f (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course, ZIP): exports files, all of them, selected f (2)": {
+      "main": [
+        [
+          {
+            "node": "get — create (course, ZIP): exports files, all of them, selected f (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (course, ZIP): exports files, all of them, selected f (3)": {
+      "main": [
+        [
+          {
+            "node": "create — create (group): zips the files of a group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (group): zips the files of a group": {
+      "main": [
+        [
+          {
+            "node": "get — create (group): zips the files of a group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — create (group): zips the files of a group": {
+      "main": [
+        [
+          {
+            "node": "getAll — create (group): zips the files of a group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — create (group): zips the files of a group": {
+      "main": [
+        [
+          {
+            "node": "getAll — create (user): a user zips their own files; nobody else can ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — create (user): a user zips their own files; nobody else can ": {
+      "main": [
+        [
+          {
+            "node": "create — waitForCompletion: waits for the export; Download File attac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — waitForCompletion: waits for the export; Download File attac": {
+      "main": [
+        [
+          {
+            "node": "waitForCompletion — waitForCompletion: waits for the export; Download File attac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "waitForCompletion — waitForCompletion: waits for the export; Download File attac": {
+      "main": [
+        [
+          {
+            "node": "get — waitForCompletion: waits for the export; Download File attac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — waitForCompletion: waits for the export; Download File attac": {
+      "main": [
+        [
+          {
+            "node": "waitForCompletion — waitForCompletion: waits for the export; Download File attac (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "waitForCompletion — waitForCompletion: waits for the export; Download File attac (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the exports of the course, newest first, and p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the exports of the course, newest first, and p": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the exports of the course, newest first, and p (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the exports of the course, newest first, and p (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the exports of the course, newest first, and p (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the exports of the course, newest first, and p (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the exports of the course, newest first, and p (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the exports of the course, newest first, and p (4)": {
+      "main": [
+        [
+          {
+            "node": "getContentList — getContentList: what a course contains, by type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getContentList — getContentList: what a course contains, by type": {
+      "main": [
+        [
+          {
+            "node": "getContentList — getContentList: what a course contains, by type (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getContentList — getContentList: what a course contains, by type (2)": {
+      "main": [
+        [
+          {
+            "node": "getContentList — getContentList: what a course contains, by type (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

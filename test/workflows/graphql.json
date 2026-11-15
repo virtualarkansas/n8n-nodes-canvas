@@ -1,0 +1,205 @@
+{
+  "name": "Canvas battery — graphql",
+  "nodes": [
+    {
+      "id": "60889768-49b7-4871-9e4f-77474c9f4c0e",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "107e1a97-a83a-4864-90a6-38d66317f8e0",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "de57c84d-915c-40e9-9a6d-b9966f85a62e",
+      "name": "query — query: returns data for a query with variables",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "graphql",
+        "operation": "query",
+        "query": "query ($id: ID!) { course(id: $id) { _id name courseCode state } }",
+        "variables": "{\"id\":\"1\"}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "03fb9feb-d0bb-468d-b491-ea315bcad9b6",
+      "name": "query — query: reaches connection data with cursors, as the web inte",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "graphql",
+        "operation": "query",
+        "query": "query ($id: ID!, $first: Int) {\n\t\t\t\t\tcourse(id: $id) {\n\t\t\t\t\t\tenrollmentsConnection(first: $first) { nodes { _id type state user { _id name } } pageInfo { hasNextPage endCursor } }\n\t\t\t\t\t}\n\t\t\t\t}",
+        "variables": {
+          "id": "93",
+          "first": 25
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4ed8b3c8-1273-4fb9-9454-eadd607d9b68",
+      "name": "query — mutation: changes data",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "graphql",
+        "operation": "query",
+        "query": "mutation ($id: ID!, $name: String!) { updateAssignment(input: { id: $id, name: $name }) { assignment { _id name } errors { message } } }",
+        "variables": {
+          "id": "1258",
+          "name": "After — renamed through GraphQL"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "eb161d76-2d95-4dc3-b178-d0f6fa7310b1",
+      "name": "query — errors: partial data can be kept on request",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "graphql",
+        "operation": "query",
+        "query": "{ thisFieldDoesNotExist }",
+        "options": {
+          "continueOnGraphqlErrors": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "query — query: returns data for a query with variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query — query: returns data for a query with variables": {
+      "main": [
+        [
+          {
+            "node": "query — query: reaches connection data with cursors, as the web inte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query — query: reaches connection data with cursors, as the web inte": {
+      "main": [
+        [
+          {
+            "node": "query — mutation: changes data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query — mutation: changes data": {
+      "main": [
+        [
+          {
+            "node": "query — errors: partial data can be kept on request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

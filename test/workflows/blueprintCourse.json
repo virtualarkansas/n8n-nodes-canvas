@@ -1,0 +1,1130 @@
+{
+  "name": "Canvas battery — blueprintCourse",
+  "nodes": [
+    {
+      "id": "0bee7b7f-930b-43fb-be8b-89bb1dbd99f6",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "e03b876e-2013-48a3-b4af-9dd26d119dfd",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f6960251-59d9-4bce-9d6a-6af9ccb5c5d2",
+              "name": "blueprintCourseId",
+              "value": "7",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "92551154-e695-45d1-8dba-e1fb405e25e8",
+      "name": "getTemplate — getTemplate: by default and by template ID; a course that ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getTemplate",
+        "courseId": "317"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "413cd2f2-3df7-41f0-bec2-4ec98f65b1a0",
+      "name": "updateAssociations — updateAssociations: adds and removes courses, in one call to",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "updateAssociations",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "courseIdsToAdd": " 318 , 319 "
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4b3f473a-fb6c-42a8-ba59-69d4f1f4aa26",
+      "name": "updateAssociations — updateAssociations: adds and removes courses, in one call to (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "updateAssociations",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "courseIdsToAdd": "319"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7c3694b0-a375-4c6a-8186-51e07cf8dff7",
+      "name": "getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getAssociatedCourses",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "85402a6a-d106-4573-bea3-dc9f666a5bd2",
+      "name": "getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getAssociatedCourses",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "pagination": {
+          "perPage": 1,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "de852939-d51d-40c4-9c16-ad4d401286fc",
+      "name": "getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getAssociatedCourses",
+        "courseId": "={{ $('Config').first().json.blueprintCourseId }}",
+        "pagination": {
+          "perPage": 2,
+          "maxPages": 0
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c7fe562a-ebd1-403d-9d2a-8e68556cdd86",
+      "name": "setRestrictions — setRestrictions: locks objects with the course defaults or w",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "setRestrictions",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "contentType": "assignment",
+        "contentId": "1212",
+        "restricted": true,
+        "restrictions": {
+          "content": false,
+          "points": true,
+          "due_dates": true,
+          "availability_dates": true,
+          "settings": false,
+          "state": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d3f69b35-2d5f-43c6-9c22-c03220383ed8",
+      "name": "setRestrictions — setRestrictions: locks objects with the course defaults or w (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "setRestrictions",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "contentType": "wiki_page",
+        "contentId": "392",
+        "restricted": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "83c762f2-ec29-43f9-8f3c-94f21dd9936e",
+      "name": "setRestrictions — setRestrictions: locks objects with the course defaults or w (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "setRestrictions",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "contentType": "quiz",
+        "contentId": "154",
+        "restricted": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9a1f502b-7a16-440e-9ddb-7f08b92695c4",
+      "name": "setRestrictions — setRestrictions: locks objects with the course defaults or w (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "setRestrictions",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "contentType": "discussion_topic",
+        "contentId": "389",
+        "restricted": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4db2751d-d4d4-4a51-baf0-9dfcceca6633",
+      "name": "setRestrictions — setRestrictions: locks objects with the course defaults or w (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "setRestrictions",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "contentType": "attachment",
+        "contentId": "2118",
+        "restricted": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "98d633ba-c2e3-41fe-a16a-c84c6e37c75e",
+      "name": "setRestrictions — setRestrictions: locks objects with the course defaults or w (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "setRestrictions",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "contentType": "quiz",
+        "contentId": "154",
+        "restricted": false
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "26db70d5-35e4-4e9a-92d2-ca8991e2ad18",
+      "name": "getUnsyncedChanges — getUnsyncedChanges: before the first sync everything is pend",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getUnsyncedChanges",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "108de0b5-0652-4273-b4a4-1310bf7fa586",
+      "name": "beginMigration — beginMigration: the first sync fills the associated courses ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "beginMigration",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "additionalFields": {
+          "comment": "First sync by the battery – \"quoted\" & <b>tags</b> 🚀",
+          "send_notification": true,
+          "copy_settings": true,
+          "publish_after_initial_sync": true,
+          "send_item_notifications": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e7d14901-3bae-45a6-9a71-aa47831b48d0",
+      "name": "getMigration — beginMigration: the first sync fills the associated courses ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getMigration",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "migrationId": "4"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b87acc9c-7abf-4468-9868-4682de7c5a78",
+      "name": "beginMigration — beginMigration: a second sync pushes changes, but keeps loca",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "beginMigration",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "additionalFields": {
+          "comment": "Second sync",
+          "send_notification": false,
+          "copy_settings": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "779e4330-9282-4b3c-8561-323f2b0fc267",
+      "name": "getMigration — beginMigration: a second sync pushes changes, but keeps loca",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getMigration",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "migrationId": "5"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5dad7578-4117-4b43-a83a-e79b9817892c",
+      "name": "getAllMigrations — getAllMigrations, getMigration, getMigrationDetails: the syn",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getAllMigrations",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "62a92109-07dd-422c-b369-328bc01ce58e",
+      "name": "getAllMigrations — getAllMigrations, getMigration, getMigrationDetails: the syn (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getAllMigrations",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "templateId": "={{ $('getAllMigrations — getAllMigrations, getMigration, getMigrationDetails: the syn').first().json.template_id }}",
+        "pagination": {
+          "perPage": 1,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5581d327-b8bf-4be9-beb3-eb94c948b27b",
+      "name": "getMigrationDetails — getAllMigrations, getMigration, getMigrationDetails: the syn",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getMigrationDetails",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "migrationId": "4"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b6818c00-1de6-4262-a85b-b02fbef8738f",
+      "name": "getMigrationDetails — getAllMigrations, getMigration, getMigrationDetails: the syn (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getMigrationDetails",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "migrationId": "5"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5d35b7e8-54bf-405a-9add-b712d4ee0c0e",
+      "name": "getSubscriptions — getSubscriptions, getAllImports, showImport, getImportDetail",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getSubscriptions",
+        "courseId": "={{ $('getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "281c6c50-320e-4e47-bbf6-92e9b1a2bdf5",
+      "name": "getAllImports — getSubscriptions, getAllImports, showImport, getImportDetail",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getAllImports",
+        "courseId": "={{ $('getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "33170cff-0af6-4aa5-86ee-90116bdab5e8",
+      "name": "getAllImports — getSubscriptions, getAllImports, showImport, getImportDetail (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getAllImports",
+        "courseId": "={{ $('getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (2)').first().json.id }}",
+        "subscriptionId": "={{ $('getAllImports — getSubscriptions, getAllImports, showImport, getImportDetail').first().json.subscription_id }}",
+        "pagination": {
+          "perPage": 1,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c9eb6978-fc64-4bd4-ac50-5350e1225233",
+      "name": "showImport — getSubscriptions, getAllImports, showImport, getImportDetail",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "showImport",
+        "courseId": "={{ $('getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (2)').first().json.id }}",
+        "subscriptionId": "={{ $('getAllImports — getSubscriptions, getAllImports, showImport, getImportDetail (2)').first().json.subscription_id }}",
+        "migrationId": "51"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "746334f3-46b6-403b-9beb-95ccb67117e2",
+      "name": "getImportDetails — getSubscriptions, getAllImports, showImport, getImportDetail",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getImportDetails",
+        "courseId": "={{ $('getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (2)').first().json.id }}",
+        "migrationId": "51"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4863255a-da42-43a3-8ca9-fbff3d0165b4",
+      "name": "getSubscriptions — getSubscriptions, getAllImports, showImport, getImportDetail (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "getSubscriptions",
+        "courseId": "318"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9edec847-0163-49f5-84c0-8e20152b2504",
+      "name": "updateAssociations — updateAssociations: removing the courses ends their subscrip",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "blueprintCourse",
+        "operation": "updateAssociations",
+        "courseId": "={{ $('getTemplate — getTemplate: by default and by template ID; a course that ').first().json.course_id }}",
+        "courseIdsToRemove": "319,320"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getTemplate — getTemplate: by default and by template ID; a course that ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getTemplate — getTemplate: by default and by template ID; a course that ": {
+      "main": [
+        [
+          {
+            "node": "updateAssociations — updateAssociations: adds and removes courses, in one call to",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateAssociations — updateAssociations: adds and removes courses, in one call to": {
+      "main": [
+        [
+          {
+            "node": "updateAssociations — updateAssociations: adds and removes courses, in one call to (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateAssociations — updateAssociations: adds and removes courses, in one call to (2)": {
+      "main": [
+        [
+          {
+            "node": "getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages": {
+      "main": [
+        [
+          {
+            "node": "getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (2)": {
+      "main": [
+        [
+          {
+            "node": "getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAssociatedCourses — getAssociatedCourses: lists the associated courses and pages (3)": {
+      "main": [
+        [
+          {
+            "node": "setRestrictions — setRestrictions: locks objects with the course defaults or w",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setRestrictions — setRestrictions: locks objects with the course defaults or w": {
+      "main": [
+        [
+          {
+            "node": "setRestrictions — setRestrictions: locks objects with the course defaults or w (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setRestrictions — setRestrictions: locks objects with the course defaults or w (2)": {
+      "main": [
+        [
+          {
+            "node": "setRestrictions — setRestrictions: locks objects with the course defaults or w (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setRestrictions — setRestrictions: locks objects with the course defaults or w (3)": {
+      "main": [
+        [
+          {
+            "node": "setRestrictions — setRestrictions: locks objects with the course defaults or w (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setRestrictions — setRestrictions: locks objects with the course defaults or w (4)": {
+      "main": [
+        [
+          {
+            "node": "setRestrictions — setRestrictions: locks objects with the course defaults or w (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setRestrictions — setRestrictions: locks objects with the course defaults or w (5)": {
+      "main": [
+        [
+          {
+            "node": "setRestrictions — setRestrictions: locks objects with the course defaults or w (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setRestrictions — setRestrictions: locks objects with the course defaults or w (6)": {
+      "main": [
+        [
+          {
+            "node": "getUnsyncedChanges — getUnsyncedChanges: before the first sync everything is pend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getUnsyncedChanges — getUnsyncedChanges: before the first sync everything is pend": {
+      "main": [
+        [
+          {
+            "node": "beginMigration — beginMigration: the first sync fills the associated courses ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "beginMigration — beginMigration: the first sync fills the associated courses ": {
+      "main": [
+        [
+          {
+            "node": "getMigration — beginMigration: the first sync fills the associated courses ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getMigration — beginMigration: the first sync fills the associated courses ": {
+      "main": [
+        [
+          {
+            "node": "beginMigration — beginMigration: a second sync pushes changes, but keeps loca",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "beginMigration — beginMigration: a second sync pushes changes, but keeps loca": {
+      "main": [
+        [
+          {
+            "node": "getMigration — beginMigration: a second sync pushes changes, but keeps loca",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getMigration — beginMigration: a second sync pushes changes, but keeps loca": {
+      "main": [
+        [
+          {
+            "node": "getAllMigrations — getAllMigrations, getMigration, getMigrationDetails: the syn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllMigrations — getAllMigrations, getMigration, getMigrationDetails: the syn": {
+      "main": [
+        [
+          {
+            "node": "getAllMigrations — getAllMigrations, getMigration, getMigrationDetails: the syn (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllMigrations — getAllMigrations, getMigration, getMigrationDetails: the syn (2)": {
+      "main": [
+        [
+          {
+            "node": "getMigrationDetails — getAllMigrations, getMigration, getMigrationDetails: the syn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getMigrationDetails — getAllMigrations, getMigration, getMigrationDetails: the syn": {
+      "main": [
+        [
+          {
+            "node": "getMigrationDetails — getAllMigrations, getMigration, getMigrationDetails: the syn (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getMigrationDetails — getAllMigrations, getMigration, getMigrationDetails: the syn (2)": {
+      "main": [
+        [
+          {
+            "node": "getSubscriptions — getSubscriptions, getAllImports, showImport, getImportDetail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSubscriptions — getSubscriptions, getAllImports, showImport, getImportDetail": {
+      "main": [
+        [
+          {
+            "node": "getAllImports — getSubscriptions, getAllImports, showImport, getImportDetail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllImports — getSubscriptions, getAllImports, showImport, getImportDetail": {
+      "main": [
+        [
+          {
+            "node": "getAllImports — getSubscriptions, getAllImports, showImport, getImportDetail (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllImports — getSubscriptions, getAllImports, showImport, getImportDetail (2)": {
+      "main": [
+        [
+          {
+            "node": "showImport — getSubscriptions, getAllImports, showImport, getImportDetail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "showImport — getSubscriptions, getAllImports, showImport, getImportDetail": {
+      "main": [
+        [
+          {
+            "node": "getImportDetails — getSubscriptions, getAllImports, showImport, getImportDetail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getImportDetails — getSubscriptions, getAllImports, showImport, getImportDetail": {
+      "main": [
+        [
+          {
+            "node": "getSubscriptions — getSubscriptions, getAllImports, showImport, getImportDetail (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSubscriptions — getSubscriptions, getAllImports, showImport, getImportDetail (2)": {
+      "main": [
+        [
+          {
+            "node": "updateAssociations — updateAssociations: removing the courses ends their subscrip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

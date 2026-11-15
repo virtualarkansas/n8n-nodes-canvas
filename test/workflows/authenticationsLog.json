@@ -1,0 +1,528 @@
+{
+  "name": "Canvas battery — authenticationsLog",
+  "nodes": [
+    {
+      "id": "7b460c15-b499-4dc7-8cd1-178e6e560268",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "35e2ab85-59fe-4e78-a806-271188f61756",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "28e8ae73-5eec-46aa-b6b1-0cc61b9476c1",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            },
+            {
+              "id": "e1753263-eb0a-4c60-9d7b-72daf9d771a2",
+              "name": "adminUserId",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "35f5eed1-5d25-4c93-858d-f32e3dc3e7e9",
+      "name": "getAllByAccount — getAllByAccount: Return All lists every event, one item per ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationsLog",
+        "operation": "getAllByAccount",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "returnAll": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c7f881fe-b378-47bb-9fa1-cd6045645214",
+      "name": "getAllByAccount — getAllByAccount: Limit is honoured across page boundaries (d",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationsLog",
+        "operation": "getAllByAccount",
+        "accountId": "self"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "68789c08-76f9-496c-929f-b715699cd498",
+      "name": "getAllByAccount — getAllByAccount: Limit is honoured across page boundaries (d (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationsLog",
+        "operation": "getAllByAccount",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "returnAll": false,
+        "limit": 7
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b7de8891-1c01-4a18-a6b0-9ecfbe6facfa",
+      "name": "getAllByAccount — getAllByAccount: Limit is honoured across page boundaries (d (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationsLog",
+        "operation": "getAllByAccount",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "returnAll": false,
+        "limit": 9,
+        "pagination": {
+          "perPage": 4
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "35a5a751-bcca-4639-815f-4fb57f7d6910",
+      "name": "getAllByAccount — getAllByAccount: Start Time and End Time bound the events",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationsLog",
+        "operation": "getAllByAccount",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "returnAll": true,
+        "options": {
+          "start_time": "2026-11-15T13:34:01Z",
+          "end_time": "2026-11-15T14:31:41Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "297f03e1-5e03-48e1-855d-52b92fcd02ea",
+      "name": "getAllByAccount — getAllByAccount: Start Time and End Time bound the events (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationsLog",
+        "operation": "getAllByAccount",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "returnAll": true,
+        "options": {
+          "start_time": "2026-11-15T14:31:41Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f9c071e7-0911-4c1f-bb23-f061a4fa3647",
+      "name": "getAllByAccount — getAllByAccount: Start Time and End Time bound the events (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationsLog",
+        "operation": "getAllByAccount",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "returnAll": true,
+        "options": {
+          "start_time": "2020-01-01T00:00:00Z",
+          "end_time": "2020-01-02T00:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "a276fe02-2409-4576-861b-651ad69dcd9d",
+      "name": "getAllByUser — getAllByUser: lists the events of one user, by ID or as sel",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationsLog",
+        "operation": "getAllByUser",
+        "userId": "={{ $('Config').first().json.adminUserId }}",
+        "returnAll": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "23c2ea68-d083-43b7-946f-3c4753faf870",
+      "name": "getAllByUser — getAllByUser: lists the events of one user, by ID or as sel (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationsLog",
+        "operation": "getAllByUser",
+        "userId": "self",
+        "returnAll": false,
+        "limit": 1
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2f39e156-43d5-4160-85e6-88b3d5f0105f",
+      "name": "getAllByUser — getAllByUser: time range, a user without logins, and several",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationsLog",
+        "operation": "getAllByUser",
+        "userId": "={{ $('Config').first().json.adminUserId }}",
+        "returnAll": true,
+        "options": {
+          "start_time": "2026-11-15T14:22:39Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1deb121c-51c8-43f6-9fc6-ee754d569df8",
+      "name": "getAllByUser — getAllByUser: time range, a user without logins, and several (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationsLog",
+        "operation": "getAllByUser",
+        "userId": "={{ $('Config').first().json.adminUserId }}",
+        "returnAll": true,
+        "options": {
+          "end_time": "2020-01-01T00:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5e07ff20-5a77-49d9-9c99-2bb29245c4eb",
+      "name": "getAllByLogin — getAllByLogin: lists the events of one login",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "authenticationsLog",
+        "operation": "getAllByLogin",
+        "loginId": "1",
+        "returnAll": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAllByAccount — getAllByAccount: Return All lists every event, one item per ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllByAccount — getAllByAccount: Return All lists every event, one item per ": {
+      "main": [
+        [
+          {
+            "node": "getAllByAccount — getAllByAccount: Limit is honoured across page boundaries (d",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllByAccount — getAllByAccount: Limit is honoured across page boundaries (d": {
+      "main": [
+        [
+          {
+            "node": "getAllByAccount — getAllByAccount: Limit is honoured across page boundaries (d (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllByAccount — getAllByAccount: Limit is honoured across page boundaries (d (2)": {
+      "main": [
+        [
+          {
+            "node": "getAllByAccount — getAllByAccount: Limit is honoured across page boundaries (d (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllByAccount — getAllByAccount: Limit is honoured across page boundaries (d (3)": {
+      "main": [
+        [
+          {
+            "node": "getAllByAccount — getAllByAccount: Start Time and End Time bound the events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllByAccount — getAllByAccount: Start Time and End Time bound the events": {
+      "main": [
+        [
+          {
+            "node": "getAllByAccount — getAllByAccount: Start Time and End Time bound the events (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllByAccount — getAllByAccount: Start Time and End Time bound the events (2)": {
+      "main": [
+        [
+          {
+            "node": "getAllByAccount — getAllByAccount: Start Time and End Time bound the events (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllByAccount — getAllByAccount: Start Time and End Time bound the events (3)": {
+      "main": [
+        [
+          {
+            "node": "getAllByUser — getAllByUser: lists the events of one user, by ID or as sel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllByUser — getAllByUser: lists the events of one user, by ID or as sel": {
+      "main": [
+        [
+          {
+            "node": "getAllByUser — getAllByUser: lists the events of one user, by ID or as sel (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllByUser — getAllByUser: lists the events of one user, by ID or as sel (2)": {
+      "main": [
+        [
+          {
+            "node": "getAllByUser — getAllByUser: time range, a user without logins, and several",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllByUser — getAllByUser: time range, a user without logins, and several": {
+      "main": [
+        [
+          {
+            "node": "getAllByUser — getAllByUser: time range, a user without logins, and several (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAllByUser — getAllByUser: time range, a user without logins, and several (2)": {
+      "main": [
+        [
+          {
+            "node": "getAllByLogin — getAllByLogin: lists the events of one login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

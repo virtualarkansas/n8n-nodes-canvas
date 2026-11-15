@@ -1,0 +1,630 @@
+{
+  "name": "Canvas battery — accessToken",
+  "nodes": [
+    {
+      "id": "c781dff0-e05d-48b4-a1fa-2bb1be38497d",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "49c389ad-3c6f-43c7-b33d-655266f8605f",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "15de058f-5569-41fb-a366-6b39737b30c0",
+      "name": "create — create: every optional field reaches Canvas; the token value",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "create",
+        "userId": "1395",
+        "purpose": "=Battery token Ünïcødé 令牌 \"quoted\" & <b>tags</b> {{ $execution.id }}-1",
+        "additionalFields": {
+          "expires_at": "2031-06-30T23:59:00Z",
+          "scopes": " url:GET|/api/v1/courses , url:GET|/api/v1/users/:user_id/profile"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7c380f26-be72-46a9-8882-6355e25264e0",
+      "name": "create — create: without optional fields the token never expires and ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "create",
+        "userId": "1396",
+        "purpose": "Minimal"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4d23b546-6571-479b-ac49-ee45a38ef11c",
+      "name": "get — get: by ID and by token hint; never returns the full token v",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "get",
+        "userId": "={{ $('create — create: every optional field reaches Canvas; the token value').first().json.user_id }}",
+        "tokenId": "={{ $('create — create: every optional field reaches Canvas; the token value').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "871b7762-e274-4406-94ad-e270ad7673b7",
+      "name": "get — get: by ID and by token hint; never returns the full token v (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "get",
+        "userId": "={{ $('get — get: by ID and by token hint; never returns the full token v').first().json.user_id }}",
+        "tokenId": "JkCrQ"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b54fb4d0-09b7-4ca5-9df7-ee1281603203",
+      "name": "getAll — getAll: lists the users manually generated tokens; Return A",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "getAll",
+        "userId": "={{ $('get — get: by ID and by token hint; never returns the full token v (2)').first().json.user_id }}",
+        "returnAll": true
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "47db1cd1-415c-40ba-b9bf-7812dfcce472",
+      "name": "getAll — getAll: lists the users manually generated tokens; Return A (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "getAll",
+        "userId": "={{ $('getAll — getAll: lists the users manually generated tokens; Return A').first().json.user_id }}",
+        "returnAll": false,
+        "limit": 5
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "da15c4ac-828c-4903-a075-3c1b859b295e",
+      "name": "getAll — getAll: lists the users manually generated tokens; Return A (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "getAll",
+        "userId": "={{ $('getAll — getAll: lists the users manually generated tokens; Return A (2)').first().json.user_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2891eb16-a22f-47d2-8509-4ce52db9a1cd",
+      "name": "getAll — getAll: lists the users manually generated tokens; Return A (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "getAll",
+        "userId": "={{ $('getAll — getAll: lists the users manually generated tokens; Return A (3)').first().json.user_id }}",
+        "returnAll": false,
+        "limit": 11,
+        "pagination": {
+          "perPage": 4
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "99997699-ff2a-48e0-8a6b-b7d4199e90f2",
+      "name": "getAll — getAll: a user without tokens yields no items; a lesser pers",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "getAll",
+        "userId": "1398"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ce4cdd4a-0ab0-4569-8b20-8c8ac0a44b6e",
+      "name": "update — update: purpose, expiry and scopes reach Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "update",
+        "userId": "={{ $('getAll — getAll: lists the users manually generated tokens; Return A (4)').first().json.user_id }}",
+        "tokenId": "={{ $('getAll — getAll: lists the users manually generated tokens; Return A (4)').first().json.id }}",
+        "updateFields": {
+          "purpose": "=Battery token Ünïcødé 令牌 \"quoted\" & <b>tags</b> {{ $execution.id }}-1 (renamed)",
+          "expires_at": "2032-01-15T08:00:00Z",
+          "scopes": "url:GET|/api/v1/users/:user_id/profile"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "87e812c2-aa0c-43b3-b485-b868c942461f",
+      "name": "update — update: Regenerate issues a new token value, addressed by th",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "update",
+        "userId": "={{ $('update — update: purpose, expiry and scopes reach Canvas').first().json.user_id }}",
+        "tokenId": "JkCrQ",
+        "updateFields": {
+          "regenerate": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7a627106-11ea-437e-a98f-c4cb602ed3d4",
+      "name": "update — update: Regenerate issues a new token value, addressed by th (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "update",
+        "userId": "={{ $('update — update: Regenerate issues a new token value, addressed by th').first().json.user_id }}",
+        "tokenId": "={{ $('update — update: Regenerate issues a new token value, addressed by th').first().json.id }}",
+        "updateFields": {
+          "regenerate": false,
+          "purpose": "=Battery token Ünïcødé 令牌 \"quoted\" & <b>tags</b> {{ $execution.id }}-1"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b721ea48-ecd2-4277-af88-bee820160ee3",
+      "name": "update — update: an expired token can only be regenerated together wi",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "update",
+        "userId": "={{ $('update — update: Regenerate issues a new token value, addressed by th (2)').first().json.user_id }}",
+        "tokenId": "={{ $('update — update: Regenerate issues a new token value, addressed by th (2)').first().json.id }}",
+        "updateFields": {
+          "expires_at": "2020-01-01T00:00:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0fe24f36-0da6-4d7a-91b6-1009c449f090",
+      "name": "update — update: an expired token can only be regenerated together wi (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "update",
+        "userId": "={{ $('update — update: an expired token can only be regenerated together wi').first().json.user_id }}",
+        "tokenId": "={{ $('update — update: an expired token can only be regenerated together wi').first().json.id }}",
+        "updateFields": {
+          "regenerate": true,
+          "expires_at": "2033-03-03T03:03:00Z"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c82f3dc3-da22-4436-8e46-6a930dd91237",
+      "name": "delete — delete: a deleted token cannot be deleted again, and a lesse",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "accessToken",
+        "operation": "delete",
+        "userId": "={{ $('update — update: an expired token can only be regenerated together wi (2)').first().json.user_id }}",
+        "tokenId": "={{ $('update — update: an expired token can only be regenerated together wi (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field reaches Canvas; the token value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas; the token value": {
+      "main": [
+        [
+          {
+            "node": "create — create: without optional fields the token never expires and ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: without optional fields the token never expires and ": {
+      "main": [
+        [
+          {
+            "node": "get — get: by ID and by token hint; never returns the full token v",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: by ID and by token hint; never returns the full token v": {
+      "main": [
+        [
+          {
+            "node": "get — get: by ID and by token hint; never returns the full token v (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: by ID and by token hint; never returns the full token v (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the users manually generated tokens; Return A",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the users manually generated tokens; Return A": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the users manually generated tokens; Return A (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the users manually generated tokens; Return A (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the users manually generated tokens; Return A (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the users manually generated tokens; Return A (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists the users manually generated tokens; Return A (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists the users manually generated tokens; Return A (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: a user without tokens yields no items; a lesser pers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: a user without tokens yields no items; a lesser pers": {
+      "main": [
+        [
+          {
+            "node": "update — update: purpose, expiry and scopes reach Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: purpose, expiry and scopes reach Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: Regenerate issues a new token value, addressed by th",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Regenerate issues a new token value, addressed by th": {
+      "main": [
+        [
+          {
+            "node": "update — update: Regenerate issues a new token value, addressed by th (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: Regenerate issues a new token value, addressed by th (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: an expired token can only be regenerated together wi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: an expired token can only be regenerated together wi": {
+      "main": [
+        [
+          {
+            "node": "update — update: an expired token can only be regenerated together wi (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: an expired token can only be regenerated together wi (2)": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: a deleted token cannot be deleted again, and a lesse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

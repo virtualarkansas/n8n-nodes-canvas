@@ -1,0 +1,292 @@
+{
+  "name": "Canvas battery — calendarEvent",
+  "nodes": [
+    {
+      "id": "7db127f9-863e-4e7a-8ccf-90218dad27d3",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "7ce97a4e-0ff2-4fe6-9f81-3a22daa8f7d1",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "ba48817b-321c-4217-9cc5-1642d04fdb59",
+      "name": "create — create: personal, group and account calendars",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "calendarEvent",
+        "operation": "create",
+        "contextCode": "account_25",
+        "title": "=District holiday {{ $execution.id }}-10",
+        "additionalFields": {
+          "start_at": "2027-12-24T00:00:00Z",
+          "all_day": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1af3f5c2-96cc-4bb8-a55d-832b71022cbd",
+      "name": "getAll — getAll: User ID reads another users calendar",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "calendarEvent",
+        "operation": "getAll",
+        "options": {
+          "start_date": "2029-01-08",
+          "end_date": "2029-01-10",
+          "user_id": " 634 "
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1e7ced7a-1e56-4691-8bac-63b2b90278b4",
+      "name": "getAll — getAll: User ID reads another users calendar (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "calendarEvent",
+        "operation": "getAll",
+        "options": {
+          "start_date": "2029-01-08",
+          "end_date": "2029-01-10"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d7272841-5291-46ce-9765-1255ea35a0cb",
+      "name": "getAll — getAll: User ID reads another users calendar (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "calendarEvent",
+        "operation": "getAll",
+        "options": {
+          "start_date": "2029-01-08",
+          "end_date": "2029-01-10",
+          "context_codes": "course_109",
+          "user_id": "634"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "188b4583-1a6f-45ea-af3c-c990b3b87242",
+      "name": "getTimetable — getTimetable: a course without a timetable returns an empty ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "calendarEvent",
+        "operation": "getTimetable",
+        "courseId": "389"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "63aa6cc8-7147-4c8f-b9a7-2b79db742dc6",
+      "name": "setTimetableEvents — setTimetableEvents: without a section the list is the timeta",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "calendarEvent",
+        "operation": "setTimetableEvents",
+        "courseId": "389",
+        "events": {
+          "event": [
+            {
+              "start_at": "2027-03-02T14:00:00Z",
+              "end_at": "2027-03-02T15:00:00Z",
+              "code": "kick-off",
+              "title": "Kick-off"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: personal, group and account calendars",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: personal, group and account calendars": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: User ID reads another users calendar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: User ID reads another users calendar": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: User ID reads another users calendar (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: User ID reads another users calendar (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: User ID reads another users calendar (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: User ID reads another users calendar (3)": {
+      "main": [
+        [
+          {
+            "node": "getTimetable — getTimetable: a course without a timetable returns an empty ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getTimetable — getTimetable: a course without a timetable returns an empty ": {
+      "main": [
+        [
+          {
+            "node": "setTimetableEvents — setTimetableEvents: without a section the list is the timeta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

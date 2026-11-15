@@ -1,0 +1,334 @@
+{
+  "name": "Canvas battery — communicationChannel",
+  "nodes": [
+    {
+      "id": "e959637b-f426-49fc-bf4b-b7d62864038c",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "02a9f25f-4fa1-4c26-9686-1b5d58a7c82c",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "32a0d885-c652-4472-93a0-a771f4e7722a",
+              "name": "multiChannelUserId",
+              "value": "48",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a6264119-5bcf-40e0-ae49-69cd896ec5fa",
+      "name": "getAll — getAll: a new user has the channel of their login email",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "communicationChannel",
+        "operation": "getAll",
+        "userId": "1441"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "820f0648-f452-4cd1-845d-7e993edba7de",
+      "name": "create — create: an email channel that is confirmed right away",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "communicationChannel",
+        "operation": "create",
+        "userId": "={{ $('getAll — getAll: a new user has the channel of their login email').first().json.user_id }}",
+        "channelType": "email",
+        "address": "battery+tag.1794753330371@example.edu",
+        "additionalFields": {
+          "skipConfirmation": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "7f6286ca-c584-4f74-9be6-1ae36429d5ee",
+      "name": "create — create: without Skip Confirmation the channel waits for th",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "communicationChannel",
+        "operation": "create",
+        "userId": "={{ $('create — create: an email channel that is confirmed right away').first().json.user_id }}",
+        "channelType": "email",
+        "address": "=unconfirmed.{{ $execution.id }}-3@example.edu",
+        "additionalFields": {
+          "skipConfirmation": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c503175a-8864-4304-972a-c57ded6b4669",
+      "name": "create — create: without Skip Confirmation the channel waits for th (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "communicationChannel",
+        "operation": "create",
+        "userId": "={{ $('create — create: without Skip Confirmation the channel waits for th').first().json.user_id }}",
+        "channelType": "sms",
+        "address": "5015551927@txt.att.net",
+        "additionalFields": {
+          "skipConfirmation": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9a54b450-485c-4d63-a314-ac53782a14be",
+      "name": "getAll — getAll: lists every channel of a user in Canvas order; reti",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "communicationChannel",
+        "operation": "getAll",
+        "userId": "={{ $('Config').first().json.multiChannelUserId }}",
+        "pagination": {
+          "perPage": 2,
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e096b638-79c7-4908-bea8-c63f4f5d27ad",
+      "name": "getAll — getAll: lists every channel of a user in Canvas order; reti (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "communicationChannel",
+        "operation": "getAll",
+        "userId": "={{ $('Config').first().json.multiChannelUserId }}",
+        "pagination": {
+          "perPage": 2,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "150ab7ca-6c92-482c-9f8b-8c6f0f1bbb6d",
+      "name": "delete — delete: by ID, and by type and address (with characters that",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "communicationChannel",
+        "operation": "delete",
+        "userId": "={{ $('create — create: without Skip Confirmation the channel waits for th (2)').first().json.user_id }}",
+        "deleteBy": "typeAndAddress",
+        "channelType": "email",
+        "address": "battery+delete.1794753335521@example.edu"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: a new user has the channel of their login email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: a new user has the channel of their login email": {
+      "main": [
+        [
+          {
+            "node": "create — create: an email channel that is confirmed right away",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: an email channel that is confirmed right away": {
+      "main": [
+        [
+          {
+            "node": "create — create: without Skip Confirmation the channel waits for th",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: without Skip Confirmation the channel waits for th": {
+      "main": [
+        [
+          {
+            "node": "create — create: without Skip Confirmation the channel waits for th (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: without Skip Confirmation the channel waits for th (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists every channel of a user in Canvas order; reti",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists every channel of a user in Canvas order; reti": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: lists every channel of a user in Canvas order; reti (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: lists every channel of a user in Canvas order; reti (2)": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: by ID, and by type and address (with characters that",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

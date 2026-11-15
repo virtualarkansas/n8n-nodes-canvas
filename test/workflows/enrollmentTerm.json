@@ -1,0 +1,659 @@
+{
+  "name": "Canvas battery — enrollmentTerm",
+  "nodes": [
+    {
+      "id": "89322a39-761a-4f7f-aa76-8d0f8606242c",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "94d5d560-7c9c-4789-b62e-41004b79b6cc",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b7417cb4-5ea5-4b84-96ca-cb2662bfb4d8",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f9685f2f-227f-436d-9461-f926a2638b69",
+      "name": "create — create: every optional field and date override reaches Canva",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollmentTerm",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "name": "zqtermmwhxqmgboxq1 Tërm 学期 \"quoted\" & <b>tags</b> 🗓",
+        "additionalFields": {
+          "startAt": "2031-01-01T00:00:00Z",
+          "endAt": "2031-06-30T00:00:00Z",
+          "sisTermId": "=TERM-SIS_{{ $execution.id }}-2"
+        },
+        "overrides": {
+          "override": [
+            {
+              "enrollmentType": "StudentEnrollment",
+              "startAt": "2031-01-05T00:00:00Z",
+              "endAt": "2031-06-20T00:00:00Z"
+            },
+            {
+              "enrollmentType": "TeacherEnrollment",
+              "startAt": "",
+              "endAt": "2031-07-15T00:00:00Z"
+            },
+            {
+              "enrollmentType": "TaEnrollment",
+              "startAt": "2031-01-02T00:00:00Z",
+              "endAt": ""
+            },
+            {
+              "enrollmentType": "DesignerEnrollment",
+              "startAt": "2030-12-01T00:00:00Z",
+              "endAt": "2031-08-01T00:00:00Z"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b2114d03-728e-4b54-91cf-f37fc8c6ba0f",
+      "name": "create — create: only a name is needed; a taken SIS ID and inverted d",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollmentTerm",
+        "operation": "create",
+        "accountId": "self",
+        "name": "zqtermmwhxqmgboxq1 Minimal"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ecaefdba-d9e8-4fcd-805c-66b3e2b48fb0",
+      "name": "get — get: by ID and by SIS ID, with course count; seeded terms ar",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollmentTerm",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "termId": "={{ $('create — create: every optional field and date override reaches Canva').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b08da149-8db9-4c28-a575-586671f26276",
+      "name": "get — get: by ID and by SIS ID, with course count; seeded terms ar (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollmentTerm",
+        "operation": "get",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "termId": "sis_term_id:TERM-2026-FA"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3ac0a275-6b6d-43bd-b393-45f1be7478b8",
+      "name": "getAll — getAll: every term is its own item, across pages",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollmentTerm",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "59555a31-f21f-4218-b61d-6e0121341e53",
+      "name": "getAll — getAll: every term is its own item, across pages (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollmentTerm",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b3d23f42-1d87-4e4b-a9d6-c9c5028211c8",
+      "name": "getAll — getAll: every term is its own item, across pages (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollmentTerm",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "pagination": {
+          "perPage": 5,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "16eb31c0-86b7-4a0f-917b-ffb3c38ebb65",
+      "name": "getAll — getAll: name search, includes and workflow state are applied",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollmentTerm",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "filters": {
+          "termName": "zqtermmwhxqmgboxq1 Bulk",
+          "include": [
+            "course_count",
+            "overrides"
+          ]
+        },
+        "pagination": {
+          "perPage": 5,
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dd1aaa5c-545f-4fad-88ae-0cb88794e91f",
+      "name": "getAll — getAll: name search, includes and workflow state are applied (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollmentTerm",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "filters": {
+          "termName": "zz-no-such-term-zz"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "87a4e61e-fe72-4dca-9a6c-b35b65fc51d6",
+      "name": "getAll — getAll: name search, includes and workflow state are applied (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollmentTerm",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "filters": {
+          "workflowState": [
+            "deleted"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "4f6f17b3-b762-4ea0-acd7-49b690725624",
+      "name": "getAll — getAll: name search, includes and workflow state are applied (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollmentTerm",
+        "operation": "getAll",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "filters": {
+          "workflowState": [
+            "all"
+          ]
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "75429f7f-ceb2-4ed9-b37d-468b1970d166",
+      "name": "update — update: every optional field reaches Canvas; overrides of ot",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollmentTerm",
+        "operation": "update",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "termId": "={{ $('get — get: by ID and by SIS ID, with course count; seeded terms ar').first().json.id }}",
+        "updateFields": {
+          "name": "zqtermmwhxqmgboxq1 Renamed",
+          "startAt": "2032-01-01T00:00:00Z",
+          "endAt": "2032-06-30T00:00:00Z",
+          "sisTermId": "=TERM-SIS_{{ $execution.id }}-2_v2",
+          "overrideSisStickiness": true
+        },
+        "overrides": {
+          "override": [
+            {
+              "enrollmentType": "StudentEnrollment",
+              "startAt": "2032-01-10T00:00:00Z",
+              "endAt": "2032-06-10T00:00:00Z"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ce4db6d2-834b-4175-aaea-7e3574e40eab",
+      "name": "update — update: with Override SIS Stickiness off, a name changed i",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollmentTerm",
+        "operation": "update",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "termId": "={{ $('update — update: every optional field reaches Canvas; overrides of ot').first().json.id }}",
+        "updateFields": {
+          "name": "Must Not Apply",
+          "overrideSisStickiness": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ba51a146-2143-4092-a36c-471188c318bb",
+      "name": "update — update: empty dates and SIS ID are cleared; an empty name is",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "enrollmentTerm",
+        "operation": "update",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "termId": "={{ $('update — update: with Override SIS Stickiness off, a name changed i').first().json.id }}",
+        "updateFields": {
+          "startAt": "",
+          "endAt": "",
+          "sisTermId": "",
+          "name": ""
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field and date override reaches Canva",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field and date override reaches Canva": {
+      "main": [
+        [
+          {
+            "node": "create — create: only a name is needed; a taken SIS ID and inverted d",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: only a name is needed; a taken SIS ID and inverted d": {
+      "main": [
+        [
+          {
+            "node": "get — get: by ID and by SIS ID, with course count; seeded terms ar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: by ID and by SIS ID, with course count; seeded terms ar": {
+      "main": [
+        [
+          {
+            "node": "get — get: by ID and by SIS ID, with course count; seeded terms ar (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: by ID and by SIS ID, with course count; seeded terms ar (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every term is its own item, across pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every term is its own item, across pages": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every term is its own item, across pages (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every term is its own item, across pages (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: every term is its own item, across pages (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: every term is its own item, across pages (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: name search, includes and workflow state are applied",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: name search, includes and workflow state are applied": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: name search, includes and workflow state are applied (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: name search, includes and workflow state are applied (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: name search, includes and workflow state are applied (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: name search, includes and workflow state are applied (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: name search, includes and workflow state are applied (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: name search, includes and workflow state are applied (4)": {
+      "main": [
+        [
+          {
+            "node": "update — update: every optional field reaches Canvas; overrides of ot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every optional field reaches Canvas; overrides of ot": {
+      "main": [
+        [
+          {
+            "node": "update — update: with Override SIS Stickiness off, a name changed i",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: with Override SIS Stickiness off, a name changed i": {
+      "main": [
+        [
+          {
+            "node": "update — update: empty dates and SIS ID are cleared; an empty name is",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -1,0 +1,717 @@
+{
+  "name": "Canvas battery — login",
+  "nodes": [
+    {
+      "id": "4fce907b-48db-4736-8099-7acafda2449d",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "9abc58e7-d922-4521-9810-484541cb1f90",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "064bd984-56e8-4422-ac74-095ac05db3f9",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            },
+            {
+              "id": "8efb6a16-5272-49b0-9809-94240d18dbad",
+              "name": "multiLoginUserId",
+              "value": "47",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "44e56ef8-ba6f-4d86-9345-d50c7dea7890",
+      "name": "create — create: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "userId": "1429",
+        "uniqueId": "=second-login_{{ $execution.id }}-5",
+        "additionalFields": {
+          "authenticationProviderId": "canvas",
+          "declaredUserType": "administrative",
+          "integrationId": "=INT-L_{{ $execution.id }}-7",
+          "password": "BatteryPass123!",
+          "sisUserId": "=SIS-L_{{ $execution.id }}-6"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f3e8a4db-d2c9-4abd-95d1-bed50dcdad1d",
+      "name": "create — create: every declared user type is accepted, including the ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "userId": "={{ $('create — create: every optional field reaches Canvas').first().json.user_id }}",
+        "uniqueId": "=type-admin_{{ $execution.id }}-8",
+        "additionalFields": {
+          "declaredUserType": "admin"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b00b4a52-a099-4305-a29f-6c0fd99997e6",
+      "name": "create — create: every declared user type is accepted, including the  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "userId": "={{ $('create — create: every declared user type is accepted, including the ').first().json.user_id }}",
+        "uniqueId": "=type-observer_{{ $execution.id }}-9",
+        "additionalFields": {
+          "declaredUserType": "observer"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c48c1564-525c-4919-8d18-1fd54d47f869",
+      "name": "create — create: every declared user type is accepted, including the  (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "userId": "={{ $('create — create: every declared user type is accepted, including the  (2)').first().json.user_id }}",
+        "uniqueId": "=type-staff_{{ $execution.id }}-10",
+        "additionalFields": {
+          "declaredUserType": "staff"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f87c1b7c-441d-4c45-ad46-40be7c6fb0d7",
+      "name": "create — create: every declared user type is accepted, including the  (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "userId": "={{ $('create — create: every declared user type is accepted, including the  (3)').first().json.user_id }}",
+        "uniqueId": "=type-student_{{ $execution.id }}-11",
+        "additionalFields": {
+          "declaredUserType": "student"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "062d9171-14d4-4ac9-8f38-522275b2bfc1",
+      "name": "create — create: every declared user type is accepted, including the  (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "userId": "={{ $('create — create: every declared user type is accepted, including the  (4)').first().json.user_id }}",
+        "uniqueId": "=type-student_other_{{ $execution.id }}-12",
+        "additionalFields": {
+          "declaredUserType": "student_other"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8886fe95-372b-446f-82df-c1ad66979667",
+      "name": "create — create: every declared user type is accepted, including the  (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "create",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "userId": "={{ $('create — create: every declared user type is accepted, including the  (5)').first().json.user_id }}",
+        "uniqueId": "=type-teacher_{{ $execution.id }}-13",
+        "additionalFields": {
+          "declaredUserType": "teacher"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5d2153bc-203d-4ded-bc47-eaf85d95a239",
+      "name": "getAll — getAll: by user and by account return the logins of the user",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "getAll",
+        "listBy": "user",
+        "userId": "={{ $('create — create: every declared user type is accepted, including the  (6)').first().json.user_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2e7f5385-1efc-4920-b12b-5e65ca7c469f",
+      "name": "getAll — getAll: by user and by account return the logins of the user (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "getAll",
+        "listBy": "account",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "userId": "={{ $('getAll — getAll: by user and by account return the logins of the user').first().json.user_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8a8c54b4-97da-4aca-b4fc-312b1971fbfc",
+      "name": "getAll — getAll: a user with several logins (one on another provider,",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "getAll",
+        "listBy": "user",
+        "userId": "={{ $('Config').first().json.multiLoginUserId }}",
+        "pagination": {
+          "perPage": 2,
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "eaf6a6bf-f6c0-447d-a7ce-ec136cf3bc3a",
+      "name": "getAll — getAll: a user with several logins (one on another provider, (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "getAll",
+        "listBy": "user",
+        "userId": "={{ $('Config').first().json.multiLoginUserId }}",
+        "pagination": {
+          "perPage": 2,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d014157b-20bf-4a6d-a355-427bd95c153b",
+      "name": "update — update: every changeable field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "update",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "loginId": "={{ $('create — create: every optional field reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "authenticationProviderId": "canvas",
+          "declaredUserType": "teacher",
+          "integrationId": "=INT-L2_{{ $execution.id }}-17",
+          "overrideSisStickiness": true,
+          "sisUserId": "=SIS-L2_{{ $execution.id }}-16",
+          "uniqueId": "=renamed-login_{{ $execution.id }}-15",
+          "workflowState": "suspended"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c585eaa9-093c-4e01-93ea-59641545af48",
+      "name": "update — update: every changeable field reaches Canvas (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "update",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "loginId": "={{ $('update — update: every changeable field reaches Canvas').first().json.id }}",
+        "updateFields": {
+          "workflowState": "active"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b94a810b-c315-4538-8bcd-0de4860c89d4",
+      "name": "update — update: with Override SIS Stickiness off, a login ID chang",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "update",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "loginId": "={{ $('update — update: every changeable field reaches Canvas (2)').first().json.id }}",
+        "updateFields": {
+          "uniqueId": "must_not_apply",
+          "declaredUserType": "staff",
+          "overrideSisStickiness": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "77e03cdb-32f0-44e9-be81-9dba1415f1a7",
+      "name": "update — update: empty values clear the SIS ID, the integration ID an",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "update",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "loginId": "={{ $('update — update: with Override SIS Stickiness off, a login ID chang').first().json.id }}",
+        "updateFields": {
+          "sisUserId": "",
+          "integrationId": "",
+          "authenticationProviderId": "",
+          "uniqueId": ""
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9640146e-caa0-44a3-9b7a-3a277cb07075",
+      "name": "resetPassword — resetPassword: starts the recovery for a known login and rep",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "login",
+        "operation": "resetPassword",
+        "email": "=login-user.{{ $execution.id }}-1@example.edu"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create: every declared user type is accepted, including the ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every declared user type is accepted, including the ": {
+      "main": [
+        [
+          {
+            "node": "create — create: every declared user type is accepted, including the  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every declared user type is accepted, including the  (2)": {
+      "main": [
+        [
+          {
+            "node": "create — create: every declared user type is accepted, including the  (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every declared user type is accepted, including the  (3)": {
+      "main": [
+        [
+          {
+            "node": "create — create: every declared user type is accepted, including the  (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every declared user type is accepted, including the  (4)": {
+      "main": [
+        [
+          {
+            "node": "create — create: every declared user type is accepted, including the  (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every declared user type is accepted, including the  (5)": {
+      "main": [
+        [
+          {
+            "node": "create — create: every declared user type is accepted, including the  (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every declared user type is accepted, including the  (6)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: by user and by account return the logins of the user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: by user and by account return the logins of the user": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: by user and by account return the logins of the user (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: by user and by account return the logins of the user (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: a user with several logins (one on another provider,",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: a user with several logins (one on another provider,": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: a user with several logins (one on another provider, (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: a user with several logins (one on another provider, (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: every changeable field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every changeable field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "update — update: every changeable field reaches Canvas (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every changeable field reaches Canvas (2)": {
+      "main": [
+        [
+          {
+            "node": "update — update: with Override SIS Stickiness off, a login ID chang",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: with Override SIS Stickiness off, a login ID chang": {
+      "main": [
+        [
+          {
+            "node": "update — update: empty values clear the SIS ID, the integration ID an",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: empty values clear the SIS ID, the integration ID an": {
+      "main": [
+        [
+          {
+            "node": "resetPassword — resetPassword: starts the recovery for a known login and rep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

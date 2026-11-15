@@ -1,0 +1,457 @@
+{
+  "name": "Canvas battery — submissionComment",
+  "nodes": [
+    {
+      "id": "15a142ef-2577-4573-8899-c2a9c8383c6f",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "1ec6605e-1597-4d5e-9bf8-f842419f7497",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "41740fb7-6874-4ed4-a69e-20797a6ddd95",
+      "name": "create — create: a plain comment returns the submission with its comm",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submissionComment",
+        "operation": "create",
+        "courseId": "111",
+        "assignmentId": "699",
+        "userId": "752",
+        "comment": "=Kommentar {{ $execution.id }}-1 ünï 评论 💬 \"quoted\" & ampersand"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "02142bbc-d2c1-475f-ae03-d79a412354aa",
+      "name": "create — create: every optional field reaches Canvas",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submissionComment",
+        "operation": "create",
+        "courseId": "111",
+        "assignmentId": "={{ $('create — create: a plain comment returns the submission with its comm').first().json.assignment_id }}",
+        "userId": "={{ $('create — create: a plain comment returns the submission with its comm').first().json.user_id }}",
+        "comment": "=Kommentar {{ $execution.id }}-1 with everything",
+        "additionalFields": {
+          "attempt": 1,
+          "file_ids": " 2131 ",
+          "group_comment": false,
+          "media_comment_id": "m-cmwhxk7lknp73",
+          "media_comment_type": "audio"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6a9828a6-daa8-42c2-a7d7-4e1e7faa7365",
+      "name": "create — create: a group comment reaches every member of the group",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submissionComment",
+        "operation": "create",
+        "courseId": "111",
+        "assignmentId": "703",
+        "userId": "749",
+        "comment": "=Kommentar {{ $execution.id }}-1 for the whole group",
+        "additionalFields": {
+          "group_comment": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "88906696-9e80-4875-9a91-076e9569363e",
+      "name": "create — create: a group comment reaches every member of the group (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submissionComment",
+        "operation": "create",
+        "courseId": "111",
+        "assignmentId": "={{ $('create — create: a group comment reaches every member of the group').first().json.assignment_id }}",
+        "userId": "={{ $('create — create: a group comment reaches every member of the group').first().json.user_id }}",
+        "comment": "=Kommentar {{ $execution.id }}-1 for one member only"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6b2fa171-94ca-4a51-bdf6-1860eb055b9c",
+      "name": "create — uploadFile + create: files uploaded for a comment are attach",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submissionComment",
+        "operation": "create",
+        "courseId": "111",
+        "assignmentId": "={{ $('create — create: every optional field reaches Canvas').first().json.assignment_id }}",
+        "userId": "={{ $('create — create: every optional field reaches Canvas').first().json.user_id }}",
+        "comment": "=Kommentar {{ $execution.id }}-1 with uploaded files",
+        "additionalFields": {
+          "file_ids": "2132, 2133"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "d147e613-3b17-4733-b54a-9a81cf0e8816",
+      "name": "uploadFile — uploadFile from URL: Canvas fetches the file for the comment",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submissionComment",
+        "operation": "uploadFile",
+        "courseId": "111",
+        "assignmentId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.assignment_id }}",
+        "userId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.user_id }}",
+        "uploadSource": "url",
+        "fileUrl": "=http://192.0.2.2:37793/rubric%20url%20{{ $execution.id }}-6.bin?download=1",
+        "options": {
+          "content_type": "application/zip",
+          "name": "=Bewertung ünï url {{ $execution.id }}-6.zip"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "32d126f6-1a47-44da-8730-6b5cd408d38a",
+      "name": "uploadFile — uploadFile from URL: Canvas fetches the file for the comment (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submissionComment",
+        "operation": "uploadFile",
+        "courseId": "111",
+        "assignmentId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.assignment_id }}",
+        "userId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.user_id }}",
+        "uploadSource": "url",
+        "fileUrl": "http://192.0.2.2:37793/background.txt",
+        "waitForCompletion": false
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9c69027a-a5eb-434b-9df1-ccf3e987ecac",
+      "name": "getAll — getAll: returns every comment of a submission as its own ite",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submissionComment",
+        "operation": "getAll",
+        "courseId": "111",
+        "assignmentId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.assignment_id }}",
+        "userId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.user_id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "573c1329-b59d-4b73-ad93-89a90500dceb",
+      "name": "getAll — getAll: returns every comment of a submission as its own ite (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submissionComment",
+        "operation": "getAll",
+        "courseId": "111",
+        "assignmentId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.assignment_id }}",
+        "userId": "756"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "01974ab4-a21a-493c-bbf9-3f173824953a",
+      "name": "delete — delete: removes comments, reporting the ones that are alread",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "submissionComment",
+        "operation": "delete",
+        "courseId": "111",
+        "assignmentId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.assignment_id }}",
+        "userId": "={{ $('create — uploadFile + create: files uploaded for a comment are attach').first().json.user_id }}",
+        "commentId": "788"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create: a plain comment returns the submission with its comm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: a plain comment returns the submission with its comm": {
+      "main": [
+        [
+          {
+            "node": "create — create: every optional field reaches Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: every optional field reaches Canvas": {
+      "main": [
+        [
+          {
+            "node": "create — create: a group comment reaches every member of the group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: a group comment reaches every member of the group": {
+      "main": [
+        [
+          {
+            "node": "create — create: a group comment reaches every member of the group (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create: a group comment reaches every member of the group (2)": {
+      "main": [
+        [
+          {
+            "node": "create — uploadFile + create: files uploaded for a comment are attach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — uploadFile + create: files uploaded for a comment are attach": {
+      "main": [
+        [
+          {
+            "node": "uploadFile — uploadFile from URL: Canvas fetches the file for the comment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "uploadFile — uploadFile from URL: Canvas fetches the file for the comment": {
+      "main": [
+        [
+          {
+            "node": "uploadFile — uploadFile from URL: Canvas fetches the file for the comment (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "uploadFile — uploadFile from URL: Canvas fetches the file for the comment (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: returns every comment of a submission as its own ite",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: returns every comment of a submission as its own ite": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: returns every comment of a submission as its own ite (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: returns every comment of a submission as its own ite (2)": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes comments, reporting the ones that are alread",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -1,0 +1,1509 @@
+{
+  "name": "Canvas battery — externalTool",
+  "nodes": [
+    {
+      "id": "d4e18239-fe2a-4977-839a-c591466bfd48",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "6bd39a1b-df27-4a4a-8dd6-c138046f17ab",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "22cd94e0-5f9d-40c7-a1a9-6b6400326dd7",
+              "name": "accountId",
+              "value": "1",
+              "type": "string"
+            },
+            {
+              "id": "2c08e03b-29a9-45a1-9d22-4937b14e5086",
+              "name": "externalToolId",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "24803f9a-3836-4d3b-845d-959b825b2bb0",
+      "name": "create — create (course, LTI 1.1): every optional field reaches Canva",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "339",
+        "authType": "lti11",
+        "name": "=Battery Tool Ünïcødé 工具 \"quoted\" & <b>tags</b> {{ $execution.id }}-1",
+        "privacyLevel": "name_only",
+        "consumerKey": "battery-key",
+        "sharedSecret": "battery-secret",
+        "additionalFields": {
+          "url": "https://tool.battery.example.com/launch?a=1&b=2",
+          "description": "Described with emoji 🧰 and <i>markup</i>",
+          "icon_url": "https://tool.battery.example.com/icon.png",
+          "text": "Default text",
+          "custom_fields": "{\"course_code\": \"$Canvas.course.sisSourceId\", \"plain\": \"värde\"}",
+          "is_rce_favorite": true,
+          "not_selectable": true,
+          "oauth_compliant": true,
+          "unified_tool_id": "battery-utid-1",
+          "placements": "{\"course_navigation\":{\"enabled\":true,\"text\":\"Nav label\",\"visibility\":\"admins\",\"default\":\"disabled\"},\"editor_button\":{\"enabled\":true,\"url\":\"https://tool.battery.example.com/editor\",\"icon_url\":\"https://tool.battery.example.com/editor.png\",\"selection_width\":500,\"selection_height\":300}}"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "36e6c989-6f81-4631-b60d-ad0087120296",
+      "name": "create — create (account): configuration by XML, matching by domain",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "create",
+        "contextType": "account",
+        "accountId": "81",
+        "authType": "lti11",
+        "name": "=Battery XML tool {{ $execution.id }}-2",
+        "privacyLevel": "anonymous",
+        "consumerKey": "xml-key",
+        "sharedSecret": "xml-secret",
+        "additionalFields": {
+          "config_type": "by_xml",
+          "config_xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cartridge_basiclti_link xmlns=\"http://www.imsglobal.org/xsd/imslticc_v1p0\"\n    xmlns:blti=\"http://www.imsglobal.org/xsd/imsbasiclti_v1p0\"\n    xmlns:lticm=\"http://www.imsglobal.org/xsd/imslticm_v1p0\"\n    xmlns:lticp=\"http://www.imsglobal.org/xsd/imslticp_v1p0\">\n  <blti:title>Title from XML</blti:title>\n  <blti:description>Description from XML</blti:description>\n  <blti:launch_url>https://xml.battery.example.com/launch</blti:launch_url>\n  <blti:extensions platform=\"canvas.instructure.com\">\n    <lticm:property name=\"privacy_level\">public</lticm:property>\n    <lticm:property name=\"domain\">xml.battery.example.com</lticm:property>\n    <lticm:options name=\"top_navigation\">\n      <lticm:property name=\"enabled\">true</lticm:property>\n      <lticm:property name=\"text\">Top nav from XML</lticm:property>\n    </lticm:options>\n    <lticm:options name=\"editor_button\">\n      <lticm:property name=\"enabled\">true</lticm:property>\n      <lticm:property name=\"icon_url\">https://xml.battery.example.com/icon.png</lticm:property>\n      <lticm:property name=\"selection_width\">400</lticm:property>\n      <lticm:property name=\"selection_height\">300</lticm:property>\n    </lticm:options>\n  </blti:extensions>\n</cartridge_basiclti_link>"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "2cc2d06a-18d2-4dee-a59a-1411c36d4337",
+      "name": "create — create (LTI 1.3): installs the tool of a client ID in a cour",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "create",
+        "contextType": "course",
+        "courseId": "340",
+        "authType": "lti13",
+        "clientId": "10000000000062"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dd5b3d2b-8e41-49a1-9f5d-a279cac1cbbe",
+      "name": "create — create (LTI 1.3): installs the tool of a client ID in a cour (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "create",
+        "contextType": "account",
+        "accountId": "81",
+        "authType": "lti13",
+        "clientId": "10000000000062"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c87d4bad-0a34-43a6-a3ea-c35d1d38d6dc",
+      "name": "get — get: in the course and in the account context, with IDs arri",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "get",
+        "contextType": "account",
+        "accountId": "81",
+        "externalToolId": "={{ $('create — create (account): configuration by XML, matching by domain').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "f79d830e-85d0-4426-9efd-8d7a09ee2b86",
+      "name": "get — get: in the course and in the account context, with IDs arri (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "get",
+        "contextType": "account",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "externalToolId": "={{ $('Config').first().json.externalToolId }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "14ea2796-0af1-4e31-a5e9-3b8c2e9cb62e",
+      "name": "getAll — getAll: filters by search term, placement, selectable and pa",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "339"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "02d50a33-a14e-43ce-be75-496c7d769d32",
+      "name": "getAll — getAll: filters by search term, placement, selectable and pa (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "339",
+        "options": {
+          "include_parents": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "89664899-710c-4a5a-9ab4-0e4685f34582",
+      "name": "getAll — getAll: filters by search term, placement, selectable and pa (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "339",
+        "options": {
+          "include_parents": true,
+          "search_term": "Battery XML"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "609e153e-d123-4613-886c-cf19ad27a96a",
+      "name": "getAll — getAll: filters by search term, placement, selectable and pa (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "339",
+        "options": {
+          "include_parents": true,
+          "placement": "top_navigation"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "def941a6-4e08-4a8a-b6ac-e23183fc3457",
+      "name": "getAll — getAll: filters by search term, placement, selectable and pa (5)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "339",
+        "options": {
+          "selectable": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ef9159fa-aaea-49d0-a357-275189344b05",
+      "name": "getAll — getAll: filters by search term, placement, selectable and pa (6)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "339",
+        "options": {
+          "selectable": false,
+          "include_parents": false
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "43fc5ebd-c1f9-4905-a04d-1ea252d5dabe",
+      "name": "getAll — getAll: account and group contexts",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getAll",
+        "contextType": "account",
+        "accountId": "={{ $('Config').first().json.accountId }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9c526ecb-97a0-4399-b0d6-82bb50835906",
+      "name": "getAll — getAll: account and group contexts (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getAll",
+        "contextType": "group",
+        "groupId": "305"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "18836dca-0109-4297-86e8-425d7198e6ff",
+      "name": "getAll — getAll: account and group contexts (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getAll",
+        "contextType": "group",
+        "groupId": "305",
+        "options": {
+          "include_parents": true
+        },
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b8776aac-0e5f-4248-b725-ca41d5dac38a",
+      "name": "getAll — getAll: pages through more tools than one page holds",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "341"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1a34e396-d653-4b7a-86fd-4732400b3b52",
+      "name": "getAll — getAll: pages through more tools than one page holds (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "341",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e1842a81-97f9-4306-a41f-de066d80f89a",
+      "name": "getAll — getAll: pages through more tools than one page holds (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "341",
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ff7c5150-13a8-4726-8337-0283f920dea3",
+      "name": "getAll — getAll: pages through more tools than one page holds (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getAll",
+        "contextType": "course",
+        "courseId": "341",
+        "pagination": {
+          "perPage": 10,
+          "maxPages": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "508f20ec-b9ee-447c-bb45-448aa5a3f80b",
+      "name": "update — update: every optional field reaches Canvas, and a placement",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "update",
+        "contextType": "course",
+        "courseId": "339",
+        "externalToolId": "={{ $('getAll — getAll: filters by search term, placement, selectable and pa (6)').first().json.id }}",
+        "updateFields": {
+          "name": "=Battery Tool Ünïcødé 工具 \"quoted\" & <b>tags</b> {{ $execution.id }}-1 (renamed)",
+          "privacy_level": "public",
+          "consumer_key": "battery-key-2",
+          "shared_secret": "battery-secret-2",
+          "url": "https://tool2.battery.example.com/launch",
+          "description": "Second description",
+          "icon_url": "https://tool2.battery.example.com/icon.png",
+          "text": "Second text",
+          "custom_fields": "{\"only\": \"this one\"}",
+          "is_rce_favorite": false,
+          "not_selectable": false,
+          "oauth_compliant": false,
+          "unified_tool_id": "battery-utid-2",
+          "placements": "{\"course_navigation\": null, \"editor_button\": {\"enabled\": false}, \"user_navigation\": {\"enabled\": true, \"text\": \"Profile tool\"}}"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c77abdd9-f0ad-4999-b410-73d3b057bd46",
+      "name": "update — update: switching from URL to domain matching in the account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "update",
+        "contextType": "account",
+        "accountId": "81",
+        "externalToolId": "={{ $('getAll — getAll: filters by search term, placement, selectable and pa (4)').first().json.id }}",
+        "updateFields": {
+          "domain": "domain.battery.example.com",
+          "description": "Updated in the account"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "88ec7d5a-38ff-41f5-bd03-01527f892dda",
+      "name": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getSessionlessLaunchUrl",
+        "contextType": "course",
+        "courseId": "339",
+        "externalToolId": "={{ $('update — update: every optional field reaches Canvas, and a placement').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0e2f5b50-f61d-4d01-a604-633c050317c1",
+      "name": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getSessionlessLaunchUrl",
+        "contextType": "course",
+        "courseId": "339",
+        "options": {
+          "url": "https://tool2.battery.example.com/launch?from=url"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fd158758-4f5e-4132-b5ef-fbe4e97447a7",
+      "name": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getSessionlessLaunchUrl",
+        "contextType": "course",
+        "courseId": "339",
+        "options": {
+          "url": "https://nobody.battery.example.org/launch"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "8783a3b4-0377-4478-b188-aab17336471c",
+      "name": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac (4)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getSessionlessLaunchUrl",
+        "contextType": "course",
+        "courseId": "339",
+        "externalToolId": "={{ $('getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac (2)').first().json.id }}",
+        "options": {
+          "launch_type": "user_navigation"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "5cb7a94d-15d9-49c7-b16f-3deddde49dee",
+      "name": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: account context",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getSessionlessLaunchUrl",
+        "contextType": "account",
+        "accountId": "81",
+        "externalToolId": "={{ $('update — update: switching from URL to domain matching in the account').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9a2f43e3-ed55-42a2-b62d-d763c7b6fc26",
+      "name": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: an external tool assignment and a m",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getSessionlessLaunchUrl",
+        "contextType": "course",
+        "courseId": "339",
+        "options": {
+          "launch_type": "assessment",
+          "assignment_id": "1221"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3e72f61c-984d-4f9f-becd-d09906e07ccb",
+      "name": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: an external tool assignment and a m (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getSessionlessLaunchUrl",
+        "contextType": "course",
+        "courseId": "339",
+        "options": {
+          "launch_type": "module_item",
+          "module_item_id": "688"
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "47345ff0-9388-4a5a-aefa-4db2933f2134",
+      "name": "getVisibleCourseNavTools — getVisibleCourseNavTools: one course, several courses",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getVisibleCourseNavTools",
+        "courseIds": "340"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "81a079f1-fdf9-4605-bbf7-af7a7c102057",
+      "name": "getVisibleCourseNavTools — getVisibleCourseNavTools: one course, several courses (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        880
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "getVisibleCourseNavTools",
+        "courseIds": " 340, 339 "
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "595c017a-a517-44ae-a690-f57e9fe3ded7",
+      "name": "addRceFavorite — favorites: RCE and top navigation favorites of an account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "addRceFavorite",
+        "accountId": "81",
+        "externalToolId": "={{ $('getSessionlessLaunchUrl — getSessionlessLaunchUrl: account context').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "709106f2-84de-4ca7-9f86-42029a478096",
+      "name": "removeRceFavorite — favorites: RCE and top navigation favorites of an account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "removeRceFavorite",
+        "accountId": "81",
+        "externalToolId": "={{ $('getSessionlessLaunchUrl — getSessionlessLaunchUrl: account context').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "0749b2d8-2cc2-434d-9cd5-ff06b79e22ed",
+      "name": "addTopNavFavorite — favorites: RCE and top navigation favorites of an account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "addTopNavFavorite",
+        "accountId": "81",
+        "externalToolId": "={{ $('getSessionlessLaunchUrl — getSessionlessLaunchUrl: account context').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "1dc5c2e7-525f-4374-80c7-1ae9ae3e81fd",
+      "name": "removeTopNavFavorite — favorites: RCE and top navigation favorites of an account",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "removeTopNavFavorite",
+        "accountId": "81",
+        "externalToolId": "={{ $('getSessionlessLaunchUrl — getSessionlessLaunchUrl: account context').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "633ed2cb-1f83-4554-902e-20e26166e203",
+      "name": "delete — delete: removes the tool in both contexts; a second delete i",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "delete",
+        "contextType": "course",
+        "courseId": "339",
+        "externalToolId": "={{ $('getSessionlessLaunchUrl — getSessionlessLaunchUrl: an external tool assignment and a m (2)').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "67ee7769-efb3-40a0-b328-512b94cedce0",
+      "name": "delete — delete: removes the tool in both contexts; a second delete i (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        1100
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "externalTool",
+        "operation": "delete",
+        "contextType": "account",
+        "accountId": "81",
+        "externalToolId": "={{ $('getSessionlessLaunchUrl — getSessionlessLaunchUrl: account context').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "create — create (course, LTI 1.1): every optional field reaches Canva",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (course, LTI 1.1): every optional field reaches Canva": {
+      "main": [
+        [
+          {
+            "node": "create — create (account): configuration by XML, matching by domain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (account): configuration by XML, matching by domain": {
+      "main": [
+        [
+          {
+            "node": "create — create (LTI 1.3): installs the tool of a client ID in a cour",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (LTI 1.3): installs the tool of a client ID in a cour": {
+      "main": [
+        [
+          {
+            "node": "create — create (LTI 1.3): installs the tool of a client ID in a cour (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create — create (LTI 1.3): installs the tool of a client ID in a cour (2)": {
+      "main": [
+        [
+          {
+            "node": "get — get: in the course and in the account context, with IDs arri",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: in the course and in the account context, with IDs arri": {
+      "main": [
+        [
+          {
+            "node": "get — get: in the course and in the account context, with IDs arri (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: in the course and in the account context, with IDs arri (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: filters by search term, placement, selectable and pa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: filters by search term, placement, selectable and pa": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: filters by search term, placement, selectable and pa (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: filters by search term, placement, selectable and pa (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: filters by search term, placement, selectable and pa (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: filters by search term, placement, selectable and pa (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: filters by search term, placement, selectable and pa (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: filters by search term, placement, selectable and pa (4)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: filters by search term, placement, selectable and pa (5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: filters by search term, placement, selectable and pa (5)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: filters by search term, placement, selectable and pa (6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: filters by search term, placement, selectable and pa (6)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: account and group contexts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: account and group contexts": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: account and group contexts (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: account and group contexts (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: account and group contexts (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: account and group contexts (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more tools than one page holds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more tools than one page holds": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more tools than one page holds (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more tools than one page holds (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more tools than one page holds (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more tools than one page holds (3)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more tools than one page holds (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more tools than one page holds (4)": {
+      "main": [
+        [
+          {
+            "node": "update — update: every optional field reaches Canvas, and a placement",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: every optional field reaches Canvas, and a placement": {
+      "main": [
+        [
+          {
+            "node": "update — update: switching from URL to domain matching in the account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update — update: switching from URL to domain matching in the account": {
+      "main": [
+        [
+          {
+            "node": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac": {
+      "main": [
+        [
+          {
+            "node": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac (2)": {
+      "main": [
+        [
+          {
+            "node": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac (3)": {
+      "main": [
+        [
+          {
+            "node": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac (4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSessionlessLaunchUrl — getSessionlessLaunchUrl: by tool ID, by URL and for one plac (4)": {
+      "main": [
+        [
+          {
+            "node": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: account context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSessionlessLaunchUrl — getSessionlessLaunchUrl: account context": {
+      "main": [
+        [
+          {
+            "node": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: an external tool assignment and a m",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSessionlessLaunchUrl — getSessionlessLaunchUrl: an external tool assignment and a m": {
+      "main": [
+        [
+          {
+            "node": "getSessionlessLaunchUrl — getSessionlessLaunchUrl: an external tool assignment and a m (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getSessionlessLaunchUrl — getSessionlessLaunchUrl: an external tool assignment and a m (2)": {
+      "main": [
+        [
+          {
+            "node": "getVisibleCourseNavTools — getVisibleCourseNavTools: one course, several courses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getVisibleCourseNavTools — getVisibleCourseNavTools: one course, several courses": {
+      "main": [
+        [
+          {
+            "node": "getVisibleCourseNavTools — getVisibleCourseNavTools: one course, several courses (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getVisibleCourseNavTools — getVisibleCourseNavTools: one course, several courses (2)": {
+      "main": [
+        [
+          {
+            "node": "addRceFavorite — favorites: RCE and top navigation favorites of an account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "addRceFavorite — favorites: RCE and top navigation favorites of an account": {
+      "main": [
+        [
+          {
+            "node": "removeRceFavorite — favorites: RCE and top navigation favorites of an account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "removeRceFavorite — favorites: RCE and top navigation favorites of an account": {
+      "main": [
+        [
+          {
+            "node": "addTopNavFavorite — favorites: RCE and top navigation favorites of an account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "addTopNavFavorite — favorites: RCE and top navigation favorites of an account": {
+      "main": [
+        [
+          {
+            "node": "removeTopNavFavorite — favorites: RCE and top navigation favorites of an account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "removeTopNavFavorite — favorites: RCE and top navigation favorites of an account": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes the tool in both contexts; a second delete i",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete — delete: removes the tool in both contexts; a second delete i": {
+      "main": [
+        [
+          {
+            "node": "delete — delete: removes the tool in both contexts; a second delete i (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -1,0 +1,533 @@
+{
+  "name": "Canvas battery — quizSubmission",
+  "nodes": [
+    {
+      "id": "20c7e5e3-3f08-4eba-95d8-050a920354fc",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "a9c06449-f537-45d7-9364-a20eeddb0869",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "52641b1b-c76a-4f5b-b0fe-3972c8852ba1",
+      "name": "get — get: returns the quiz submission itself; the attempt option ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizSubmission",
+        "operation": "get",
+        "courseId": "119",
+        "quizId": 132,
+        "submissionId": 476,
+        "options": {
+          "attempt": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "fd913bda-c29a-46fc-a114-702f59ce1498",
+      "name": "get — get: with includes, hands on the compound document with the ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizSubmission",
+        "operation": "get",
+        "courseId": "119",
+        "quizId": "={{ $('get — get: returns the quiz submission itself; the attempt option ').first().json.quiz_id }}",
+        "submissionId": "={{ $('get — get: returns the quiz submission itself; the attempt option ').first().json.id }}",
+        "options": {
+          "include": [
+            "quiz",
+            "submission",
+            "user"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "975cf79b-53c0-42d3-9216-13b0d7e27819",
+      "name": "get — get: with includes, hands on the compound document with the  (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizSubmission",
+        "operation": "get",
+        "courseId": "119",
+        "quizId": "={{ $('get — get: returns the quiz submission itself; the attempt option ').first().json.quiz_id }}",
+        "submissionId": "={{ $('get — get: returns the quiz submission itself; the attempt option ').first().json.id }}",
+        "options": {
+          "include": [
+            "user"
+          ]
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "354b0058-d6d6-4c8c-8945-c3b0d2ceaf1f",
+      "name": "updateScore — updateScore: questions as an object from an expression; fudg",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizSubmission",
+        "operation": "updateScore",
+        "courseId": "119",
+        "quizId": "={{ $('get — get: returns the quiz submission itself; the attempt option ').first().json.quiz_id }}",
+        "submissionId": "={{ $('get — get: returns the quiz submission itself; the attempt option ').first().json.id }}",
+        "attempt": 1,
+        "updateFields": {
+          "fudge_points": 2
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "3765a667-5392-4c97-8cc0-f9f8bf660f77",
+      "name": "updateScore — updateScore: questions as an object from an expression; fudg (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizSubmission",
+        "operation": "updateScore",
+        "courseId": "119",
+        "quizId": "={{ $('updateScore — updateScore: questions as an object from an expression; fudg').first().json.quiz_id }}",
+        "submissionId": "={{ $('updateScore — updateScore: questions as an object from an expression; fudg').first().json.id }}",
+        "attempt": 1,
+        "updateFields": {
+          "fudge_points": 0
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cda2671c-7492-455f-87a1-5857ccd17257",
+      "name": "get — start + complete: a second attempt; get then returns eithe",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizSubmission",
+        "operation": "get",
+        "courseId": "119",
+        "quizId": "={{ $('updateScore — updateScore: questions as an object from an expression; fudg (2)').first().json.quiz_id }}",
+        "submissionId": "={{ $('updateScore — updateScore: questions as an object from an expression; fudg (2)').first().json.id }}",
+        "options": {
+          "attempt": 1
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ea7e38dc-c5a6-450d-8ab2-5689a57d7a71",
+      "name": "get — start + complete: a second attempt; get then returns eithe (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizSubmission",
+        "operation": "get",
+        "courseId": "119",
+        "quizId": "={{ $('get — start + complete: a second attempt; get then returns eithe').first().json.quiz_id }}",
+        "submissionId": "={{ $('get — start + complete: a second attempt; get then returns eithe').first().json.id }}"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "07ff1f20-f4e2-419b-8557-624baf14db79",
+      "name": "getAll — getAll: graders get the attempts of every student, students ",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizSubmission",
+        "operation": "getAll",
+        "courseId": "119",
+        "quizId": "133"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "cd0fbfaf-328a-47d9-a67c-5d10e7fe2d88",
+      "name": "getAll — getAll: pages through more quiz submissions than one page ho",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizSubmission",
+        "operation": "getAll",
+        "courseId": "122",
+        "quizId": "90"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bd318e03-0425-4687-87af-734adbb1e5ae",
+      "name": "getAll — getAll: pages through more quiz submissions than one page ho (2)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizSubmission",
+        "operation": "getAll",
+        "courseId": "122",
+        "quizId": "={{ $('getAll — getAll: pages through more quiz submissions than one page ho').first().json.quiz_id }}",
+        "pagination": {
+          "returnAll": true
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "087e062e-4a21-4d58-9258-7201708976b0",
+      "name": "getAll — getAll: pages through more quiz submissions than one page ho (3)",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizSubmission",
+        "operation": "getAll",
+        "courseId": "122",
+        "quizId": "={{ $('getAll — getAll: pages through more quiz submissions than one page ho (2)').first().json.quiz_id }}",
+        "pagination": {
+          "perPage": 4,
+          "maxPages": 3
+        }
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "dcd3bac4-0250-4103-b64f-4977c13215f4",
+      "name": "getAllOutstanding — getAllOutstanding + gradeOutstanding: an attempt left open p",
+      "type": "@kyancey-va/n8n-nodes-canvas.canvas",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        220
+      ],
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "quizSubmission",
+        "operation": "getAllOutstanding",
+        "courseId": "119",
+        "quizId": "134"
+      },
+      "credentials": {
+        "canvasApi": {
+          "id": "",
+          "name": "Canvas account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "get — get: returns the quiz submission itself; the attempt option ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: returns the quiz submission itself; the attempt option ": {
+      "main": [
+        [
+          {
+            "node": "get — get: with includes, hands on the compound document with the ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: with includes, hands on the compound document with the ": {
+      "main": [
+        [
+          {
+            "node": "get — get: with includes, hands on the compound document with the  (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — get: with includes, hands on the compound document with the  (2)": {
+      "main": [
+        [
+          {
+            "node": "updateScore — updateScore: questions as an object from an expression; fudg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateScore — updateScore: questions as an object from an expression; fudg": {
+      "main": [
+        [
+          {
+            "node": "updateScore — updateScore: questions as an object from an expression; fudg (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateScore — updateScore: questions as an object from an expression; fudg (2)": {
+      "main": [
+        [
+          {
+            "node": "get — start + complete: a second attempt; get then returns eithe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — start + complete: a second attempt; get then returns eithe": {
+      "main": [
+        [
+          {
+            "node": "get — start + complete: a second attempt; get then returns eithe (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get — start + complete: a second attempt; get then returns eithe (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: graders get the attempts of every student, students ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: graders get the attempts of every student, students ": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more quiz submissions than one page ho",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more quiz submissions than one page ho": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more quiz submissions than one page ho (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more quiz submissions than one page ho (2)": {
+      "main": [
+        [
+          {
+            "node": "getAll — getAll: pages through more quiz submissions than one page ho (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAll — getAll: pages through more quiz submissions than one page ho (3)": {
+      "main": [
+        [
+          {
+            "node": "getAllOutstanding — getAllOutstanding + gradeOutstanding: an attempt left open p",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

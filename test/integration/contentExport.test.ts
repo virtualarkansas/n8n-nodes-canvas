@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { canvas, fx, unique } from '../lib/canvas';
-import { runNode, runOk } from '../lib/harness';
+import { digestOf, runNode, runOk } from '../lib/harness';
 import type { Json } from '../lib/n8n';
 import { download, uploadFile, waitForProgress, zipNames, zipRead } from './content.helper';
 import { createTokenPersona } from './lti-advantage.helper';
@@ -281,6 +281,86 @@ describe('contentExport', () => {
 			(await canvas().getAll<Json>(`/api/v1/users/${owner!.id}/content_exports`)).map((e) => e.id),
 		);
 	});
+
+	it('waitForCompletion: waits for the export; Download File attaches the archive, here and on get', async () => {
+		const [created] = await runOk({
+			resource: 'contentExport',
+			operation: 'create',
+			params: { contextType: 'course', courseId, exportType: 'zip', additionalFields: { skip_notifications: true } },
+		});
+		exportIds.push(String(created.id));
+		const target = { contextType: 'course', courseId, contentExportId: String(created.id) };
+
+		// Not allowed to wait at all: the export is either still on its way (TIMEOUT) or already there.
+		const impatient = await runNode({
+			resource: 'contentExport',
+			operation: 'waitForCompletion',
+			params: { ...target, timeout: 0, errorHandling: { onError: 'continueWithError' } },
+		});
+		if (impatient.error.length > 0) {
+			expect(impatient.error[0]).toMatchObject({
+				errorCode: 0,
+				errorType: 'TIMEOUT',
+				errorMessage: 'Still not finished after 0 seconds',
+				operation: 'waitForCompletion',
+			});
+		} else {
+			expect(impatient.success[0].workflow_state).toBe('exported');
+		}
+
+		const waited = await runNode({
+			resource: 'contentExport',
+			operation: 'waitForCompletion',
+			params: { ...target, pollInterval: 2, timeout: 300, downloadFile: true, binaryPropertyName: 'archive' },
+			digestBinary: 'archive',
+		});
+		expect(waited.error).toEqual([]);
+		expect(waited.success[0]).toMatchObject({ id: created.id, export_type: 'zip', workflow_state: 'exported' });
+
+		// Byte for byte the archive Canvas serves, under the name and type Canvas gives it.
+		const direct = await canvas().get<Json>(`/api/v1/courses/${courseId}/content_exports/${String(created.id)}`);
+		const attachment = direct.attachment as Json;
+		const archive = await download(attachment.url);
+		const expected = { ...digestOf(archive), fileName: attachment.filename, mimeType: attachment['content-type'] };
+		expect(waited.digests).toEqual([expected]);
+		expect(zipNames(archive)).toEqual(expect.arrayContaining(['folder-alpha/file-alpha.txt', 'folder-beta/file-beta.txt']));
+
+		// Get offers the same option; without it there is no binary data.
+		const fetched = await runNode({
+			resource: 'contentExport',
+			operation: 'get',
+			params: { ...target, downloadFile: true },
+			digestBinary: 'data',
+		});
+		expect(fetched.error).toEqual([]);
+		expect(fetched.digests).toEqual([expected]);
+		const plain = await runNode({ resource: 'contentExport', operation: 'waitForCompletion', params: target, digestBinary: 'data' });
+		expect(plain.success[0]).toMatchObject({ id: created.id, workflow_state: 'exported' });
+		expect(plain.digests).toEqual([null]);
+
+		// The export of a user, waited for by its owner.
+		const [mine] = await runOk({
+			resource: 'contentExport',
+			operation: 'create',
+			persona,
+			params: { contextType: 'user', userId: 'self', exportType: 'zip' },
+		});
+		const [finished] = await runOk({
+			resource: 'contentExport',
+			operation: 'waitForCompletion',
+			persona,
+			params: { contextType: 'user', userId: 'self', contentExportId: String(mine.id), pollInterval: 2, timeout: 300 },
+		});
+		expect(finished).toMatchObject({ id: mine.id, workflow_state: 'exported' });
+
+		// An export that does not exist is not waited for.
+		const missing = await runNode({
+			resource: 'contentExport',
+			operation: 'waitForCompletion',
+			params: { ...target, contentExportId: '999999999', errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(missing.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', operation: 'waitForCompletion' });
+	}, 600_000);
 
 	it('getAll: lists the exports of the course, newest first, and pages through them', async () => {
 		const expected = await canvas().getAll<Json>(`/api/v1/courses/${courseId}/content_exports`);
