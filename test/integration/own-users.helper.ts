@@ -131,7 +131,8 @@ export async function deleteUser(user: OwnUser | undefined): Promise<void> {
 
 /** Call Canvas as one of the file's own users. */
 export async function asUser<T = Json>(user: OwnUser, method: string, path: string, body?: unknown): Promise<T> {
-	const res = await fetch(`${canvas().url}${path}`, {
+	// `path` may also be an absolute Canvas URL (e.g. from a Location header).
+	const res = await fetch(/^https?:/.test(path) ? path : `${canvas().url}${path}`, {
 		method,
 		headers: {
 			authorization: `Bearer ${user.token ?? ''}`,
