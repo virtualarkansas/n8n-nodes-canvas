@@ -464,14 +464,22 @@ export class Canvas implements INodeType {
 					curl,
 				};
 
+				// What a real run does beyond this one request, in the order it happens.
+				const notes: string[] = [];
+				if (request.upload) {
+					notes.push('This is Step 1 of 3. Steps 2 (multipart upload) and 3 (confirmation) are handled automatically at runtime.');
+				}
 				if (request.poll) {
-					debugJson._note = `Repeated every ${request.poll.intervalSeconds} seconds until the job is finished, for at most ${request.poll.timeoutSeconds} seconds.`;
+					notes.push(`Repeated every ${request.poll.intervalSeconds} seconds until the job is finished, for at most ${request.poll.timeoutSeconds} seconds.`);
 				}
 				if (request.download) {
-					debugJson._note = `Then the file is downloaded from the "${request.download.urlField}" of the answer and attached as binary property "${request.download.binaryPropertyName}".`;
+					notes.push(`Then the file is downloaded from the "${request.download.urlField}" of the answer and attached as binary property "${request.download.binaryPropertyName}".`);
 				}
-				if (request.upload) {
-					debugJson._note = 'This is Step 1 of 3. Steps 2 (multipart upload) and 3 (confirmation) are handled automatically at runtime.';
+				if (request.thenGet) {
+					notes.push(`Then ${request.thenGet} is read, and that record is the output.`);
+				}
+				if (notes.length > 0) {
+					debugJson._note = notes.join(' ');
 				}
 
 				debugItems.push({ json: debugJson, pairedItem: { item: i } });

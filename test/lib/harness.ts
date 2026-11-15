@@ -148,6 +148,8 @@ export interface OpRecord {
 	outcome: 'success' | 'error-output' | 'failed' | 'debug' | 'skipped';
 	/** Why an operation cannot be exercised on the local instance (outcome = skipped). */
 	reason?: string;
+	/** Items on the Success output (so the coverage report can tell an empty answer from data). */
+	items?: number;
 	at: string;
 }
 
@@ -384,10 +386,11 @@ async function runNodeOnce(opts: RunNodeOptions): Promise<RunNodeResult> {
 					: (run?.outputs[1]?.length ?? 0) > 0
 						? 'error-output'
 						: 'success';
-		logOp({ resource: opts.resource, operation: opts.operation, outcome });
+		const returned = run?.outputs[0]?.length ?? 0;
+		logOp({ resource: opts.resource, operation: opts.operation, outcome, items: returned });
 		// A run with both successful and failed items counts as a success for coverage too.
-		if (outcome === 'error-output' && (run?.outputs[0]?.length ?? 0) > 0) {
-			logOp({ resource: opts.resource, operation: opts.operation, outcome: 'success' });
+		if (outcome === 'error-output' && returned > 0) {
+			logOp({ resource: opts.resource, operation: opts.operation, outcome: 'success', items: returned });
 		}
 		await logRun(opts, outcome, run?.outputs[0] ?? []);
 		return {

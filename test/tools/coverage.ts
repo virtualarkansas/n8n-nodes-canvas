@@ -16,6 +16,8 @@ interface OpRecord {
 	operation: string;
 	outcome: 'success' | 'error-output' | 'failed' | 'debug' | 'skipped';
 	reason?: string;
+	/** Items on the Success output (absent in logs written before this was recorded). */
+	items?: number;
 }
 
 const args = process.argv.slice(2);
@@ -37,6 +39,8 @@ interface Row {
 	resource: string;
 	operation: string;
 	success: number;
+	/** Successful runs that returned at least one item. */
+	withData: number;
 	errors: number;
 	failed: number;
 	skipped?: string;
@@ -62,6 +66,7 @@ const rows: Row[] = listOperations().map((op) => {
 		resource: op.resource,
 		operation: op.operation,
 		success: mine.filter((r) => r.outcome === 'success').length,
+		withData: mine.filter((r) => r.outcome === 'success' && (r.items === undefined || r.items > 0)).length,
 		errors: mine.filter((r) => r.outcome === 'error-output').length,
 		failed: mine.filter((r) => r.outcome === 'failed').length,
 		skipped: mine.find((r) => r.outcome === 'skipped')?.reason,
@@ -87,9 +92,10 @@ const lines: string[] = [
 	`- Skipped with a stated reason: **${count('skipped')}**`,
 	`- Only ever produced errors: **${count('errors only')}**`,
 	`- Never run: **${count('not run')}**`,
+	`- Passed with empty answers only: **${rows.filter((r) => r.success > 0 && r.withData === 0).length}**`,
 	`- Failing the route audit: **${rows.filter((r) => !r.route).length}**`,
 	'',
-	'"Runs" counts successful executions; "Error runs" counts executions that ended on the Error output or failed (error-path tests land here).',
+	'What the columns mean. **passed**: a real n8n ran the operation against Canvas at least once without an error. Whether the result was right is asserted by the test that ran it (`test/integration/<resource>.test.ts`), not by this report; the tests read writes back from Canvas. **Runs** counts executions without an error, **Error runs** those that ended on the Error output or failed (error-path tests land here). An operation is marked "empty answers only" when every successful run returned no items, so its output shape was never seen. **Route**: the request matches a route of Canvas\' route table for every context value.',
 	'',
 ];
 
@@ -100,7 +106,7 @@ for (const [resource, list] of [...byResource].sort(([a], [b]) => a.localeCompar
 	lines.push(`## ${resource}`, '', '| Operation | Status | Runs | Error runs | Route | Note |', '|---|---|---:|---:|---|---|');
 	for (const row of list.sort((a, b) => a.operation.localeCompare(b.operation))) {
 		lines.push(
-			`| ${row.operation} | ${status(row)} | ${row.success} | ${row.errors + row.failed} | ${freeForm(row) ? 'any path' : row.route ? 'ok' : 'MISSING'} | ${row.skipped ?? ''} |`,
+			`| ${row.operation} | ${status(row)} | ${row.success} | ${row.errors + row.failed} | ${freeForm(row) ? 'any path' : row.route ? 'ok' : 'MISSING'} | ${row.skipped ?? (row.success > 0 && row.withData === 0 ? 'empty answers only' : '')} |`,
 		);
 	}
 	lines.push('');
