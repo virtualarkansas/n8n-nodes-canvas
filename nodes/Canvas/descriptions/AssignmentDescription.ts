@@ -156,7 +156,7 @@ const assignmentFieldOptions: INodeProperties[] = [
 		name: 'annotatable_attachment_id',
 		type: 'string',
 		default: '',
-		description: 'ID of the course file students annotate (required for the Student Annotation submission type)',
+		description: 'ID of the course file students annotate. Canvas only takes it together with Submission Types that include Student Annotation, so set both.',
 	},
 	{
 		displayName: 'Anonymous Grading',

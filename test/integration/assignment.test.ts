@@ -612,6 +612,76 @@ describe('assignment', () => {
 		expect(await fromCanvas(moderatedId)).toMatchObject({ moderated_grading: false, only_visible_to_overrides: true });
 	});
 
+	it('update: external tool, annotation file, hide in gradebook, anonymous graders, peer review date', async () => {
+		const api = `/api/v1/courses/${courseId}/assignments`;
+		const make = async (assignment: Json): Promise<string> => {
+			const record = await canvas().post<Json>(api, { assignment: { name: unique('Update target'), ...assignment } });
+			created.push(String(record.id));
+			return String(record.id);
+		};
+		const update = (id: string, updateFields: Json): Promise<Json[]> =>
+			runOk({ resource: 'assignment', operation: 'update', params: { courseId, assignmentId: id, updateFields } });
+
+		const toolId = await make({
+			submission_types: ['external_tool'],
+			points_possible: 5,
+			external_tool_tag_attributes: { url: fx('externalToolUrl'), new_tab: false },
+		});
+		const newUrl = `${fx('externalToolUrl')}${fx('externalToolUrl').includes('?') ? '&' : '?'}unit=2`;
+		await update(toolId, { external_tool_url: newUrl, external_tool_new_tab: true });
+		expect((await fromCanvas(toolId)).external_tool_tag_attributes).toMatchObject({ url: newUrl, new_tab: true });
+
+		const upload = (label: string): Promise<Json> =>
+			uploadDirect(canvas(), `/api/v1/courses/${courseId}/files`, `${unique(label).replace(/\s/g, '-')}.txt`, Buffer.from(label), 'text/plain');
+		const [first, second] = [await upload('annotate first'), await upload('annotate second')];
+		const annotationId = await make({ submission_types: ['student_annotation'], annotatable_attachment_id: first.id });
+		// Canvas ignores the file unless the submission types come with it: the node refuses that.
+		const alone = await runNode({
+			resource: 'assignment',
+			operation: 'update',
+			params: { courseId, assignmentId: annotationId, updateFields: { annotatable_attachment_id: String(second.id) }, errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(alone.error[0]).toMatchObject({ errorType: 'INVALID_PARAMETERS' });
+		expect(String(alone.error[0].errorMessage)).toContain('needs Submission Types with "Student Annotation"');
+		const before = (await fromCanvas(annotationId)).annotatable_attachment_id;
+		await update(annotationId, { annotatable_attachment_id: String(second.id), submission_types: ['student_annotation'] });
+		const annotation = await fromCanvas(annotationId);
+		expect(annotation.annotatable_attachment_id).not.toBe(before);
+		// Canvas keeps its own copy of the file for the assignment: it is a copy of the second one.
+		const copy = await canvas().get<Json>(`/api/v1/files/${String(annotation.annotatable_attachment_id)}`);
+		expect(copy.display_name).toBe(second.display_name);
+
+		const hiddenId = await make({ omit_from_final_grade: true, points_possible: 0 });
+		await update(hiddenId, { hide_in_gradebook: true });
+		expect(await fromCanvas(hiddenId)).toMatchObject({ hide_in_gradebook: true });
+		await update(hiddenId, { hide_in_gradebook: false });
+		expect(await fromCanvas(hiddenId)).toMatchObject({ hide_in_gradebook: false });
+
+		const moderated = await make({ moderated_grading: true, grader_count: 2, points_possible: 10 });
+		await update(moderated, { graders_anonymous_to_graders: true, grader_comments_visible_to_graders: true });
+		expect(await fromCanvas(moderated)).toMatchObject({ graders_anonymous_to_graders: true });
+
+		const reviewed = await make({
+			peer_reviews: true,
+			automatic_peer_reviews: true,
+			due_at: '2031-03-01T12:00:00Z',
+			submission_types: ['online_text_entry'],
+		});
+		await update(reviewed, { peer_reviews_assign_at: '2031-03-05T12:00:00Z' });
+		expect(Date.parse(String((await fromCanvas(reviewed)).peer_reviews_assign_at))).toBe(Date.parse('2031-03-05T12:00:00Z'));
+
+		// Anonymous grading: as for create, the course feature is off on this instance and Canvas
+		// ignores the field without an error; the request carries it under Canvas' name.
+		const debug = await runNode({
+			resource: 'assignment',
+			operation: 'update',
+			params: { courseId, assignmentId: reviewed, updateFields: { anonymous_grading: true }, debugMode: true },
+		});
+		expect(debug.debug[0]).toMatchObject({ method: 'PUT', body: { assignment: { anonymous_grading: true } } });
+		await update(reviewed, { anonymous_grading: true });
+		expect((await fromCanvas(reviewed)).anonymous_grading).toBe(false);
+	});
+
 	it('update: Canvas refuses a final grader who is not an instructor of the course', async () => {
 		const [moderated] = await runOk({
 			resource: 'assignment',
@@ -737,6 +807,20 @@ describe('assignment', () => {
 		// Dates that are not sent again are no longer overridden.
 		expect(actual).not.toHaveProperty('lock_at');
 		expect(actual).not.toHaveProperty('unlock_at');
+
+		// Availability dates through Update, then the due date alone again.
+		await runOk({
+			resource: 'assignment',
+			operation: 'updateOverride',
+			params: {
+				...base,
+				overrideId: String(students.id),
+				updateFields: { due_at: '2033-01-12T12:00:00Z', unlock_at: '2033-01-01T08:00:00Z', lock_at: '2033-01-20T20:00:00Z' },
+			},
+		});
+		expect(
+			await canvas().get<Json>(`/api/v1/courses/${courseId}/assignments/${groupAssignmentId}/overrides/${String(students.id)}`),
+		).toMatchObject({ due_at: '2033-01-12T12:00:00Z', unlock_at: '2033-01-01T08:00:00Z', lock_at: '2033-01-20T20:00:00Z' });
 
 		const twice = await runNode({
 			resource: 'assignment',

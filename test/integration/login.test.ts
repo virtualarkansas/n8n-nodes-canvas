@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { canvas, fx, unique } from '../lib/canvas';
-import { runNode, runOk } from '../lib/harness';
+import { createCredential, runNode, runOk } from '../lib/harness';
+import { asUser, createUserWithToken, deleteUser } from './own-users.helper';
 import type { Json } from '../lib/n8n';
 
 /**
@@ -285,6 +286,52 @@ describe('login', () => {
 		});
 		expect(missing.success).toEqual([]);
 		expect(missing.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND' });
+	});
+
+	it('update: a user changes their own password with the old one; a wrong old password is refused', async () => {
+		const own = await createUserWithToken('Login password changer');
+		try {
+			const credential = await createCredential(own.token as string, 'login password');
+			const [ownLogin] = await asUser<Json[]>(own, 'GET', '/api/v1/users/self/logins');
+			const works = async (password: string): Promise<boolean> => {
+				const res = await canvas().request('POST', `/api/v1/users/${witnessId}/observees`, { observee: { unique_id: own.login, password } });
+				if (res.status === 200) {
+					await canvas().delete(`/api/v1/users/${witnessId}/observees/${own.id}`);
+					return true;
+				}
+				if (res.status === 401) return false;
+				throw new Error(`Unexpected answer while checking a password: ${res.status} ${JSON.stringify(res.data)}`);
+			};
+			const newPassword = `Changed-${unique('pw').replace(/\s/g, '')}!`;
+
+			const wrong = await runNode({
+				resource: 'login',
+				operation: 'update',
+				credential,
+				params: {
+					accountId: account,
+					loginId: String(ownLogin.id),
+					updateFields: { password: newPassword, oldPassword: 'not-my-password' },
+					errorHandling: { onError: 'continueWithError' },
+				},
+			});
+			expect(wrong.success).toEqual([]);
+			expect(wrong.error[0]).toMatchObject({ errorCode: 400, errorType: 'VALIDATION_ERROR' });
+			expect(JSON.stringify(wrong.error[0].canvasErrors ?? wrong.error[0].responseBody)).toContain('old_password');
+			expect(await works(own.password)).toBe(true);
+
+			const [changed] = await runOk({
+				resource: 'login',
+				operation: 'update',
+				credential,
+				params: { accountId: account, loginId: String(ownLogin.id), updateFields: { password: newPassword, oldPassword: own.password } },
+			});
+			expect(changed).toMatchObject({ id: ownLogin.id, unique_id: own.login });
+			expect(await works(newPassword)).toBe(true);
+			expect(await works(own.password)).toBe(false);
+		} finally {
+			await deleteUser(own);
+		}
 	});
 
 	it('resetPassword: starts the recovery for a known login and reports an unknown address', async () => {

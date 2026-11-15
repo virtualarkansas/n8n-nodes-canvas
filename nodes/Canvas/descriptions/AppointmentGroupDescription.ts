@@ -160,7 +160,8 @@ const commonFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		placeholder: 'course_section_123',
-		description: 'Comma-separated sections ("course_section_123") to limit the appointment group to, or a single group category ("group_category_45") to let students sign up as groups',
+		description:
+			'Comma-separated sections ("course_section_123") to limit the appointment group to, or a single group category ("group_category_45") to let students sign up as groups. On Update, Canvas only takes sections of courses added in the same request (Context Codes) and ignores the others: the sections of a course already in the group cannot be changed.',
 	},
 	{
 		displayName: 'Time Slots',

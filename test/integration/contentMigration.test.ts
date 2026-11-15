@@ -42,6 +42,14 @@ describe('contentMigration', () => {
 		((await canvas().get<Json>(`${context}/content_migrations/${String(migrationId)}`)).audit_info as Json)
 			.migration_settings as Json;
 
+	/** The selective-import property of the entry with this title (read from Canvas directly). */
+	const selectableProperty = async (contextPath: string, migrationId: string, type: string, title: string): Promise<string> => {
+		const list = await canvas().get<Json[]>(`${contextPath}/content_migrations/${migrationId}/selective_data?type=${type}`);
+		const flat = list.flatMap((entry) => [entry, ...((entry.sub_items as Json[] | undefined) ?? [])]);
+		const found = flat.find((entry) => entry.title === title);
+		if (!found) throw new Error(`nothing selectable named ${title}: ${JSON.stringify(list).slice(0, 300)}`);
+		return String(found.property);
+	};
 	/** Start a migration through the node and follow it to the end through the node. */
 	async function migrate(params: Json, runAs?: string, items?: Json[]): Promise<Json> {
 		const [created] = await runOk({ resource: 'contentMigration', operation: 'create', persona: runAs, items, params });
@@ -541,7 +549,7 @@ describe('contentMigration', () => {
 		expect(list.map((m) => m.id)).toEqual([created.id]);
 	});
 
-	it('getIssue: a single issue of a migration, in every context', async () => {
+	it('getIssue, getIssues, updateIssue: the issues of a migration, in every context', async () => {
 		// One import per context that fails (Canvas cannot download from that URL) and therefore has an issue.
 		const failingImport = async (
 			contextPath: string,
@@ -606,6 +614,39 @@ describe('contentMigration', () => {
 			expect(String(fetched.content_migration_url)).toContain(`/content_migrations/${migrationId}`);
 		}
 
+		// getIssues and updateIssue in the course, group and user context (the account ran above).
+		const contextPaths: Record<string, string> = {
+			course: `/api/v1/courses/${issueCourse}`,
+			group: `/api/v1/groups/${issueGroup}`,
+			user: `/api/v1/users/${owner!.id}`,
+		};
+		for (const [context, { migrationId, issue }, runAs] of cases) {
+			const kind = String(context.contextType);
+			if (kind === 'account') continue;
+			const read = (path: string): Promise<Json> =>
+				kind === 'user' ? asUser<Json>(owner as OwnUser, 'GET', path) : canvas().get<Json>(path);
+			const issuesPath = `${contextPaths[kind]}/content_migrations/${migrationId}/migration_issues`;
+			const listed = await runOk({
+				resource: 'contentMigration',
+				operation: 'getIssues',
+				persona: runAs,
+				params: { ...context, contentMigrationId: migrationId, pagination: { returnAll: true } },
+			});
+			expect(listed.map((i) => i.id), kind).toEqual(((await read(issuesPath)) as unknown as Json[]).map((i) => i.id));
+			expect(listed.map((i) => i.id)).toContain(issue.id);
+
+			for (const state of ['resolved', 'active']) {
+				const [updated] = await runOk({
+					resource: 'contentMigration',
+					operation: 'updateIssue',
+					persona: runAs,
+					params: { ...context, contentMigrationId: migrationId, issueId: String(issue.id), issueState: state },
+				});
+				expect(updated, kind).toMatchObject({ id: issue.id, workflow_state: state });
+				expect((await read(`${issuesPath}/${String(issue.id)}`)).workflow_state, `${kind}: ${state}`).toBe(state);
+			}
+		}
+
 		const run = (params: Json, runAs?: string): ReturnType<typeof runNode> =>
 			runNode({
 				resource: 'contentMigration',
@@ -639,6 +680,212 @@ describe('contentMigration', () => {
 		const asStudent = await run({ ...course, issueId: String(inCourse.issue.id) }, 'student');
 		expect(asStudent.success).toEqual([]);
 		expect([401, 403, 404]).toContain(asStudent.error[0].errorCode);
+	});
+
+	it('update (course): a selective copy, with date shifting and placement chosen together with the selection', async () => {
+		const destination = await newCourse('selective update settings');
+		const api = `/api/v1/courses/${destination}`;
+		const module = await canvas().post<Json>(`${api}/modules`, { module: { name: 'Placed here' } });
+		await canvas().post(`${api}/modules/${String(module.id)}/items`, { module_item: { type: 'SubHeader', title: 'First' } });
+		const group = await canvas().post<Json>(`${api}/assignment_groups`, { name: 'Moved here' });
+		const created = await canvas().post<Json>(`${api}/content_migrations`, {
+			migration_type: 'course_copy_importer',
+			settings: { source_course_id: sourceId },
+			selective_import: true,
+		});
+		const migrationId = String(created.id);
+		const context = { contextType: 'course', courseId: destination, contentMigrationId: migrationId };
+		await eventually(
+			async () => (await canvas().get<Json>(`${api}/content_migrations/${migrationId}`)).workflow_state === 'waiting_for_select',
+			'the selection',
+		);
+		const alpha = await selectableProperty(api, migrationId, 'assignments', 'Copy assignment alpha');
+
+		const [updated] = await runOk({
+			resource: 'contentMigration',
+			operation: 'update',
+			params: {
+				...context,
+				copyProperties: `${alpha}, copy[all_wiki_pages]`,
+				updateFields: {
+					date_shift_options_shift_dates: true,
+					date_shift_options_old_start_date: '2030-03-01',
+					date_shift_options_old_end_date: '2030-06-01',
+					date_shift_options_new_start_date: '2032-03-01',
+					date_shift_options_new_end_date: '2032-06-01',
+					// Monday (1) becomes Friday (5).
+					date_shift_options_day_substitutions: '{"1": 5}',
+					insert_into_module_id: String(module.id),
+					insert_into_module_type: 'assignment',
+					insert_into_module_position: 2,
+					move_to_assignment_group_id: String(group.id),
+					importer_skips: 'all_course_settings',
+					overwrite_quizzes: true,
+					question_bank_name: 'Updated bank',
+					question_bank_id: '515151',
+					import_blueprint_settings: true,
+				},
+			},
+		});
+		expect(updated.id).toBe(created.id);
+		await waitForProgress(updated.progress_url);
+
+		const assignments = await canvas().getAll<Json>(`${api}/assignments`);
+		expect(assignments.map((a) => a.name)).toEqual(['Copy assignment alpha']);
+		const due = new Date(String(assignments[0].due_at));
+		expect(due.getUTCFullYear()).toBe(2032);
+		expect(due.getUTCDay()).toBe(5);
+		expect(assignments[0].assignment_group_id).toBe(group.id);
+		expect(await titles(destination, 'pages')).toEqual(['Copy page alpha', 'Copy page beta']);
+		// Only the assignment goes into the module, at position 2.
+		const items = await canvas().getAll<Json>(`${api}/modules/${String(module.id)}/items`);
+		expect(items.map((i) => `${String(i.type)}:${String(i.title)}`)).toEqual(['SubHeader:First', 'Assignment:Copy assignment alpha']);
+		expect((await canvas().get<Json>(api)).license).not.toBe('cc_by');
+		expect(await storedSettings(api, created.id)).toMatchObject({
+			date_shift_options: {
+				shift_dates: true,
+				old_start_date: '2030-03-01',
+				new_start_date: '2032-03-01',
+				old_end_date: '2030-06-01',
+				new_end_date: '2032-06-01',
+				day_substitutions: { '1': 5 },
+			},
+			overwrite_quizzes: true,
+			question_bank_name: 'Updated bank',
+			question_bank_id: '515151',
+			import_blueprint_settings: true,
+			importer_skips: ['all_course_settings'],
+		});
+	});
+
+	it('update, getSelectiveData (account): a cartridge from a content export, selected after conversion', async () => {
+		const api = `/api/v1/accounts/${accountId}`;
+		// A migration whose file never arrived ...
+		const created = await canvas().post<Json>(`${api}/content_migrations`, {
+			migration_type: 'canvas_cartridge_importer',
+			pre_attachment: { name: 'never.imscc', size: 1000 },
+		});
+		const migrationId = String(created.id);
+		const context = { contextType: 'account', accountId, contentMigrationId: migrationId };
+		// ... gets the export to import instead, and waits for a selection.
+		const [updated] = await runOk({
+			resource: 'contentMigration',
+			operation: 'update',
+			params: { ...context, updateFields: { content_export_id: exportId, selective_import: true } },
+		});
+		expect(updated.id).toBe(created.id);
+		await eventually(
+			async () => (await canvas().get<Json>(`${api}/content_migrations/${migrationId}`)).workflow_state === 'waiting_for_select',
+			'the conversion of the export',
+			150_000,
+		);
+		expect(await storedSettings(api, created.id)).toMatchObject({ import_immediately: false });
+
+		const sections = await runOk({ resource: 'contentMigration', operation: 'getSelectiveData', params: context });
+		expect(sections).toEqual(await canvas().get<Json[]>(`${api}/content_migrations/${migrationId}/selective_data`));
+		expect(sections.map((section) => section.type)).toContain('wiki_pages');
+		const pages = await runOk({
+			resource: 'contentMigration',
+			operation: 'getSelectiveData',
+			params: { ...context, options: { type: 'wiki_pages' } },
+		});
+		expect(pages.map((page) => page.title).sort()).toEqual(['Copy page alpha', 'Copy page beta']);
+
+		const [selected] = await runOk({
+			resource: 'contentMigration',
+			operation: 'update',
+			params: { ...context, copyProperties: 'copy[all_wiki_pages]', updateFields: { date_shift_options_remove_dates: true } },
+		});
+		expect(selected.id).toBe(created.id);
+		expect(await storedSettings(api, created.id)).toMatchObject({
+			date_shift_options: { remove_dates: true },
+			migration_ids_to_import: { copy: { all_wiki_pages: '1' } },
+		});
+		await waitForProgress(selected.progress_url, { allowFailure: true });
+	});
+
+	it('update (group and user): a ZIP import whose upload never arrived gets a new upload and folder', async () => {
+		const zip = makeZip({ 'retried.txt': 'second attempt' });
+		// A group of its own: the error test counts the migrations of the shared one.
+		const category = await canvas().post<Json>(`/api/v1/courses/${sourceId}/group_categories`, { name: unique('Retry groups') });
+		const retryGroup = String(
+			(await canvas().post<Json>(`/api/v1/group_categories/${String(category.id)}/groups`, { name: unique('Retry group') })).id,
+		);
+		const groupApi = `/api/v1/groups/${retryGroup}`;
+		const first = await canvas().post<Json>(`${groupApi}/folders`, { name: unique('first try'), parent_folder_path: '/' });
+		const second = await canvas().post<Json>(`${groupApi}/folders`, { name: unique('second try'), parent_folder_path: '/' });
+		const stalled = await canvas().post<Json>(`${groupApi}/content_migrations`, {
+			migration_type: 'zip_file_importer',
+			settings: { folder_id: String(first.id) },
+			pre_attachment: { name: 'lost.zip', size: 10 },
+		});
+		const [retried] = await runOk({
+			resource: 'contentMigration',
+			operation: 'update',
+			params: {
+				contextType: 'group',
+				groupId: retryGroup,
+				contentMigrationId: String(stalled.id),
+				updateFields: { folder_id: String(second.id), pre_attachment_name: 'retry.zip', pre_attachment_size: zip.byteLength },
+			},
+		});
+		expect(retried).toMatchObject({ id: stalled.id, pre_attachment: { upload_url: expect.any(String) } });
+		expect(await storedSettings(groupApi, stalled.id)).toMatchObject({ folder_id: String(second.id) });
+		await postToUploadSlot(retried.pre_attachment as Json, 'retry.zip', zip, 'application/zip');
+		await eventually(
+			async () => (await canvas().get<Json>(`${groupApi}/content_migrations/${String(stalled.id)}`)).workflow_state === 'completed',
+			'the group import',
+		);
+		expect((await canvas().getAll<Json>(`/api/v1/folders/${String(second.id)}/files`)).map((f) => f.display_name)).toEqual(['retried.txt']);
+		expect(await canvas().getAll<Json>(`/api/v1/folders/${String(first.id)}/files`)).toEqual([]);
+
+		// The same for a user, as that user.
+		const userFolder = await asUser<Json>(owner as OwnUser, 'POST', '/api/v1/users/self/folders', { name: unique('retry'), parent_folder_path: '/' });
+		const userStalled = await asUser<Json>(owner as OwnUser, 'POST', '/api/v1/users/self/content_migrations', {
+			migration_type: 'zip_file_importer',
+			settings: { folder_id: String(userFolder.id) },
+			pre_attachment: { name: 'lost.zip', size: 10 },
+		});
+		const [userRetried] = await runOk({
+			resource: 'contentMigration',
+			operation: 'update',
+			persona,
+			params: {
+				contextType: 'user',
+				userId: 'self',
+				contentMigrationId: String(userStalled.id),
+				updateFields: { pre_attachment_name: 'retry.zip', pre_attachment_size: zip.byteLength },
+			},
+		});
+		expect(userRetried).toMatchObject({ id: userStalled.id, pre_attachment: { upload_url: expect.any(String) } });
+		await postToUploadSlot(userRetried.pre_attachment as Json, 'retry.zip', zip, 'application/zip', (method, url) =>
+			asUser<Json>(owner as OwnUser, method, url),
+		);
+		await eventually(
+			async () =>
+				(await asUser<Json>(owner as OwnUser, 'GET', `/api/v1/users/self/content_migrations/${String(userStalled.id)}`))
+					.workflow_state === 'completed',
+			'the user import',
+		);
+		const files = await asUser<Json[]>(owner as OwnUser, 'GET', `/api/v1/folders/${String(userFolder.id)}/files`);
+		expect(files.map((f) => f.display_name)).toEqual(['retried.txt']);
+
+		// Groups and users only have ZIP imports, which have nothing to select (Canvas fails with
+		// "course hasn't been converted"): Get Selective Data does not offer these contexts.
+		for (const context of [
+			{ contextType: 'group', groupId: retryGroup },
+			{ contextType: 'user', userId: 'self' },
+		]) {
+			const refused = await runNode({
+				resource: 'contentMigration',
+				operation: 'getSelectiveData',
+				params: { ...context, contentMigrationId: String(stalled.id), errorHandling: { onError: 'continueWithError' } },
+			});
+			expect(refused.error[0], context.contextType).toMatchObject({ errorType: 'INVALID_PARAMETERS' });
+			expect(String(refused.error[0].errorMessage)).toContain('only for course and account migrations');
+		}
+		const direct = await canvas().request('GET', `${groupApi}/content_migrations/${String(stalled.id)}/selective_data`);
+		expect(direct.status, 'Canvas cannot list the content of a ZIP import').toBe(500);
 	});
 
 	it('getAll: the migrations of a course, newest first, with paging; getIssues of a clean migration is empty', async () => {

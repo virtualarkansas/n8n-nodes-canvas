@@ -142,6 +142,84 @@ describe('quizAssignmentOverride', () => {
 	});
 });
 
+describe('quizSubmissionQuestion with an access code', () => {
+	const code = 'Röom 42 & "B"';
+	let protectedQuizId = '';
+	let questionId = '';
+	let quizSubmissionId = '';
+	let validationToken = '';
+	let attempt = 0;
+	const eh = { errorHandling: { onError: 'continueWithError' } };
+	const stored = async (): Promise<Json> =>
+		((await taker.client.get<Json>(`/api/v1/quiz_submissions/${quizSubmissionId}/questions`)).quiz_submission_questions as Json[]).find(
+			(q) => String(q.id) === questionId,
+		) as Json;
+
+	beforeAll(async () => {
+		const quiz = await canvas().post<Json>(`/api/v1/courses/${courseId}/quizzes`, {
+			quiz: { title: unique('Protected quiz'), quiz_type: 'assignment', allowed_attempts: 1, access_code: code },
+		});
+		protectedQuizId = String(quiz.id);
+		const question = await canvas().post<Json>(`/api/v1/courses/${courseId}/quizzes/${protectedQuizId}/questions`, {
+			question: { question_name: 'Essay', question_type: 'essay_question', question_text: 'Why?', points_possible: 1 },
+		});
+		questionId = String(question.id);
+		await canvas().put(`/api/v1/courses/${courseId}/quizzes/${protectedQuizId}`, { quiz: { published: true } });
+		const started = await taker.client.post<Json>(`/api/v1/courses/${courseId}/quizzes/${protectedQuizId}/submissions`, { access_code: code });
+		const submission = (started.quiz_submissions as Json[])[0];
+		quizSubmissionId = String(submission.id);
+		validationToken = String(submission.validation_token);
+		attempt = Number(submission.attempt);
+	});
+
+	it('answer, flag, unflag: need the access code of the quiz', async () => {
+		const common = { quizSubmissionId, attempt, validationToken };
+		const answers = JSON.stringify([{ question_id: Number(questionId), answer: 'Because.' }]);
+
+		for (const [operation, params] of [
+			['answer', { ...common, answers }],
+			['flag', { ...common, questionId }],
+			['unflag', { ...common, questionId }],
+		] as const) {
+			const without = await runNode({ resource: 'quizSubmissionQuestion', operation, credential: takerCredential, params: { ...params, ...eh } });
+			expect(without.success, `${operation} without the code`).toEqual([]);
+			expect(without.error[0].errorCode, operation).toBe(403);
+			const wrong = await runNode({
+				resource: 'quizSubmissionQuestion',
+				operation,
+				credential: takerCredential,
+				params: { ...params, additionalFields: { access_code: 'wrong' }, ...eh },
+			});
+			expect(wrong.error[0]?.errorCode, `${operation} with a wrong code`).toBe(403);
+		}
+		expect((await stored()).answer ?? null).toBeNull();
+
+		const [answered] = await runOk({
+			resource: 'quizSubmissionQuestion',
+			operation: 'answer',
+			credential: takerCredential,
+			params: { ...common, answers, additionalFields: { access_code: code } },
+		});
+		expect(String(answered.answer)).toContain('Because.');
+		expect(String((await stored()).answer)).toContain('Because.');
+
+		await runOk({
+			resource: 'quizSubmissionQuestion',
+			operation: 'flag',
+			credential: takerCredential,
+			params: { ...common, questionId, additionalFields: { access_code: code } },
+		});
+		expect((await stored()).flagged).toBe(true);
+		await runOk({
+			resource: 'quizSubmissionQuestion',
+			operation: 'unflag',
+			credential: takerCredential,
+			params: { ...common, questionId, additionalFields: { access_code: code } },
+		});
+		expect((await stored()).flagged).toBe(false);
+	});
+});
+
 describe('quiz attempt: quizSubmissionQuestion, quizSubmissionEvent', () => {
 	let quizSubmissionId = '';
 	let validationToken = '';

@@ -63,7 +63,7 @@ export const progressFields: INodeProperties[] = [
 			},
 		},
 		description:
-			'The ID of the progress object. Canvas returns it (or a "progress_url" ending in it) from operations that run in the background.',
+			'The ID of the progress object, or the "progress_url" that operations running in the background (migrations, exports, reports ...) return: the ID is taken from its end',
 	},
 
 	...waitFields('progress'),
@@ -97,7 +97,7 @@ export const progressFields: INodeProperties[] = [
 				operation: ['getLti'],
 			},
 		},
-		description: 'The ID of the progress object',
+		description: 'The ID of the progress object, or the progress URL the LTI service returned: the ID is taken from its end',
 	},
 
 	// ----------------------------------

@@ -301,7 +301,8 @@ export const coursePaceFields: INodeProperties[] = [
 				name: 'exclude_weekends',
 				type: 'boolean',
 				default: true,
-				description: 'Whether to skip weekend days in pacing calculations',
+				description:
+					'Whether to skip Saturday and Sunday. Canvas only uses this where the "skip selected days" course pacing feature is off; with it on (the default) it skips the Selected Days to Skip instead and reports this as whether those include Saturday and Sunday.',
 			},
 			{
 				displayName: 'Hard End Dates',
@@ -385,7 +386,8 @@ export const coursePaceFields: INodeProperties[] = [
 				name: 'exclude_weekends',
 				type: 'boolean',
 				default: true,
-				description: 'Whether to skip weekend days in pacing calculations',
+				description:
+					'Whether to skip Saturday and Sunday. Canvas only uses this where the "skip selected days" course pacing feature is off; with it on (the default) it skips the Selected Days to Skip instead and reports this as whether those include Saturday and Sunday.',
 			},
 			{
 				displayName: 'Hard End Dates',

@@ -511,6 +511,21 @@ describe('file', () => {
 			const [ticket] = await runOk({ resource: 'file', operation: 'initiateUpload', params: { ...context, fileName: 'ticket.txt' } });
 			expect(ticket.upload_url, JSON.stringify(context)).toBeTypeOf('string');
 		}
+		// Into a folder given by its ID.
+		const [byFolderId] = await runOk({
+			resource: 'file',
+			operation: 'initiateUpload',
+			params: { contextType: 'course', courseId, fileName: 'by-folder-id.txt', options: { parent_folder_id: otherFolderId, size: 4 } },
+		});
+		const form = new FormData();
+		for (const [key, value] of Object.entries(byFolderId.upload_params as Json)) form.append(key, String(value));
+		form.append(String(byFolderId.file_param ?? 'file'), new Blob([new Uint8Array(Buffer.from('four'))], { type: 'text/plain' }), 'by-folder-id.txt');
+		const sent = await fetch(String(byFolderId.upload_url), { method: 'POST', body: form, redirect: 'manual' });
+		expect(sent.status).toBeLessThan(400);
+		const placed = (await canvas().request('GET', String(sent.headers.get('location')))).data as Json;
+		expect(String(placed.folder_id)).toBe(otherFolderId);
+		expect((await canvas().getAll<Json>(`/api/v1/folders/${otherFolderId}/files`)).map((f) => f.display_name)).toContain('by-folder-id.txt');
+
 		const tooBig = await runNode({
 			resource: 'file',
 			operation: 'initiateUpload',

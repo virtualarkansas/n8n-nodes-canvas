@@ -1,6 +1,7 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IDataObject } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { linkedIfAsked } from './shared';
 
 /**
  * Canvas builds the "days" and "day details" summaries from a paginated list of
@@ -78,12 +79,20 @@ export function buildGradeChangeLogRequest(
 	getParamObject: GetParamObject,
 ): IRequestConfig {
 	const base = '/api/v1/audit/grade_change';
-	// Responses look like { links, events: [...], linked: {...} }; each event becomes an item.
+	// Responses look like { links, events: [...], linked: {...} }; each event becomes an item,
+	// with the records it refers to unless switched off.
 	const list = (endpoint: string, qs: Record<string, unknown>): IRequestConfig => ({
 		method: 'GET',
 		endpoint,
 		qs,
 		dataKey: 'events',
+		pageTransform: linkedIfAsked(getParam, {
+			course: 'courses',
+			assignment: 'assignments',
+			student: 'users',
+			grader: 'users',
+			page_view: 'page_views',
+		}),
 	});
 
 	switch (operation) {
@@ -121,21 +130,28 @@ export function buildCourseAuditLogRequest(
 	getParam: GetParam,
 	getParamObject: GetParamObject,
 ): IRequestConfig {
+	// Copy and reset events name the other course under the event type
+	// (`links.copied_from`), and Canvas includes that course in `linked.courses`.
+	const list = (endpoint: string): IRequestConfig => ({
+		method: 'GET',
+		endpoint,
+		qs: getParamObject('options'),
+		dataKey: 'events',
+		pageTransform: linkedIfAsked(getParam, {
+			course: 'courses',
+			copied_from: 'courses',
+			copied_to: 'courses',
+			reset_from: 'courses',
+			reset_to: 'courses',
+			user: 'users',
+			page_view: 'page_views',
+		}),
+	});
 	switch (operation) {
 		case 'getByAccount':
-			return {
-				method: 'GET',
-				endpoint: `/api/v1/audit/course/accounts/${getParam('accountId')}`,
-				qs: getParamObject('options'),
-				dataKey: 'events',
-			};
+			return list(`/api/v1/audit/course/accounts/${getParam('accountId')}`);
 		case 'getByCourse':
-			return {
-				method: 'GET',
-				endpoint: `/api/v1/audit/course/courses/${getParam('courseId')}`,
-				qs: getParamObject('options'),
-				dataKey: 'events',
-			};
+			return list(`/api/v1/audit/course/courses/${getParam('courseId')}`);
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for courseAuditLog`);
 	}

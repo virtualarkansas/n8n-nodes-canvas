@@ -1093,6 +1093,14 @@ describe('submission', () => {
 		});
 		expect(viaSection).toEqual({ success: true });
 		expect(await readState()).toBe('read');
+		const [unreadViaSection] = await runOk({
+			resource: 'submission',
+			operation: 'markUnread',
+			persona: 'student',
+			params: { contextType: 'section', sectionId: battery.sectionId, assignmentId: battery.playgroundAssignmentId, userId: 'self' },
+		});
+		expect(unreadViaSection).toEqual({ success: true });
+		expect(await readState()).toBe('unread');
 
 		const missing = await runNode({
 			resource: 'submission',

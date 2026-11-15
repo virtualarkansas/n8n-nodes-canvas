@@ -687,6 +687,37 @@ describe('canvasApiRequestAllItems', () => {
 		]);
 	});
 
+	it('pageTransform reshapes the records of each page with that page\'s answer, before the limit applies', async () => {
+		const pages = [
+			{ events: [{ id: 1, links: { user: 7 } }, { id: 2, links: { user: 8 } }], linked: { users: [{ id: 7, name: 'A' }, { id: 8, name: 'B' }] } },
+			{ events: [{ id: 3, links: { user: 9 } }], linked: { users: [{ id: 9, name: 'C' }] } },
+		];
+		const { context } = fakeContext((_options, index) => ({
+			body: pages[index],
+			headers: index === 0 ? { link: '<https://canvas.test/api/v1/audit?page=2>; rel="next"' } : {},
+		}));
+		const seen: unknown[] = [];
+		const result = await canvasApiRequestAllItems.call(
+			context,
+			'GET',
+			'/api/v1/audit',
+			undefined,
+			undefined,
+			{ enabled: true, perPage: 2, maxPages: 0 },
+			NO_RATE_LIMIT,
+			'events',
+			(records, page) => {
+				seen.push(page.linked);
+				const users = (page.linked as { users: Array<{ id: number; name: string }> }).users;
+				return records.map((record) => ({ ...record, userName: users.find((u) => u.id === (record.links as { user: number }).user)?.name }));
+			},
+		);
+		// Each page is resolved with its own linked records, not with those of another page.
+		expect(result.items.map((item) => [item.id, item.userName])).toEqual([[1, 'A'], [2, 'B'], [3, 'C']]);
+		expect(seen).toEqual([pages[0].linked, pages[1].linked]);
+		expect(result.more).toBe(false);
+	});
+
 	it('stops at maxPages and at the item limit', async () => {
 		const endless = (_options: IDataObject, index: number) =>
 			page([{ id: 1 }, { id: 2 }, { id: 3 }], `https://canvas.test/api/v1/x?page=${index + 2}`);

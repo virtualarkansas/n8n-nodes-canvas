@@ -2948,7 +2948,8 @@
    "endpoint": "/api/v1/audit/authentication/accounts/7",
    "qs": {},
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   },
   "full": {
    "method": "GET",
@@ -2958,7 +2959,8 @@
     "end_time": "2026-01-15T12:00:00Z"
    },
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   }
  },
  "authenticationsLog.getAllByLogin": {
@@ -2967,7 +2969,8 @@
    "endpoint": "/api/v1/audit/authentication/logins/7",
    "qs": {},
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   },
   "full": {
    "method": "GET",
@@ -2977,7 +2980,8 @@
     "end_time": "2026-01-15T12:00:00Z"
    },
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   }
  },
  "authenticationsLog.getAllByUser": {
@@ -2986,7 +2990,8 @@
    "endpoint": "/api/v1/audit/authentication/users/7",
    "qs": {},
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   },
   "full": {
    "method": "GET",
@@ -2996,7 +3001,8 @@
     "end_time": "2026-01-15T12:00:00Z"
    },
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   }
  },
  "blackoutDate.create": {
@@ -5836,34 +5842,6 @@
     "type": "announcements"
    },
    "body": "<undefined>"
-  },
-  "minimal [contextType=group]": {
-   "method": "GET",
-   "endpoint": "/api/v1/groups/7/content_migrations/7/selective_data",
-   "qs": {},
-   "body": "<undefined>"
-  },
-  "full [contextType=group]": {
-   "method": "GET",
-   "endpoint": "/api/v1/groups/7/content_migrations/7/selective_data",
-   "qs": {
-    "type": "announcements"
-   },
-   "body": "<undefined>"
-  },
-  "minimal [contextType=user]": {
-   "method": "GET",
-   "endpoint": "/api/v1/users/7/content_migrations/7/selective_data",
-   "qs": {},
-   "body": "<undefined>"
-  },
-  "full [contextType=user]": {
-   "method": "GET",
-   "endpoint": "/api/v1/users/7/content_migrations/7/selective_data",
-   "qs": {
-    "type": "announcements"
-   },
-   "body": "<undefined>"
   }
  },
  "contentMigration.listMigrators": {
@@ -7328,7 +7306,8 @@
    "endpoint": "/api/v1/audit/course/accounts/7",
    "qs": {},
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   },
   "full": {
    "method": "GET",
@@ -7338,7 +7317,8 @@
     "start_time": "2026-01-15T12:00:00Z"
    },
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   }
  },
  "courseAuditLog.getByCourse": {
@@ -7347,7 +7327,8 @@
    "endpoint": "/api/v1/audit/course/courses/7",
    "qs": {},
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   },
   "full": {
    "method": "GET",
@@ -7357,7 +7338,8 @@
     "start_time": "2026-01-15T12:00:00Z"
    },
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   }
  },
  "courseNickname.clearAll": {
@@ -8753,7 +8735,6 @@
     "expanded": true,
     "expanded_locked": true,
     "group_category_id": "7",
-    "is_announcement": true,
     "lock_at": "2026-01-15T12:00:00Z",
     "lock_comment": true,
     "locked": true,
@@ -8793,7 +8774,6 @@
     "expanded": true,
     "expanded_locked": true,
     "group_category_id": "7",
-    "is_announcement": true,
     "lock_at": "2026-01-15T12:00:00Z",
     "lock_comment": true,
     "locked": true,
@@ -11999,7 +11979,8 @@
    "endpoint": "/api/v1/audit/grade_change/assignments/7",
    "qs": {},
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   },
   "full": {
    "method": "GET",
@@ -12009,7 +11990,8 @@
     "start_time": "2026-01-15T12:00:00Z"
    },
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   }
  },
  "gradeChangeLog.getByCourse": {
@@ -12018,7 +12000,8 @@
    "endpoint": "/api/v1/audit/grade_change/courses/7",
    "qs": {},
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   },
   "full": {
    "method": "GET",
@@ -12028,7 +12011,8 @@
     "start_time": "2026-01-15T12:00:00Z"
    },
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   }
  },
  "gradeChangeLog.getByGrader": {
@@ -12037,7 +12021,8 @@
    "endpoint": "/api/v1/audit/grade_change/graders/7",
    "qs": {},
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   },
   "full": {
    "method": "GET",
@@ -12047,7 +12032,8 @@
     "start_time": "2026-01-15T12:00:00Z"
    },
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   }
  },
  "gradeChangeLog.getByStudent": {
@@ -12056,7 +12042,8 @@
    "endpoint": "/api/v1/audit/grade_change/students/7",
    "qs": {},
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   },
   "full": {
    "method": "GET",
@@ -12066,7 +12053,8 @@
     "start_time": "2026-01-15T12:00:00Z"
    },
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   }
  },
  "gradeChangeLog.query": {
@@ -12085,7 +12073,8 @@
     "student_id": "7"
    },
    "body": "<undefined>",
-   "dataKey": "events"
+   "dataKey": "events",
+   "pageTransform": "<function>"
   }
  },
  "gradebook.applyScoreToUngraded": {
@@ -17616,12 +17605,6 @@
   "minimal [context=course]": {
    "method": "DELETE",
    "endpoint": "/api/v1/courses/7/outcome_groups/7/outcomes/7",
-   "qs": "<undefined>",
-   "body": "<undefined>"
-  },
-  "minimal [context=global]": {
-   "method": "DELETE",
-   "endpoint": "/api/v1/global/outcome_groups/7/outcomes/7",
    "qs": "<undefined>",
    "body": "<undefined>"
   }

@@ -1,7 +1,10 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { canvas, fx } from '../lib/canvas';
 import { pairedItems, runNode, runOk } from './support/adminGroup';
 import type { Json } from '../lib/n8n';
+import { AUTHENTICATION_LINKS, expectedLinked } from './support/auditLinked';
+import { createUser, deleteUser, WebSession } from './own-users.helper';
+import type { OwnUser } from './own-users.helper';
 
 /**
  * Resource: authenticationsLog (the audit log of logins and logouts). Read-only.
@@ -288,5 +291,81 @@ describe('authenticationsLog', () => {
 		expect(result.error.map((e) => (e.originalItem as Json).login).sort()).toEqual(
 			[fx('deletedLoginId'), '99999999'].sort(),
 		);
+	});
+
+	// ---------------------------------------------------------- linked records
+
+	it('every event carries the login, account, user and page view it refers to, from its own page', async () => {
+		// The node reads pages of 4, Canvas is read directly in pages of 7: every event must
+		// still get the records of the page it came on.
+		const listed = await runOk({
+			resource: 'authenticationsLog',
+			operation: 'getAllByAccount',
+			params: { accountId: root, returnAll: false, limit: 25, pagination: { perPage: 4 } },
+		});
+		const expected = await expectedLinked(`/api/v1/audit/authentication/accounts/${root}`, AUTHENTICATION_LINKS);
+		expect(listed).toHaveLength(25);
+		let compared = 0;
+		for (const item of listed) {
+			const direct = expected.get(String(item.id));
+			if (!direct) continue; // newer than the direct read (logins on the shared Canvas)
+			compared++;
+			const { linked, ...event } = item;
+			expect(event).toEqual(direct.event);
+			expect(linked).toEqual(direct.linked);
+			expect(Object.keys(linked as Json).sort()).toEqual(['account', 'login', 'page_view', 'user']);
+			expect(String(((linked as Json).user as Json).id)).toBe(String(links(item).user));
+			expect(((linked as Json).user as Json).name).toBeTypeOf('string');
+			expect(String(((linked as Json).login as Json).id)).toBe(String(links(item).login));
+			expect(((linked as Json).login as Json).unique_id).toBeTypeOf('string');
+			expect(String(((linked as Json).account as Json).id)).toBe(String(root));
+		}
+		expect(compared).toBeGreaterThan(20);
+	});
+
+	it('Include Linked Records off: the events exactly as Canvas lists them', async () => {
+		const listed = await runOk({
+			resource: 'authenticationsLog',
+			operation: 'getAllByUser',
+			params: { userId: adminUser, returnAll: false, limit: 5, includeLinked: false },
+		});
+		const direct = new Map((await userEvents()).map((event) => [String(event.id), event]));
+		expect(listed.length).toBeGreaterThan(0);
+		for (const item of listed) {
+			expect(item).not.toHaveProperty('linked');
+			const event = direct.get(String(item.id));
+			if (event) expect(item).toEqual(event);
+		}
+	});
+
+	describe('a login that has been deleted', () => {
+		let user: OwnUser | undefined;
+		afterAll(async () => deleteUser(user));
+
+		it('keeps its name in the events: linked.login holds the deleted login', async () => {
+			user = await createUser('Audit login');
+			await new WebSession().login(user.login, user.password);
+			const [firstLogin] = await canvas().get<Json[]>(`/api/v1/users/${user.id}/logins`);
+			// Canvas keeps at least one login per user: add another before deleting the first.
+			await canvas().post(`/api/v1/accounts/${root}/logins`, {
+				user: { id: user.id },
+				login: { unique_id: `second-${user.login}` },
+			});
+			await canvas().delete(`/api/v1/users/${user.id}/logins/${firstLogin.id}`);
+
+			const events = await runOk({
+				resource: 'authenticationsLog',
+				operation: 'getAllByUser',
+				params: { userId: user.id, returnAll: true },
+			});
+			const login = events.find((event) => event.event_type === 'login');
+			expect(login, 'the web login must be in the log').toBeDefined();
+			const linked = login!.linked as Json;
+			expect(linked.login).toMatchObject({ id: firstLogin.id, unique_id: user.login, workflow_state: 'deleted' });
+			expect(linked.user).toMatchObject({ id: Number(user.id), name: user.name });
+			// The same as Canvas' own answer for that page.
+			const expected = await expectedLinked(`/api/v1/audit/authentication/users/${user.id}`, AUTHENTICATION_LINKS);
+			expect(linked).toEqual(expected.get(String(login!.id))!.linked);
+		});
 	});
 });

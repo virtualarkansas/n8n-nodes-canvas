@@ -11,6 +11,8 @@ const CONTEXT_OPERATIONS = [
 	'update',
 	'updateIssue',
 ];
+/** Operations that also take a group or a user: Get Selective Data is for courses and accounts only. */
+const GROUP_USER_OPERATIONS = CONTEXT_OPERATIONS.filter((operation) => operation !== 'getSelectiveData');
 
 /**
  * Settings of a migration. Create and Update take the same ones ("Update a
@@ -306,7 +308,7 @@ export const contentMigrationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['contentMigration'],
-				operation: CONTEXT_OPERATIONS,
+				operation: GROUP_USER_OPERATIONS,
 			},
 		},
 		options: [
@@ -329,6 +331,31 @@ export const contentMigrationFields: INodeProperties[] = [
 		],
 		description:
 			'The context to migrate content into. Courses accept every migration type; accounts only question bank imports (QTI), groups and users only ZIP files. List Migrators shows what a context accepts.',
+	},
+	{
+		displayName: 'Context Type',
+		name: 'contextType',
+		type: 'options',
+		required: true,
+		default: 'course',
+		displayOptions: {
+			show: {
+				resource: ['contentMigration'],
+				operation: ['getSelectiveData'],
+			},
+		},
+		options: [
+			{
+				name: 'Account',
+				value: 'account',
+			},
+			{
+				name: 'Course',
+				value: 'course',
+			},
+		],
+		description:
+			'The context of the migration. Groups and users only have ZIP imports, which have nothing to select.',
 	},
 	{
 		displayName: 'Account ID',
@@ -383,7 +410,7 @@ export const contentMigrationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['contentMigration'],
-				operation: CONTEXT_OPERATIONS,
+				operation: GROUP_USER_OPERATIONS,
 				contextType: ['group'],
 			},
 		},
@@ -398,7 +425,7 @@ export const contentMigrationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['contentMigration'],
-				operation: CONTEXT_OPERATIONS,
+				operation: GROUP_USER_OPERATIONS,
 				contextType: ['user'],
 			},
 		},
