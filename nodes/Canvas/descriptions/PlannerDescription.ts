@@ -21,7 +21,7 @@ export const plannerOperations: INodeProperties[] = [
 			{
 				name: 'Create Override',
 				value: 'createOverride',
-				description: 'Create a planner override',
+				description: 'Mark a planner item as complete or dismissed for the current user',
 				action: 'Create a planner override',
 			},
 			{
@@ -39,13 +39,14 @@ export const plannerOperations: INodeProperties[] = [
 			{
 				name: 'Get Many Items',
 				value: 'getAllItems',
-				description: 'Get many planner items',
+				description:
+					'Get the items on a user\'s planner (assignments, quizzes, pages, discussions, events, notes)',
 				action: 'Get many planner items',
 			},
 			{
 				name: 'Get Many Notes',
 				value: 'getAllNotes',
-				description: 'Get many planner notes',
+				description: 'Get the planner notes of the current user (Canvas returns all of them at once)',
 				action: 'Get many planner notes',
 			},
 			{
@@ -127,7 +128,6 @@ export const plannerFields: INodeProperties[] = [
 		displayName: 'Title',
 		name: 'title',
 		type: 'string',
-		required: true,
 		default: '',
 		displayOptions: {
 			show: {
@@ -135,7 +135,8 @@ export const plannerFields: INodeProperties[] = [
 				operation: ['createNote'],
 			},
 		},
-		description: 'The title of the planner note',
+		description:
+			'The title of the planner note (at most 255 characters). Required, except when the note is linked to a learning object: left empty, the note then takes the title of that object.',
 	},
 	{
 		displayName: 'Todo Date',
@@ -149,7 +150,8 @@ export const plannerFields: INodeProperties[] = [
 				operation: ['createNote'],
 			},
 		},
-		description: 'The date when the note is due',
+		description:
+			'The date and time at which the note appears in the planner. A value without a time zone is read in the time zone of the Canvas user.',
 	},
 	{
 		displayName: 'Additional Fields',
@@ -169,7 +171,8 @@ export const plannerFields: INodeProperties[] = [
 				name: 'course_id',
 				type: 'string',
 				default: '',
-				description: 'The ID of the course to associate the note with',
+				description:
+					'The numeric ID of a course to associate the note with. The user must be able to see the course.',
 			},
 			{
 				displayName: 'Details',
@@ -179,21 +182,30 @@ export const plannerFields: INodeProperties[] = [
 					rows: 4,
 				},
 				default: '',
-				description: 'The details or body of the planner note',
+				description: 'The text of the planner note',
 			},
 			{
 				displayName: 'Linked Object ID',
 				name: 'linked_object_id',
 				type: 'string',
 				default: '',
-				description: 'The ID of the object to link to',
+				description:
+					'The ID of a learning object in the course to link the note to. Needs Linked Object Type and Course ID. Only one note per user can be linked to an object.',
 			},
 			{
 				displayName: 'Linked Object Type',
 				name: 'linked_object_type',
-				type: 'string',
-				default: '',
-				description: 'The type of object to link to (e.g., assignment, discussion_topic)',
+				type: 'options',
+				options: [
+					{ name: 'Announcement', value: 'announcement' },
+					{ name: 'Assignment', value: 'assignment' },
+					{ name: 'Discussion Topic', value: 'discussion_topic' },
+					{ name: 'Quiz', value: 'quiz' },
+					{ name: 'Wiki Page', value: 'wiki_page' },
+				],
+				default: 'assignment',
+				description:
+					'The type of the learning object to link the note to. Needs Linked Object ID and Course ID.',
 			},
 		],
 	},
@@ -219,7 +231,8 @@ export const plannerFields: INodeProperties[] = [
 				name: 'course_id',
 				type: 'string',
 				default: '',
-				description: 'The ID of the course to associate the note with',
+				description:
+					'The numeric ID of the course to associate the note with. Leave empty to detach the note from its course. Cannot be changed for a note linked to a learning object.',
 			},
 			{
 				displayName: 'Details',
@@ -229,21 +242,22 @@ export const plannerFields: INodeProperties[] = [
 					rows: 4,
 				},
 				default: '',
-				description: 'The details or body of the planner note',
+				description: 'The text of the planner note',
 			},
 			{
 				displayName: 'Title',
 				name: 'title',
 				type: 'string',
 				default: '',
-				description: 'The title of the planner note',
+				description: 'The title of the planner note (at most 255 characters)',
 			},
 			{
 				displayName: 'Todo Date',
 				name: 'todo_date',
 				type: 'dateTime',
 				default: '',
-				description: 'The date when the note is due',
+				description:
+					'The date and time at which the note appears in the planner. A value without a time zone is read in the time zone of the Canvas user.',
 			},
 		],
 	},
@@ -269,12 +283,24 @@ export const plannerFields: INodeProperties[] = [
 				value: 'announcement',
 			},
 			{
+				name: 'Assessment Request (Peer Review)',
+				value: 'assessment_request',
+			},
+			{
 				name: 'Assignment',
 				value: 'assignment',
 			},
 			{
+				name: 'Calendar Event',
+				value: 'calendar_event',
+			},
+			{
 				name: 'Discussion Topic',
 				value: 'discussion_topic',
+			},
+			{
+				name: 'Peer Review Sub Assignment',
+				value: 'peer_review_sub_assignment',
 			},
 			{
 				name: 'Planner Note',
@@ -285,11 +311,16 @@ export const plannerFields: INodeProperties[] = [
 				value: 'quiz',
 			},
 			{
+				name: 'Sub Assignment (Discussion Checkpoint)',
+				value: 'sub_assignment',
+			},
+			{
 				name: 'Wiki Page',
 				value: 'wiki_page',
 			},
 		],
-		description: 'The type of the plannable item',
+		description:
+			'The type of the item to override (the plannable_type of a planner item). An assignment that is really a graded quiz, discussion or page is stored under that type.',
 	},
 	{
 		displayName: 'Plannable ID',
@@ -303,7 +334,8 @@ export const plannerFields: INodeProperties[] = [
 				operation: ['createOverride'],
 			},
 		},
-		description: 'The ID of the plannable item',
+		description:
+			'The ID of the item to override (the plannable_id of a planner item). A user can have one override per item.',
 	},
 	{
 		displayName: 'Additional Fields',
@@ -323,7 +355,7 @@ export const plannerFields: INodeProperties[] = [
 				name: 'dismissed',
 				type: 'boolean',
 				default: false,
-				description: 'Whether the item is dismissed from the planner',
+				description: 'Whether the item is dismissed from the opportunities list',
 			},
 			{
 				displayName: 'Marked Complete',
@@ -356,14 +388,16 @@ export const plannerFields: INodeProperties[] = [
 				name: 'dismissed',
 				type: 'boolean',
 				default: false,
-				description: 'Whether the item is dismissed from the planner',
+				description:
+					'Whether the item is dismissed from the opportunities list. Canvas rewrites both flags on every update: when this field is not added it is saved as false.',
 			},
 			{
 				displayName: 'Marked Complete',
 				name: 'marked_complete',
 				type: 'boolean',
 				default: false,
-				description: 'Whether the item is marked as complete',
+				description:
+					'Whether the item is marked as complete. Canvas rewrites both flags on every update: when this field is not added it is saved as false.',
 			},
 		],
 	},
@@ -390,14 +424,15 @@ export const plannerFields: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				description:
-					'Comma-separated list of context codes (e.g., course_123, user_456) to filter items',
+					'Comma-separated context codes of the courses, groups or user whose items to return, e.g. course_123, group_45, user_6. Defaults to all contexts of the user. Concluded courses are ignored unless Include has Concluded.',
 			},
 			{
 				displayName: 'End Date',
 				name: 'end_date',
 				type: 'dateTime',
 				default: '',
-				description: 'Only return items up to this date',
+				description:
+					'Only return items up to this date (yyyy-mm-dd or ISO 8601). Without Start Date and End Date Canvas returns two weeks before to two weeks after today.',
 			},
 			{
 				displayName: 'Filter',
@@ -425,25 +460,63 @@ export const plannerFields: INodeProperties[] = [
 				description: 'Filter items by status',
 			},
 			{
+				displayName: 'Include',
+				name: 'include',
+				type: 'multiOptions',
+				options: [
+					{
+						name: 'Account Calendars',
+						value: 'account_calendars',
+						description: 'Events of the account calendars the user follows',
+					},
+					{
+						name: 'All Courses',
+						value: 'all_courses',
+						description: 'Every course of the user, without listing them in Context Codes',
+					},
+					{
+						name: 'Concluded',
+						value: 'concluded',
+						description: 'Items of concluded courses',
+					},
+				],
+				default: [],
+				description: 'Additional contexts to take items from',
+			},
+			{
 				displayName: 'Observed User ID',
 				name: 'observed_user_id',
 				type: 'string',
 				default: '',
-				description: 'Return planner items for an observed user instead',
+				description:
+					'For an observer: return the planner items of this observed student. Needs Context Codes with courses in which the observer is linked to the student (or Include: All Courses).',
+			},
+			{
+				displayName: 'Order',
+				name: 'order',
+				type: 'options',
+				options: [
+					{ name: 'Ascending', value: 'asc' },
+					{ name: 'Descending', value: 'desc' },
+				],
+				default: 'asc',
+				description: 'Order of the items by date',
 			},
 			{
 				displayName: 'Start Date',
 				name: 'start_date',
 				type: 'dateTime',
 				default: '',
-				description: 'Only return items from this date onwards',
+				description:
+					'Only return items from this date onwards (yyyy-mm-dd or ISO 8601). Without Start Date and End Date Canvas returns two weeks before to two weeks after today.',
 			},
 			{
 				displayName: 'User ID',
 				name: 'user_id',
 				type: 'string',
 				default: '',
-				description: 'Return planner items for a specific user (requires appropriate permissions)',
+				description:
+					'Return the planner items of this user instead of the user of the credential. Only the user themselves and observers linked to the user are allowed; admins and teachers are not.',
 			},
 		],
 	},
@@ -470,21 +543,21 @@ export const plannerFields: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				description:
-					'Comma-separated list of context codes (e.g., course_123) to filter notes',
+					'Comma-separated context codes of courses whose notes to return, e.g. course_123. Add the user\'s own code (user_6) to include notes that belong to no course.',
 			},
 			{
 				displayName: 'End Date',
 				name: 'end_date',
 				type: 'dateTime',
 				default: '',
-				description: 'Only return notes up to this date',
+				description: 'Only return notes with a todo date up to the end of this day',
 			},
 			{
 				displayName: 'Start Date',
 				name: 'start_date',
 				type: 'dateTime',
 				default: '',
-				description: 'Only return notes from this date onwards',
+				description: 'Only return notes with a todo date from this date onwards',
 			},
 		],
 	},
