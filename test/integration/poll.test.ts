@@ -36,14 +36,11 @@ describe('poll', () => {
 	const direct = async (id: string): Promise<Json> =>
 		((await asOwner.get<Json>(`/api/v1/polls/${id}`)).polls as Json[])[0];
 	const allPolls = (): Promise<Json[]> => asOwner.getAll<Json>('/api/v1/polls', 'polls');
-	/**
-	 * POST/PUT answers keep Canvas' wrapper, { polls: [poll], meta: {} }: the node unwraps
-	 * `dataKey` for GET responses only (a change for Canvas.node.ts, see the battery report).
-	 */
+	/** Create and Update output the poll itself, not Canvas' { polls: [poll], meta: {} } wrapper. */
 	const unwrap = (item: Json): Json => {
-		expect(Object.keys(item).sort()).toEqual(['meta', 'polls']);
-		expect(item.polls).toHaveLength(1);
-		return (item.polls as Json[])[0];
+		expect(item).not.toHaveProperty('polls');
+		expect(item).not.toHaveProperty('meta');
+		return item;
 	};
 
 	beforeAll(async () => {

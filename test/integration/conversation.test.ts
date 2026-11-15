@@ -900,9 +900,8 @@ describe('conversation', () => {
 		expect((await view(teacher, String(ok.id))).subject).toBe('S'.repeat(255));
 	});
 
-	// Canvas reports these as a bare list, `[{"attribute":"recipients","message":"invalid"}]`. Surfacing that
-	// needs a change in the shared request layer (GenericFunctions.getCanvasErrorDetails), see the report.
-	it('errors [needs shared change]: the Error output names the attribute Canvas rejected', async () => {
+	// Canvas reports these as a bare list, `[{"attribute":"recipients","message":"invalid"}]`.
+	it('errors: the Error output names the attribute Canvas rejected', async () => {
 		const unknown = await runNode({
 			resource: 'conversation',
 			operation: 'create',

@@ -284,6 +284,7 @@ export function buildCollaborationRequest(
 			return {
 				method: 'DELETE',
 				endpoint: `${getCollaborationBasePath(getParam)}/collaborations/${getParam('collaborationId')}`,
+				dataKey: 'collaboration',
 			};
 
 		case 'getAll':

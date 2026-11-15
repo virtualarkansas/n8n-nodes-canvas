@@ -388,6 +388,7 @@ function collectMessages(value: unknown, out: string[], depth = 0): void {
  * Canvas reports errors in several shapes:
  *   { "errors": [{ "message": "..." , "error_code": "..." }] }
  *   { "errors": { "field": [{ "type": "blank", "message": "..." }] } }
+ *   [{ "attribute": "recipients", "message": "invalid" }]
  *   { "message": "..." } / { "error": "..." } / plain text
  */
 export function getCanvasErrorDetails(error: unknown): {
@@ -412,6 +413,18 @@ function describeCanvasErrorBody(body: unknown): {
 		// Skip HTML error pages; keep short plain-text bodies such as "403 Forbidden (Rate Limit Exceeded)".
 		if (text && !text.startsWith('<') && text.length <= 500) {
 			messages.push(text);
+		}
+	} else if (Array.isArray(body)) {
+		// Conversations and reservations: [{ "attribute": "recipients", "message": "invalid" }]
+		errors = body;
+		for (const entry of body) {
+			const before = messages.length;
+			collectMessages(entry, messages, 1);
+			const attribute =
+				entry && typeof entry === 'object' ? (entry as Record<string, unknown>).attribute : undefined;
+			if (typeof attribute === 'string' && attribute && messages.length > before) {
+				messages[before] = `${attribute}: ${messages[before]}`;
+			}
 		}
 	} else if (body && typeof body === 'object') {
 		const obj = body as Record<string, unknown>;

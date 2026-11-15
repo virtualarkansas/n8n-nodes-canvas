@@ -26,8 +26,6 @@ describe('notificationPreference', () => {
 		return Object.fromEntries(list.map((p) => [String(p.notification), p]));
 	}
 
-	/** Update operations answer with `{ notification_preferences: [...] }`. */
-	const changed = (item: Json): Json[] => (item.notification_preferences as Json[] | undefined) ?? [item];
 
 	beforeAll(async () => {
 		sbx = await commsSandbox();
@@ -125,13 +123,13 @@ describe('notificationPreference', () => {
 
 	it('update: each frequency is stored for the caller\'s own channel', async () => {
 		for (const frequency of ['daily', 'weekly', 'never', 'immediately']) {
-			const [result] = await runOk({
+			const result = await runOk({
 				resource: 'notificationPreference',
 				operation: 'update',
 				persona: asOwner,
 				params: { channelId: owner.channelId, notification: 'new_announcement', frequency },
 			});
-			expect(changed(result)).toEqual([{ notification: 'new_announcement', category: 'announcement', frequency }]);
+			expect(result).toEqual([{ notification: 'new_announcement', category: 'announcement', frequency }]);
 			expect((await actual(owner, String(owner.channelId))).new_announcement.frequency).toBe(frequency);
 		}
 	});
@@ -168,7 +166,7 @@ describe('notificationPreference', () => {
 	it('update: an admin changes another user\'s preference with "Act as User ID"', async () => {
 		const before = (await actual(other, otherChannelId)).new_announcement.frequency;
 		const target = before === 'daily' ? 'weekly' : 'daily';
-		const [result] = await runOk({
+		const result = await runOk({
 			resource: 'notificationPreference',
 			operation: 'update',
 			params: {
@@ -178,7 +176,7 @@ describe('notificationPreference', () => {
 				options: { as_user_id: ` ${other.id} ` },
 			},
 		});
-		expect(changed(result)[0]).toMatchObject({ notification: 'new_announcement', frequency: target });
+		expect(result[0]).toMatchObject({ notification: 'new_announcement', frequency: target });
 		expect((await actual(other, otherChannelId)).new_announcement.frequency).toBe(target);
 	});
 
@@ -214,9 +212,8 @@ describe('notificationPreference', () => {
 		expect(stored.new_discussion_topic.frequency).toBe('weekly');
 	});
 
-	// The update endpoints answer `{ "notification_preferences": [ ... ] }`. The node can only unwrap
-	// such responses for GET requests (`dataKey`); doing it here needs a change in Canvas.node.ts.
-	it('update [needs shared change]: the output is the changed preference itself, like Get', async () => {
+	// The update endpoints answer `{ "notification_preferences": [ ... ] }`; the node outputs the entries.
+	it('update: the output is the changed preference itself, like Get', async () => {
 		const [result] = await runOk({
 			resource: 'notificationPreference',
 			operation: 'update',
@@ -231,14 +228,14 @@ describe('notificationPreference', () => {
 		const inCategory = Object.values(before).filter((p) => p.category === 'course_content');
 		expect(inCategory.length).toBeGreaterThan(1);
 
-		const [result] = await runOk({
+		const result = await runOk({
 			resource: 'notificationPreference',
 			operation: 'updateByCategory',
 			persona: asOwner,
 			params: { channelId: owner.channelId, category: 'course_content', frequency: 'never' },
 		});
 		expect(
-			changed(result)
+			result
 				.map((p) => p.notification)
 				.sort(),
 		).toEqual(inCategory.map((p) => p.notification).sort());
@@ -293,7 +290,7 @@ describe('notificationPreference', () => {
 	});
 
 	it('updateMultiple: several notifications with different frequencies in one request', async () => {
-		const [result] = await runOk({
+		const result = await runOk({
 			resource: 'notificationPreference',
 			operation: 'updateMultiple',
 			persona: asOwner,
@@ -310,7 +307,7 @@ describe('notificationPreference', () => {
 				},
 			},
 		});
-		expect(changed(result)).toHaveLength(3);
+		expect(result).toHaveLength(3);
 		const stored = await actual(owner, String(owner.channelId));
 		expect(stored.new_announcement.frequency).toBe('weekly');
 		expect(stored.assignment_due_date_changed.frequency).toBe('never');

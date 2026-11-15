@@ -337,6 +337,7 @@ export function buildBlackoutDateRequest(
 						end_date: toDay(getParam('endDate')),
 					},
 				},
+				dataKey: 'blackout_date',
 			};
 
 		case 'delete':
@@ -349,6 +350,7 @@ export function buildBlackoutDateRequest(
 			return {
 				method: 'GET',
 				endpoint: `${getBlackoutDateBasePath(getParam)}/blackout_dates/${blackoutDateId}`,
+				dataKey: 'blackout_date',
 			};
 
 		case 'getAll':
@@ -368,6 +370,7 @@ export function buildBlackoutDateRequest(
 				method: 'PUT',
 				endpoint: `${getBlackoutDateBasePath(getParam)}/blackout_dates/${blackoutDateId}`,
 				body: { blackout_date: updateFields },
+				dataKey: 'blackout_date',
 			};
 		}
 

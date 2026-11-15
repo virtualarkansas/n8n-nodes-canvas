@@ -154,11 +154,10 @@ export function buildConversationRequest(
 				qs: {
 					user_id: getParam('userId'),
 					...getParamObject('options'),
-					// This endpoint answers every "page" with the complete list while still
-					// advertising further pages. Asking for the largest page keeps Canvas from
-					// announcing a next page (up to 100 messages), so nothing is fetched twice.
-					per_page: 100,
 				},
+				// Canvas answers every "page" with the complete list while still announcing
+				// further pages; following them would repeat every message.
+				singlePage: true,
 			};
 
 		case 'getUnreadCount':
@@ -280,6 +279,7 @@ export function buildNotificationPreferenceRequest(
 				body: {
 					notification_preferences: { frequency: getParam('frequency') },
 				},
+				dataKey: 'notification_preferences',
 			};
 		}
 
@@ -292,6 +292,7 @@ export function buildNotificationPreferenceRequest(
 				body: {
 					notification_preferences: { frequency: getParam('frequency') },
 				},
+				dataKey: 'notification_preferences',
 			};
 		}
 
@@ -318,6 +319,7 @@ export function buildNotificationPreferenceRequest(
 				body: {
 					notification_preferences: notificationPreferences,
 				},
+				dataKey: 'notification_preferences',
 			};
 		}
 

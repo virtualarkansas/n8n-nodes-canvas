@@ -31,6 +31,11 @@ export interface IRequestConfig {
 	 */
 	fetchAllPages?: boolean;
 	/**
+	 * The endpoint answers with its complete list whatever page is asked for, while
+	 * still announcing further pages: read it once and do not follow them.
+	 */
+	singlePage?: boolean;
+	/**
 	 * Reshape the complete list before it becomes items, e.g. to merge entries
 	 * that Canvas split across pages.
 	 */

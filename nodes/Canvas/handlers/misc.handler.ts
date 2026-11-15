@@ -593,6 +593,7 @@ export function buildPollRequest(
 				method: 'POST',
 				endpoint: '/api/v1/polls',
 				body: { polls: [poll] },
+				dataKey: 'polls',
 			};
 		}
 
@@ -627,6 +628,7 @@ export function buildPollRequest(
 				method: 'PUT',
 				endpoint: `/api/v1/polls/${pollId}`,
 				body: { polls: [poll] },
+				dataKey: 'polls',
 			};
 		}
 

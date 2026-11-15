@@ -565,9 +565,12 @@ async function processItem(
 			}
 
 			if (request.method === 'GET') {
-				const pagination: IPaginationOptions = request.fetchAllPages
+				let pagination: IPaginationOptions = request.fetchAllPages
 					? { enabled: true, perPage: CANVAS_MAX_PER_PAGE, maxPages: 0 }
 					: resolvePagination(context, itemIndex, nodePagination);
+				if (request.singlePage) {
+					pagination = { ...pagination, enabled: false };
+				}
 				const response = await canvasApiRequestAllItems.call(
 					context,
 					request.method,

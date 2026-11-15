@@ -121,9 +121,8 @@ describe('blackoutDate', () => {
 		expect(unwrap(inAccount)).toMatchObject({ id: Number(accountDateId), event_title: 'District closure' });
 	});
 
-	// Canvas answers Create, Get and Update with `{ "blackout_date": { ... } }` while Get Many returns the
-	// plain records. Unwrapping single records needs support in the shared node code (see the report).
-	it('get [needs shared change]: the output is the blackout date itself, like the items of Get Many', async () => {
+	// Canvas answers Create, Get and Update with `{ "blackout_date": { ... } }`; the node outputs the record.
+	it('get: the output is the blackout date itself, like the items of Get Many', async () => {
 		const [inCourse] = await runOk({
 			resource: 'blackoutDate',
 			operation: 'get',
