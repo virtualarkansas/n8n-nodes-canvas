@@ -68,6 +68,7 @@ corrected. Where that changed what you see in the node:
 | Account Notification | Update: **Message** is a required field (Canvas rejects an update without it) | Fill in Message |
 | Authentication Provider | Type `twitter` and the settings `scopes`, `skip_internal_lookup`, `user_info_endpoint` removed (Canvas knows `scope` and `userinfo_endpoint`); Update SSO Settings sends the settings where Canvas reads them | Re-select the settings |
 | Calendar Event | Get Many: `includes` replaced by `include` (the name Canvas reads) | Saved values still work |
+| Content Export, Content Migration, Notification Preference | **User ID** defaults to `self` (an empty ID built an invalid path) | Nothing |
 | Content Migration | Default migration type is Course Copy; `workflow_state` removed from Update; Get Selective Data: Group and User contexts removed (Canvas cannot list the content of their ZIP imports) | Choose the type explicitly |
 | Content Share | Create, Add Users, Update and Delete no longer take a User ID (Canvas only has these routes for the calling user) | Nothing |
 | Account Calendar, Assignment | The JSON fields of Update Many, Bulk Update Dates, Batch Create Overrides and Batch Update Overrides are empty by default (the sample moved to the placeholder; the Update Many sample named account 1) | Fill in the list |
