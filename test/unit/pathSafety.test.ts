@@ -58,7 +58,7 @@ describe('no parameter value changes where a request goes', () => {
 		for (const op of listOperations()) {
 			const types = new Map(op.fields.map((field) => [field.name, field.type]));
 			for (const variant of paramVariants(op)) {
-				let baseline: { endpoint: string; encodedParams?: string[] };
+				let baseline: { endpoint: string; encodedParams?: string[]; thenGet?: string };
 				try {
 					baseline = buildRequestFor(op.resource, op.operation, variant.params);
 				} catch {
@@ -71,7 +71,7 @@ describe('no parameter value changes where a request goes', () => {
 					// What the path looks like with a harmless value of the same shape in this parameter
 					// (an empty and a filled parameter, or one ID and several, may legitimately lead to
 					// different routes).
-					const harmless = (shape: unknown): { endpoint: string; encodedParams?: string[] } => {
+					const harmless = (shape: unknown): { endpoint: string; encodedParams?: string[]; thenGet?: string } => {
 						try {
 							const value = Array.isArray(shape) && shape.length > 1 ? ['x7', 'x8'] : 'x7';
 							return buildRequestFor(op.resource, op.operation, { ...variant.params, [name]: value });
@@ -99,6 +99,15 @@ describe('no parameter value changes where a request goes', () => {
 						const multiSegment = (built.encodedParams ?? reference.encodedParams ?? []).includes(name);
 						if (!multiSegment && segments(built.endpoint) !== segments(reference.endpoint)) {
 							violations.push(`${where}: ${reference.endpoint} became ${built.endpoint}`);
+						}
+						// The same for the path that is read after a write.
+						if (
+							!multiSegment &&
+							typeof built.thenGet === 'string' &&
+							typeof reference.thenGet === 'string' &&
+							segments(built.thenGet) !== segments(reference.thenGet)
+						) {
+							violations.push(`${where}: the read after the write, ${reference.thenGet}, became ${built.thenGet}`);
 						}
 					}
 				}
