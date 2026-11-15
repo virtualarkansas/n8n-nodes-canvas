@@ -417,6 +417,80 @@ describe('outcomeGroup', () => {
 		}
 	});
 
+	it('linkOutcome, listOutcomes, unlinkOutcome, import: account and global context', async () => {
+		const contexts = [
+			{ context: 'account', base: `/api/v1/accounts/${accountId}`, rootId: accountRootId, sourceGroupId: accountGroupId, params: { accountId } },
+			{ context: 'global', base: '/api/v1/global', rootId: globalRootId, sourceGroupId: globalGroupId, params: {} },
+		];
+		const scratch: string[] = [];
+		try {
+			for (const { context, base, rootId, sourceGroupId, params } of contexts) {
+				const outcomesOf = async (id: string): Promise<number[]> =>
+					(await canvas().getAll<Json>(`${base}/outcome_groups/${id}/outcomes`)).map((l) => Number((l.outcome as Json).id));
+				const target = await canvas().post<Json>(`${base}/outcome_groups/${rootId}/subgroups`, { title: unique(`${context} link target`) });
+				const targetId = String(target.id);
+				scratch.push(`${base}/outcome_groups/${targetId}`);
+				// An outcome of this context, created in the group the earlier tests made.
+				const outcomeId = await createOutcome(`${base}/outcome_groups/${sourceGroupId}`, `${context} linked outcome`);
+
+				const [link] = await runOk({
+					resource: 'outcomeGroup',
+					operation: 'linkOutcome',
+					params: { context, ...params, outcomeGroupId: targetId, outcomeId },
+				});
+				expect(link).toMatchObject({ outcome_group: { id: Number(targetId) }, outcome: { id: outcomeId } });
+				expect(await outcomesOf(targetId), context).toEqual([outcomeId]);
+
+				const listed = await runOk({
+					resource: 'outcomeGroup',
+					operation: 'listOutcomes',
+					params: { context, ...params, outcomeGroupId: sourceGroupId, options: { outcome_style: 'full' }, pagination: { returnAll: true } },
+				});
+				expect(listed.map((l) => Number((l.outcome as Json).id)).sort()).toEqual((await outcomesOf(sourceGroupId)).sort());
+				expect(listed.find((l) => (l.outcome as Json).id === outcomeId)!.outcome).toHaveProperty('description');
+
+				if (context === 'account') {
+					const [unlinked] = await runOk({
+						resource: 'outcomeGroup',
+						operation: 'unlinkOutcome',
+						params: { context, ...params, outcomeGroupId: targetId, outcomeId },
+					});
+					expect(unlinked).toMatchObject({ outcome: { id: outcomeId } });
+					expect(await outcomesOf(targetId), context).toEqual([]);
+					// Still linked in its own group, so the outcome itself remains.
+					expect(await outcomesOf(sourceGroupId)).toContain(outcomeId);
+				} else {
+					// Canvas deletes a global link and then fails to render it (500, NoMethodError in
+					// outcome_link_json: a global link's context is its group). The node does not offer it.
+					const refused = await runNode({
+						resource: 'outcomeGroup',
+						operation: 'unlinkOutcome',
+						params: { context, outcomeGroupId: targetId, outcomeId, errorHandling: { onError: 'continueWithError' } },
+					});
+					expect(refused.error[0]).toMatchObject({ errorType: 'INVALID_PARAMETERS' });
+					expect(String(refused.error[0].errorMessage)).toContain('not available for global outcome groups');
+					expect(await outcomesOf(targetId), 'nothing was sent').toEqual([outcomeId]);
+					const direct = await canvas().request('DELETE', `${base}/outcome_groups/${targetId}/outcomes/${outcomeId}`);
+					expect(direct.status, 'Canvas still answers a global unlink with 500').toBe(500);
+					expect(await outcomesOf(targetId), 'although the link is gone').toEqual([]);
+				}
+
+				const [copy] = await runOk({
+					resource: 'outcomeGroup',
+					operation: 'import',
+					params: { context, ...params, outcomeGroupId: targetId, sourceOutcomeGroupId: sourceGroupId },
+				});
+				const source = await canvas().get<Json>(`${base}/outcome_groups/${sourceGroupId}`);
+				expect(copy).toMatchObject({ title: source.title, parent_outcome_group: { id: Number(targetId) } });
+				const copied = await canvas().get<Json>(`${base}/outcome_groups/${copy.id}`);
+				expect(copied.parent_outcome_group).toMatchObject({ id: Number(targetId) });
+				expect((await outcomesOf(String(copy.id))).sort()).toEqual((await outcomesOf(sourceGroupId)).sort());
+			}
+		} finally {
+			for (const path of scratch) await canvas().request('DELETE', path);
+		}
+	});
+
 	it('delete: removes a group with its subgroups and links; a root group cannot be deleted', async () => {
 		const [deleted] = await runOk({ resource: 'outcomeGroup', operation: 'delete', params: { context: 'course', courseId, outcomeGroupId: targetGroupId } });
 		expect(deleted).toMatchObject({ id: Number(targetGroupId) });

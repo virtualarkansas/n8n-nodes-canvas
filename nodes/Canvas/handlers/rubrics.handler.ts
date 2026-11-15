@@ -516,6 +516,13 @@ export function handleOutcomeGroupResource(
 		}
 
 		case 'unlinkOutcome':
+			// Canvas removes the link of a global group, then fails to render it (500): global
+			// links name the group as their context and its API helpers have no route for that.
+			if (getParam('context') === 'global') {
+				throw new ApplicationError(
+					'Unlink Outcome is not available for global outcome groups: Canvas removes the link but answers with an error 500',
+				);
+			}
 			return {
 				method: 'DELETE',
 				endpoint: `${basePath}/outcome_groups/${groupId}/outcomes/${getParam('outcomeId')}`,

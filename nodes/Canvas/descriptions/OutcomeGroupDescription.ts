@@ -1,7 +1,7 @@
 import type { INodeProperties } from 'n8n-workflow';
 
 /** Operations Canvas only has for accounts and courses, not for global outcome groups. */
-const CONTEXT_ONLY_OPERATIONS = ['getAll', 'getAllLinks'];
+const CONTEXT_ONLY_OPERATIONS = ['getAll', 'getAllLinks', 'unlinkOutcome'];
 const ANY_CONTEXT_OPERATIONS = [
 	'create',
 	'delete',
@@ -11,7 +11,6 @@ const ANY_CONTEXT_OPERATIONS = [
 	'linkOutcome',
 	'listOutcomes',
 	'listSubgroups',
-	'unlinkOutcome',
 	'update',
 ];
 
@@ -183,7 +182,7 @@ export const outcomeGroupFields: INodeProperties[] = [
 			},
 		],
 		description:
-			'The account or course to list from. Global outcome groups cannot be listed as a whole; walk them with Get Root, List Subgroups and List Outcomes.',
+			'The account or course of the outcome group. Global outcome groups cannot be listed as a whole (walk them with Get Root, List Subgroups and List Outcomes), and Canvas fails with an error after it has unlinked an outcome from a global group.',
 	},
 	{
 		displayName: 'Account ID',
