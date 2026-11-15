@@ -1008,7 +1008,7 @@ describe('cross-cutting', () => {
 				await viaStub({ resource: 'course', operation: 'listStudents', params: { courseId: '5', options: { search_term: tricky } } });
 				const query = new URL(`${stub.url}${stub.calls[0].url}`).searchParams;
 				expect(query.get('search_term')).toBe(tricky);
-				expect(stub.calls[0].path).toBe('/api/v1/courses/5/students');
+				expect(stub.calls[0].path).toBe('/api/v1/courses/5/users');
 			} finally {
 				for (const entry of odd.slice(0, 8)) {
 					if (entry.id) await api.request('DELETE', `/api/v1/accounts/${fx('accountId')}/users/${entry.id}`).catch(() => undefined);
