@@ -12,7 +12,8 @@ import type { SandboxCourse } from './support/gradingSandbox';
  * List Imported Rubrics, Get Import Template). Rubrics are imported into a course
  * of this file's own and into the sub-account it lives in.
  */
-describe('rubric: CSV import', () => {
+// Several tests wait for background jobs of the shared Canvas: more time than the default.
+describe('rubric: CSV import', { timeout: 600_000 }, () => {
 	let accountId = '';
 	let course: SandboxCourse;
 	let courseId = '';

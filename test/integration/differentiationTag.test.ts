@@ -33,7 +33,8 @@ import type { SandboxCourse } from './support/gradingSandbox';
  * Rails one-liner) for a sub-account that belongs to this file alone. A second course
  * in an account without the setting shows what Canvas answers there.
  */
-describe('differentiation tags', () => {
+// Several tests wait for background jobs of the shared Canvas: more time than the default.
+describe('differentiation tags', { timeout: 600_000 }, () => {
 	let accountId = '';
 	let course: SandboxCourse;
 	let courseId = '';

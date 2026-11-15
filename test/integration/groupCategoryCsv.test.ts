@@ -21,7 +21,8 @@ import type { SandboxCourse } from './support/gradingSandbox';
  * file's own with twelve students (four of them in a second section as well), the
  * teacher persona as its teacher, and group categories the tests create in it.
  */
-describe('groupCategory: export and import (CSV)', () => {
+// Several tests wait for background jobs of the shared Canvas: more time than the default.
+describe('groupCategory: export and import (CSV)', { timeout: 600_000 }, () => {
 	let course: SandboxCourse;
 	let courseId = '';
 	let students: Json[] = [];

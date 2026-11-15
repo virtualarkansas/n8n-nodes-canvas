@@ -15,7 +15,8 @@ import type { SandboxCourse } from './support/gradingSandbox';
  * same class time is a different UTC time in the second half), with a section
  * that has dates of its own; and one without any dates.
  */
-describe('calendarEvent: course timetable', () => {
+// Several tests wait for background jobs of the shared Canvas: more time than the default.
+describe('calendarEvent: course timetable', { timeout: 600_000 }, () => {
 	let course: SandboxCourse;
 	let courseId = '';
 	let courseName = '';
