@@ -94,6 +94,12 @@ export interface IRequestConfig {
 	 */
 	transform?: (records: IDataObject[]) => IDataObject[];
 	/**
+	 * For a list wrapped under `dataKey` whose pages carry more than the list
+	 * (`{ events: [...], linked: {...} }`): reshape the records of each page with that
+	 * page's whole answer at hand, before pages are joined and the item limit is applied.
+	 */
+	pageTransform?: (records: IDataObject[], page: IDataObject) => IDataObject[];
+	/**
 	 * For a GET that returns one record containing a paginated array (the Link header
 	 * pages through that array): the key of the array. All pages are read and the
 	 * array is completed, so the record is output once and whole.
@@ -271,4 +277,6 @@ export interface IPaginatedResult<T = IDataObject> {
 	items: T[];
 	totalPages: number;
 	rateLimitStatus: IRateLimitStatus;
+	/** The list goes on in Canvas: reading stopped at the limit or the page budget. */
+	more?: boolean;
 }

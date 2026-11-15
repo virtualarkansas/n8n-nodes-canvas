@@ -12,6 +12,7 @@ import {
 	canvasApiRequestAllItems,
 	canvasApiRequestMergedRecord,
 	canvasDownload,
+	decodePathValue,
 	canvasFileUpload,
 	canvasFileUploadFromUrl,
 	executeWithErrorHandling,
@@ -25,7 +26,7 @@ import {
 	DEFAULT_RATE_LIMIT_OPTIONS,
 	DEFAULT_PAGINATION_OPTIONS,
 	DEFAULT_ERROR_HANDLING_OPTIONS,
-	sleep,
+	pause,
 	tagError,
 } from './GenericFunctions';
 
@@ -200,7 +201,8 @@ export class Canvas implements INodeType {
 						name: 'perPage',
 						type: 'number',
 						default: 10,
-						description: 'Number of items per page (max 100)',
+						description:
+							'Number of items Canvas is asked for per request (max 100). Setting this or Max Pages replaces the Limit field of a list operation: the node then reads up to Max Pages pages of this size.',
 						typeOptions: {
 							minValue: 1,
 							maxValue: 100,
@@ -211,7 +213,8 @@ export class Canvas implements INodeType {
 						name: 'maxPages',
 						type: 'number',
 						default: 5,
-						description: 'Maximum pages to fetch (0 = unlimited)',
+						description:
+							'Maximum pages to fetch (0 = unlimited). Setting this or Items Per Page replaces the Limit field of a list operation.',
 						typeOptions: {
 							minValue: 0,
 						},
@@ -345,6 +348,17 @@ export class Canvas implements INodeType {
 		// agent the first one only: failed items and debug requests join it, so the agent learns
 		// what went wrong instead of receiving nothing.
 		const asTool = this.getNode().type.endsWith('Tool');
+		// n8n's own node setting "On Error: Continue (using error output)" adds an output of its
+		// own and moves there every item that carries an error. Failed items are marked that way
+		// when the setting is chosen, so they arrive where the user asked for them.
+		const viaN8nErrorOutput = this.getNode().onError === 'continueErrorOutput';
+		const failedItem = (error: ICanvasErrorOutput, itemIndex: number): INodeExecutionData => ({
+			json: error as unknown as IDataObject,
+			pairedItem: { item: itemIndex },
+			...(viaN8nErrorOutput
+				? { error: new NodeOperationError(this.getNode(), error.errorMessage || 'The Canvas request failed', { itemIndex }) }
+				: {}),
+		});
 
 		// Get options
 		const errorHandlingRaw = this.getNodeParameter('errorHandling', 0, {}) as IDataObject;
@@ -355,7 +369,8 @@ export class Canvas implements INodeType {
 
 		const paginationRaw = this.getNodeParameter('pagination', 0, {}) as IDataObject;
 		const nodeReturnAll = paginationRaw.returnAll === true;
-		const pagination: IPaginationOptions = {
+		const isSet = (value: unknown): boolean => value !== undefined && value !== null && value !== '';
+		const pagination: INodePagination = {
 			enabled: true,
 			// Fetching everything is far cheaper with full pages unless a size was chosen explicitly.
 			perPage: toNumber(
@@ -364,7 +379,12 @@ export class Canvas implements INodeType {
 				1,
 			),
 			maxPages: nodeReturnAll ? 0 : toNumber(paginationRaw.maxPages, DEFAULT_PAGINATION_OPTIONS.maxPages, 0),
+			returnAll: nodeReturnAll,
+			perPageSet: isSet(paginationRaw.perPage),
+			pagesSet: isSet(paginationRaw.perPage) || isSet(paginationRaw.maxPages),
 		};
+		// Lists that were cut short, for the hint shown with the output.
+		const cutShort: ICutShort = { count: 0, hasLimitField: false };
 
 		const rateLimitRaw = this.getNodeParameter('rateLimiting', 0, {}) as IDataObject;
 		const rateLimit: IRateLimitOptions = {
@@ -401,7 +421,7 @@ export class Canvas implements INodeType {
 				);
 				if (!built.success || !built.data) {
 					if (built.error) {
-						errorItems.push({ json: built.error as unknown as IDataObject, pairedItem: { item: i } });
+						errorItems.push(failedItem(built.error, i));
 					}
 					continue;
 				}
@@ -463,10 +483,7 @@ export class Canvas implements INodeType {
 			if (result.success) {
 				successItems.push(...result.items);
 			} else if (result.error) {
-				errorItems.push({
-					json: result.error as unknown as IDataObject,
-					pairedItem: { item: result.itemIndex },
-				});
+				errorItems.push(failedItem(result.error, result.itemIndex));
 			}
 		};
 
@@ -486,6 +503,7 @@ export class Canvas implements INodeType {
 							errorHandling,
 							pagination,
 							rateLimit,
+							cutShort,
 						),
 					),
 				);
@@ -493,7 +511,7 @@ export class Canvas implements INodeType {
 				results.forEach(collect);
 
 				if (i + batch.batchSize < items.length && batch.batchDelay > 0) {
-					await sleep(batch.batchDelay);
+					await pause(this, batch.batchDelay);
 				}
 			}
 		} else {
@@ -508,13 +526,43 @@ export class Canvas implements INodeType {
 						errorHandling,
 						pagination,
 						rateLimit,
+						cutShort,
 					),
 				);
 			}
 		}
 
+		if (cutShort.count > 0) {
+			// Never let a partial list pass for a complete one.
+			const lists = cutShort.count === 1 ? 'The list' : `${cutShort.count} lists`;
+			const remedy = cutShort.hasLimitField
+				? 'Turn on Return All or raise the Limit to get all of them.'
+				: 'Turn on Pagination > Return All (or raise Max Pages) to get all of them.';
+			this.addExecutionHints?.({
+				message: `${lists} returned by Canvas LMS ${cutShort.count === 1 ? 'is' : 'are'} incomplete: Canvas has more records than were read. ${remedy}`,
+				location: 'outputPane',
+			});
+		}
+
 		return asTool ? [[...successItems, ...errorItems]] : [successItems, errorItems];
 	}
+}
+
+/** The node-level Pagination options, with what the user set explicitly. */
+interface INodePagination extends IPaginationOptions {
+	/** Pagination > Return All is on. */
+	returnAll: boolean;
+	/** Pagination > Items Per Page was set. */
+	perPageSet: boolean;
+	/** Pagination > Items Per Page or Max Pages was set. */
+	pagesSet: boolean;
+}
+
+/** Lists that ended before Canvas ran out of records. */
+interface ICutShort {
+	count: number;
+	/** One of them was limited by the operation's own Limit field. */
+	hasLimitField: boolean;
 }
 
 interface IProcessResult {
@@ -574,6 +622,7 @@ async function downloadTo(
 	itemIndex: number,
 	record: IDataObject,
 	download: NonNullable<IRequestConfig['download']>,
+	rateLimit: IRateLimitOptions,
 ): Promise<OutputItem | IDataObject> {
 	// Fields may be nested: "attachment.url".
 	const field = (path?: string): unknown =>
@@ -588,7 +637,7 @@ async function downloadTo(
 			description: `The record has no "${download.urlField}". Locked or hidden files, and files the user of the credential may not download, come without one.`,
 		});
 	}
-	const file = await canvasDownload.call(context, url);
+	const file = await canvasDownload.call(context, url, rateLimit, itemIndex);
 	const fileName = field(download.fileNameField) as string | undefined;
 	const recordType = field(download.contentTypeField) as string | undefined;
 	const binary = await context.helpers.prepareBinaryData(file.data, fileName || undefined, recordType || file.contentType);
@@ -631,7 +680,7 @@ async function waitUntilFinished(
 				'TIMEOUT',
 			);
 		}
-		await sleep(intervalMs);
+		await pause(context, intervalMs);
 	}
 }
 
@@ -648,8 +697,9 @@ async function processItem(
 	resource: string,
 	operation: string,
 	errorHandling: IErrorHandlingOptions,
-	nodePagination: IPaginationOptions,
+	nodePagination: INodePagination,
 	nodeRateLimit: IRateLimitOptions,
+	cutShort: ICutShort,
 ): Promise<IProcessResult> {
 	// Known once the request has been built; reported with any error.
 	let endpoint = '';
@@ -736,7 +786,7 @@ async function processItem(
 			if (request.method === 'GET' && request.poll) {
 				const finished = await waitUntilFinished(context, itemIndex, request, qsData, rateLimit);
 				return request.download
-					? downloadTo(context, itemIndex, finished as IDataObject, request.download)
+					? downloadTo(context, itemIndex, finished as IDataObject, request.download, rateLimit)
 					: finished;
 			}
 
@@ -756,14 +806,19 @@ async function processItem(
 					pagination,
 					rateLimit,
 					request.dataKey,
+					request.pageTransform,
 				);
+				if (response.more && !request.singlePage) {
+					cutShort.count++;
+					cutShort.hasLimitField ||= pagination.limit !== undefined;
+				}
 				if (!response.isList) {
 					const record = unwrapRecord(response.items[0], request.dataKey);
 					if (request.checkResponse) {
 						request.checkResponse(record as IDataObject);
 					}
 					if (request.download) {
-						return downloadTo(context, itemIndex, record as IDataObject, request.download);
+						return downloadTo(context, itemIndex, record as IDataObject, request.download, rateLimit);
 					}
 					if (request.responseFile && typeof record === 'string') {
 						// A file delivered as text: keep the text and attach the file.
@@ -861,35 +916,42 @@ async function processItem(
 }
 
 /**
- * Operation-level "Return All" / "Limit" fields (where a resource defines them)
- * take precedence over the node-level Pagination options.
+ * How much of a list an operation reads.
+ *
+ *  1. Everything, when Return All is on: the operation's own field or Pagination > Return All.
+ *  2. Otherwise, when Pagination > Items Per Page or Max Pages was set, those decide (pages of
+ *     that size, up to that many pages). This is also what a workflow saved before the
+ *     operations had a Limit field relies on.
+ *  3. Otherwise the operation's Limit, read in as few requests as possible.
+ *
+ * An operation without Return All / Limit fields follows the node-level options alone.
  */
 function resolvePagination(
 	context: IExecuteFunctions,
 	itemIndex: number,
-	nodePagination: IPaginationOptions,
+	nodePagination: INodePagination,
 ): IPaginationOptions {
+	const { enabled, perPage, maxPages } = nodePagination;
+	const nodeLevel: IPaginationOptions = { enabled, perPage, maxPages };
 	let returnAll: unknown;
 	let limit: unknown;
 	try {
 		returnAll = context.getNodeParameter('returnAll', itemIndex, null);
 		limit = context.getNodeParameter('limit', itemIndex, null);
 	} catch {
-		return nodePagination;
+		return nodeLevel;
 	}
 	if (returnAll === null || returnAll === undefined) {
-		return nodePagination;
+		return nodeLevel;
 	}
-	if (returnAll === true) {
-		return { ...nodePagination, perPage: CANVAS_MAX_PER_PAGE, maxPages: 0, limit: undefined };
+	if (returnAll === true || nodePagination.returnAll) {
+		return { enabled, perPage: nodePagination.perPageSet ? perPage : CANVAS_MAX_PER_PAGE, maxPages: 0 };
+	}
+	if (nodePagination.pagesSet) {
+		return nodeLevel;
 	}
 	const itemLimit = toNumber(limit, 50, 1);
-	return {
-		...nodePagination,
-		perPage: Math.min(CANVAS_MAX_PER_PAGE, itemLimit),
-		maxPages: 0,
-		limit: itemLimit,
-	};
+	return { enabled, perPage: Math.min(CANVAS_MAX_PER_PAGE, itemLimit), maxPages: 0, limit: itemLimit };
 }
 
 /** Top-level parameters of a resource that are JSON fields: a list given to one stays JSON. */
@@ -976,13 +1038,22 @@ function buildRequest(
 	}
 	request.endpoint = encodePathValues(request.endpoint, pathValues.values());
 
-	// "." and ".." as an ID would let an input value move the request to another path.
-	if (/(^|\/)\.{1,2}(\/|$)/.test(request.endpoint.split('?')[0]) && !/^https?:\/\//i.test(request.endpoint)) {
-		throw new NodeOperationError(
-			context.getNode(),
-			`A parameter of ${resource}/${operation} is "." or "..", which is not a valid ID`,
-			{ itemIndex, description: `The request path "${request.endpoint.split('?')[0]}" must not contain relative segments.` },
-		);
+	// "." and ".." as a path segment, however they are written (`%2e%2e`, with a backslash),
+	// would let an input value move the request to another path: HTTP clients and servers
+	// resolve them. Every segment of the finished path is checked, whoever put it there.
+	if (!/^https?:\/\//i.test(request.endpoint)) {
+		const builtPath = request.endpoint.split(/[?#]/)[0];
+		// Decoded as well: a proxy in front of Canvas may resolve `..%2F..` after decoding it.
+		const relative = builtPath
+			.split(/[/\\]/)
+			.some((segment) => decodePathValue(segment).split(/[/\\]/).some((part) => /^\.{1,2}$/.test(part)));
+		if (relative || builtPath.includes('\\')) {
+			throw new NodeOperationError(
+				context.getNode(),
+				`A parameter of ${resource}/${operation} is not a valid ID: it would change the path of the request`,
+				{ itemIndex, description: `The request path "${builtPath}" must not contain relative segments ("." or "..") or backslashes.` },
+			);
+		}
 	}
 
 	// A required ID that resolved to nothing leaves an empty path segment

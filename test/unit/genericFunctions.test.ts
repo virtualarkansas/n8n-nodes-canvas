@@ -9,6 +9,8 @@ import {
 	canvasApiRequest,
 	canvasApiRequestAllItems,
 	canvasDownload,
+	canvasFileUpload,
+	canvasFileUploadFromUrl,
 	categorizeError,
 	encodePathValues,
 	isThrottleResponse,
@@ -573,6 +575,56 @@ describe('canvasApiRequest', () => {
 		expect(token.calls).toHaveLength(1);
 	});
 
+	it('after a token renewal a refused request is read the normal way, and a write that may have run is not repeated', async () => {
+		const asOAuth2 = (context: IExecuteFunctions): void => {
+			(context as unknown as { getNodeParameter: (name: string) => string }).getNodeParameter = () => 'oAuth2';
+		};
+		const expired: FakeResponse = { status: 401, body: { errors: [{ message: 'Invalid access token.' }] } };
+
+		// The renewed request is throttled: n8n's error has lost Canvas' text, so the request is
+		// sent again the normal way, recognised as throttling and repeated after a pause.
+		const throttled = fakeContext((_options, index) => [expired, THROTTLED, THROTTLED, { body: { id: 7 } }][index]);
+		asOAuth2(throttled.context);
+		const answer = await canvasApiRequest.call(throttled.context, 'POST', '/api/v1/courses/1/assignments', { assignment: { name: 'x' } }, undefined, NO_RATE_LIMIT);
+		expect(answer.data).toEqual({ id: 7 });
+		expect(throttled.calls.map((c) => c.ignoreHttpStatusErrors)).toEqual([true, false, true, true]);
+
+		// The renewed write fails on the server: it may have been carried out, so it is a failed
+		// write (not retried by Retry Then Error) and is not sent again here either.
+		const broken = fakeContext((_options, index) => [expired, { status: 500, body: { errors: [{ message: 'boom' }] } }][index]);
+		asOAuth2(broken.context);
+		const failure = await canvasApiRequest
+			.call(broken.context, 'POST', '/api/v1/courses/1/assignments', { assignment: { name: 'x' } }, undefined, NO_RATE_LIMIT)
+			.catch((error: unknown) => error);
+		expect(broken.calls).toHaveLength(2);
+		expect(isRetryableError(failure)).toBe(false);
+
+		// The same failure of a read is repeated the normal way and reported with Canvas' answer.
+		const read = fakeContext((_options, index) => [expired, { status: 500, body: {} }, { status: 500, body: { errors: [{ message: 'boom' }] } }][index]);
+		asOAuth2(read.context);
+		const readFailure = await canvasApiRequest.call(read.context, 'GET', '/api/v1/courses/1', undefined, undefined, NO_RATE_LIMIT).catch((error: unknown) => error);
+		expect(read.calls).toHaveLength(3);
+		expect(isRetryableError(readFailure)).toBe(true);
+
+		// Still refused after the renewal: one clear UNAUTHORIZED, no loop.
+		const refused = fakeContext(() => expired);
+		asOAuth2(refused.context);
+		await expect(canvasApiRequest.call(refused.context, 'GET', '/api/v1/users/self', undefined, undefined, NO_RATE_LIMIT)).rejects.toMatchObject({ httpCode: '401' });
+		expect(refused.calls).toHaveLength(3);
+	});
+
+	it('a redirect within Canvas keeps the scheme of the Canvas URL: the token never travels over http', async () => {
+		const { context, calls } = fakeContext((_options, index) =>
+			index === 0 ? { status: 302, headers: { location: 'http://canvas.test/api/v1/courses/5?x=1' } } : { body: { id: 5 } },
+		);
+		const response = await canvasApiRequest.call(context, 'GET', '/api/v1/courses/sis_course_id:A', undefined, undefined, NO_RATE_LIMIT);
+		expect(response.data).toEqual({ id: 5 });
+		expect(calls.map((c) => [c.authenticated, c.url])).toEqual([
+			[true, 'https://canvas.test/api/v1/courses/sis_course_id:A'],
+			[true, 'https://canvas.test/api/v1/courses/5?x=1'],
+		]);
+	});
+
 	it('rejects an invalid Canvas URL before sending anything', async () => {
 		const { context, calls } = fakeContext(() => ({ body: {} }));
 		(context as unknown as { getCredentials: () => Promise<IDataObject> }).getCredentials = async () => ({ canvasUrl: 'school.instructure.com' });
@@ -630,7 +682,8 @@ describe('canvasApiRequestAllItems', () => {
 			'https://canvas.test/api/v1/users/self',
 			'https://canvas.test/api/v1/users/self/bookmarks?per_page=1&as_user_id=sis_user_id%3Aj%20doe',
 			'https://canvas.test/api/v1/users/self/bookmarks?page=2&per_page=1&as_user_id=sis_user_id%3Aj%20doe',
-			'https://canvas.test/api/v1/users/self/bookmarks?as_user_id=sis_user_id%3Aj%20doe&page=3&per_page=1',
+			// Whatever a link says about the user, the node's own value replaces it.
+			'https://canvas.test/api/v1/users/self/bookmarks?page=3&per_page=1&as_user_id=sis_user_id%3Aj%20doe',
 		]);
 	});
 
@@ -698,6 +751,66 @@ describe('canvasApiRequestAllItems', () => {
 	});
 });
 
+describe('uploads and Retry Then Error', () => {
+	const ticket = { body: { upload_url: 'https://upload.example.net/files', upload_params: { key: 'k' }, file_param: 'file' } };
+	const file = { data: Buffer.from('hello'), fileName: 'a.txt', mimeType: 'text/plain' };
+	const upload = (context: IExecuteFunctions): Promise<unknown> =>
+		canvasFileUpload.call(context, '/api/v1/courses/1/files', { name: 'a.txt' }, 0, file, NO_RATE_LIMIT).catch((error: unknown) => error);
+
+	it('once the file has been sent, a failed confirmation is final: the upload is not started again', async () => {
+		const { context, calls } = fakeContext((_options, index) =>
+			[
+				ticket,
+				{ status: 201, headers: { location: 'https://canvas.test/api/v1/files/9/create_success?uuid=u' } },
+				{ status: 502, body: 'Bad Gateway' },
+			][index],
+		);
+		const failure = await upload(context);
+		expect(calls.map((c) => `${String(c.method)} ${String(c.url)}`)).toEqual([
+			'POST https://canvas.test/api/v1/courses/1/files',
+			'POST https://upload.example.net/files',
+			'GET https://canvas.test/api/v1/files/9/create_success?uuid=u',
+		]);
+		// A 502 on a plain read would be retried; here the whole item would be done again.
+		expect(isRetryableError(failure)).toBe(false);
+		expect(String((failure as { description?: string }).description)).toContain('the upload is not repeated');
+	});
+
+	it('a failure of the upload server counts as a failed write: repeated only when the file cannot have been stored', async () => {
+		const stored = fakeContext((_options, index) => [ticket, { status: 500, body: 'oops' }][index]);
+		expect(isRetryableError(await upload(stored.context))).toBe(false);
+
+		const busy = fakeContext((_options, index) => [ticket, { status: 503, body: 'Slow Down' }][index]);
+		expect(isRetryableError(await upload(busy.context))).toBe(true);
+
+		const unreachable = fakeContext((_options, index) =>
+			index === 0 ? ticket : { throw: Object.assign(new Error('connect ECONNREFUSED 10.0.0.1:443'), { code: 'ECONNREFUSED' }) },
+		);
+		expect(isRetryableError(await upload(unreachable.context))).toBe(true);
+
+		const reset = fakeContext((_options, index) =>
+			index === 0 ? ticket : { throw: Object.assign(new Error('socket hang up'), { code: 'ECONNRESET' }) },
+		);
+		expect(isRetryableError(await upload(reset.context))).toBe(false);
+	});
+
+	it('a URL upload Canvas has accepted is not started again when watching it fails', async () => {
+		const { context, calls } = fakeContext((_options, index) =>
+			[
+				{ body: { upload_url: 'https://upload.example.net/files', upload_params: { key: 'k' } } },
+				{ status: 201, body: { progress: { url: 'https://canvas.test/api/v1/progress/3', workflow_state: 'queued' } } },
+				{ status: 502, body: 'Bad Gateway' },
+			][index],
+		);
+		const failure = await canvasFileUploadFromUrl
+			.call(context, '/api/v1/courses/1/files', { name: 'a.txt' }, 'https://files.example.org/a.txt', true, NO_RATE_LIMIT)
+			.catch((error: unknown) => error);
+		expect(calls).toHaveLength(3);
+		expect(isRetryableError(failure)).toBe(false);
+		expect(String((failure as { description?: string }).description)).toContain('not started again');
+	});
+});
+
 describe('canvasDownload', () => {
 	function downloadContext(answers: Array<{ status: number; body?: Buffer; headers?: Record<string, string> }>) {
 		const calls: Array<{ authenticated: boolean; url: string; follow: boolean }> = [];
@@ -721,7 +834,7 @@ describe('canvasDownload', () => {
 			{ status: 302, headers: { location: 'https://storage.example.net/blob/7?sig=xyz' } },
 			{ status: 200, body: Buffer.from('a,b\n1,2\n'), headers: { 'content-type': 'text/csv; charset=utf-8' } },
 		]);
-		const file = await canvasDownload.call(context, 'https://canvas.test/files/7/download?download_frd=1');
+		const file = await canvasDownload.call(context, 'https://canvas.test/files/7/download?download_frd=1', NO_RATE_LIMIT);
 		expect(file.data.toString()).toBe('a,b\n1,2\n');
 		expect(file.contentType).toBe('text/csv');
 		expect(calls).toEqual([
@@ -735,7 +848,7 @@ describe('canvasDownload', () => {
 			{ status: 302, headers: { location: '/courses/3/files/7/download?verifier=abc' } },
 			{ status: 200, body: Buffer.from('PDF') },
 		]);
-		const file = await canvasDownload.call(context, '/files/7/download');
+		const file = await canvasDownload.call(context, '/files/7/download', NO_RATE_LIMIT);
 		expect(file.data.toString()).toBe('PDF');
 		expect(calls.map((c) => [c.authenticated, c.url])).toEqual([
 			[true, 'https://canvas.test/files/7/download'],
@@ -745,15 +858,58 @@ describe('canvasDownload', () => {
 
 	it('a URL on another host never sees the credential; failures say the status; redirect loops end', async () => {
 		const elsewhere = downloadContext([{ status: 403 }]);
-		await expect(canvasDownload.call(elsewhere.context, 'https://storage.example.net/blob/7')).rejects.toThrow(/could not be downloaded \(HTTP 403\)/);
+		await expect(canvasDownload.call(elsewhere.context, 'https://storage.example.net/blob/7', NO_RATE_LIMIT)).rejects.toThrow(/could not be downloaded \(HTTP 403\)/);
 		expect(elsewhere.calls).toEqual([{ authenticated: false, url: 'https://storage.example.net/blob/7', follow: false }]);
 
 		const refused = downloadContext([{ status: 401 }]);
-		await expect(canvasDownload.call(refused.context, '/files/7/download')).rejects.toThrow(/HTTP 401/);
+		await expect(canvasDownload.call(refused.context, '/files/7/download', NO_RATE_LIMIT)).rejects.toThrow(/HTTP 401/);
 
 		const loop = downloadContext(Array.from({ length: 10 }, () => ({ status: 302, headers: { location: '/files/7/download' } })));
-		await expect(canvasDownload.call(loop.context, '/files/7/download')).rejects.toThrow(/too many redirects/);
+		await expect(canvasDownload.call(loop.context, '/files/7/download', NO_RATE_LIMIT)).rejects.toThrow(/too many redirects/);
 		expect(loop.calls).toHaveLength(6);
+	});
+
+	it('a throttled download waits and tries again; the user being acted as goes to Canvas only', async () => {
+		const { context, calls } = downloadContext([
+			{ status: 403, body: Buffer.from('403 Forbidden (Rate Limit Exceeded)'), headers: { 'x-rate-limit-remaining': '0.0' } },
+			{ status: 302, headers: { location: 'https://storage.example.net/blob/7?sig=xyz' } },
+			{ status: 200, body: Buffer.from('zip') },
+		]);
+		const file = await canvasDownload.call(context, '/files/7/download?x=1', { ...NO_RATE_LIMIT, asUserId: '42' }, 3);
+		expect(file.data.toString()).toBe('zip');
+		expect(calls.map((c) => [c.authenticated, c.url])).toEqual([
+			[true, 'https://canvas.test/files/7/download?x=1&as_user_id=42'],
+			[true, 'https://canvas.test/files/7/download?x=1&as_user_id=42'],
+			[false, 'https://storage.example.net/blob/7?sig=xyz'],
+		]);
+
+		// Throttled for good: reported as throttling (so Retry Then Error may try again), with the item.
+		const never = downloadContext(Array.from({ length: 10 }, () => ({ status: 403, body: Buffer.from('403 Forbidden (Rate Limit Exceeded)') })));
+		const failure = await canvasDownload.call(never.context, '/files/7/download', NO_RATE_LIMIT, 3).catch((error: unknown) => error);
+		expect(isRateLimitError(failure)).toBe(true);
+		expect(isRetryableError(failure)).toBe(true);
+		expect((failure as { context?: IDataObject }).context?.itemIndex).toBe(3);
+		expect(never.calls).toHaveLength(NO_RATE_LIMIT.maxRetries + 1);
+	});
+
+	it('the token never follows Canvas to http://, and never returns once a redirect has left Canvas', async () => {
+		const downgraded = downloadContext([
+			{ status: 302, headers: { location: 'http://canvas.test/files/7/download?verifier=abc' } },
+			{ status: 200, body: Buffer.from('ok') },
+		]);
+		await canvasDownload.call(downgraded.context, '/files/7/download', NO_RATE_LIMIT);
+		expect(downgraded.calls.map((c) => [c.authenticated, c.url])).toEqual([
+			[true, 'https://canvas.test/files/7/download'],
+			[true, 'https://canvas.test/files/7/download?verifier=abc'],
+		]);
+
+		const back = downloadContext([
+			{ status: 302, headers: { location: 'https://storage.example.net/a' } },
+			{ status: 302, headers: { location: 'https://canvas.test/files/7/download' } },
+			{ status: 200, body: Buffer.from('ok') },
+		]);
+		await canvasDownload.call(back.context, '/files/7/download', NO_RATE_LIMIT);
+		expect(back.calls.map((c) => c.authenticated)).toEqual([true, false, false]);
 	});
 });
 

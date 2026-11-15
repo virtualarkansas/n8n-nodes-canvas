@@ -437,10 +437,9 @@ describe('cross-cutting', () => {
 				// "Continue & Output Error". Failed items go to the node's Error output, never to the regular output.
 				'continueOnFail: true (legacy setting)': { stop: toErrorOutput, continueWithError: toErrorOutput, ignoreAndContinue: dropped, retryThenError: toErrorOutput },
 				'onError: continueRegularOutput': { stop: toErrorOutput, continueWithError: toErrorOutput, ignoreAndContinue: dropped, retryThenError: toErrorOutput },
-				// "Continue (using error output)" makes n8n add a third output of its own. It stays empty in every
-				// mode: failed items are already on the node's own Error output (n8n only moves items shaped
-				// { error } there, and the node's error items are richer). The README says to use the node's output.
-				'onError: continueErrorOutput': { stop: 'ok [2,1,0]', continueWithError: 'ok [2,1,0]', ignoreAndContinue: 'ok [2,0,0]', retryThenError: 'ok [2,1,0]' },
+				// "Continue (using error output)" makes n8n add a third output of its own, and that is where the
+				// user asked for failed items: they go there (with the same fields) instead of the node's own Error output.
+				'onError: continueErrorOutput': { stop: 'ok [2,0,1]', continueWithError: 'ok [2,0,1]', ignoreAndContinue: 'ok [2,0,0]', retryThenError: 'ok [2,0,1]' },
 			});
 		});
 
@@ -465,7 +464,15 @@ describe('cross-cutting', () => {
 			expect(outputSizes(continued)).toEqual([2, 1]);
 			expect(continued.success.map((c) => c.id)).toEqual([Number(course.id), Number(course.id)]);
 			expect(continued.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', endpoint: '/api/v1/courses/999999999' });
-			expect(outputSizes(errorOutput)).toEqual([2, 1, 0]);
+			// With n8n's error output chosen, the failed item arrives there, with the node's error fields
+			// and (n8n's doing) the fields of the input item it belongs to.
+			expect(outputSizes(errorOutput)).toEqual([2, 0, 1]);
+			expect(raw(errorOutput, 2)[0].json).toMatchObject({
+				id: 999999999,
+				errorCode: 404,
+				errorType: 'NOT_FOUND',
+				endpoint: '/api/v1/courses/999999999',
+			});
 		});
 
 		it('n8n\'s "Retry On Fail" repeats the whole node: items that already succeeded are sent again', async () => {

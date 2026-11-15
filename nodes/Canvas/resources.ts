@@ -1,6 +1,7 @@
 import type { INodeProperties } from 'n8n-workflow';
 
 import * as descriptions from './descriptions';
+import { PAGED_LIST_OPERATIONS } from './listOperations';
 
 /**
  * Every Canvas resource the node offers: its label in the Resource dropdown and its
@@ -15,7 +16,52 @@ export interface ICanvasResource {
 	fields: INodeProperties[];
 }
 
-export const canvasResources: ICanvasResource[] = [
+/** True when a field is shown for the operation (or for every operation of its resource). */
+function shownFor(field: INodeProperties, operation: string): boolean {
+	const operations = field.displayOptions?.show?.operation as string[] | undefined;
+	return operations === undefined || operations.includes(operation);
+}
+
+/**
+ * n8n's standard pair of fields for a list operation: everything, or the first N records.
+ * `only` narrows when they are shown further (the Custom API Request pages GET requests only).
+ */
+function listFields(resource: string, operations: string[], only: Record<string, string[]> = {}): INodeProperties[] {
+	const show = { resource: [resource], operation: operations, ...only };
+	return [
+		{
+			displayName: 'Return All',
+			name: 'returnAll',
+			type: 'boolean',
+			default: false,
+			description: 'Whether to return all results or only up to a given limit',
+			displayOptions: { show },
+		},
+		{
+			displayName: 'Limit',
+			name: 'limit',
+			type: 'number',
+			typeOptions: { minValue: 1 },
+			default: 50,
+			description: 'Max number of results to return',
+			displayOptions: { show: { ...show, returnAll: [false] } },
+		},
+	];
+}
+
+/** Add Return All / Limit to the paged list operations of a resource that do not define them themselves. */
+function withListFields(resource: ICanvasResource): ICanvasResource {
+	const operations = (PAGED_LIST_OPERATIONS[resource.value] ?? []).filter(
+		(operation) => !resource.fields.some((field) => field.name === 'returnAll' && shownFor(field, operation)),
+	);
+	if (operations.length === 0) {
+		return resource;
+	}
+	const only: Record<string, string[]> = resource.value === 'apiRequest' ? { method: ['GET'] } : {};
+	return { ...resource, fields: [...resource.fields, ...listFields(resource.value, operations, only)] };
+}
+
+const resources: ICanvasResource[] = [
 	{ name: 'Access Token', value: 'accessToken', operations: descriptions.accessTokenOperations, fields: descriptions.accessTokenFields },
 	{ name: 'Account', value: 'account', operations: descriptions.accountOperations, fields: descriptions.accountFields },
 	{ name: 'Account Calendar', value: 'accountCalendar', operations: descriptions.accountCalendarOperations, fields: descriptions.accountCalendarFields },
@@ -133,3 +179,5 @@ export const canvasResources: ICanvasResource[] = [
 	{ name: 'Web Zip Export', value: 'webZipExport', operations: descriptions.webZipExportOperations, fields: descriptions.webZipExportFields },
 	{ name: 'What-If Grade', value: 'whatIfGrade', operations: descriptions.whatIfGradeOperations, fields: descriptions.whatIfGradeFields },
 ];
+
+export const canvasResources: ICanvasResource[] = resources.map(withListFields);

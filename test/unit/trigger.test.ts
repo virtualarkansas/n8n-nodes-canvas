@@ -16,6 +16,10 @@ describe('trigger: Canvas IDs', () => {
 		expect(idsMatch('21070000000000565', '565')).toBe(true);
 		expect(idsMatch(' 565 ', 565)).toBe(true);
 		expect(idsMatch('565', '21070000000000566')).toBe(false);
+		// A filter given as a global ID is exact: the same local ID on another shard is another record.
+		expect(idsMatch('21070000000000565', '21070000000000565')).toBe(true);
+		expect(idsMatch('70000000000565', '20000000000565')).toBe(false);
+		expect(idsMatch('565', '20000000000565')).toBe(true);
 		expect(idsMatch('565', undefined)).toBe(false);
 		expect(idsMatch('565', '')).toBe(false);
 	});

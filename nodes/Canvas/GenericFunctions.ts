@@ -7,7 +7,7 @@ import type {
 	IDataObject,
 	JsonObject,
 } from 'n8n-workflow';
-import { NodeApiError, NodeOperationError } from 'n8n-workflow';
+import { NodeApiError, NodeOperationError, sleepWithAbort } from 'n8n-workflow';
 
 import type {
 	IRateLimitOptions,
@@ -54,14 +54,22 @@ export const DEFAULT_ERROR_HANDLING_OPTIONS: IErrorHandlingOptions = {
 /** Canvas never returns more than 100 records per page. */
 export const CANVAS_MAX_PER_PAGE = 100;
 
-/**
- * Sleep utility for backoff delays
- * Uses global.setTimeout to avoid ESLint restriction on setTimeout
- */
+/** Wait for the given time. */
 export function sleep(ms: number): Promise<void> {
-	return new Promise((resolve) => {
-		global.setTimeout(resolve, ms);
-	});
+	return sleepWithAbort(ms);
+}
+
+/**
+ * Wait for the given time, but stop waiting at once when the execution is cancelled
+ * (the wait then ends with n8n's cancellation error instead of polling on).
+ */
+export function pause(context: CanvasContext, ms: number): Promise<void> {
+	return sleepWithAbort(ms, (context as Partial<IExecuteFunctions>).getExecutionCancelSignal?.());
+}
+
+/** n8n's error for an execution that was stopped by hand or timed out. */
+function isCancellation(error: unknown): boolean {
+	return /ExecutionCancelledError$/.test(String((error as JsonObject)?.name ?? (error as Error)?.constructor?.name ?? ''));
 }
 
 /**
@@ -217,10 +225,24 @@ export function buildCanvasUrl(
 }
 
 /**
+ * A parameter value as it was meant: percent-escapes written by hand (`A%2FB`) are
+ * resolved once; text that is not validly escaped (`50%`) is taken as it is.
+ */
+export function decodePathValue(value: string): string {
+	try {
+		return decodeURIComponent(value);
+	} catch {
+		return value;
+	}
+}
+
+/**
  * SIS IDs may contain characters that mean something in a URL
  * (`sis_user_id:A/B #1`). Handlers put parameter values into the path as they
- * are, so encode every value that needs it wherever it forms a path segment.
- * A value that already looks encoded (%2F) is left alone.
+ * are, so every value is encoded wherever it forms a path segment: whatever it
+ * contains, it stays one segment and can never add a segment, a query string or
+ * a fragment. A value that was encoded by hand (`A%2FB`) is decoded first, so it
+ * is not encoded twice.
  */
 export function encodePathValues(endpoint: string, values: Iterable<string>): string {
 	if (/^https?:\/\//i.test(endpoint)) {
@@ -228,12 +250,7 @@ export function encodePathValues(endpoint: string, values: Iterable<string>): st
 	}
 
 	const candidates = Array.from(new Set(values))
-		.filter(
-			(value) =>
-				value.length > 0 &&
-				/[^A-Za-z0-9_.~:,@!*'()$-]/.test(value) &&
-				!/%[0-9A-Fa-f]{2}/.test(value),
-		)
+		.filter((value) => value.length > 0 && /[^A-Za-z0-9_.~:,@!*'()$-]/.test(value))
 		.sort((a, b) => b.length - a.length);
 	if (candidates.length === 0) {
 		return endpoint;
@@ -243,7 +260,7 @@ export function encodePathValues(endpoint: string, values: Iterable<string>): st
 	// deciding where the path ends.
 	let result = endpoint;
 	for (const value of candidates) {
-		const encoded = encodeURIComponent(value)
+		const encoded = encodeURIComponent(decodePathValue(value))
 			.replace(/%3A/gi, ':')
 			.replace(/%2C/gi, ',')
 			.replace(/%40/g, '@');
@@ -503,6 +520,22 @@ function markWrite<T extends Error>(error: T): T {
 	return error;
 }
 
+/**
+ * Remember on the error that the work it belongs to must not be started again: part of
+ * it has reached Canvas (a file was sent, an import is under way), and repeating the
+ * whole item would do that part twice.
+ */
+function markFinal<T extends Error>(error: T, note: string): T {
+	const target = error as unknown as { context?: IDataObject; description?: string | null };
+	target.context = { ...(target.context ?? {}), canvasNoRetry: true };
+	target.description = target.description ? `${target.description} ${note}` : note;
+	return error;
+}
+
+function isFinalFailure(error: unknown): boolean {
+	return ((error as JsonObject)?.context as JsonObject | undefined)?.canvasNoRetry === true;
+}
+
 function isWriteFailure(error: unknown): boolean {
 	return ((error as JsonObject)?.context as JsonObject | undefined)?.canvasWrite === true;
 }
@@ -560,6 +593,9 @@ export function isRateLimitError(error: unknown): boolean {
  * applied, and repeating it could create a second record.
  */
 export function isRetryableError(error: unknown): boolean {
+	if (isFinalFailure(error) || isCancellation(error)) {
+		return false;
+	}
 	if (isRateLimitError(error)) {
 		return true;
 	}
@@ -819,7 +855,7 @@ export async function waitForRateLimit(
 				'RATE_LIMITED',
 			);
 		}
-		await sleep(calculateBackoff(attempt, options.baseDelayMs, options.maxDelayMs));
+		await pause(this, calculateBackoff(attempt, options.baseDelayMs, options.maxDelayMs));
 		status = await checkRateLimit.call(this, options);
 	}
 }
@@ -848,6 +884,22 @@ async function ensureRateLimit(context: CanvasContext, options: IRateLimitOption
 // ============================================
 
 /**
+ * The URL with `as_user_id` set to the user chosen under Request Options > Act as User ID.
+ * Whatever the URL already says about `as_user_id` is removed first (a next-page link of
+ * Canvas repeats it; text from an input item must never choose who is impersonated).
+ */
+export function withMasquerade(url: string, asUserId: string): string {
+	const [base, query = ''] = url.split('#')[0].split(/\?(.*)/s);
+	const kept = query.split('&').filter((part) => {
+		if (part === '') return false;
+		const key = part.split('=')[0];
+		return decodePathValue(key.replace(/\+/g, ' ')).toLowerCase() !== 'as_user_id';
+	});
+	kept.push(buildCanvasQueryString({ as_user_id: asUserId }));
+	return `${base}?${kept.join('&')}`;
+}
+
+/**
  * Make a Canvas API request with rate limit handling.
  * `endpoint` is a path such as `/api/v1/courses`, or an absolute Canvas URL
  * taken from a Link/Location header.
@@ -868,10 +920,14 @@ export async function canvasApiRequest(
 		? resolveCanvasUrl(canvasUrl, endpoint)
 		: `${canvasUrl}${endpoint}`;
 	const queryString = buildCanvasQueryString(query);
-	let url = queryString ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${queryString}` : baseUrl;
+	// A fragment is never sent to a server; one that slipped in would swallow what is added below.
+	const withoutFragment = baseUrl.split('#')[0];
+	let url = queryString
+		? `${withoutFragment}${withoutFragment.includes('?') ? '&' : '?'}${queryString}`
+		: withoutFragment;
 	// Masquerading applies to every request made for the item, follow-up pages included.
-	if (rateLimitOptions.asUserId && !/[?&]as_user_id=/.test(url)) {
-		url += `${url.includes('?') ? '&' : '?'}${buildCanvasQueryString({ as_user_id: rateLimitOptions.asUserId })}`;
+	if (rateLimitOptions.asUserId) {
+		url = withMasquerade(url, rateLimitOptions.asUserId);
 	}
 
 	const requestOptions: IHttpRequestOptions = {
@@ -907,6 +963,7 @@ export async function canvasApiRequest(
 
 	const state = getRateLimitState(this);
 	const canvasHost = new URL(canvasUrl).host;
+	const canvasOrigin = new URL(canvasUrl).origin;
 	let refreshTried = false;
 	let redirects = 0;
 	// Set once a redirect has led away from Canvas: from then on no credential is sent.
@@ -946,8 +1003,20 @@ export async function canvasApiRequest(
 					ignoreHttpStatusErrors: false,
 				});
 			} catch (error) {
-				// Still refused after the refresh attempt, or the refresh itself failed.
-				throw extractHttpStatus(error) === undefined ? tagError(error as Error, 'UNAUTHORIZED') : error;
+				const refusedWith = extractHttpStatus(error);
+				if (refusedWith === undefined) {
+					// The refresh itself failed, or there was no answer at all.
+					const failure = tagError(error as Error, 'UNAUTHORIZED');
+					throw method === 'GET' ? failure : markWrite(failure);
+				}
+				if (method !== 'GET' && refusedWith >= 500) {
+					// The write may have been carried out: do not send it again.
+					throw markWrite(error as Error);
+				}
+				// A read, or a write Canvas refused outright (4xx): send it once more the normal
+				// way, so the answer is read like any other. n8n's error has lost a plain-text
+				// body, which is how Canvas reports throttling.
+				continue;
 			}
 		}
 
@@ -962,8 +1031,13 @@ export async function canvasApiRequest(
 		if (method === 'GET' && status >= 300 && status < 400 && typeof headers.location === 'string' && redirects < MAX_REDIRECTS) {
 			redirects++;
 			const target = new URL(headers.location, requestOptions.url);
-			requestOptions.url = target.toString();
-			if (target.host !== canvasHost) {
+			if (!elsewhere && target.host === canvasHost) {
+				// Still Canvas: keep the scheme of the credential's Canvas URL. A proxy that ends
+				// TLS in front of Canvas may answer with http:// links, and the token must never
+				// travel unencrypted because of that.
+				requestOptions.url = `${canvasOrigin}${target.pathname}${target.search}`;
+			} else {
+				requestOptions.url = target.toString();
 				elsewhere = target.host;
 			}
 			continue;
@@ -994,7 +1068,8 @@ export async function canvasApiRequest(
 			state.remaining = 0;
 			// Only throttling is retried here; other failures go to the error handling mode.
 			if (attempt < rateLimitOptions.maxRetries) {
-				await sleep(
+				await pause(
+					this,
 					calculateBackoff(attempt, rateLimitOptions.baseDelayMs, rateLimitOptions.maxDelayMs),
 				);
 				attempt++;
@@ -1118,7 +1193,15 @@ export async function canvasApiRequestAllItems(
 	paginationOptions: IPaginationOptions = DEFAULT_PAGINATION_OPTIONS,
 	rateLimitOptions: IRateLimitOptions = DEFAULT_RATE_LIMIT_OPTIONS,
 	dataKey?: string,
+	pageTransform?: (records: IDataObject[], page: IDataObject) => IDataObject[],
 ): Promise<IPaginatedResult & { isList: boolean }> {
+	// The records of one page, reshaped with the rest of that page's answer where asked for.
+	const listOf = (data: unknown): IDataObject[] | undefined => {
+		const list = extractList(data, dataKey);
+		return list !== undefined && pageTransform && data !== null && typeof data === 'object' && !Array.isArray(data)
+			? pageTransform(list, data as IDataObject)
+			: list;
+	};
 	const limit =
 		paginationOptions.limit !== undefined && paginationOptions.limit > 0
 			? paginationOptions.limit
@@ -1136,7 +1219,7 @@ export async function canvasApiRequestAllItems(
 		rateLimitOptions,
 	);
 
-	const firstList = extractList(response.data, dataKey);
+	const firstList = listOf(response.data);
 	if (firstList === undefined) {
 		return {
 			items: [response.data as IDataObject],
@@ -1173,7 +1256,7 @@ export async function canvasApiRequestAllItems(
 			rateLimitOptions,
 		);
 
-		const pageItems = extractList(response.data, dataKey);
+		const pageItems = listOf(response.data);
 		if (pageItems === undefined) {
 			break;
 		}
@@ -1181,11 +1264,17 @@ export async function canvasApiRequestAllItems(
 		pageCount++;
 	}
 
+	// Did reading stop before the end of the list? Either records were cut off at the limit,
+	// or Canvas still points to a page that was not read (and is not a page already seen).
+	const cut = limit !== undefined && allItems.length > limit;
+	const unread =
+		paginationOptions.enabled && Boolean(response.linkHeader.next) && !visited.has(response.linkHeader.next as string);
 	return {
 		items: limit !== undefined ? allItems.slice(0, limit) : allItems,
 		totalPages: pageCount,
 		rateLimitStatus: response.rateLimitStatus,
 		isList: true,
+		more: cut || unread,
 	};
 }
 
@@ -1312,9 +1401,15 @@ export async function executeWithErrorHandling<T>(
 		} catch (error) {
 			const jsonError = error as JsonObject;
 
+			// A cancelled execution is not a failed item: stop, whatever the error mode.
+			if (isCancellation(error)) {
+				throw error;
+			}
+
 			// Retry Then Error: only failures that can succeed on a second try.
 			if (mode === 'retryThenError' && attempt < errorOptions.maxRetries && isRetryableError(error)) {
-				await sleep(
+				await pause(
+					this,
 					calculateBackoff(
 						attempt,
 						DEFAULT_RATE_LIMIT_OPTIONS.baseDelayMs,
@@ -1504,20 +1599,29 @@ export async function canvasFileUpload(
 		ignoreHttpStatusErrors: true,
 	};
 
-	const step2Response = await this.helpers.httpRequest(step2Options);
+	// From here on the item counts as a write: it is only started again (Retry Then Error)
+	// when the upload server cannot have stored the file.
+	let step2Response: { statusCode?: number; headers?: IDataObject; body?: unknown };
+	try {
+		step2Response = await this.helpers.httpRequest(step2Options);
+	} catch (error) {
+		throw markWrite(extractHttpStatus(error) === undefined ? tagError(error as Error, 'NETWORK_ERROR') : (error as Error));
+	}
 	const step2Headers = (step2Response.headers || {}) as IDataObject;
 	const step2StatusCode = step2Response.statusCode as number;
 	const step2Body = parseJsonBody(step2Response.body);
 
 	if (step2StatusCode >= 400) {
-		throw new NodeApiError(
-			this.getNode(),
-			{ ...(step2Body ?? {}), httpCode: String(step2StatusCode) } as JsonObject,
-			{
-				message: `The file upload was rejected by the upload server (HTTP ${step2StatusCode})`,
-				httpCode: String(step2StatusCode),
-				itemIndex,
-			},
+		throw markWrite(
+			new NodeApiError(
+				this.getNode(),
+				{ ...(step2Body ?? {}), httpCode: String(step2StatusCode) } as JsonObject,
+				{
+					message: `The file upload was rejected by the upload server (HTTP ${step2StatusCode})`,
+					httpCode: String(step2StatusCode),
+					itemIndex,
+				},
+			),
 		);
 	}
 
@@ -1538,16 +1642,24 @@ export async function canvasFileUpload(
 	}
 
 	// --- Step 3: Confirm upload with Canvas auth ---
-	const step3Response = await canvasApiRequest.call(
-		this,
-		'GET',
-		locationUrl,
-		undefined,
-		undefined,
-		rateLimitOptions,
-	);
-
-	return step3Response.data as IDataObject;
+	// The file has been sent. Whatever goes wrong now, the upload must not start again:
+	// that would store the file a second time.
+	try {
+		const step3Response = await canvasApiRequest.call(
+			this,
+			'GET',
+			locationUrl,
+			undefined,
+			undefined,
+			rateLimitOptions,
+		);
+		return step3Response.data as IDataObject;
+	} catch (error) {
+		throw markFinal(
+			error as Error,
+			'The file itself was sent; only the confirmation failed, so the upload is not repeated. Look in Canvas before uploading it again.',
+		);
+	}
 }
 
 /**
@@ -1600,18 +1712,26 @@ export async function canvasFileUploadFromUrl(
 			ignoreHttpStatusErrors: true,
 		};
 
-		const uploadResponse = await this.helpers.httpRequest(uploadOptions);
+		// A write: only started again when the upload server cannot have accepted it.
+		let uploadResponse: { statusCode?: number; body?: unknown };
+		try {
+			uploadResponse = await this.helpers.httpRequest(uploadOptions);
+		} catch (error) {
+			throw markWrite(extractHttpStatus(error) === undefined ? tagError(error as Error, 'NETWORK_ERROR') : (error as Error));
+		}
 		const uploadStatus = uploadResponse.statusCode as number;
 		const uploadBody = parseJsonBody(uploadResponse.body);
 
 		if (uploadStatus >= 400) {
-			throw new NodeApiError(
-				this.getNode(),
-				{ ...(uploadBody ?? {}), httpCode: String(uploadStatus) } as JsonObject,
-				{
-					message: `The upload server rejected the URL upload (HTTP ${uploadStatus})`,
-					httpCode: String(uploadStatus),
-				},
+			throw markWrite(
+				new NodeApiError(
+					this.getNode(),
+					{ ...(uploadBody ?? {}), httpCode: String(uploadStatus) } as JsonObject,
+					{
+						message: `The upload server rejected the URL upload (HTTP ${uploadStatus})`,
+						httpCode: String(uploadStatus),
+					},
+				),
 			);
 		}
 
@@ -1630,7 +1750,15 @@ export async function canvasFileUploadFromUrl(
 		return progress ? { ...responseData, progress } : responseData;
 	}
 
-	return pollCanvasProgress.call(this, progress.url as string, rateLimitOptions);
+	// Canvas is fetching the file. A failure while watching it must not start a second import.
+	try {
+		return await pollCanvasProgress.call(this, progress.url as string, rateLimitOptions);
+	} catch (error) {
+		throw markFinal(
+			error as Error,
+			'Canvas had already accepted the URL, so the upload is not started again. Look in Canvas before uploading it again.',
+		);
+	}
 }
 
 /**
@@ -1643,13 +1771,34 @@ export async function canvasFileUploadFromUrl(
 export async function canvasDownload(
 	this: IExecuteFunctions,
 	fileUrl: string,
+	rateLimitOptions: IRateLimitOptions = DEFAULT_RATE_LIMIT_OPTIONS,
+	itemIndex?: number,
 ): Promise<{ data: Buffer; contentType?: string }> {
 	const canvasUrl = await getCanvasUrl.call(this);
-	const canvasHost = new URL(canvasUrl).host;
+	const canvas = new URL(canvasUrl);
+	const credentialType = getCredentialType(this);
+	const renewable = credentialType === 'canvasOAuth2Api' || credentialType === LTI_CREDENTIAL;
+	const state = getRateLimitState(this);
 	let url = /^https?:\/\//i.test(fileUrl) ? fileUrl : `${canvasUrl}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
+	let refreshTried = false;
+	// Once a redirect has left Canvas, no credential is sent any more, wherever it leads.
+	let elsewhere = false;
 
-	for (let hop = 0; hop < 6; hop++) {
-		const options: IHttpRequestOptions = {
+	for (let hop = 0, attempt = 0; hop < 6; ) {
+		const target = new URL(url);
+		const onCanvas = !elsewhere && target.host === canvas.host;
+		if (onCanvas) {
+			// Same rules as for every other request to Canvas: the scheme of the credential's
+			// Canvas URL, the user being acted as, and the quota.
+			url = `${canvas.origin}${target.pathname}${target.search}`;
+			if (rateLimitOptions.asUserId) {
+				url = withMasquerade(url, rateLimitOptions.asUserId);
+			}
+			await ensureRateLimit(this, rateLimitOptions);
+		} else {
+			elsewhere = true;
+		}
+		const options = (): IHttpRequestOptions => ({
 			method: 'GET',
 			url,
 			encoding: 'arraybuffer',
@@ -1657,31 +1806,70 @@ export async function canvasDownload(
 			json: false,
 			ignoreHttpStatusErrors: true,
 			disableFollowRedirect: true,
-		};
-		const response =
-			new URL(url).host === canvasHost
-				? await this.helpers.httpRequestWithAuthentication.call(this, getCredentialType(this), options)
-				: await this.helpers.httpRequest(options);
+		});
+
+		let response: { statusCode?: number; headers?: IDataObject; body?: unknown };
+		try {
+			response = onCanvas
+				? await this.helpers.httpRequestWithAuthentication.call(this, credentialType, options())
+				: await this.helpers.httpRequest(options());
+			if (Number(response.statusCode) === 401 && onCanvas && renewable && !refreshTried) {
+				// n8n renews an expired OAuth2 or LTI token only when the request fails with 401.
+				refreshTried = true;
+				try {
+					await this.helpers.httpRequestWithAuthentication.call(this, credentialType, {
+						...options(),
+						ignoreHttpStatusErrors: false,
+					});
+				} catch {
+					// Read the real answer below, the normal way.
+				}
+				continue;
+			}
+		} catch (error) {
+			throw extractHttpStatus(error) === undefined ? tagError(error as Error, 'NETWORK_ERROR') : error;
+		}
 		const status = Number(response.statusCode);
 		const headers = (response.headers ?? {}) as IDataObject;
+		if (onCanvas && headers['x-rate-limit-remaining'] !== undefined) {
+			state.remaining = parseRateLimitHeaders(headers).remaining;
+		}
 
 		if (status >= 300 && status < 400 && typeof headers.location === 'string') {
 			url = new URL(headers.location, url).toString();
+			hop++;
 			continue;
 		}
-		if (status < 200 || status >= 300) {
-			throw new NodeApiError(
-				this.getNode(),
-				{ httpCode: String(status) } as JsonObject,
-				{ message: `The file could not be downloaded (HTTP ${status})`, httpCode: String(status) },
-			);
+		const body = response.body as Buffer | ArrayBuffer | string | undefined;
+		const data = Buffer.isBuffer(body) ? body : Buffer.from((body ?? '') as ArrayBuffer);
+		if (status >= 200 && status < 300) {
+			const contentType = headers['content-type'];
+			return { data, contentType: typeof contentType === 'string' ? contentType.split(';')[0].trim() : undefined };
 		}
-		const body = response.body as Buffer | ArrayBuffer | string;
-		const data = Buffer.isBuffer(body) ? body : Buffer.from(body as ArrayBuffer);
-		const contentType = headers['content-type'];
-		return { data, contentType: typeof contentType === 'string' ? contentType.split(';')[0].trim() : undefined };
+
+		// A failure: read the answer like any other Canvas answer (throttling included).
+		const text = data.toString('utf8');
+		const answer = parseJsonBody(text) ?? text;
+		const throttled = onCanvas && isThrottleResponse(status, answer, headers);
+		if (throttled) {
+			state.remaining = 0;
+			if (attempt < rateLimitOptions.maxRetries) {
+				await pause(this, calculateBackoff(attempt, rateLimitOptions.baseDelayMs, rateLimitOptions.maxDelayMs));
+				attempt++;
+				continue;
+			}
+		}
+		const failure = buildResponseError(this, status, answer, headers, throttled);
+		failure.message = `The file could not be downloaded (HTTP ${status})`;
+		if (!onCanvas) {
+			failure.description = `The download was redirected to ${target.host}, which answered HTTP ${status}.`;
+		}
+		if (itemIndex !== undefined) {
+			failure.context = { ...(failure.context ?? {}), itemIndex };
+		}
+		throw failure;
 	}
-	throw new NodeOperationError(this.getNode(), 'The file could not be downloaded: too many redirects');
+	throw new NodeOperationError(this.getNode(), 'The file could not be downloaded: too many redirects', { itemIndex });
 }
 
 /**
@@ -1733,7 +1921,7 @@ export async function pollCanvasProgress(
 		}
 
 		// Still running - wait and retry
-		await sleep(intervalMs);
+		await pause(this, intervalMs);
 	}
 
 	throw new NodeOperationError(

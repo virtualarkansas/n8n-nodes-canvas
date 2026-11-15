@@ -63,13 +63,33 @@ export function toLocalId(id: unknown): string {
 	}
 }
 
+/** True for an ID that names its shard (a global ID such as "21070000000000565"). */
+function isGlobalId(id: string): boolean {
+	try {
+		return /^\d+$/.test(id) && BigInt(id) >= SHARD_FACTOR;
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * Does the ID in an event match the ID of a filter? A filter written as people know the
+ * record ("565") matches by local ID. A filter written as a global ID is exact: it does
+ * not match the record with the same local ID on another shard.
+ */
 export function idsMatch(filter: string, candidate: unknown): boolean {
 	if (candidate === undefined || candidate === null || candidate === '') {
 		return false;
 	}
 	const wanted = filter.trim();
 	const actual = String(candidate).trim();
-	return wanted === actual || toLocalId(wanted) === toLocalId(actual);
+	if (wanted === actual) {
+		return true;
+	}
+	if (isGlobalId(wanted) && isGlobalId(actual)) {
+		return false;
+	}
+	return toLocalId(wanted) === toLocalId(actual);
 }
 
 function decodeBase64Url(value: string): Buffer {
@@ -259,7 +279,15 @@ export class CanvasTrigger implements INodeType {
 						type: 'boolean',
 						default: false,
 						description:
-							'Whether to reject events that are not signed. Turn this on together with "Sign Payload" in the Data Services subscription so that only Canvas can start this workflow.',
+							'Whether to reject events that are not signed. Turn this on together with "Sign Payload" in the Data Services subscription. The signature is then always checked, whatever Verify Signed Payloads says. A valid signature proves that Instructure\'s Data Services sent the event, not which Canvas it came from: add a Secret Token or a Root Account UUID as well.',
+					},
+					{
+						displayName: 'Root Account UUID',
+						name: 'rootAccountUuid',
+						type: 'string',
+						default: '',
+						description:
+							'If set, only events of this Canvas root account are accepted (the "root_account_uuid" in the metadata of every event; Account > Get of your root account shows it as "uuid"). Events of any other Canvas are rejected.',
 					},
 					{
 						displayName: 'Secret Token',
@@ -390,7 +418,8 @@ export class CanvasTrigger implements INodeType {
 					return reject(400, 'The signed payload is not a valid JWT');
 				}
 
-				if (options.verifySignedPayloads !== false) {
+				// Requiring signed payloads is pointless unless the signature is checked.
+				if (options.verifySignedPayloads !== false || options.requireSignedPayload === true) {
 					const algorithm = JWT_ALGORITHMS[String(header.alg ?? '')];
 					if (!algorithm) {
 						return reject(401, `Unsupported signature algorithm: ${String(header.alg ?? 'none')}`);
@@ -468,6 +497,20 @@ export class CanvasTrigger implements INodeType {
 		const event = parseCanvasEvent(payload as IDataObject);
 		if (!event) {
 			return reject(400, 'The request body is not a Canvas Live Event');
+		}
+
+		// --- Which Canvas the event comes from ---
+		const rootAccountUuid = String(options.rootAccountUuid ?? '').trim();
+		if (rootAccountUuid) {
+			// Caliper deliveries carry it in the extensions of the event.
+			const caliperEvent = (Array.isArray(event.caliper?.data) ? event.caliper.data[0] : undefined) as IDataObject | undefined;
+			const extensions = (caliperEvent?.extensions as IDataObject | undefined)?.['com.instructure.canvas'] as
+				| IDataObject
+				| undefined;
+			const actual = String(event.metadata.root_account_uuid ?? extensions?.root_account_uuid ?? '');
+			if (!constantTimeEquals(actual, rootAccountUuid)) {
+				return reject(403, 'The event does not belong to the expected Canvas root account');
+			}
 		}
 
 		// --- Filters ---
