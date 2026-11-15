@@ -786,6 +786,8 @@ export async function canvasApiRequestAllItems(
 
 	const allItems: IDataObject[] = [...firstList];
 	let pageCount = 1;
+	// A server that keeps pointing at a page already read must not loop forever.
+	const visited = new Set<string>();
 
 	while (paginationOptions.enabled && response.linkHeader.next) {
 		if (paginationOptions.maxPages > 0 && pageCount >= paginationOptions.maxPages) {
@@ -794,6 +796,10 @@ export async function canvasApiRequestAllItems(
 		if (limit !== undefined && allItems.length >= limit) {
 			break;
 		}
+		if (visited.has(response.linkHeader.next)) {
+			break;
+		}
+		visited.add(response.linkHeader.next);
 
 		// The next URL is opaque (page numbers or bookmarks) and already carries every parameter.
 		response = await canvasApiRequest.call(
@@ -846,7 +852,9 @@ export async function canvasApiRequestMergedRecord(
 		return record;
 	}
 	const merged = [...(record[arrayKey] as IDataObject[])];
-	while (response.linkHeader.next) {
+	const visited = new Set<string>();
+	while (response.linkHeader.next && !visited.has(response.linkHeader.next)) {
+		visited.add(response.linkHeader.next);
 		response = await canvasApiRequest.call(
 			this,
 			'GET',

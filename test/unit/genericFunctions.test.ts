@@ -365,7 +365,8 @@ describe('canvasApiRequestAllItems', () => {
 	});
 
 	it('stops at maxPages and at the item limit', async () => {
-		const endless = () => page([{ id: 1 }, { id: 2 }, { id: 3 }], 'https://canvas.test/api/v1/x?page=n');
+		const endless = (_options: IDataObject, index: number) =>
+			page([{ id: 1 }, { id: 2 }, { id: 3 }], `https://canvas.test/api/v1/x?page=${index + 2}`);
 		const byPages = fakeContext(endless);
 		const pages = await canvasApiRequestAllItems.call(byPages.context, 'GET', '/api/v1/x', undefined, undefined, { enabled: true, perPage: 3, maxPages: 2 }, NO_RATE_LIMIT);
 		expect(pages.items).toHaveLength(6);
@@ -405,6 +406,14 @@ describe('canvasApiRequestAllItems', () => {
 		const result = await canvasApiRequestAllItems.call(context, 'GET', '/api/v1/q', undefined, undefined, { enabled: true, perPage: 1, maxPages: 0 }, NO_RATE_LIMIT, 'quiz_submissions');
 		expect(result.items).toEqual([{ id: 1 }, { id: 2 }]);
 		expect(result.isList).toBe(true);
+	});
+
+	it('stops when the server keeps pointing at the same next page', async () => {
+		const { context, calls } = fakeContext(() => page([{ id: 1 }], 'https://canvas.test/api/v1/x?page=2'));
+		const result = await canvasApiRequestAllItems.call(context, 'GET', '/api/v1/x', undefined, undefined, { enabled: true, perPage: 1, maxPages: 0 }, NO_RATE_LIMIT);
+		// First page, then page=2 once; the repeated link is not followed again.
+		expect(calls).toHaveLength(2);
+		expect(result.items).toHaveLength(2);
 	});
 
 	it('retries a throttled later page instead of losing the run', async () => {

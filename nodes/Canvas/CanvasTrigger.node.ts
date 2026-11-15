@@ -177,7 +177,7 @@ export class CanvasTrigger implements INodeType {
 		properties: [
 			{
 				displayName:
-					'Canvas does not register this webhook for you. In Canvas, open Admin → Data Services → Add, choose HTTPS delivery with the <b>Canvas</b> message format, and paste this node\'s Production URL. <a href="https://developerdocs.instructure.com/services/canvas/data-services/live-events/overview/file.data_service_setup" target="_blank">Setup guide</a>.',
+					'Canvas does not register this webhook for you. In Canvas, open Admin → Data Services → Add, choose HTTPS delivery with the <b>Canvas</b> message format, and paste this node\'s Production URL. The URL is public: set a Secret Token or require signed payloads under Options so that only Canvas can start the workflow. <a href="https://developerdocs.instructure.com/services/canvas/data-services/live-events/overview/file.data_service_setup" target="_blank">Setup guide</a>.',
 				name: 'setupNotice',
 				type: 'notice',
 				default: '',
