@@ -1,5 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam } from '../types/Canvas.types';
+import { toList } from './shared';
 
 // ============================================
 // Content Security Policy Settings
@@ -28,10 +29,7 @@ export function buildCspSettingRequest(operation: string, getParam: GetParam): I
 		case 'addDomain':
 			return { method: 'POST', endpoint: `${accountBase}/domains`, body: { domain: getParam('domain').trim() } };
 		case 'addDomains': {
-			const domains = getParam('domains')
-				.split(/[\s,]+/)
-				.map((domain) => domain.trim())
-				.filter((domain) => domain !== '');
+			const domains = toList(getParam('domains'), /[\s,]+/);
 			if (domains.length === 0) {
 				throw new ApplicationError('At least one domain is required for cspSetting addDomains');
 			}
