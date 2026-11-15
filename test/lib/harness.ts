@@ -153,6 +153,8 @@ async function logRun(opts: RunNodeOptions, outcome: OpRecord['outcome'], succes
 			persona: opts.credential ? 'custom' : (opts.persona ?? 'admin'),
 			params: opts.params ?? {},
 			items: opts.items,
+			// The files themselves are not recorded; such a run cannot be replayed from this log.
+			...(opts.binary ? { binary: true } : {}),
 			outcome,
 			outputCount: success.length,
 			outputIds: ids,

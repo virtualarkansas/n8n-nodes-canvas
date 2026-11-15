@@ -29,6 +29,8 @@ interface RunRecord {
 	persona: string;
 	params: Json;
 	items?: Json[];
+	/** The run's input items carried files, which the log does not contain. */
+	binary?: boolean;
 	outcome: string;
 	outputCount: number;
 	outputIds: Json[];
@@ -88,7 +90,9 @@ const SECRET_KEY = /secret|password|token/i;
 
 function isExportable(run: RunRecord): boolean {
 	if (run.outcome !== 'success' || run.persona !== 'admin') return false;
-	if (run.params.debugMode === true) return false;
+	if (run.params.debugMode === true || run.binary) return false;
+	// Acting as a user the battery created for the test cannot be repeated elsewhere.
+	if ((run.params.requestOptions as Json | undefined)?.asUserId) return false;
 	if (run.items && run.items.length > 1) return false;
 	return !JSON.stringify(run.params).includes('={{');
 }
