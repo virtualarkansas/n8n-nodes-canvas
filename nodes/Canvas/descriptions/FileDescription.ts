@@ -25,6 +25,13 @@ export const fileOperations: INodeProperties[] = [
 				action: 'Delete a file',
 			},
 			{
+				name: 'Download',
+				value: 'download',
+				description:
+					'Get a file together with its content: the file is attached to the output item as binary data, ready for the next node (Extract From File, Write Files, an upload to another system ...)',
+				action: 'Download a file',
+			},
+			{
 				name: 'Get',
 				value: 'get',
 				description: 'Get a file',
@@ -339,10 +346,28 @@ export const fileFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['file'],
-				operation: ['get', 'update', 'delete', 'copy', 'getPublicUrl', 'getIconMetadata', 'resetVerifier'],
+				operation: ['get', 'download', 'update', 'delete', 'copy', 'getPublicUrl', 'getIconMetadata', 'resetVerifier'],
 			},
 		},
 		description: 'The ID of the file',
+	},
+
+	// ----------------------------------
+	//         file: download
+	// ----------------------------------
+	{
+		displayName: 'Put Output File in Field',
+		name: 'binaryPropertyName',
+		type: 'string',
+		required: true,
+		default: 'data',
+		displayOptions: {
+			show: {
+				resource: ['file'],
+				operation: ['download'],
+			},
+		},
+		hint: 'The name of the output binary field to put the file in',
 	},
 
 	// ----------------------------------

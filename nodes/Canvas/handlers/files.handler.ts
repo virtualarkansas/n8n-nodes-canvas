@@ -101,6 +101,19 @@ export function handleFileResource(
 			};
 		}
 
+		case 'download':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/files/${getParam('fileId')}`,
+				// The record's `url` is where Canvas serves the content (usually a redirect to file storage).
+				download: {
+					urlField: 'url',
+					fileNameField: 'display_name',
+					contentTypeField: 'content-type',
+					binaryPropertyName: getParam('binaryPropertyName', 'data') || 'data',
+				},
+			};
+
 		case 'getByMigrationId':
 			return {
 				method: 'GET',

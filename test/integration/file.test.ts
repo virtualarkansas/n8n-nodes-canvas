@@ -3,8 +3,8 @@ import { createServer } from 'node:http';
 import type { Server } from 'node:http';
 import { networkInterfaces } from 'node:os';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { canvas, CanvasClient, fx, unique } from '../lib/canvas';
-import { runNode, runOk } from '../lib/harness';
+import { canvas, CanvasClient, createUserWithToken, fx, unique } from '../lib/canvas';
+import { createCredential, digestOf, runNode, runOk } from '../lib/harness';
 import type { Json } from '../lib/n8n';
 import { BULK, downloadFile, ensureFilesBattery, patternBuffer, runWithBinary, uploadDirect } from './contentBattery';
 import type { FilesBattery } from './contentBattery';
@@ -98,6 +98,53 @@ describe('file', () => {
 		expect(file).toMatchObject({ display_name: 'hello.txt', size: content.length, 'content-type': 'text/plain', folder_id: Number(workFolderId) });
 		expect(await fileFromCanvas(file.id)).toMatchObject({ display_name: 'hello.txt', size: content.length, upload_status: 'success' });
 		expect((await downloadFile(file)).equals(content)).toBe(true);
+	});
+
+	// ------------------------------------------------------------ download
+
+	it('download: the file arrives as binary data, byte for byte, with its name and type', async () => {
+		const text = Buffer.from('Downloaded through the node, ünï 课程 🚀\n');
+		const big = patternBuffer(1_200_000);
+		const uploaded = await upload({ contextType: 'course', courseId, options: { parent_folder_id: workFolderId } }, [
+			{ fileName: 'download me (ünï).txt', mimeType: 'text/plain', b64: text.toString('base64') },
+			{ fileName: 'big.bin', mimeType: 'application/octet-stream', size: big.length },
+		]);
+		expect(uploaded.failure, JSON.stringify(uploaded.failure)).toBeUndefined();
+		const [textFile, bigFile] = uploaded.success;
+
+		const result = await runNode({
+			resource: 'file',
+			operation: 'download',
+			items: [{ id: textFile.id }, { id: 999999999 }, { id: String(bigFile.id) }],
+			params: { fileId: '={{ $json.id }}', binaryPropertyName: 'file', errorHandling: { onError: 'continueWithError' } },
+			digestBinary: 'file',
+		});
+		// The file record is the item, as Get returns it.
+		expect(result.success.map((f) => f.id)).toEqual([textFile.id, bigFile.id]);
+		expect(result.success[0]).toMatchObject({ display_name: 'download me (ünï).txt', size: text.length, 'content-type': 'text/plain' });
+		expect(result.rawSuccess.map((item) => (item.pairedItem as Json).item)).toEqual([0, 2]);
+		expect(result.digests).toEqual([
+			{ ...digestOf(text), fileName: 'download me (ünï).txt', mimeType: 'text/plain' },
+			{ ...digestOf(big), fileName: 'big.bin', mimeType: 'application/octet-stream' },
+		]);
+		expect(result.error).toHaveLength(1);
+		expect(result.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', operation: 'download', originalItem: { id: 999999999 } });
+
+		// As someone who has nothing to do with the course: refused, nothing downloaded.
+		const outsider = await createUserWithToken('File outsider');
+		try {
+			const refused = await runNode({
+				resource: 'file',
+				operation: 'download',
+				credential: await createCredential(outsider.token, 'file outsider'),
+				params: { fileId: String(textFile.id), errorHandling: { onError: 'continueWithError' } },
+				digestBinary: 'data',
+			});
+			expect(refused.success).toEqual([]);
+			expect([401, 403, 404]).toContain(refused.error[0].errorCode);
+		} finally {
+			await canvas().request('DELETE', `/api/v1/accounts/${fx('accountId')}/users/${outsider.id}`);
+		}
 	});
 
 	it('upload: without a folder the file lands in the root folder of the course', async () => {
