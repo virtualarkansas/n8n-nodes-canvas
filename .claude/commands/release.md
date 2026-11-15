@@ -29,7 +29,9 @@ When you run this command, I will:
 GitHub Actions will then:
 - Refuse to continue if the tag does not match the version in `package.json`
 - Lint, build, type-check and run the unit tests
-- Publish the package to npm (with provenance; dist-tag `latest`, or `alpha` / `beta` / `next` for pre-releases)
+- Publish the package to npm (with provenance; dist-tag `latest`, or `alpha` / `beta` / `next` for pre-releases).
+  It uses npm trusted publishing, not a token: the package's settings on npmjs.com name this
+  repository and `release.yml` as trusted publisher, with `npm publish` allowed
 - Create a GitHub Release with the .tgz artifact and the section of `CHANGELOG.md` for this version
 
 ## Version Format

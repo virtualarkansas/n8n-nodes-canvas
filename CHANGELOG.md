@@ -226,7 +226,8 @@ corrected. Where that changed what you see in the node:
   `test/README.md`. CI runs lint, build, type check and unit tests.
 - The release workflow runs the same checks before it publishes, refuses a tag that does not match
   the version in `package.json` or is not on `main`, installs packages without their install
-  scripts, and takes the release notes from this file.
+  scripts, publishes through npm trusted publishing (no stored npm token), and takes the release
+  notes from this file.
 - `npm test` also compares the request of every operation (method, path, query, body) with a
   committed snapshot and runs the node against inputs that try to change a request's path.
 - README: the manual installation steps were wrong (n8n loads community packages from

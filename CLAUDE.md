@@ -47,7 +47,7 @@ npx tsx test/tools/description-diff.ts [version]        # What changed for saved
 ```
 
 ### Releasing
-Releases are automated via GitHub Actions: update the version in `package.json` and the heading of its section in `CHANGELOG.md`, commit, tag `vX.Y.Z`, push the tag. The release workflow checks that the tag matches the version, runs the same checks as CI, publishes to npm and creates a GitHub release with that changelog section as notes. `ci.yml` runs lint, build, type check and unit tests on pushes to `main` and on pull requests.
+Releases are automated via GitHub Actions: update the version in `package.json` and the heading of its section in `CHANGELOG.md`, commit, tag `vX.Y.Z`, push the tag. The release workflow checks that the tag matches the version, runs the same checks as CI, publishes to npm and creates a GitHub release with that changelog section as notes. Publishing uses npm trusted publishing (no token): the trusted publisher on npmjs.com names this repository and `release.yml`. `ci.yml` runs lint, build, type check and unit tests on pushes to `main` and on pull requests.
 
 ## Architecture
 
