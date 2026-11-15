@@ -107,7 +107,16 @@ describe('quizQuestionGroup', () => {
 			name: 'Bare group',
 			assessment_question_bank_id: null,
 		});
-		await canvas().request('DELETE', `${groupsPath()}/${String(created.id)}`);
+
+		// Deleting answers with an empty body.
+		const [deleted] = await runOk({
+			resource: 'quizQuestionGroup',
+			operation: 'delete',
+			persona: 'teacher',
+			params: { courseId, quizId, groupId: created.id },
+		});
+		expect(deleted).toEqual({ success: true });
+		expect((await canvas().request('GET', `${groupsPath()}/${String(created.id)}`)).status).toBe(404);
 	});
 
 	it('get: returns the group; numeric IDs from expressions work', async () => {
