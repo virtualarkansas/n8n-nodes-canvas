@@ -292,7 +292,7 @@ describe('groupCategory: export and import (CSV)', () => {
 		const target = await newCategory('Imported with problems');
 		const fileContent = [
 			// A byte order mark and Windows line ends, as Excel writes them.
-			'﻿canvas_user_id,group_name',
+			'\uFEFFcanvas_user_id,group_name',
 			`${student(9)},First row wins`,
 			// The same student again: only the first row counts.
 			`${student(9)},Second row loses`,

@@ -1,6 +1,8 @@
 import type { INodeProperties } from 'n8n-workflow';
 
 const READ_OPERATIONS = ['get', 'getAll', 'getUsedLocations'];
+/** Operations that work on the rubrics of a course or of an account. */
+const CONTEXT_OPERATIONS = [...READ_OPERATIONS, 'import', 'getImportStatus', 'listImportedRubrics'];
 const COURSE_ONLY_OPERATIONS = [
 	'create',
 	'update',
@@ -68,6 +70,18 @@ export const rubricOperations: INodeProperties[] = [
 				action: 'Get a rubric',
 			},
 			{
+				name: 'Get Import Status',
+				value: 'getImportStatus',
+				description: 'Get the state of a rubric import, with the errors Canvas found in the file. An import whose file is not valid CSV stays in the state "importing": look at the error count as well.',
+				action: 'Get the status of a rubric import',
+			},
+			{
+				name: 'Get Import Template',
+				value: 'getImportTemplate',
+				description: 'Get the CSV template Canvas offers for rubric imports: the header row and two example rows. The node outputs the CSV text in the field "value".',
+				action: 'Get the rubric import template',
+			},
+			{
 				name: 'Get Many',
 				value: 'getAll',
 				description: 'Get the rubrics of a course or an account',
@@ -78,6 +92,18 @@ export const rubricOperations: INodeProperties[] = [
 				value: 'getUsedLocations',
 				description: 'Get the courses and assignments that use a rubric',
 				action: 'Get rubric used locations',
+			},
+			{
+				name: 'Import',
+				value: 'import',
+				description: 'Create rubrics in a course or an account from CSV. Canvas works in the background and the node outputs the import record: poll it with Get Import Status. The rubrics are created as drafts.',
+				action: 'Import rubrics from CSV',
+			},
+			{
+				name: 'List Imported Rubrics',
+				value: 'listImportedRubrics',
+				description: 'List the rubrics an import created. Imported rubrics are drafts, which Get Many leaves out, so this is where their IDs come from.',
+				action: 'List the rubrics of an import',
 			},
 			{
 				name: 'Update',
@@ -378,7 +404,7 @@ export const rubricFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['rubric'],
-				operation: READ_OPERATIONS,
+				operation: CONTEXT_OPERATIONS,
 			},
 		},
 		options: [
@@ -393,7 +419,7 @@ export const rubricFields: INodeProperties[] = [
 		],
 		default: 'course',
 		description:
-			'Whether to read rubrics of a course or of an account. Canvas has no API to create, change or delete account rubrics.',
+			'Whether the rubrics belong to a course or to an account. Account rubrics can be read and imported from CSV; Canvas has no API to create them one by one, change or delete them.',
 	},
 	{
 		displayName: 'Account ID',
@@ -404,7 +430,7 @@ export const rubricFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['rubric'],
-				operation: READ_OPERATIONS,
+				operation: CONTEXT_OPERATIONS,
 				context: ['account'],
 			},
 		},
@@ -419,11 +445,63 @@ export const rubricFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['rubric'],
-				operation: READ_OPERATIONS,
+				operation: CONTEXT_OPERATIONS,
 				context: ['course'],
 			},
 		},
 		description: 'ID of the course',
+	},
+
+	// ----------------------------------
+	//         rubric: import
+	// ----------------------------------
+	{
+		displayName: 'CSV Data',
+		name: 'csvData',
+		type: 'string',
+		typeOptions: {
+			rows: 10,
+		},
+		required: true,
+		default: '',
+		placeholder:
+			'Rubric Name,Criteria Name,Criteria Description,Criteria Enable Range,Rating Name,Rating Description,Rating Points',
+		displayOptions: {
+			show: {
+				resource: ['rubric'],
+				operation: ['import'],
+			},
+		},
+		description:
+			'The rubrics to import, as CSV text in the Canvas rubric format: one row per criterion with the columns Rubric Name, Criteria Name, Criteria Description, Criteria Enable Range, followed by Rating Name, Rating Description, Rating Points once per rating (see Get Import Template). Rows with the same Rubric Name form one rubric. For a CSV file from a previous node, use Extract From File first.',
+	},
+	{
+		displayName: 'Import ID',
+		name: 'importId',
+		type: 'string',
+		required: true,
+		default: 'latest',
+		displayOptions: {
+			show: {
+				resource: ['rubric'],
+				operation: ['getImportStatus'],
+			},
+		},
+		description: 'The ID of the rubric import, or "latest" for the most recent import of the course or account',
+	},
+	{
+		displayName: 'Import ID',
+		name: 'importId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['rubric'],
+				operation: ['listImportedRubrics'],
+			},
+		},
+		description: 'The ID of the rubric import (see Import and Get Import Status). An ID Canvas does not know in the course or account gives an empty list.',
 	},
 	{
 		displayName: 'Course ID',

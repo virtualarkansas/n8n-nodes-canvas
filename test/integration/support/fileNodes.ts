@@ -55,7 +55,7 @@ export function parseCsv(text: string): string[][] {
 	let row: string[] = [];
 	let field = '';
 	let quoted = false;
-	const source = text.replace(/^﻿/, '');
+	const source = text.replace(/^\uFEFF/, '');
 	for (let i = 0; i < source.length; i++) {
 		const ch = source[i];
 		if (quoted) {
@@ -102,8 +102,8 @@ export function csvField(value: unknown): string {
 }
 
 /** The Canvas node, for use in a chain. */
-export function canvas(opts: RunNodeOptions): N8nNode {
-	return canvasNode(opts, 'Canvas');
+export function canvas(opts: RunNodeOptions, name = 'Canvas'): N8nNode {
+	return canvasNode(opts, name);
 }
 
 export interface ChainResult {

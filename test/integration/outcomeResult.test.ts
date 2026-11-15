@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { canvas, fx, unique } from '../lib/canvas';
+import { canvas, CanvasClient, fx, unique } from '../lib/canvas';
 import { runNode, runOk } from '../lib/harness';
 import type { Json } from '../lib/n8n';
 import { createSandboxCourse, deleteSandboxCourse } from './support/gradingSandbox';
@@ -17,6 +17,8 @@ describe('outcomeResult', () => {
 	let groupId = '';
 	let outcomeA = 0;
 	let outcomeB = 0;
+	/** Linked into the course by the mastery distribution test; nobody is assessed on it. */
+	let outcomeC = 0;
 	let assignmentId = '';
 	let assessed: number[] = [];
 	/** score per assessed student: [outcome A, outcome B] */
@@ -323,6 +325,253 @@ describe('outcomeResult', () => {
 				[assessed[2], scores.get(assessed[2])?.[1]],
 			].sort(),
 		);
+	});
+
+	// ---------------------------------------------------------------- mastery distribution
+
+	/** What Canvas should count: every scored student falls into the highest rating they reach. */
+	const expectedDistribution = async (outcomeId: number, ratings: Json[]): Promise<{ total: number; buckets: string[][] }> => {
+		const points = ratings.map((rating) => Number(rating.points));
+		const buckets: string[][] = points.map(() => []);
+		let total = 0;
+		for (const rollup of await allRollups('?sort_by=student')) {
+			const score = (rollup.scores as Json[]).find((s) => Number((s.links as Json).outcome) === outcomeId);
+			if (!score || score.score === null || score.score === undefined) continue;
+			total++;
+			const index = points.findIndex((p) => p <= Number(score.score));
+			if (index >= 0) buckets[index].push(String(userOf(rollup)));
+		}
+		return { total, buckets: buckets.map((ids) => ids.sort()) };
+	};
+
+	it('getMasteryDistribution: one record with the students per mastery level for every outcome', async () => {
+		// A third outcome that nobody was assessed on.
+		const rootId = String((await canvas().get<Json>(`/api/v1/courses/${courseId}/root_outcome_group`)).id);
+		const linkC = await canvas().post<Json>(`/api/v1/courses/${courseId}/outcome_groups/${rootId}/outcomes`, { title: 'Outcome C (no results)' });
+		outcomeC = Number((linkC.outcome as Json).id);
+
+		const expected = await canvas().get<Json>(`/api/v1/courses/${courseId}/outcome_mastery_distribution`);
+		const result = await runOk({ resource: 'outcomeResult', operation: 'getMasteryDistribution', persona: 'teacher', params: { courseId } });
+		expect(result).toHaveLength(1);
+		expect(result[0]).toEqual(expected);
+
+		const distributions = result[0].outcome_distributions as Record<string, Json>;
+		expect(Object.keys(distributions).sort()).toEqual([outcomeA, outcomeB, outcomeC].map(String).sort());
+		for (const outcomeId of [outcomeA, outcomeB]) {
+			const distribution = distributions[String(outcomeId)];
+			const ratings = distribution.ratings as Json[];
+			// Highest level first.
+			expect(ratings.map((r) => Number(r.points))).toEqual([...ratings.map((r) => Number(r.points))].sort((a, b) => b - a));
+			const { total, buckets } = await expectedDistribution(outcomeId, ratings);
+			expect(total).toBe(12);
+			expect(distribution).toMatchObject({ outcome_id: String(outcomeId), total_students: 12 });
+			expect(ratings.map((r) => [...(r.student_ids as string[])].sort())).toEqual(buckets);
+			expect(ratings.map((r) => r.count)).toEqual(buckets.map((ids) => ids.length));
+			expect(ratings.reduce((sum, r) => sum + Number(r.count), 0)).toBe(12);
+		}
+		expect(distributions[String(outcomeC)]).toMatchObject({ total_students: 0 });
+		expect((distributions[String(outcomeC)].ratings as Json[]).every((r) => r.count === 0)).toBe(true);
+		// Every student of the course, assessed or not: 13 sandbox students and the student persona.
+		expect((result[0].students as Json[]).map((s) => Number(s.id)).sort()).toEqual([...course.studentIds, Number(fx('studentUserId'))].sort());
+		expect(distributions[String(outcomeA)]).not.toHaveProperty('alignment_distributions');
+	});
+
+	it('getMasteryDistribution: every option narrows or extends the record', async () => {
+		const [first, second, third] = assessed;
+		const [narrowed] = await runOk({
+			resource: 'outcomeResult',
+			operation: 'getMasteryDistribution',
+			items: [{ outcomes: [outcomeA], students: [first, second, third, course.studentIds[12]] }],
+			params: {
+				courseId: `sis_course_id:${course.sisId}`,
+				options: { outcome_ids: '={{ $json.outcomes }}', student_ids: '={{ $json.students }}' },
+			},
+		});
+		const narrowedDistributions = narrowed.outcome_distributions as Record<string, Json>;
+		expect(Object.keys(narrowedDistributions)).toEqual([String(outcomeA)]);
+		// Three of the four students have a score for the outcome.
+		expect(narrowedDistributions[String(outcomeA)].total_students).toBe(3);
+		const counted = (narrowedDistributions[String(outcomeA)].ratings as Json[]).flatMap((r) => r.student_ids as string[]);
+		expect(counted.sort()).toEqual([first, second, third].map(String).sort());
+		expect((narrowed.students as Json[]).map((s) => Number(s.id)).sort()).toEqual([first, second, third, course.studentIds[12]].sort());
+
+		const [excluded] = await runOk({
+			resource: 'outcomeResult',
+			operation: 'getMasteryDistribution',
+			params: { courseId, options: { exclude_missing_outcome_results: true } },
+		});
+		// Outcome C has no results. The students without scores stay in the list of students
+		// (Canvas' "missing_user_rollups" does not change this answer, so the node does not offer it).
+		expect(Object.keys(excluded.outcome_distributions as Json).sort()).toEqual([outcomeA, outcomeB].map(String).sort());
+		expect(excluded.students as Json[]).toHaveLength(14);
+		expect(await canvas().get<Json>(`/api/v1/courses/${courseId}/outcome_mastery_distribution?exclude[]=missing_user_rollups`)).toEqual(
+			await canvas().get<Json>(`/api/v1/courses/${courseId}/outcome_mastery_distribution`),
+		);
+		const [notExcluded] = await runOk({
+			resource: 'outcomeResult',
+			operation: 'getMasteryDistribution',
+			params: { courseId, options: { exclude_missing_outcome_results: false } },
+		});
+		expect(Object.keys(notExcluded.outcome_distributions as Json)).toHaveLength(3);
+
+		// Outcome C is aligned with nothing, so it never gets alignment distributions. Outcome A is
+		// aligned with the rubric and the graded assignment, and (added here) with an unpublished
+		// assignment through a second rubric.
+		const hidden = await canvas().post<Json>(`/api/v1/courses/${courseId}/assignments`, {
+			assignment: { name: unique('Unpublished, aligned'), points_possible: 4, submission_types: ['online_text_entry'], published: false },
+		});
+		await canvas().post(`/api/v1/courses/${courseId}/rubrics`, {
+			rubric: {
+				title: unique('Second outcome rubric'),
+				criteria: { 0: { description: 'A again', learning_outcome_id: outcomeA, ratings: { 0: { description: 'Top', points: 4 }, 1: { description: 'None', points: 0 } } } },
+			},
+			rubric_association: { association_type: 'Assignment', association_id: hidden.id, purpose: 'grading', use_for_grading: true },
+		});
+		const alignmentsOfA = async (query = ''): Promise<Json[]> =>
+			(await canvas().get<Json>(`/api/v1/courses/${courseId}/outcomes/${outcomeA}/contributing_scores${query}`)).alignments as Json[];
+		const visible = await alignmentsOfA();
+		const withHidden = await alignmentsOfA('?show_unpublished_assignments=true');
+		const hiddenAlignment = withHidden.find((a) => a.associated_asset_type === 'Assignment' && String(a.associated_asset_id) === String(hidden.id)) as Json;
+		expect(hiddenAlignment).toBeDefined();
+		expect(visible.map((a) => a.alignment_id)).not.toContain(hiddenAlignment.alignment_id);
+
+		const distributionKeys = async (options: Json): Promise<string[]> => {
+			const [record] = await runOk({
+				resource: 'outcomeResult',
+				operation: 'getMasteryDistribution',
+				params: { courseId, options: { include_alignment_distributions: true, ...options } },
+			});
+			const distributions = record.outcome_distributions as Record<string, Json>;
+			expect(distributions[String(outcomeC)]).not.toHaveProperty('alignment_distributions');
+			const ofA = distributions[String(outcomeA)].alignment_distributions as Record<string, Json>;
+			for (const [key, alignment] of Object.entries(ofA)) {
+				expect(alignment).toMatchObject({ alignment_id: key });
+				expect(alignment).toHaveProperty('ratings');
+				expect(alignment).toHaveProperty('total_students');
+			}
+			return Object.keys(ofA).sort();
+		};
+		const ids = (alignments: Json[]): string[] => alignments.map((a) => String(a.alignment_id)).sort();
+
+		// Published content only, rubrics and assignments.
+		expect(await distributionKeys({})).toEqual(ids(visible));
+		expect(await distributionKeys({ add_defaults: true })).toEqual(ids(visible));
+		// Assignments only.
+		const assignmentAlignments = visible.filter((a) => a.associated_asset_type === 'Assignment');
+		expect(assignmentAlignments.length).toBeGreaterThan(0);
+		expect(assignmentAlignments.length).toBeLessThan(visible.length);
+		expect(await distributionKeys({ only_assignment_alignments: true })).toEqual(ids(assignmentAlignments));
+		expect(await distributionKeys({ only_assignment_alignments: false })).toEqual(ids(visible));
+		// With the unpublished assignment.
+		expect(await distributionKeys({ show_unpublished_assignments: true })).toEqual(ids(withHidden));
+		expect(await distributionKeys({ show_unpublished_assignments: true, only_assignment_alignments: true })).toEqual(
+			ids(withHidden.filter((a) => a.associated_asset_type === 'Assignment')),
+		);
+
+		// The whole record is what Canvas returns for the same request.
+		const [full] = await runOk({
+			resource: 'outcomeResult',
+			operation: 'getMasteryDistribution',
+			params: { courseId, options: { include_alignment_distributions: true, add_defaults: true, show_unpublished_assignments: true } },
+		});
+		expect(full).toEqual(
+			await canvas().get<Json>(
+				`/api/v1/courses/${courseId}/outcome_mastery_distribution?include[]=alignment_distributions&add_defaults=true&show_unpublished_assignments=true`,
+			),
+		);
+
+		// Without "Include Alignment Distributions" the two alignment options are not sent at all.
+		const debug = await runNode({
+			resource: 'outcomeResult',
+			operation: 'getMasteryDistribution',
+			params: { debugMode: true, courseId, options: { only_assignment_alignments: true, show_unpublished_assignments: true } },
+		});
+		expect(Object.keys(debug.debug[0].queryString as Json)).toEqual(['per_page']);
+	});
+
+	it('getMasteryDistribution: students may not see it, unknown outcomes are refused', async () => {
+		const eh = { errorHandling: { onError: 'continueWithError' } };
+		const student = await runNode({ resource: 'outcomeResult', operation: 'getMasteryDistribution', persona: 'student', params: { courseId, ...eh } });
+		expect(student.success).toEqual([]);
+		expect(student.error[0]).toMatchObject({ errorCode: 403, errorType: 'FORBIDDEN', resource: 'outcomeResult', operation: 'getMasteryDistribution' });
+
+		const foreign = await runNode({
+			resource: 'outcomeResult',
+			operation: 'getMasteryDistribution',
+			params: { courseId, options: { outcome_ids: '99999999' }, ...eh },
+		});
+		expect(foreign.error[0]).toMatchObject({ errorCode: 400, errorType: 'VALIDATION_ERROR' });
+		expect(String(foreign.error[0].errorMessage)).toContain('can only include id');
+	});
+
+	// ---------------------------------------------------------------- outcome order
+
+	it('assignOutcomeOrder: saves the caller\'s order of the outcomes for the Learning Mastery Gradebook', async () => {
+		const teacher = new CanvasClient('teacher');
+		/** The order in which Canvas hands the outcomes of the course to this user. */
+		const orderFor = async (client: CanvasClient): Promise<number[]> =>
+			(
+				((await client.get<Json>(`/api/v1/courses/${courseId}/outcome_rollups?include[]=outcomes&per_page=1`)).linked as Json)
+					.outcomes as Json[]
+			).map((outcome) => Number(outcome.id));
+		// The saved order only shows when the user arranges the gradebook as "custom"
+		// (a personal setting that needs the Learning Mastery Gradebook of the course).
+		await canvas().put(`/api/v1/courses/${courseId}/features/flags/outcome_gradebook`, { state: 'on' });
+		await teacher.put(`/api/v1/courses/${courseId}/learning_mastery_gradebook_settings`, {
+			learning_mastery_gradebook_settings: { outcome_arrangement: 'custom' },
+		});
+		const initial = await orderFor(teacher);
+		expect([...initial].sort()).toEqual([outcomeA, outcomeB, outcomeC].sort());
+
+		const result = await runOk({
+			resource: 'outcomeResult',
+			operation: 'assignOutcomeOrder',
+			persona: 'teacher',
+			params: { courseId, outcomeIds: ` ${outcomeC}, ${outcomeA} ,${outcomeB},` },
+		});
+		// Canvas answers without a body.
+		expect(result).toEqual([{ success: true }]);
+		expect(await orderFor(teacher)).toEqual([outcomeC, outcomeA, outcomeB]);
+
+		// A new list replaces the old one; outcomes that are left out come last. IDs as numbers from an expression.
+		await runOk({
+			resource: 'outcomeResult',
+			operation: 'assignOutcomeOrder',
+			persona: 'teacher',
+			items: [{ order: [outcomeB, outcomeC] }],
+			params: { courseId: Number(courseId), outcomeIds: '={{ $json.order }}' },
+		});
+		expect(await orderFor(teacher)).toEqual([outcomeB, outcomeC, outcomeA]);
+
+		// The order is personal: the admin still gets the outcomes in the order they were added.
+		expect(await orderFor(canvas())).toEqual(initial.slice().sort((a, b) => a - b));
+	});
+
+	it('assignOutcomeOrder: outcomes of another course, IDs that are not numbers, students', async () => {
+		const eh = { errorHandling: { onError: 'continueWithError' } };
+		const run = (outcomeIds: string, persona = 'teacher'): ReturnType<typeof runNode> =>
+			runNode({ resource: 'outcomeResult', operation: 'assignOutcomeOrder', persona, params: { courseId, outcomeIds, ...eh } });
+
+		const foreign = await run(`${outcomeA},${fx('outcomeId')}`);
+		expect(foreign.success).toEqual([]);
+		expect(foreign.error[0]).toMatchObject({ errorCode: 400, errorType: 'VALIDATION_ERROR', resource: 'outcomeResult', operation: 'assignOutcomeOrder' });
+		expect(String(foreign.error[0].errorMessage)).toContain('Outcomes do not belong to Course');
+
+		const notANumber = await run(`${outcomeA}, sis_outcome_id:X`);
+		expect(notANumber.error[0]).toMatchObject({ errorCode: 0, errorType: 'INVALID_PARAMETERS' });
+		expect(String(notANumber.error[0].errorMessage)).toContain('numeric');
+		const none = await run(' , ');
+		expect(none.error[0]).toMatchObject({ errorCode: 0, errorType: 'INVALID_PARAMETERS' });
+		expect(String(none.error[0].errorMessage)).toContain('at least one outcome ID');
+
+		const student = await run(String(outcomeA), 'student');
+		expect(student.success).toEqual([]);
+		expect(student.error[0]).toMatchObject({ errorCode: 403, errorType: 'FORBIDDEN' });
+
+		// The order saved by the test before is still in place.
+		const teacher = new CanvasClient('teacher');
+		const linked = (await teacher.get<Json>(`/api/v1/courses/${courseId}/outcome_rollups?include[]=outcomes&per_page=1`)).linked as Json;
+		expect((linked.outcomes as Json[]).map((outcome) => Number(outcome.id))).toEqual([outcomeB, outcomeC, outcomeA]);
 	});
 
 	it('errors: an outcome that is not linked into the course; students need their own ID', async () => {
