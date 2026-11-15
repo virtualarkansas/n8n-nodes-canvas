@@ -16,7 +16,7 @@ is tested against a real Canvas through a real n8n; see [`test/COVERAGE.md`](tes
 - **Files and background jobs**: uploads, downloads, SIS import files, Wait for Completion
 - **Act as User**: carry out any operation as another user (masquerading)
 - **Debug mode**: see the exact request without sending it
-- **Trigger**: start workflows from 85 Canvas Live Events, with optional signature verification
+- **Trigger**: start workflows from 84 Canvas Live Events, with optional signature verification
 
 Upgrading from 0.1.0? Read the [changelog](CHANGELOG.md) first: several outputs and parameters changed.
 

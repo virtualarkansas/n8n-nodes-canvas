@@ -104,7 +104,7 @@ corrected. Where that changed what you see in the node:
   start the workflow (select **All Events** to keep the old behaviour). Course and account filters
   compare local IDs with the global IDs Canvas sends.
 - Events that are filtered out are answered `200 {"status":"ignored"}` (Canvas retries anything else).
-- 85 events can be selected (22 before); `course_concluded` and `enrollment_concluded` were removed
+- 84 events can be selected (22 before); `course_concluded` and `enrollment_concluded` were removed
   because Canvas has no such events (a concluded course or enrollment arrives as `course_updated` /
   `enrollment_updated` with its new `workflow_state`).
 - **Include Metadata** moved into **Options**; the setting of a saved workflow is still honoured.
