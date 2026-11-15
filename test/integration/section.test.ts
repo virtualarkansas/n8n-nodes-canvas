@@ -285,8 +285,15 @@ describe('section', () => {
 		});
 		expect(all.map((u) => u.id).sort()).toEqual(expected.map((u) => u.id).sort());
 		expect(new Set(all.map((u) => u.id)).size).toBe(all.length);
-		expect(all[0]).toHaveProperty('avatar_url');
-		expect(all[0].uuid).toBeTypeOf('string');
+		// The includes reach Canvas: every user carries exactly the extra fields Canvas itself
+		// returns for them (Canvas leaves the avatar out for some users, e.g. the account admin).
+		const withIncludes = await canvas().getAll<Json>(`/api/v1/sections/${seeded}/users?include[]=avatar_url&include[]=uuid`);
+		const extras = (users: Json[]): Array<[unknown, boolean, boolean]> =>
+			users.map((u): [unknown, boolean, boolean] => [u.id, 'avatar_url' in u, typeof u.uuid === 'string']).sort((a, b) => Number(a[0]) - Number(b[0]));
+		expect(extras(all)).toEqual(extras(withIncludes));
+		expect(all.filter((u) => 'avatar_url' in u).length).toBeGreaterThan(10);
+		expect(all.every((u) => typeof u.uuid === 'string')).toBe(true);
+		expect(expected.some((u) => 'avatar_url' in u || 'uuid' in u)).toBe(false);
 
 		const paged = await runOk({ resource: 'section', operation: 'listUsers', params: { sectionId: seeded, pagination: { perPage: 4, maxPages: 3 } } });
 		expect(paged).toHaveLength(12);
