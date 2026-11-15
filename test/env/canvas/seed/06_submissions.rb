@@ -356,13 +356,5 @@ Seed.step("subs.special") do
   ext.submit_homework(students[0], submission_type: "basic_lti_launch", url: "https://course-tool.example.com/result/#{students[0].id}", submitted_at: ext.due_at - 1.day)
   ext.grade_student(students[0], grade: 18, grader: teacher)
 
-  # --- media objects referenced by media submissions/comments (no Kaltura locally: rows only)
-  if defined?(MediaObject)
-    mo = nil
-    [["m-seed-feedback-1", "audio", "Feedback for HW 1"], ["m-seed-lecture-1", "video", "Lecture capture: Mitosis"], ["m-seed-lecture-2", "video", "Lab safety walkthrough 🎬"]].each do |mid, type, title|
-      mo = MediaObject.where(media_id: mid).first || MediaObject.create!(media_id: mid, media_type: type, title:, context: main, user: teacher, duration: 95, workflow_state: "active")
-    end
-    Seed.fixture(:mediaObjectId, mo.media_id)
-  end
   main.touch
 end

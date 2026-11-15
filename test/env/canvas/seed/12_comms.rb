@@ -549,7 +549,7 @@ Seed.step("comms.conferences") do
     dead.title = "Deleted collaboration"
     dead.save!
     dead.destroy
-    Seed.fixture(:collaborationId, made.first.id)
+    Seed.fixture(:etherpadCollaborationId, made.first.id)
     Seed.fixture(:studentCollaborationId, g.id)
   else
     Seed.log "  collaborations skipped (EtherPad plugin not available)"
@@ -581,4 +581,42 @@ Seed.step("comms.conferences") do
   else
     Seed.log "  conferences skipped (no web conference plugin enabled)"
   end
+end
+
+# The collaborations REST API only lists LTI ("ExternalToolCollaboration") collaborations,
+# i.e. what an LTI tool hands back through content-item selection; create those rows the way
+# CollaborationsController#collaboration_from_content_item does.
+Seed.step("comms.lti_collaborations") do
+  main = Seed.course(:main)
+  teacher = Seed.user(:teacher)
+  students = Seed.users(:main_students)
+  mk = lambda do |title, desc, owner, members, groups = [], ctx: main|
+    c = ExternalToolCollaboration.new(title:, description: desc, user: owner, context: ctx, url: "https://lti.example.com/collab/#{title.parameterize}",
+                                      data: { "updateUrl" => "https://lti.example.com/collab/#{title.parameterize}/edit", "@type" => "LtiLinkItem" })
+    c.save!
+    c.update_members(members.dup, groups)
+    c
+  end
+  first = mk.call("Unit 3 shared lab notebook (LTI)", "Everyone adds their data table here.", teacher, students.first(20))
+  mk.call("Poster storyboard — Lab Team 1", "Shared with one group.", teacher, [], [Seed.ref("groups:lab").first])
+  mk.call("Exam review doc — «repaso» 📝", nil, Seed.user(:ta), students[20, 8])
+  mine = mk.call("Sam's group essay outline", "Student-owned collaboration.", Seed.user(:student), [Seed.user(:student2), students[5]])
+  mk.call("Algebra II formula sheet", "", teacher, Seed.users(:second_students).first(10), ctx: Seed.course(:second))
+  mk.call("Removed collaboration", nil, teacher, []).destroy
+  Seed.fixture(:collaborationId, first.id)
+  Seed.fixture(:studentOwnedCollaborationId, mine.id)
+end
+
+# Media objects: there is no Kaltura locally, so these are database rows only. They live in a
+# side course and belong to a non-persona teacher on purpose: without a media server, listing
+# media objects answers 500 as soon as one exists unless the request passes exclude[]=sources.
+Seed.step("comms.media") do
+  media_course = Seed.course(:paced)
+  owner = Seed.user(:teacher2)
+  mo = nil
+  [["m-seed-feedback-1", "audio", "Feedback for HW 1"], ["m-seed-lecture-1", "video", "Lecture capture: Mitosis"], ["m-seed-lecture-2", "video", "Lab safety walkthrough 🎬"]].each do |mid, type, title|
+    mo = MediaObject.where(media_id: mid).first || MediaObject.create!(media_id: mid, media_type: type, title:, context: media_course, user: owner, duration: 95, workflow_state: "active")
+  end
+  Seed.fixture(:mediaObjectId, mo.media_id)
+  Seed.fixture(:mediaObjectCourseId, media_course.id)
 end

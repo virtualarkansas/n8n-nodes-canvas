@@ -4,7 +4,7 @@
 # canvas-jobs container does the actual work: SIS imports (one clean, one with deliberate
 # errors, one that fails outright), outcome imports, content exports, a course copy, a
 # blueprint sync, content shares, account/quiz reports, recurring calendar series, a
-# three-step file upload, and browser-style page views (recent history).
+# three-step file upload, and page views / recent history.
 
 module Seed
   module Api
@@ -309,50 +309,96 @@ Seed.step("api.file_upload", tx: false) do
   Seed.log "  3-step upload -> file #{file["id"]} (#{res.code})"
 end
 
-Seed.step("api.page_views", tx: false) do
-  a = Seed::Api
+# Page views and recent history. The running web process cannot record them: HTML pages
+# do not render in this image (no compiled CSS/JS, so /login/canvas answers 500), and the
+# `enable_page_views` Setting is cached in-process until Canvas is restarted. The rows are
+# therefore written through the models; /users/:id/page_views and /users/self/history read
+# the same tables.
+Seed.step("api.history") do
+  root = Seed.root
   main = Seed.course(:main)
+  second = Seed.course(:second)
+  rng = Seed.rng("api.history")
   fx = Seed.fx
-  paths = ["/courses/#{main.id}", "/courses/#{main.id}/assignments/#{fx["assignmentId"]}", "/courses/#{main.id}/pages/#{fx["pageUrl"]}", "/courses/#{main.id}/quizzes/#{fx["quizId"]}",
-           "/courses/#{main.id}/discussion_topics/#{fx["discussionTopicId"]}", "/courses/#{main.id}/modules", "/courses/#{main.id}/files", "/courses/#{main.id}/announcements",
-           "/courses/#{main.id}/grades", "/courses/#{fx["courseId2"]}", "/courses/#{fx["courseId2"]}/assignments", "/calendar", "/conversations"]
-  # browser-style session (login form + cookies) so page views and recent history are real
-  browse = lambda do |login, password|
-    jar = {}
-    get = lambda do |path|
-      req = Net::HTTP::Get.new(URI.join(Seed::BASE_URL, path))
-      req["Cookie"] = jar.map { |k, v| "#{k}=#{v}" }.join("; ")
-      req["User-Agent"] = "Mozilla/5.0 (X11; Linux x86_64) n8n-battery-seed"
-      req["Accept"] = "text/html"
-      res = Net::HTTP.start("localhost", URI(Seed::BASE_URL).port, read_timeout: 120) { |h| h.request(req) }
-      Array(res.get_fields("Set-Cookie")).each { |c| k, v = c.split(";").first.split("=", 2); jar[k] = v }
-      res
+  base = Seed::BASE_URL
+  hw1 = Assignment.find(fx["assignmentId"])
+  assets = [
+    [hw1, "assignments", "/courses/#{main.id}/assignments/#{hw1.id}", "assignments", "show"],
+    [Assignment.find(fx["uploadAssignmentId"]), "assignments", "/courses/#{main.id}/assignments/#{fx["uploadAssignmentId"]}", "assignments", "show"],
+    [WikiPage.find(fx["pageId"]), "wiki", "/courses/#{main.id}/pages/#{fx["pageUrl"]}", "wiki_pages", "show"],
+    [WikiPage.find(fx["frontPageId"]), "wiki", "/courses/#{main.id}/pages/#{fx["frontPageUrl"]}", "wiki_pages", "show"],
+    [Quizzes::Quiz.find(fx["quizId"]), "quizzes", "/courses/#{main.id}/quizzes/#{fx["quizId"]}", "quizzes/quizzes", "show"],
+    [DiscussionTopic.find(fx["discussionTopicId"]), "topics", "/courses/#{main.id}/discussion_topics/#{fx["discussionTopicId"]}", "discussion_topics", "show"],
+    [DiscussionTopic.find(fx["announcementId"]), "announcements", "/courses/#{main.id}/discussion_topics/#{fx["announcementId"]}", "announcements", "show"],
+    [Attachment.find(fx["pdfFileId"]), "files", "/courses/#{main.id}/files/#{fx["pdfFileId"]}?module_item_id=#{fx["fileModuleItemId"]}", "files", "show"],
+    [ContextModule.find(fx["moduleId"]), "modules", "/courses/#{main.id}/modules/#{fx["moduleId"]}", "context_modules", "show"],
+    [Assignment.find(fx["course2AssignmentId"]), "assignments", "/courses/#{second.id}/assignments/#{fx["course2AssignmentId"]}", "assignments", "show"]
+  ]
+  course_pages = [["home", "/courses/#{main.id}", "courses", "show"], ["modules", "/courses/#{main.id}/modules", "context_modules", "index"], ["grades", "/courses/#{main.id}/grades", "gradebooks", "grade_summary"],
+                  ["assignments", "/courses/#{main.id}/assignments", "assignments", "index"], ["files", "/courses/#{main.id}/files", "files", "index"], ["roster", "/courses/#{main.id}/users", "context", "roster"]]
+  api_urls = ["/api/v1/courses?per_page=10", "/api/v1/courses/#{main.id}/assignments?per_page=50", "/api/v1/users/self/todo", "/api/v1/courses/#{main.id}/students/submissions?student_ids[]=all",
+              "/api/v1/conversations?scope=unread", "/api/v1/courses/#{main.id}/modules?include[]=items"]
+  agents = ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Canvas/7.2", "n8n"]
+  key = DeveloperKey.default
+  counts = {}
+  { Seed.admin => "TeacherEnrollment", Seed.user(:teacher) => "TeacherEnrollment", Seed.user(:student) => "StudentEnrollment" }.each do |user, membership|
+    session = SecureRandom.hex(16)
+    view = lambda do |url, at, controller, action, context, aua: nil, api: false, participated: false|
+      id = SecureRandom.uuid
+      PageView.new do |p|
+        p.assign_attributes(id:, request_id: id, url: "#{base}#{url}", session_id: session, context:, controller:, action:, user_request: true, render_time: rng.rand(0.05..1.8).round(3),
+                            user_agent: api ? agents.last : agents[rng.rand(3)], account_id: root.id, interaction_seconds: api ? nil : rng.rand(2.0..400.0).round(1), user:,
+                            remote_ip: "10.20.#{rng.rand(255)}.#{rng.rand(1..254)}", http_method: "get", asset_user_access_id: aua&.id, participated:, developer_key_id: (api ? key.id : nil),
+                            created_at: at, updated_at: at)
+      end.save!
     end
-    form = get.call("/login/canvas")
-    token = form.body[/name="authenticity_token"[^>]*value="([^"]+)"/, 1] || CGI.unescape(jar["_csrf_token"].to_s)
-    req = Net::HTTP::Post.new(URI.join(Seed::BASE_URL, "/login/canvas"))
-    req["Cookie"] = jar.map { |k, v| "#{k}=#{v}" }.join("; ")
-    req.set_form_data("authenticity_token" => token, "pseudonym_session[unique_id]" => login, "pseudonym_session[password]" => password)
-    res = Net::HTTP.start("localhost", URI(Seed::BASE_URL).port, read_timeout: 120) { |h| h.request(req) }
-    Array(res.get_fields("Set-Cookie")).each { |c| k, v = c.split(";").first.split("=", 2); jar[k] = v }
-    codes = paths.map { |p| get.call(p).code }
-    [res.code, codes.tally]
+    60.times do
+      at = Seed.now - rng.rand(10..(13 * 24 * 60)).minutes
+      if rng.rand < 0.7
+        asset, category, path, controller, action = assets[rng.rand(assets.size)]
+        ctx = asset.context
+        aua = AssetUserAccess.where(user:, asset_code: asset.asset_string, context: ctx).first_or_initialize
+        aua.asset_category ||= category
+        aua.asset_group_code ||= "#{category}:#{ctx.asset_string}"
+        aua.membership_type ||= membership
+        aua.display_name ||= asset.respond_to?(:title) ? asset.title : asset.try(:display_name) || asset.try(:name)
+        aua.action_level ||= "view"
+        aua.view_score = (aua.view_score || 0) + 1
+        aua.root_account_id ||= root.id
+        aua.last_access = [aua.last_access, at].compact.max
+        aua.save!
+        view.call(path, at, controller, action, ctx, aua:)
+      else
+        category, path, controller, action = course_pages[rng.rand(course_pages.size)]
+        aua = AssetUserAccess.where(user:, asset_code: "#{category}:#{main.asset_string}", context: main).first_or_initialize
+        aua.asset_category ||= category
+        aua.asset_group_code ||= main.asset_string
+        aua.membership_type ||= membership
+        aua.action_level ||= "view"
+        aua.view_score = (aua.view_score || 0) + 1
+        aua.root_account_id ||= root.id
+        aua.last_access = [aua.last_access, at].compact.max
+        aua.save!
+        view.call(path, at, controller, action, main, aua:)
+      end
+    end
+    25.times { view.call(api_urls[rng.rand(api_urls.size)], Seed.now - rng.rand(5..(6 * 24 * 60)).minutes, "courses", "index", main, api: true) }
+    counts[user.id] = PageView.where(user_id: user.id).count
   end
-  visits = {}
-  { teacher: ["teacher.persona@example.edu", Seed::PASSWORD], student: ["student.persona@example.edu", Seed::PASSWORD],
-    admin: [ENV.fetch("CANVAS_LMS_ADMIN_EMAIL", "admin@example.com"), ENV["CANVAS_LMS_ADMIN_PASSWORD"]] }.each do |who, (login, password)|
-    next if password.to_s.empty?
-
-    visits[who] = browse.call(login, password)
-  rescue => e
-    visits[who] = "failed: #{e.class}: #{e.message[0, 80]}"
+  # a participation by the student (submitting homework counts as "participated")
+  s = Seed.user(:student)
+  aua = AssetUserAccess.where(user: s, asset_code: hw1.asset_string, context: main).first
+  if aua
+    aua.update!(participate_score: 1, action_level: "participate")
+    id = SecureRandom.uuid
+    PageView.new do |p|
+      p.assign_attributes(id:, request_id: id, url: "#{base}/courses/#{main.id}/assignments/#{hw1.id}/submissions", session_id: SecureRandom.hex(16), context: main, controller: "submissions",
+                          action: "create", user_request: true, render_time: 0.4, user_agent: agents[0], account_id: root.id, interaction_seconds: 12.0, user: s, remote_ip: "10.20.1.9",
+                          http_method: "post", asset_user_access_id: aua.id, participated: true, created_at: Seed.now - 3.days, updated_at: Seed.now - 3.days)
+    end.save!
   end
-  # API traffic for the same users (page views with http_method / url recorded)
-  api_paths = ["/api/v1/courses/#{main.id}", "/api/v1/courses/#{main.id}/assignments?per_page=5", "/api/v1/users/self/profile", "/api/v1/courses/#{main.id}/modules",
-               "/api/v1/courses/#{main.id}/discussion_topics?per_page=5", "/api/v1/users/self/todo", "/api/v1/courses/#{main.id}/pages/#{fx["pageUrl"]}"]
-  [nil, a.tok(:teacher), a.tok(:student), a.tok(:ta)].each { |t| api_paths.each { |p| Seed.api(:get, p, token: t) } }
-  sleep 3 # page views are written after the response
-  counts = { admin: PageView.where(user_id: Seed.admin.id).count, teacher: PageView.where(user_id: Seed.ref("user:teacher")).count, student: PageView.where(user_id: Seed.ref("user:student")).count }
-  Seed.fixture(:pageViewUserIds, [Seed.admin.id, Seed.ref("user:teacher"), Seed.ref("user:student")])
-  Seed.log "  web sessions: #{visits.inspect}; page views now: #{counts.inspect}"
+  Seed.fixture(:pageViewUserIds, counts.keys)
+  Seed.log "  page views per user: #{counts.inspect}"
 end

@@ -26,8 +26,20 @@ Seed.step("accounts.bootstrap") do
   root.enable_service(:avatars) rescue nil # rubocop:disable Style/RescueModifier
   root.save!
 
-  # page views in the database so /users/:id/page_views and /users/self/history have data
+end
+
+# Outside a transaction on purpose: Setting.set drops the shared settings cache immediately,
+# and inside a transaction another process can re-fill that cache with the old value before
+# the commit. (A running web process still keeps its own in-process copy until Canvas is
+# restarted or reloaded, so page views only start being recorded after the next restart.)
+Seed.step("accounts.settings", tx: false) do
   Setting.set("enable_page_views", "db")
+  # Without an account default, Canvas infers a locale from Accept-Language. Node's fetch
+  # sends "Accept-Language: *", which matches every locale; Canvas then picks the first one
+  # alphabetically ("ar"), stores it as the user's browser_locale and answers in Arabic.
+  root = Seed.root
+  root.update!(default_locale: "en") if root.default_locale.blank?
+  Seed.fixture(:accountDefaultLocale, root.default_locale)
 end
 
 Seed.step("accounts.tree") do
@@ -325,6 +337,14 @@ Seed.step("accounts.devkeys") do
   Seed.fixture(:oauthDeveloperKeySecret, oauth.api_key)
   Seed.fixture(:oauthRedirectUri, "http://localhost:5678/rest/oauth2-credential/callback")
   Seed.fixture(:inactiveDeveloperKeyId, inactive.id)
+end
+
+# The developer key API reports *global* ids (shard-prefixed, e.g. 10000000000004) while the
+# database / most other endpoints use the local id; publish both.
+Seed.step("accounts.devkey_ids") do
+  { developerKeyGlobalId: "developerKeyId", scopedDeveloperKeyGlobalId: "scopedDeveloperKeyId", inactiveDeveloperKeyGlobalId: "inactiveDeveloperKeyId" }.each do |global, local|
+    Seed.fixture(global, DeveloperKey.find(Seed.fx[local]).global_id.to_s)
+  end
 end
 
 Seed.step("accounts.tools") do

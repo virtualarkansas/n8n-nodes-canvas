@@ -92,6 +92,10 @@ module Seed
     # process only waits for the work it produced; the final drain covers all of them.
     QUEUE_PREFIX = "n8n_seed"
 
+    def queue_prefix
+      QUEUE_PREFIX
+    end
+
     def queue
       @queue ||= [QUEUE_PREFIX, ENV["SEED_LANE"].to_s.strip.presence].compact.join("_")
     end
