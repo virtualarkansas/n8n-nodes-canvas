@@ -1,4 +1,5 @@
 import { ApplicationError } from 'n8n-workflow';
+import type { IDataObject } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
 
 // ============================================
@@ -42,6 +43,38 @@ function toList(value: unknown): string[] {
 // Course
 // ============================================
 
+/**
+ * Drop records that were already returned on an earlier page. Canvas sorts some lists by a
+ * value many records share (students who never logged in), and such ties are not ordered
+ * the same way on every page.
+ */
+function uniqueById(records: IDataObject[]): IDataObject[] {
+	const seen = new Set<unknown>();
+	return records.filter((record) => {
+		const id = record.id;
+		if (id === undefined || id === null) return true;
+		if (seen.has(id)) return false;
+		seen.add(id);
+		return true;
+	});
+}
+
+/** Options of the roster operations: ID lists typed with commas become real arrays. */
+function buildCourseUsersQuery(options: Record<string, unknown>): Record<string, unknown> {
+	const qs = withoutBlanks(options);
+	for (const key of ['section_ids', 'user_ids']) {
+		if (qs[key] !== undefined) {
+			const ids = toList(qs[key]);
+			if (ids.length > 0) {
+				qs[key] = ids;
+			} else {
+				delete qs[key];
+			}
+		}
+	}
+	return qs;
+}
+
 export function buildCourseRequest(
 	operation: string,
 	getParam: GetParam,
@@ -50,6 +83,17 @@ export function buildCourseRequest(
 	const courseId = getParam('courseId');
 
 	switch (operation) {
+		case 'batchUpdate': {
+			const courseIds = toList(getParam('courseIds'));
+			if (courseIds.length === 0) {
+				throw new ApplicationError('Enter at least one course ID for course batchUpdate');
+			}
+			return {
+				method: 'PUT',
+				endpoint: `/api/v1/accounts/${getParam('accountId')}/courses`,
+				body: { course_ids: courseIds, event: getParam('event') },
+			};
+		}
 		case 'create': {
 			const fields = getParamObject('additionalFields');
 			// These three are request-level arguments in Canvas, not attributes of the course.
@@ -84,6 +128,116 @@ export function buildCourseRequest(
 				endpoint: '/api/v1/courses',
 				qs: getParamObject('options'),
 			};
+		case 'getAllForUser':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/users/${getParam('userId')}/courses`,
+				qs: getParamObject('options'),
+			};
+		case 'getActivityStream':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/activity_stream`,
+			};
+		case 'getActivityStreamSummary':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/activity_stream/summary`,
+			};
+		case 'getBulkUserProgress':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/bulk_user_progress`,
+			};
+		case 'getEffectiveDueDates': {
+			const assignmentIds = toList(getParamObject('options').assignment_ids);
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/effective_due_dates`,
+				...(assignmentIds.length > 0 ? { qs: { assignment_ids: assignmentIds } } : {}),
+			};
+		}
+		case 'getPermissions': {
+			// Without names Canvas answers with every permission it knows.
+			const permissions = toList(getParam('permissions'));
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/permissions`,
+				...(permissions.length > 0 ? { qs: { permissions } } : {}),
+			};
+		}
+		case 'getSettings':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/settings`,
+			};
+		case 'getTestStudent':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/student_view_student`,
+			};
+		case 'getUser':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/users/${getParam('userId')}`,
+				qs: withoutBlanks(getParamObject('options')),
+			};
+		case 'getUserProgress':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/users/${getParam('userId')}/progress`,
+			};
+		case 'listContentShareUsers':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/content_share_users`,
+				qs: { search_term: getParam('searchTerm') },
+			};
+		case 'listRecentStudents':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/recent_students`,
+				transform: uniqueById,
+			};
+		case 'listTodoItems':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/todo`,
+				qs: withoutBlanks(getParamObject('options')),
+			};
+		case 'listUsers': {
+			const qs = buildCourseUsersQuery(getParamObject('options'));
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/users`,
+				qs,
+				// With `user_id` Canvas answers with the page that holds that user, and its link
+				// to the next page leads back to that same page: there is nothing to follow.
+				...(qs.user_id !== undefined ? { singlePage: true } : {}),
+			};
+		}
+		case 'previewHtml':
+			return {
+				method: 'POST',
+				endpoint: `/api/v1/courses/${courseId}/preview_html`,
+				body: { html: getParam('html') },
+			};
+		case 'resetContent':
+			return {
+				method: 'POST',
+				endpoint: `/api/v1/courses/${courseId}/reset_content`,
+			};
+		case 'restoreVersion':
+			return {
+				method: 'POST',
+				endpoint: `/api/v1/courses/${courseId}/restore/${getParam('versionId')}`,
+			};
+		case 'updateSettings':
+			return {
+				method: 'PUT',
+				endpoint: `/api/v1/courses/${courseId}/settings`,
+				body: getParamObject('settings'),
+			};
 		case 'update':
 			return {
 				method: 'PUT',
@@ -105,12 +259,26 @@ export function buildCourseRequest(
 					settings: { source_course_id: getParam('sourceCourseId'), ...getParamObject('options') },
 				},
 			};
-		case 'listStudents':
+		case 'listStudents': {
+			// Canvas' own "list students" endpoint is deprecated: it takes no arguments at all
+			// (every option was ignored), is not paginated and repeats a student for each of
+			// their enrollments. The roster endpoint returns the same students with working
+			// options; every page is read, so the operation still returns all of them.
+			const qs = buildCourseUsersQuery(getParamObject('options'));
+			qs.enrollment_type = toList(qs.include).includes('test_student')
+				? ['student', 'student_view']
+				: ['student'];
+			// Canvas cannot sort a course roster by last login (it answers 500).
+			if (qs.sort === 'last_login') {
+				delete qs.sort;
+			}
 			return {
 				method: 'GET',
-				endpoint: `/api/v1/courses/${courseId}/students`,
-				qs: getParamObject('options'),
+				endpoint: `/api/v1/courses/${courseId}/users`,
+				qs,
+				fetchAllPages: true,
 			};
+		}
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for course`);
 	}
@@ -343,6 +511,25 @@ export function buildCoursePaceRequest(
 				method: 'GET',
 				endpoint: `${basePath}/new`,
 				qs,
+			};
+		}
+		case 'listContexts': {
+			const options = withoutBlanks(getParamObject('options'));
+			const filter = takeKeys(options, ['context_ids']);
+			const qs: Record<string, unknown> = { type: getParam('contextType', 'section'), ...options };
+			const contextIds = toList(filter.context_ids).map((id) => Number(id));
+			if (contextIds.some((id) => !Number.isInteger(id))) {
+				throw new ApplicationError('Context IDs must be a comma-separated list of numeric IDs');
+			}
+			if (contextIds.length > 0) {
+				// Canvas reads this argument as a JSON array of numeric IDs.
+				qs.contexts = JSON.stringify(contextIds);
+			}
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/pace_contexts`,
+				qs,
+				dataKey: 'pace_contexts',
 			};
 		}
 		case 'publish':
