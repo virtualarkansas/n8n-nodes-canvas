@@ -69,7 +69,8 @@ corrected. Where that changed what you see in the node:
 | Calendar Event | Get Many: `includes` replaced by `include` (the name Canvas reads) | Saved values still work |
 | Content Migration | Default migration type is Course Copy; `workflow_state` removed from Update | Choose the type explicitly |
 | Content Share | Create, Add Users, Update and Delete no longer take a User ID (Canvas only has these routes for the calling user) | Nothing |
-| Course | List Students uses the current roster endpoint: every student once (the old endpoint repeated a student per enrollment), without the test student unless included, and its options now take effect. Sort and include values Canvas cannot serve were removed | Check workflows that counted or de-duplicated students |
+| Account Calendar, Assignment | The JSON fields of Update Many, Bulk Update Dates, Batch Create Overrides and Batch Update Overrides are empty by default (the sample moved to the placeholder; the Update Many sample named account 1) | Fill in the list |
+| Course | **Copy: Only and Except now take effect.** 0.1.0 and earlier builds sent them where Canvas does not read them, so every copy was a complete copy; the value Assignment Groups is gone (groups come with their assignments). Create/Update: Allow Student Assignment Edits removed (Canvas ignores it; use Default Page Editing Roles). List Students uses the current roster endpoint: every student once (the old endpoint repeated a student per enrollment), without the test student unless included, and its options now take effect. Sort and include values Canvas cannot serve were removed | Check Copy workflows that set Only or Except: they now copy less. Check workflows that counted or de-duplicated students |
 | Course Pace | Create: `start_date` removed | Nothing |
 | Course Report | Only the report type Canvas offers per course remains (Course Pace) | Use Account Report for provisioning, grade export and the other account reports |
 | Custom Gradebook Column | Operation **Get** removed (Canvas has no such route) | Use Get Many |
@@ -167,6 +168,9 @@ corrected. Where that changed what you see in the node:
 - **Trigger:** optional secret token, signed payloads (verified against Instructure's key set),
   an optional check that events belong to your own Canvas (**Root Account UUID**), compressed
   bodies, Caliper deliveries, all current Live Events.
+- **Course administration:** Create and Update take the sub-account, storage quota and template
+  flag; Update can move a course to another sub-account, make it a blueprint (with its lock
+  settings) and override SIS stickiness.
 - **Debug mode** shows exactly the URL, body and `curl` command a real run sends.
 - Codex files for both nodes (categories and search aliases in the n8n editor).
 
