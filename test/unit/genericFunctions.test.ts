@@ -249,6 +249,14 @@ describe('error classification', () => {
 			'Invalid access token.',
 		]);
 		expect(getCanvasErrorDetails(apiError(400, { message: 'invalid parameter' })).messages).toEqual(['invalid parameter']);
+		// A refusal answered with a record (the report that is already running): no error list, the record itself.
+		const running = { id: 7, report: 'provisioning_csv', status: 'running', message: null };
+		expect(getCanvasErrorDetails(apiError(409, running))).toEqual({ messages: [], code: undefined, errors: undefined });
+		expect(createErrorOutput(apiError(409, running), {}, 'accountReport', 'create', '/e')).toMatchObject({
+			errorCode: 409,
+			errorType: 'CONFLICT',
+			responseBody: running,
+		});
 		expect(getCanvasErrorDetails(apiError(403, '403 Forbidden (Rate Limit Exceeded)\n')).messages).toEqual([
 			'403 Forbidden (Rate Limit Exceeded)',
 		]);
@@ -653,34 +661,44 @@ describe('canvasDownload', () => {
 		return { context, calls };
 	}
 
-	it('fetches the file without the Canvas token and reports its type', async () => {
-		const { context, calls } = downloadContext([{ status: 200, body: Buffer.from('a,b\n1,2\n'), headers: { 'content-type': 'text/csv; charset=utf-8' } }]);
-		const file = await canvasDownload.call(context, 'https://canvas.test/files/7/download?download_frd=1&verifier=abc');
+	it('asks Canvas with the credential and follows its redirect to the storage host without it', async () => {
+		const { context, calls } = downloadContext([
+			{ status: 302, headers: { location: 'https://storage.example.net/blob/7?sig=xyz' } },
+			{ status: 200, body: Buffer.from('a,b\n1,2\n'), headers: { 'content-type': 'text/csv; charset=utf-8' } },
+		]);
+		const file = await canvasDownload.call(context, 'https://canvas.test/files/7/download?download_frd=1');
 		expect(file.data.toString()).toBe('a,b\n1,2\n');
 		expect(file.contentType).toBe('text/csv');
-		expect(calls).toEqual([{ authenticated: false, url: 'https://canvas.test/files/7/download?download_frd=1&verifier=abc', follow: true }]);
+		expect(calls).toEqual([
+			{ authenticated: true, url: 'https://canvas.test/files/7/download?download_frd=1', follow: false },
+			{ authenticated: false, url: 'https://storage.example.net/blob/7?sig=xyz', follow: false },
+		]);
 	});
 
-	it('uses the token only when Canvas itself asks for it, and never carries it along a redirect', async () => {
+	it('stays signed in while Canvas redirects within itself, and accepts relative URLs', async () => {
 		const { context, calls } = downloadContext([
-			{ status: 401 },
-			{ status: 302, headers: { location: 'https://storage.example.net/blob/7?sig=xyz' } },
+			{ status: 302, headers: { location: '/courses/3/files/7/download?verifier=abc' } },
 			{ status: 200, body: Buffer.from('PDF') },
 		]);
 		const file = await canvasDownload.call(context, '/files/7/download');
 		expect(file.data.toString()).toBe('PDF');
-		expect(calls).toEqual([
-			{ authenticated: false, url: 'https://canvas.test/files/7/download', follow: true },
-			{ authenticated: true, url: 'https://canvas.test/files/7/download', follow: false },
-			{ authenticated: false, url: 'https://storage.example.net/blob/7?sig=xyz', follow: true },
+		expect(calls.map((c) => [c.authenticated, c.url])).toEqual([
+			[true, 'https://canvas.test/files/7/download'],
+			[true, 'https://canvas.test/courses/3/files/7/download?verifier=abc'],
 		]);
 	});
 
-	it('a refusal from another host is not retried with the token; failures say the status', async () => {
+	it('a URL on another host never sees the credential; failures say the status; redirect loops end', async () => {
 		const elsewhere = downloadContext([{ status: 403 }]);
 		await expect(canvasDownload.call(elsewhere.context, 'https://storage.example.net/blob/7')).rejects.toThrow(/could not be downloaded \(HTTP 403\)/);
-		expect(elsewhere.calls).toHaveLength(1);
-		expect(elsewhere.calls[0].authenticated).toBe(false);
+		expect(elsewhere.calls).toEqual([{ authenticated: false, url: 'https://storage.example.net/blob/7', follow: false }]);
+
+		const refused = downloadContext([{ status: 401 }]);
+		await expect(canvasDownload.call(refused.context, '/files/7/download')).rejects.toThrow(/HTTP 401/);
+
+		const loop = downloadContext(Array.from({ length: 10 }, () => ({ status: 302, headers: { location: '/files/7/download' } })));
+		await expect(canvasDownload.call(loop.context, '/files/7/download')).rejects.toThrow(/too many redirects/);
+		expect(loop.calls).toHaveLength(6);
 	});
 });
 

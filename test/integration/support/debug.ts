@@ -21,6 +21,25 @@ export interface BuiltRequest {
  * Used for operations of hosted Instructure services (New Quizzes) that a local
  * Canvas does not have: the request is compared with the published API documentation.
  */
+/**
+ * A Debug output item without the page size the node adds to every GET, so a test can
+ * compare the operation's own parameters with the documentation. That the page size is
+ * there is asserted here.
+ */
+export function withoutPaging(item: Json): Json {
+	if (item.method !== 'GET') return item;
+	const { per_page: perPage, ...queryString } = (item.queryString ?? {}) as Json;
+	expect(perPage, 'every GET carries per_page').toBe(10);
+	const url = String(item.url);
+	expect(url).toMatch(/[?&]per_page=10(&|$)/);
+	return {
+		...item,
+		queryString,
+		url: url.replace(/([?&])per_page=10(&|$)/, (_match, lead: string, tail: string) => (tail === '&' ? lead : '')),
+		curl: String(item.curl ?? '').replace(/([?&])per_page=10(&|')/, (_match, lead: string, tail: string) => (tail === '&' ? lead : tail)),
+	};
+}
+
 export async function buildRequests(opts: RunNodeOptions): Promise<BuiltRequest[]> {
 	const result = await runNode({ ...opts, params: { ...(opts.params ?? {}), debugMode: true } });
 	if (!result.ok) {
@@ -30,8 +49,9 @@ export async function buildRequests(opts: RunNodeOptions): Promise<BuiltRequest[
 	}
 	expect(result.success, 'debug mode sends nothing, so there is no Success output').toEqual([]);
 	expect(result.error).toEqual([]);
-	return result.debug.map((item: Json) => {
-		expect(item).toMatchObject({ resource: opts.resource, operation: opts.operation });
+	return result.debug.map((raw: Json) => {
+		expect(raw).toMatchObject({ resource: opts.resource, operation: opts.operation });
+		const item = withoutPaging(raw);
 		const url = new URL(String(item.url));
 		return {
 			method: String(item.method),

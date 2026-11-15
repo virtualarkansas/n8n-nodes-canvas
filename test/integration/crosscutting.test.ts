@@ -606,7 +606,13 @@ describe('cross-cutting', () => {
 			expect(threePages).toHaveLength(15);
 			expect(new Set(threePages.map((c) => c.id)).size).toBe(15);
 			const all = await runOk({ resource: 'course', operation: 'getAll', persona: 'teacher', params: { pagination: { returnAll: true, perPage: 8 } } });
-			expect(all.map((c) => Number(c.id)).sort((a, b) => a - b)).toEqual(expected.slice().sort((a, b) => a - b));
+			// Other files enrol the shared teacher in courses of their own while this runs: everything that
+			// was there before and after must be listed, once, and nothing that was there at neither time.
+			const after = (await asTeacher.getAll<Json>('/api/v1/courses')).map((c) => Number(c.id));
+			const listed = all.map((c) => Number(c.id));
+			expect(new Set(listed).size).toBe(listed.length);
+			expect(expected.filter((id) => after.includes(id) && !listed.includes(id))).toEqual([]);
+			expect(listed.filter((id) => !expected.includes(id) && !after.includes(id))).toEqual([]);
 		});
 
 		it('a list of exactly one page, an empty list, and a list Canvas does not paginate at all', async () => {

@@ -428,7 +428,8 @@ function describeCanvasErrorBody(body: unknown): {
 		}
 	} else if (body && typeof body === 'object') {
 		const obj = body as Record<string, unknown>;
-		errors = obj.errors ?? obj.error ?? obj.message;
+		// A record can carry `"message": null` (a report); that is not an error list.
+		errors = obj.errors ?? obj.error ?? obj.message ?? undefined;
 		collectMessages(obj.errors, messages);
 		if (messages.length === 0) {
 			collectMessages(obj.message ?? obj.error, messages);
@@ -1586,57 +1587,54 @@ export async function canvasFileUploadFromUrl(
 }
 
 /**
- * Download a file Canvas points to (the `url` of a file record).
+ * Download a file Canvas points to (the `url` of a file record or of a report's attachment).
  *
- * Such URLs carry their own short-lived authorisation and usually redirect to a
- * storage service on another host, so the Canvas token is not sent. Only when Canvas
- * itself asks for it (401/403 from the Canvas host) is the request repeated with the
- * credential, and then without following redirects with it.
+ * Canvas serves such a URL to the signed-in user and usually answers with a redirect to
+ * a storage service on another host. The credential is therefore sent to the Canvas host
+ * only: redirects are followed by hand, and a request to any other host goes out without it.
  */
 export async function canvasDownload(
 	this: IExecuteFunctions,
 	fileUrl: string,
 ): Promise<{ data: Buffer; contentType?: string }> {
 	const canvasUrl = await getCanvasUrl.call(this);
-	const url = /^https?:\/\//i.test(fileUrl) ? fileUrl : `${canvasUrl}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
-	const options: IHttpRequestOptions = {
-		method: 'GET',
-		url,
-		encoding: 'arraybuffer',
-		returnFullResponse: true,
-		json: false,
-		ignoreHttpStatusErrors: true,
-	};
+	const canvasHost = new URL(canvasUrl).host;
+	let url = /^https?:\/\//i.test(fileUrl) ? fileUrl : `${canvasUrl}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
 
-	let response = await this.helpers.httpRequest(options);
-	let status = Number(response.statusCode);
-
-	const sameHost = new URL(url).host === new URL(canvasUrl).host;
-	if ((status === 401 || status === 403) && sameHost) {
-		response = await this.helpers.httpRequestWithAuthentication.call(this, getCredentialType(this), {
-			...options,
+	for (let hop = 0; hop < 6; hop++) {
+		const options: IHttpRequestOptions = {
+			method: 'GET',
+			url,
+			encoding: 'arraybuffer',
+			returnFullResponse: true,
+			json: false,
+			ignoreHttpStatusErrors: true,
 			disableFollowRedirect: true,
-		});
-		status = Number(response.statusCode);
-		const location = (response.headers as IDataObject | undefined)?.location;
-		if (status >= 300 && status < 400 && typeof location === 'string') {
-			// Wherever the file is stored, that request goes out without the token.
-			response = await this.helpers.httpRequest({ ...options, url: new URL(location, url).toString() });
-			status = Number(response.statusCode);
-		}
-	}
+		};
+		const response =
+			new URL(url).host === canvasHost
+				? await this.helpers.httpRequestWithAuthentication.call(this, getCredentialType(this), options)
+				: await this.helpers.httpRequest(options);
+		const status = Number(response.statusCode);
+		const headers = (response.headers ?? {}) as IDataObject;
 
-	if (status < 200 || status >= 300) {
-		throw new NodeApiError(
-			this.getNode(),
-			{ httpCode: String(status) } as JsonObject,
-			{ message: `The file could not be downloaded (HTTP ${status})`, httpCode: String(status) },
-		);
+		if (status >= 300 && status < 400 && typeof headers.location === 'string') {
+			url = new URL(headers.location, url).toString();
+			continue;
+		}
+		if (status < 200 || status >= 300) {
+			throw new NodeApiError(
+				this.getNode(),
+				{ httpCode: String(status) } as JsonObject,
+				{ message: `The file could not be downloaded (HTTP ${status})`, httpCode: String(status) },
+			);
+		}
+		const body = response.body as Buffer | ArrayBuffer | string;
+		const data = Buffer.isBuffer(body) ? body : Buffer.from(body as ArrayBuffer);
+		const contentType = headers['content-type'];
+		return { data, contentType: typeof contentType === 'string' ? contentType.split(';')[0].trim() : undefined };
 	}
-	const body = response.body as Buffer | ArrayBuffer | string;
-	const data = Buffer.isBuffer(body) ? body : Buffer.from(body as ArrayBuffer);
-	const contentType = (response.headers as IDataObject | undefined)?.['content-type'];
-	return { data, contentType: typeof contentType === 'string' ? contentType.split(';')[0].trim() : undefined };
+	throw new NodeOperationError(this.getNode(), 'The file could not be downloaded: too many redirects');
 }
 
 /**

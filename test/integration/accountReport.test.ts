@@ -432,6 +432,9 @@ describe('accountReport', () => {
 				additionalFields: parameters,
 				errorHandling: { onError: 'continueWithError' },
 				batchProcessing: { mode: 'individual' },
+				// The second request has to arrive while the first report is still being generated:
+				// no waiting for the rate limit quota between the two.
+				rateLimiting: { enabled: false },
 			},
 		});
 		expect(result.success).toHaveLength(1);

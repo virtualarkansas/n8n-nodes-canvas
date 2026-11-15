@@ -426,7 +426,7 @@ describe('sisImport', () => {
 	});
 
 	it('waitForCompletion: several imports are waited for in one run; the final states come back', async () => {
-		const first = await startImport(usersCsv(userRow('w1', 'Wait', 'One')));
+		const first = await startImport(usersCsv(userRow('wait1', 'Wait', 'One')));
 		const second = await startImport('this,is,not\na,sis,file\n');
 		const result = await runNode({
 			resource: 'sisImport',
@@ -447,7 +447,7 @@ describe('sisImport', () => {
 		expect(String(result.success[1].workflow_state)).toMatch(/^failed/);
 		expect(result.error).toHaveLength(1);
 		expect(result.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', operation: 'waitForCompletion' });
-		expect(await findUser('w1')).toBeDefined();
+		expect(await findUser('wait1')).toBeDefined();
 	});
 
 	it('create: a zip file as Base64, from several items', async () => {

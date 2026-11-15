@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { canvas, fx } from '../lib/canvas';
 import { runNode, skipOp } from '../lib/harness';
 import type { Json } from '../lib/n8n';
+import { withoutPaging } from './support/debug';
 
 /**
  * Resource: analytics.
@@ -37,7 +38,7 @@ async function debugRequests(operation: string, params: Json, items?: Json[]): P
 	expect(result.ok, JSON.stringify(result.failure)).toBe(true);
 	expect(result.success).toEqual([]);
 	expect(result.error).toEqual([]);
-	return result.debug;
+	return result.debug.map(withoutPaging);
 }
 
 describe('analytics', () => {

@@ -131,6 +131,11 @@ export interface TestUser {
  * Create a Canvas user of the test's own, with an API token, so tests can act as
  * that user without touching the seeded personas.
  */
+/** Run a Ruby one-liner inside the Canvas web container (for data the API cannot create). */
+export function railsRunner(script: string): string {
+	return execFileSync('docker', ['exec', 'canvas-web', 'bundle', 'exec', 'rails', 'runner', script], { encoding: 'utf8' });
+}
+
 export async function createUserWithToken(label: string, accountId = fx('accountId')): Promise<TestUser> {
 	const name = unique(label);
 	const login = `${name.toLowerCase().replace(/[^a-z0-9]+/g, '.')}@example.edu`;

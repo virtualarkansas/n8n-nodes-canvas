@@ -249,8 +249,8 @@ describe('enrollmentTerm', () => {
 		expect(String(list.error[0].errorMessage)).toContain('root_accounts');
 
 		// For writes Canvas does not answer with an API error but redirects away from the
-		// sub-account, so the status that finally arrives is not a clean 400. What matters:
-		// the node reports a failure and the term is untouched.
+		// sub-account. The node does not follow a redirect on a write: it reports the
+		// redirect itself as the failure, and the term is untouched.
 		const before = await getTerm(termId);
 		const write = await runNode({
 			resource: 'enrollmentTerm',
@@ -259,7 +259,8 @@ describe('enrollmentTerm', () => {
 		});
 		expect(write.success).toEqual([]);
 		expect(write.error).toHaveLength(1);
-		expect(Number(write.error[0].errorCode)).toBeGreaterThanOrEqual(400);
+		expect(write.error[0]).toMatchObject({ errorCode: 302, operation: 'update' });
+		expect(String(write.error[0].errorMessage)).toMatch(/redirect \(HTTP 302\)/);
 		expect((await getTerm(termId)).name).toBe(before.name);
 	});
 

@@ -256,8 +256,9 @@ describe('search', () => {
 				persona: 'searchInsider',
 				params: { options: { search: 'Search', type: 'user' }, pagination: { returnAll: true } },
 			});
-			// The people of the course (the insider included), but not the stranger.
-			expect(ids(everyone).sort()).toEqual([insider.id, classmate.id, teacher.id].sort());
+			// The people of the course (the insider included), but not the stranger. Compared as a set:
+			// right after enrollments change, Canvas now and then lists the searching user twice.
+			expect([...new Set(ids(everyone))].sort()).toEqual([insider.id, classmate.id, teacher.id].sort());
 			expect(ids(everyone)).not.toContain(stranger.id);
 
 			const teachers = await runOk({
@@ -352,6 +353,14 @@ describe('search', () => {
 
 			catalogChanged = true;
 			await setCourseCatalog(true);
+			// Canvas runs several server processes and each notices the changed account setting on its
+			// own (within about a minute): wait until every one of them serves the catalog.
+			for (let inARow = 0, attempt = 0; inARow < 8; attempt++) {
+				const res = await canvas().request('GET', `/api/v1/search/all_courses?search=${marker}`);
+				inARow = res.status === 200 ? inARow + 1 : 0;
+				if (attempt > 120) throw new Error('The course catalog did not become available');
+				if (res.status !== 200) await new Promise((resolve) => setTimeout(resolve, 1000));
+			}
 			try {
 				// Canvas wraps every entry as { course: {...} }; the node outputs the course itself.
 				const courseIds = (items: Json[]): number[] => items.map((item) => ((item.course as Json | undefined) ?? item).id as number);

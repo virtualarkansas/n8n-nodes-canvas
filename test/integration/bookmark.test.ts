@@ -110,10 +110,7 @@ describe('bookmark', () => {
 		expect(result.success).toEqual([]);
 		expect(result.error[0]).toMatchObject({ errorCode: 0, resource: 'bookmark', operation: 'create' });
 		expect(String(result.error[0].errorMessage)).toContain('must be valid JSON');
-		// SHARED-BUG: should be INVALID_PARAMETERS. GenericFunctions.createErrorOutput recognises handler
-		// errors by `error.name === 'ApplicationError'`, but n8n's ApplicationError keeps the name "Error",
-		// so every validation error thrown by a handler is reported as UNKNOWN (see crosscutting.test.ts).
-		expect(result.error[0].errorType).toBe('UNKNOWN');
+		expect(result.error[0].errorType).toBe('INVALID_PARAMETERS');
 		expect(await ids()).toEqual(before);
 	});
 

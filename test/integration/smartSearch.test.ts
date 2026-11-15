@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { canvas, fx } from '../lib/canvas';
 import { runNode, skipOp } from '../lib/harness';
+import { withoutPaging } from './support/debug';
 
 /**
  * Resource: smartSearch.
@@ -57,7 +58,7 @@ describe('smartSearch', () => {
 			operation: 'search',
 			params: { debugMode: true, courseId: `sis_course_id:${fx('courseSisId')}`, query: 'photosynthesis', options: { filter: [], include: [] } },
 		});
-		expect(result.debug[0]).toMatchObject({
+		expect(withoutPaging(result.debug[0])).toMatchObject({
 			method: 'GET',
 			url: `${canvas().url}/api/v1/courses/sis_course_id:${fx('courseSisId')}/smartsearch?q=photosynthesis`,
 			queryString: { q: 'photosynthesis' },

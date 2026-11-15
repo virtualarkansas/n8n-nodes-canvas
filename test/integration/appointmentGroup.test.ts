@@ -40,6 +40,13 @@ describe('appointmentGroup', () => {
 		let course = courses.find((c) => c.name === name && c.workflow_state === 'available');
 		if (!course) {
 			course = await canvas().post<Json>(`/api/v1/accounts/${subAccount}/courses`, { course: { name }, offer: true });
+		}
+		// The course outlives the sandbox (which is rebuilt per checkout, with a new teacher):
+		// make sure this sandbox's teacher teaches it.
+		const teaching = await canvas().getAll<Json>(
+			`/api/v1/courses/${String(course.id)}/enrollments?user_id=${sbx.teacher.id}&type[]=TeacherEnrollment`,
+		);
+		if (teaching.length === 0) {
 			await canvas().post(`/api/v1/courses/${String(course.id)}/enrollments`, {
 				enrollment: { user_id: sbx.teacher.id, type: 'TeacherEnrollment', enrollment_state: 'active', notify: false },
 			});
