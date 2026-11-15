@@ -2,6 +2,31 @@ import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
 
 // ============================================
+// Helpers
+// ============================================
+
+/**
+ * Copy the fields of a UI collection into a Canvas object under Canvas' own names.
+ * Only fields the user actually added are copied. With `keepBlank` an empty string
+ * is sent as well, which is how Canvas clears a value on update.
+ */
+function mapFields(
+	source: Record<string, unknown>,
+	names: Record<string, string>,
+	keepBlank = false,
+): Record<string, unknown> {
+	const target: Record<string, unknown> = {};
+	for (const [uiName, canvasName] of Object.entries(names)) {
+		const value = source[uiName];
+		if (value === undefined || value === null) continue;
+		if (value === '' && !keepBlank) continue;
+		if (Array.isArray(value) && value.length === 0) continue;
+		target[canvasName] = value;
+	}
+	return target;
+}
+
+// ============================================
 // USER
 // ============================================
 
@@ -12,54 +37,59 @@ export function buildUserRequest(
 ): IRequestConfig {
 	switch (operation) {
 		case 'create': {
-			const additionalFields = getParamObject('additionalFields');
-			// Build the user object from name + user-related additional fields
-			const userObj: Record<string, unknown> = {
+			const fields = getParamObject('additionalFields');
+
+			const user = {
 				name: getParam('name'),
+				...mapFields(fields, {
+					shortName: 'short_name',
+					sortableName: 'sortable_name',
+					locale: 'locale',
+					timeZone: 'time_zone',
+					termsOfUse: 'terms_of_use',
+					skipRegistration: 'skip_registration',
+				}),
 			};
-			if (additionalFields.shortName) {
-				userObj.short_name = additionalFields.shortName;
-			}
-			if (additionalFields.sortableName) {
-				userObj.sortable_name = additionalFields.sortableName;
-			}
-			if (additionalFields.email) {
-				userObj.email = additionalFields.email;
-			}
-			if (additionalFields.locale) {
-				userObj.locale = additionalFields.locale;
-			}
-			if (additionalFields.timeZone) {
-				userObj.time_zone = additionalFields.timeZone;
-			}
-			if (additionalFields.termsOfUse !== undefined) {
-				userObj.terms_of_use = additionalFields.termsOfUse;
+
+			const pseudonym = {
+				unique_id: getParam('uniqueId'),
+				...mapFields(fields, {
+					password: 'password',
+					sisUserId: 'sis_user_id',
+					integrationId: 'integration_id',
+					sendConfirmation: 'send_confirmation',
+					forceSelfRegistration: 'force_self_registration',
+					authenticationProviderId: 'authentication_provider_id',
+				}),
+			};
+
+			// Canvas has no user[email]: the address is the user's first communication channel.
+			const channel = mapFields(fields, {
+				email: 'address',
+				skipConfirmation: 'skip_confirmation',
+				confirmationUrl: 'confirmation_url',
+			});
+			if (channel.address !== undefined) {
+				channel.type = 'email';
 			}
 
-			// Build pseudonym from uniqueId + password-related additional fields
-			const pseudonym: Record<string, unknown> = {
-				unique_id: getParam('uniqueId'),
+			const body: Record<string, unknown> = {
+				user,
+				pseudonym,
+				...mapFields(fields, {
+					enableSisReactivation: 'enable_sis_reactivation',
+					forceValidations: 'force_validations',
+					destination: 'destination',
+				}),
 			};
-			if (additionalFields.password) {
-				pseudonym.password = additionalFields.password;
-			}
-			if (additionalFields.sisUserId) {
-				pseudonym.sis_user_id = additionalFields.sisUserId;
-			}
-			if (additionalFields.sendConfirmation !== undefined) {
-				pseudonym.send_confirmation = additionalFields.sendConfirmation;
-			}
-			if (additionalFields.forceSelfRegistration !== undefined) {
-				pseudonym.force_self_registration = additionalFields.forceSelfRegistration;
+			if (Object.keys(channel).length > 0) {
+				body.communication_channel = channel;
 			}
 
 			return {
 				endpoint: `/api/v1/accounts/${getParam('accountId')}/users`,
 				method: 'POST',
-				body: {
-					user: userObj,
-					pseudonym,
-				},
+				body,
 			};
 		}
 
@@ -69,38 +99,98 @@ export function buildUserRequest(
 				method: 'DELETE',
 			};
 
+		case 'restore':
+			return {
+				endpoint: `/api/v1/accounts/${getParam('accountId')}/users/${getParam('userId')}/restore`,
+				method: 'PUT',
+			};
+
 		case 'get':
 			return {
 				endpoint: `/api/v1/users/${getParam('userId')}`,
 				method: 'GET',
-				qs: getParamObject('additionalFields'),
+				qs: mapFields(getParamObject('additionalFields'), { include: 'include' }),
 			};
 
 		case 'getSelf':
 			return {
 				endpoint: '/api/v1/users/self',
 				method: 'GET',
-				qs: getParamObject('additionalFields'),
+				qs: mapFields(getParamObject('additionalFields'), { include: 'include' }),
+			};
+
+		case 'getProfile':
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/profile`,
+				method: 'GET',
 			};
 
 		case 'getAll':
 			return {
 				endpoint: `/api/v1/accounts/${getParam('accountId')}/users`,
 				method: 'GET',
-				qs: getParamObject('additionalFields'),
+				qs: mapFields(getParamObject('additionalFields'), {
+					enrollmentType: 'enrollment_type',
+					include: 'include',
+					includeDeletedUsers: 'include_deleted_users',
+					searchTerm: 'search_term',
+					sort: 'sort',
+					order: 'order',
+				}),
 			};
 
-		case 'update':
+		case 'update': {
+			const fields = getParamObject('updateFields');
+			// A field that was added but left empty is not sent (an empty name or email must never
+			// reach Canvas by accident). The profile texts are the exception: empty clears them.
+			const user: Record<string, unknown> = {
+				...mapFields(fields, {
+					email: 'email',
+					event: 'event',
+					locale: 'locale',
+					name: 'name',
+					shortName: 'short_name',
+					sortableName: 'sortable_name',
+					timeZone: 'time_zone',
+				}),
+				...mapFields(fields, { bio: 'bio', pronouns: 'pronouns', title: 'title' }, true),
+			};
+			const avatar = mapFields(fields, { avatarToken: 'token', avatarUrl: 'url' });
+			if (Object.keys(avatar).length > 0) {
+				user.avatar = avatar;
+			}
+			// Query string, not body: Canvas reads a JSON `false` in the body as "not given".
+			const qs = mapFields(fields, { overrideSisStickiness: 'override_sis_stickiness' });
 			return {
 				endpoint: `/api/v1/users/${getParam('userId')}`,
 				method: 'PUT',
-				body: { user: getParamObject('updateFields') },
+				body: { user },
+				...(Object.keys(qs).length > 0 ? { qs } : {}),
+			};
+		}
+
+		case 'merge': {
+			const source = getParam('sourceUserId');
+			const destination = getParam('destinationUserId');
+			const destinationAccountId = getParam('destinationAccountId');
+			return {
+				endpoint: destinationAccountId
+					? `/api/v1/users/${source}/merge_into/accounts/${destinationAccountId}/users/${destination}`
+					: `/api/v1/users/${source}/merge_into/${destination}`,
+				method: 'PUT',
+			};
+		}
+
+		case 'split':
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/split`,
+				method: 'POST',
 			};
 
-		case 'merge':
+		case 'terminateSessions':
 			return {
-				endpoint: `/api/v1/users/${getParam('sourceUserId')}/merge_into/${getParam('destinationUserId')}`,
-				method: 'PUT',
+				endpoint: `/api/v1/users/${getParam('userId')}/sessions`,
+				method: 'DELETE',
 			};
 
 		default:
@@ -112,6 +202,25 @@ export function buildUserRequest(
 // LOGIN
 // ============================================
 
+const LOGIN_FIELDS: Record<string, string> = {
+	uniqueId: 'unique_id',
+	password: 'password',
+	oldPassword: 'old_password',
+	sisUserId: 'sis_user_id',
+	integrationId: 'integration_id',
+	authenticationProviderId: 'authentication_provider_id',
+	declaredUserType: 'declared_user_type',
+	workflowState: 'workflow_state',
+};
+
+/** Workflows saved before the dropdown was corrected carry "admin"; Canvas only knows "administrative". */
+function fixDeclaredUserType(login: Record<string, unknown>): Record<string, unknown> {
+	if (login.declared_user_type === 'admin') {
+		login.declared_user_type = 'administrative';
+	}
+	return login;
+}
+
 export function buildLoginRequest(
 	operation: string,
 	getParam: GetParam,
@@ -119,50 +228,33 @@ export function buildLoginRequest(
 ): IRequestConfig {
 	switch (operation) {
 		case 'getAll': {
-			const listBy = getParam('listBy');
+			const listBy = getParam('listBy', 'user');
 			if (listBy === 'user') {
 				return {
 					endpoint: `/api/v1/users/${getParam('userId')}/logins`,
 					method: 'GET',
 				};
 			}
-			// listBy === 'account'
+			// By account: Canvas lists the logins of one user within a root account.
 			return {
 				endpoint: `/api/v1/accounts/${getParam('accountId')}/logins`,
 				method: 'GET',
+				qs: { user: { id: getParam('userId') } },
 			};
 		}
 
-		case 'create': {
-			const additionalFields = getParamObject('additionalFields');
-			const loginBody: Record<string, unknown> = {
-				unique_id: getParam('uniqueId'),
-			};
-			if (additionalFields.password) {
-				loginBody.password = additionalFields.password;
-			}
-			if (additionalFields.sisUserId) {
-				loginBody.sis_user_id = additionalFields.sisUserId;
-			}
-			if (additionalFields.integrationId) {
-				loginBody.integration_id = additionalFields.integrationId;
-			}
-			if (additionalFields.authenticationProviderId) {
-				loginBody.authentication_provider_id = additionalFields.authenticationProviderId;
-			}
-			if (additionalFields.declaredUserType) {
-				loginBody.declared_user_type = additionalFields.declaredUserType;
-			}
-
+		case 'create':
 			return {
 				endpoint: `/api/v1/accounts/${getParam('accountId')}/logins`,
 				method: 'POST',
 				body: {
 					user: { id: getParam('userId') },
-					login: loginBody,
+					login: fixDeclaredUserType({
+						unique_id: getParam('uniqueId'),
+						...mapFields(getParamObject('additionalFields'), LOGIN_FIELDS),
+					}),
 				},
 			};
-		}
 
 		case 'delete':
 			return {
@@ -171,43 +263,37 @@ export function buildLoginRequest(
 			};
 
 		case 'update': {
-			const updateFields = getParamObject('updateFields');
-			const loginUpdate: Record<string, unknown> = {};
-
-			if (updateFields.uniqueId) {
-				loginUpdate.unique_id = updateFields.uniqueId;
-			}
-			if (updateFields.password) {
-				loginUpdate.password = updateFields.password;
-			}
-			if (updateFields.oldPassword) {
-				loginUpdate.old_password = updateFields.oldPassword;
-			}
-			if (updateFields.sisUserId) {
-				loginUpdate.sis_user_id = updateFields.sisUserId;
-			}
-			if (updateFields.integrationId) {
-				loginUpdate.integration_id = updateFields.integrationId;
-			}
-			if (updateFields.authenticationProviderId) {
-				loginUpdate.authentication_provider_id = updateFields.authenticationProviderId;
-			}
-			if (updateFields.declaredUserType) {
-				loginUpdate.declared_user_type = updateFields.declaredUserType;
-			}
-			if (updateFields.workflowState) {
-				loginUpdate.workflow_state = updateFields.workflowState;
-			}
-			if (updateFields.overrideSisStickiness !== undefined) {
-				loginUpdate.override_sis_stickiness = updateFields.overrideSisStickiness;
-			}
-
+			const fields = getParamObject('updateFields');
+			// An empty SIS ID, integration ID or provider is sent as such: that is how Canvas
+			// clears them. Any other field left empty is not sent at all.
+			const login = fixDeclaredUserType({
+				...mapFields(fields, LOGIN_FIELDS),
+				...mapFields(
+					fields,
+					{
+						sisUserId: 'sis_user_id',
+						integrationId: 'integration_id',
+						authenticationProviderId: 'authentication_provider_id',
+					},
+					true,
+				),
+			});
+			// Query string, not body: Canvas reads a JSON `false` in the body as "not given".
+			const qs = mapFields(fields, { overrideSisStickiness: 'override_sis_stickiness' });
 			return {
 				endpoint: `/api/v1/accounts/${getParam('accountId')}/logins/${getParam('loginId')}`,
 				method: 'PUT',
-				body: { login: loginUpdate },
+				body: { login },
+				...(Object.keys(qs).length > 0 ? { qs } : {}),
 			};
 		}
+
+		case 'resetPassword':
+			return {
+				endpoint: '/api/v1/users/reset_password',
+				method: 'POST',
+				body: { email: getParam('email') },
+			};
 
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for login`);
@@ -233,42 +319,30 @@ export function buildCommunicationChannelRequest(
 			};
 
 		case 'create': {
-			const additionalFields = getParamObject('additionalFields');
-			const channelBody: Record<string, unknown> = {
-				type: getParam('channelType'),
-				address: getParam('address'),
-			};
-			if (additionalFields.token) {
-				channelBody.token = additionalFields.token;
-			}
-
-			const body: Record<string, unknown> = {
-				communication_channel: channelBody,
-			};
-			if (additionalFields.skipConfirmation !== undefined) {
-				body.skip_confirmation = additionalFields.skipConfirmation;
-			}
-
+			const fields = getParamObject('additionalFields');
 			return {
 				endpoint: `/api/v1/users/${userId}/communication_channels`,
 				method: 'POST',
-				body,
+				body: {
+					communication_channel: {
+						type: getParam('channelType'),
+						address: getParam('address'),
+						...mapFields(fields, { token: 'token' }),
+					},
+					...mapFields(fields, { skipConfirmation: 'skip_confirmation' }),
+				},
 			};
 		}
 
 		case 'delete': {
-			const deleteBy = getParam('deleteBy');
-			if (deleteBy === 'id') {
+			if (getParam('deleteBy', 'id') === 'id') {
 				return {
 					endpoint: `/api/v1/users/${userId}/communication_channels/${getParam('channelId')}`,
 					method: 'DELETE',
 				};
 			}
-			// deleteBy === 'typeAndAddress'
-			const channelType = getParam('channelType');
-			const address = encodeURIComponent(getParam('address'));
 			return {
-				endpoint: `/api/v1/users/${userId}/communication_channels/${channelType}/${address}`,
+				endpoint: `/api/v1/users/${userId}/communication_channels/${getParam('channelType')}/${encodeURIComponent(getParam('address'))}`,
 				method: 'DELETE',
 			};
 		}
@@ -290,16 +364,16 @@ export function buildUserObserveeRequest(
 	getParamObject: GetParamObject,
 ): IRequestConfig {
 	const userId = getParam('userId');
+	const rootAccount = (): Record<string, unknown> =>
+		mapFields(getParamObject('additionalFields'), { rootAccountId: 'root_account_id' });
 
 	switch (operation) {
-		case 'getAll': {
-			const additionalFields = getParamObject('additionalFields');
+		case 'getAll':
 			return {
 				endpoint: `/api/v1/users/${userId}/observees`,
 				method: 'GET',
-				qs: additionalFields,
+				qs: mapFields(getParamObject('additionalFields'), { include: 'include' }),
 			};
-		}
 
 		case 'get':
 			return {
@@ -307,28 +381,22 @@ export function buildUserObserveeRequest(
 				method: 'GET',
 			};
 
-		case 'add': {
-			const additionalFields = getParamObject('additionalFields');
-			const qs: Record<string, unknown> = {};
-			if (additionalFields.rootAccountId) {
-				qs.root_account_id = additionalFields.rootAccountId;
-			}
+		case 'getObserver':
+			return {
+				endpoint: `/api/v1/users/${userId}/observers/${getParam('observerId')}`,
+				method: 'GET',
+			};
+
+		case 'add':
 			return {
 				endpoint: `/api/v1/users/${userId}/observees/${getParam('observeeId')}`,
 				method: 'PUT',
-				qs,
+				qs: rootAccount(),
 			};
-		}
 
 		case 'addWithCredentials': {
-			const addMethod = getParam('addMethod');
-			const additionalFields = getParamObject('additionalFields');
+			const addMethod = getParam('addMethod', 'pairingCode');
 			const body: Record<string, unknown> = {};
-			const qs: Record<string, unknown> = {};
-
-			if (additionalFields.rootAccountId) {
-				qs.root_account_id = additionalFields.rootAccountId;
-			}
 
 			if (addMethod === 'credentials') {
 				body.observee = {
@@ -338,38 +406,31 @@ export function buildUserObserveeRequest(
 			} else if (addMethod === 'pairingCode') {
 				body.pairing_code = getParam('pairingCode');
 			} else if (addMethod === 'accessToken') {
-				qs.access_token = getParam('accessToken');
+				// In the body, never in the URL: query strings end up in access logs.
+				body.access_token = getParam('accessToken');
 			}
 
 			return {
 				endpoint: `/api/v1/users/${userId}/observees`,
 				method: 'POST',
 				body,
-				qs,
+				qs: rootAccount(),
 			};
 		}
 
-		case 'remove': {
-			const additionalFields = getParamObject('additionalFields');
-			const qs: Record<string, unknown> = {};
-			if (additionalFields.rootAccountId) {
-				qs.root_account_id = additionalFields.rootAccountId;
-			}
+		case 'remove':
 			return {
 				endpoint: `/api/v1/users/${userId}/observees/${getParam('observeeId')}`,
 				method: 'DELETE',
-				qs,
+				qs: rootAccount(),
 			};
-		}
 
-		case 'listObservers': {
-			const additionalFields = getParamObject('additionalFields');
+		case 'listObservers':
 			return {
 				endpoint: `/api/v1/users/${userId}/observers`,
 				method: 'GET',
-				qs: additionalFields,
+				qs: mapFields(getParamObject('additionalFields'), { include: 'include' }),
 			};
-		}
 
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for userObservee`);

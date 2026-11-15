@@ -62,7 +62,7 @@ export const enrollmentTermFields: INodeProperties[] = [
 				resource: ['enrollmentTerm'],
 			},
 		},
-		description: 'The ID of the account',
+		description: 'The ID of the root account (terms only exist on root accounts; sub-accounts are refused)',
 	},
 
 	// ----------------------------------
@@ -170,7 +170,6 @@ export const enrollmentTermFields: INodeProperties[] = [
 						type: 'options',
 						options: [
 							{ name: 'Designer', value: 'DesignerEnrollment' },
-							{ name: 'Observer', value: 'ObserverEnrollment' },
 							{ name: 'Student', value: 'StudentEnrollment' },
 							{ name: 'TA', value: 'TaEnrollment' },
 							{ name: 'Teacher', value: 'TeacherEnrollment' },
@@ -219,7 +218,7 @@ export const enrollmentTermFields: INodeProperties[] = [
 				name: 'endAt',
 				type: 'dateTime',
 				default: '',
-				description: 'The end date of the term in ISO 8601 format',
+				description: 'The end date of the term in ISO 8601 format. Leave empty to remove the end date.',
 			},
 			{
 				displayName: 'Name',
@@ -233,21 +232,22 @@ export const enrollmentTermFields: INodeProperties[] = [
 				name: 'overrideSisStickiness',
 				type: 'boolean',
 				default: true,
-				description: 'Whether to allow updating fields that were set via SIS import',
+				description:
+					'Whether to change fields that an SIS import may later overwrite (Canvas default: true). When turned off, fields marked as changed in Canvas ("sticky") are left alone.',
 			},
 			{
 				displayName: 'SIS Term ID',
 				name: 'sisTermId',
 				type: 'string',
 				default: '',
-				description: 'The unique SIS identifier for the term',
+				description: 'The unique SIS identifier for the term. Leave empty to clear it.',
 			},
 			{
 				displayName: 'Start At',
 				name: 'startAt',
 				type: 'dateTime',
 				default: '',
-				description: 'The start date of the term in ISO 8601 format',
+				description: 'The start date of the term in ISO 8601 format. Leave empty to remove the start date.',
 			},
 		],
 	},
@@ -284,7 +284,7 @@ export const enrollmentTermFields: INodeProperties[] = [
 				name: 'termName',
 				type: 'string',
 				default: '',
-				description: 'Search terms by name',
+				description: 'Only return terms whose name contains this text',
 			},
 			{
 				displayName: 'Workflow State',
@@ -296,7 +296,7 @@ export const enrollmentTermFields: INodeProperties[] = [
 					{ name: 'Deleted', value: 'deleted' },
 				],
 				default: [],
-				description: 'Filter terms by workflow state',
+				description: 'Filter terms by workflow state. Without this filter only active terms are returned.',
 			},
 		],
 	},

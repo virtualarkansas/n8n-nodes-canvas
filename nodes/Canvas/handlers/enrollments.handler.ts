@@ -2,6 +2,38 @@ import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
 
 // ============================================
+// Helpers
+// ============================================
+
+/**
+ * Copy the fields of a UI collection into a Canvas object under Canvas' own names.
+ * Only fields the user actually added are copied. With `keepBlank` an empty string
+ * is sent as well, which is how Canvas clears a value on update.
+ */
+function mapFields(
+	source: Record<string, unknown>,
+	names: Record<string, string>,
+	keepBlank = false,
+): Record<string, unknown> {
+	const target: Record<string, unknown> = {};
+	for (const [uiName, canvasName] of Object.entries(names)) {
+		const value = source[uiName];
+		if (value === undefined || value === null) continue;
+		if (value === '' && !keepBlank) continue;
+		if (Array.isArray(value) && value.length === 0) continue;
+		target[canvasName] = value;
+	}
+	return target;
+}
+
+/** "a, b ,c" (or an array coming from an expression) -> ['a', 'b', 'c']. */
+function toList(value: unknown): string[] {
+	if (value === undefined || value === null) return [];
+	const entries = Array.isArray(value) ? value : String(value).split(',');
+	return entries.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
+}
+
+// ============================================
 // Enrollment
 // ============================================
 
@@ -10,9 +42,12 @@ export function buildEnrollmentRequest(
 	getParam: GetParam,
 	getParamObject: GetParamObject,
 ): IRequestConfig {
+	const enrollmentPath = (): string =>
+		`/api/v1/courses/${getParam('courseId')}/enrollments/${getParam('enrollmentId')}`;
+
 	switch (operation) {
 		case 'getAll': {
-			const listBy = getParam('listBy');
+			const listBy = getParam('listBy', 'course');
 			let endpoint: string;
 
 			switch (listBy) {
@@ -29,12 +64,37 @@ export function buildEnrollmentRequest(
 					throw new ApplicationError(`Unknown enrollment listBy value: ${listBy}`);
 			}
 
+			const filters = getParamObject('filters');
+			const qs = mapFields(filters, {
+				enrollmentTermId: 'enrollment_term_id',
+				gradingPeriodId: 'grading_period_id',
+				include: 'include',
+				role: 'role',
+				state: 'state',
+				type: 'type',
+				userId: 'user_id',
+			});
+			// Comma-separated in the UI, arrays in Canvas.
+			for (const [uiName, canvasName] of [
+				['roleIds', 'role_id'],
+				['sisAccountIds', 'sis_account_id'],
+				['sisCourseIds', 'sis_course_id'],
+				['sisSectionIds', 'sis_section_id'],
+				['sisUserIds', 'sis_user_id'],
+			]) {
+				const values = toList(filters[uiName]);
+				if (values.length > 0) {
+					qs[canvasName] = values;
+				}
+			}
+
+			return { method: 'GET', endpoint, qs };
+		}
+		case 'get':
 			return {
 				method: 'GET',
-				endpoint,
-				qs: getParamObject('filters'),
+				endpoint: `/api/v1/accounts/${getParam('accountId')}/enrollments/${getParam('enrollmentId')}`,
 			};
-		}
 		case 'create':
 			return {
 				method: 'POST',
@@ -43,26 +103,34 @@ export function buildEnrollmentRequest(
 					enrollment: {
 						user_id: getParam('userId'),
 						type: getParam('enrollmentType'),
-						...getParamObject('additionalFields'),
+						...mapFields(getParamObject('additionalFields'), {
+							associatedUserId: 'associated_user_id',
+							courseSectionId: 'course_section_id',
+							endAt: 'end_at',
+							enrollmentState: 'enrollment_state',
+							limitPrivilegesToCourseSection: 'limit_privileges_to_course_section',
+							notify: 'notify',
+							roleId: 'role_id',
+							selfEnrolled: 'self_enrolled',
+							selfEnrollmentCode: 'self_enrollment_code',
+							startAt: 'start_at',
+						}),
 					},
 				},
 			};
 		case 'conclude':
-			return {
-				method: 'DELETE',
-				endpoint: `/api/v1/courses/${getParam('courseId')}/enrollments/${getParam('enrollmentId')}`,
-				qs: { task: 'conclude' },
-			};
+			return { method: 'DELETE', endpoint: enrollmentPath(), qs: { task: 'conclude' } };
 		case 'deactivate':
-			return {
-				method: 'DELETE',
-				endpoint: `/api/v1/courses/${getParam('courseId')}/enrollments/${getParam('enrollmentId')}`,
-				qs: { task: 'deactivate' },
-			};
+			return { method: 'DELETE', endpoint: enrollmentPath(), qs: { task: 'deactivate' } };
+		case 'delete':
+			return { method: 'DELETE', endpoint: enrollmentPath(), qs: { task: 'delete' } };
 		case 'reactivate':
+			return { method: 'PUT', endpoint: `${enrollmentPath()}/reactivate` };
+		case 'setLastAttended':
 			return {
 				method: 'PUT',
-				endpoint: `/api/v1/courses/${getParam('courseId')}/enrollments/${getParam('enrollmentId')}/reactivate`,
+				endpoint: `/api/v1/courses/${getParam('courseId')}/users/${getParam('userId')}/last_attended`,
+				body: { date: getParam('date') },
 			};
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for enrollment`);
@@ -100,6 +168,13 @@ function buildEnrollmentTermOverrides(getParamObject: GetParamObject): Record<st
 	return overrides;
 }
 
+const TERM_FIELDS: Record<string, string> = {
+	name: 'name',
+	startAt: 'start_at',
+	endAt: 'end_at',
+	sisTermId: 'sis_term_id',
+};
+
 export function buildEnrollmentTermRequest(
 	operation: string,
 	getParam: GetParam,
@@ -112,7 +187,13 @@ export function buildEnrollmentTermRequest(
 			return {
 				method: 'GET',
 				endpoint: `/api/v1/accounts/${accountId}/terms`,
-				qs: getParamObject('filters'),
+				qs: mapFields(getParamObject('filters'), {
+					include: 'include',
+					termName: 'term_name',
+					workflowState: 'workflow_state',
+				}),
+				// Canvas wraps the list: { "enrollment_terms": [...] }
+				dataKey: 'enrollment_terms',
 			};
 		case 'get':
 			return {
@@ -120,34 +201,36 @@ export function buildEnrollmentTermRequest(
 				endpoint: `/api/v1/accounts/${accountId}/terms/${getParam('termId')}`,
 			};
 		case 'create': {
-			const additionalFields = getParamObject('additionalFields');
 			const overrides = buildEnrollmentTermOverrides(getParamObject);
-
 			return {
 				method: 'POST',
 				endpoint: `/api/v1/accounts/${accountId}/terms`,
 				body: {
 					enrollment_term: {
 						name: getParam('name'),
-						...additionalFields,
+						...mapFields(getParamObject('additionalFields'), TERM_FIELDS),
 						...(overrides ? { overrides } : {}),
 					},
 				},
 			};
 		}
 		case 'update': {
-			const updateFields = getParamObject('updateFields');
+			const fields = getParamObject('updateFields');
 			const overrides = buildEnrollmentTermOverrides(getParamObject);
-
+			// Query string, not body: Canvas reads a JSON `false` in the body as "not given".
+			const qs = mapFields(fields, { overrideSisStickiness: 'override_sis_stickiness' });
 			return {
 				method: 'PUT',
 				endpoint: `/api/v1/accounts/${accountId}/terms/${getParam('termId')}`,
 				body: {
 					enrollment_term: {
-						...updateFields,
+						// An empty name is not sent; empty dates or SIS ID clear the value.
+						...mapFields(fields, { name: 'name' }),
+						...mapFields(fields, { startAt: 'start_at', endAt: 'end_at', sisTermId: 'sis_term_id' }, true),
 						...(overrides ? { overrides } : {}),
 					},
 				},
+				...(Object.keys(qs).length > 0 ? { qs } : {}),
 			};
 		}
 		case 'delete':

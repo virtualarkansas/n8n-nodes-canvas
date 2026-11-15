@@ -21,7 +21,7 @@ export const userOperations: INodeProperties[] = [
 			{
 				name: 'Delete',
 				value: 'delete',
-				description: 'Delete a user from the system',
+				description: 'Delete a user from a root account: removes their logins there and takes them off the account',
 				action: 'Delete a user',
 			},
 			{
@@ -37,6 +37,12 @@ export const userOperations: INodeProperties[] = [
 				action: 'Get many users',
 			},
 			{
+				name: 'Get Profile',
+				value: 'getProfile',
+				description: 'Get the profile of a user (bio, title, primary email, login ID, time zone)',
+				action: 'Get a user profile',
+			},
+			{
 				name: 'Get Self',
 				value: 'getSelf',
 				description: 'Get the currently authenticated user',
@@ -47,6 +53,24 @@ export const userOperations: INodeProperties[] = [
 				value: 'merge',
 				description: 'Merge one user into another',
 				action: 'Merge users',
+			},
+			{
+				name: 'Restore',
+				value: 'restore',
+				description: 'Restore a deleted user and their most recently deleted login',
+				action: 'Restore a user',
+			},
+			{
+				name: 'Split',
+				value: 'split',
+				description: 'Split a merged user back into separate users (within 180 days of the merge)',
+				action: 'Split a merged user',
+			},
+			{
+				name: 'Terminate Sessions',
+				value: 'terminateSessions',
+				description: 'End all browser sessions of a user and expire all of their access tokens',
+				action: 'Terminate all sessions of a user',
 			},
 			{
 				name: 'Update',
@@ -61,7 +85,7 @@ export const userOperations: INodeProperties[] = [
 
 export const userFields: INodeProperties[] = [
 	// ----------------------------------
-	//         user: getAll
+	//         user: account
 	// ----------------------------------
 	{
 		displayName: 'Account ID',
@@ -72,14 +96,15 @@ export const userFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['user'],
-				operation: ['getAll', 'create'],
+				operation: ['getAll', 'create', 'delete', 'restore'],
 			},
 		},
-		description: 'The ID of the account to list users from',
+		description:
+			'The ID of the account. Deleting and restoring users only works on a root account ("self" selects the root account of the Canvas URL).',
 	},
 
 	// ----------------------------------
-	//         user: get
+	//         user: single user
 	// ----------------------------------
 	{
 		displayName: 'User ID',
@@ -90,10 +115,11 @@ export const userFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['user'],
-				operation: ['get', 'update', 'delete'],
+				operation: ['get', 'update', 'delete', 'restore', 'getProfile', 'split', 'terminateSessions'],
 			},
 		},
-		description: 'The ID of the user (use "self" for current user)',
+		description:
+			'The ID of the user. "self" selects the current user; SIS IDs work in the form "sis_user_id:ABC".',
 	},
 
 	// ----------------------------------
@@ -127,6 +153,20 @@ export const userFields: INodeProperties[] = [
 		},
 		description: 'The ID of the user to merge into (will be preserved)',
 	},
+	{
+		displayName: 'Destination Account ID',
+		name: 'destinationAccountId',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['user'],
+				operation: ['merge'],
+			},
+		},
+		description:
+			'The ID or domain of the account the destination user belongs to. Only needed when the destination user is identified by an SIS ID of another account.',
+	},
 
 	// ----------------------------------
 	//         user: create
@@ -157,7 +197,8 @@ export const userFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'The unique login identifier for the user (e.g., email address)',
+		description:
+			'The login ID of the user. When it is an email address and no "Email" is given, it also becomes the user\'s email address.',
 	},
 
 	// ----------------------------------
@@ -188,7 +229,7 @@ export const userFields: INodeProperties[] = [
 					{ name: 'Teacher', value: 'teacher' },
 				],
 				default: 'student',
-				description: 'Filter by enrollment type',
+				description: 'Only return users enrolled with this base role in a course of the account',
 			},
 			{
 				displayName: 'Include',
@@ -197,9 +238,8 @@ export const userFields: INodeProperties[] = [
 				options: [
 					{ name: 'Avatar URL', value: 'avatar_url' },
 					{ name: 'Email', value: 'email' },
-					{ name: 'Enrollments', value: 'enrollments' },
 					{ name: 'Last Login', value: 'last_login' },
-					{ name: 'Locale', value: 'locale' },
+					{ name: 'Time Zone', value: 'time_zone' },
 					{ name: 'UUID', value: 'uuid' },
 				],
 				default: [],
@@ -210,28 +250,30 @@ export const userFields: INodeProperties[] = [
 				name: 'includeDeletedUsers',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to include deleted users in the results',
+				description: 'Whether to include users whose logins in the account have been deleted',
 			},
 			{
 				displayName: 'Search Term',
 				name: 'searchTerm',
 				type: 'string',
 				default: '',
-				description: 'Filter by partial name or email match',
+				description:
+					'Partial name, login ID, SIS ID or email address, or a full user ID (minimum 3 characters). A numeric term is matched against the user ID first.',
 			},
 			{
 				displayName: 'Sort',
 				name: 'sort',
 				type: 'options',
 				options: [
-					{ name: 'Created At', value: 'created_at' },
 					{ name: 'Email', value: 'email' },
+					{ name: 'ID', value: 'id' },
+					{ name: 'Integration ID', value: 'integration_id' },
 					{ name: 'Last Login', value: 'last_login' },
 					{ name: 'SIS ID', value: 'sis_id' },
 					{ name: 'Username', value: 'username' },
 				],
 				default: 'username',
-				description: 'Field to sort by',
+				description: 'Field to sort by. "ID" is the most efficient choice when fetching many pages.',
 			},
 			{
 				displayName: 'Sort Order',
@@ -267,14 +309,13 @@ export const userFields: INodeProperties[] = [
 				name: 'include',
 				type: 'multiOptions',
 				options: [
-					{ name: 'Avatar URL', value: 'avatar_url' },
-					{ name: 'Email', value: 'email' },
+					{ name: 'Avatar State', value: 'avatar_state' },
 					{ name: 'Last Login', value: 'last_login' },
-					{ name: 'Locale', value: 'locale' },
 					{ name: 'UUID', value: 'uuid' },
 				],
 				default: [],
-				description: 'Additional data to include in the response',
+				description:
+					'Additional data to include in the response. Email, locale, avatar URL and permissions are always returned.',
 			},
 		],
 	},
@@ -296,12 +337,36 @@ export const userFields: INodeProperties[] = [
 		},
 		options: [
 			{
+				displayName: 'Authentication Provider ID',
+				name: 'authenticationProviderId',
+				type: 'string',
+				default: '',
+				description:
+					'The authentication provider the login belongs to: its ID or its type (e.g. "canvas", "saml")',
+			},
+			{
+				displayName: 'Destination',
+				name: 'destination',
+				type: 'string',
+				default: '',
+				description:
+					'A URL on this Canvas instance. When a password is set, the response contains this URL with a session token that logs the new user in.',
+			},
+			{
 				displayName: 'Email',
 				name: 'email',
 				type: 'string',
 				placeholder: 'name@email.com',
 				default: '',
-				description: 'The email address of the user',
+				description: 'The email address of the user (their first communication channel)',
+			},
+			{
+				displayName: 'Enable SIS Reactivation',
+				name: 'enableSisReactivation',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether to first try to reactivate a deleted user with the same SIS User ID instead of creating a new one',
 			},
 			{
 				displayName: 'Force Self Registration',
@@ -309,6 +374,21 @@ export const userFields: INodeProperties[] = [
 				type: 'boolean',
 				default: false,
 				description: 'Whether to send the user a self-registration email',
+			},
+			{
+				displayName: 'Force Validations',
+				name: 'forceValidations',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether to apply the validations of self-registration (name required, terms accepted, login ID must be an email address) even for an admin request',
+			},
+			{
+				displayName: 'Integration ID',
+				name: 'integrationId',
+				type: 'string',
+				default: '',
+				description: 'Integration ID for the login (requires the "manage SIS" permission)',
 			},
 			{
 				displayName: 'Locale',
@@ -324,6 +404,14 @@ export const userFields: INodeProperties[] = [
 				typeOptions: { password: true },
 				default: '',
 				description: 'User\'s initial password',
+			},
+			{
+				displayName: 'Return Confirmation URL',
+				name: 'confirmationUrl',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether to return the URL with which the new user confirms their email address (requires an email address)',
 			},
 			{
 				displayName: 'Send Confirmation',
@@ -344,7 +432,23 @@ export const userFields: INodeProperties[] = [
 				name: 'sisUserId',
 				type: 'string',
 				default: '',
-				description: 'SIS ID for the user',
+				description: 'SIS ID for the user (requires the "manage SIS" permission)',
+			},
+			{
+				displayName: 'Skip Confirmation',
+				name: 'skipConfirmation',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether to mark the email address as confirmed right away instead of sending a confirmation message',
+			},
+			{
+				displayName: 'Skip Registration',
+				name: 'skipRegistration',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether to mark the user as registered right away, so they do not have to complete the registration process',
 			},
 			{
 				displayName: 'Sortable Name',
@@ -392,7 +496,8 @@ export const userFields: INodeProperties[] = [
 				type: 'string',
 				typeOptions: { password: true },
 				default: '',
-				description: 'Token from avatar options for setting user avatar',
+				description:
+					'Token of one of the avatars offered by Canvas for this user (from the user\'s avatar list). Takes precedence over "Avatar URL".',
 			},
 			{
 				displayName: 'Avatar URL',
@@ -407,7 +512,8 @@ export const userFields: INodeProperties[] = [
 				type: 'string',
 				typeOptions: { rows: 4 },
 				default: '',
-				description: 'User\'s biography/about text',
+				description:
+					'User\'s biography. Profiles must be enabled on the root account, otherwise Canvas refuses the whole update.',
 			},
 			{
 				displayName: 'Email',
@@ -415,7 +521,7 @@ export const userFields: INodeProperties[] = [
 				type: 'string',
 				placeholder: 'name@email.com',
 				default: '',
-				description: 'User\'s email address',
+				description: 'The default email address of the user',
 			},
 			{
 				displayName: 'Event',
@@ -426,7 +532,7 @@ export const userFields: INodeProperties[] = [
 					{ name: 'Unsuspend', value: 'unsuspend' },
 				],
 				default: 'suspend',
-				description: 'Suspend or unsuspend the user',
+				description: 'Suspend or unsuspend all logins of the user',
 			},
 			{
 				displayName: 'Locale',
@@ -443,11 +549,20 @@ export const userFields: INodeProperties[] = [
 				description: 'User\'s full name',
 			},
 			{
+				displayName: 'Override SIS Stickiness',
+				name: 'overrideSisStickiness',
+				type: 'boolean',
+				default: true,
+				description:
+					'Whether to change fields that an SIS import may later overwrite (Canvas default: true). When turned off, fields marked as changed in Canvas ("sticky") are left alone.',
+			},
+			{
 				displayName: 'Pronouns',
 				name: 'pronouns',
 				type: 'string',
 				default: '',
-				description: 'User\'s preferred pronouns',
+				description:
+					'User\'s pronouns. Must be one of the pronouns configured on the root account, where pronouns must be enabled; otherwise Canvas refuses the whole update.',
 			},
 			{
 				displayName: 'Short Name',
@@ -475,7 +590,8 @@ export const userFields: INodeProperties[] = [
 				name: 'title',
 				type: 'string',
 				default: '',
-				description: 'User\'s title (e.g., Dr., Professor)',
+				description:
+					'User\'s title (e.g., Dr., Professor). Profiles must be enabled on the root account, otherwise Canvas refuses the whole update.',
 			},
 		],
 	},

@@ -49,6 +49,12 @@ export const sectionOperations: INodeProperties[] = [
 				action: 'Get many sections',
 			},
 			{
+				name: 'List Users',
+				value: 'listUsers',
+				description: 'List the users enrolled in a section',
+				action: 'List users in a section',
+			},
+			{
 				name: 'Update',
 				value: 'update',
 				description: 'Update a section',
@@ -75,7 +81,7 @@ export const sectionFields: INodeProperties[] = [
 				operation: ['create', 'getAll'],
 			},
 		},
-		description: 'The ID of the course',
+		description: 'The ID of the course. SIS IDs work in the form "sis_course_id:ABC".',
 	},
 	{
 		displayName: 'Section ID',
@@ -86,10 +92,10 @@ export const sectionFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['section'],
-				operation: ['get', 'update', 'delete', 'crosslist', 'decrosslist'],
+				operation: ['get', 'update', 'delete', 'crosslist', 'decrosslist', 'listUsers'],
 			},
 		},
-		description: 'The ID of the section',
+		description: 'The ID of the section. SIS IDs work in the form "sis_section_id:ABC".',
 	},
 
 	// ----------------------------------
@@ -127,7 +133,7 @@ export const sectionFields: INodeProperties[] = [
 				name: 'enable_sis_reactivation',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to reactivate a deleted section with matching SIS ID',
+				description: 'Whether to first try to reactivate a deleted section with the same SIS Section ID instead of creating a new one',
 			},
 			{
 				displayName: 'End At',
@@ -141,7 +147,7 @@ export const sectionFields: INodeProperties[] = [
 				name: 'integration_id',
 				type: 'string',
 				default: '',
-				description: 'The integration ID for the section',
+				description: 'The integration ID for the section. Requires the "manage SIS" permission; ignored otherwise.',
 			},
 			{
 				displayName: 'Restrict Enrollments to Section Dates',
@@ -155,7 +161,7 @@ export const sectionFields: INodeProperties[] = [
 				name: 'sis_section_id',
 				type: 'string',
 				default: '',
-				description: 'The SIS ID for the section',
+				description: 'The SIS ID for the section. Requires the "manage SIS" permission; ignored otherwise.',
 			},
 			{
 				displayName: 'Start At',
@@ -208,8 +214,8 @@ export const sectionFields: INodeProperties[] = [
 				displayName: 'Override SIS Stickiness',
 				name: 'override_sis_stickiness',
 				type: 'boolean',
-				default: false,
-				description: 'Whether to override SIS stickiness for the update',
+				default: true,
+				description: 'Whether to change fields that an SIS import may later overwrite (Canvas default: true). When turned off, Canvas only updates "Restrict Enrollments to Section Dates" and leaves name and dates alone.',
 			},
 			{
 				displayName: 'Restrict Enrollments to Section Dates',
@@ -325,7 +331,7 @@ export const sectionFields: INodeProperties[] = [
 				operation: ['crosslist'],
 			},
 		},
-		description: 'The ID of the course to crosslist the section to',
+		description: 'The ID of the course to move the section to. It must be in the same root account and must not be a blueprint course.',
 	},
 	{
 		displayName: 'Options',
@@ -345,7 +351,7 @@ export const sectionFields: INodeProperties[] = [
 				name: 'override_sis_stickiness',
 				type: 'boolean',
 				default: true,
-				description: 'Whether to override SIS stickiness for the crosslist operation',
+				description: 'Whether to move the section even though the change is "sticky" for SIS imports (Canvas default: true). When turned off, Canvas returns the section without cross-listing it.',
 			},
 		],
 	},
@@ -371,7 +377,65 @@ export const sectionFields: INodeProperties[] = [
 				name: 'override_sis_stickiness',
 				type: 'boolean',
 				default: true,
-				description: 'Whether to override SIS stickiness for the de-crosslist operation',
+				description: 'Whether to move the section back even though the change is "sticky" for SIS imports (Canvas default: true). When turned off, Canvas returns the section without de-cross-listing it.',
+			},
+		],
+	},
+
+	// ----------------------------------
+	//         section: listUsers - options
+	// ----------------------------------
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['section'],
+				operation: ['listUsers'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Enrollment Type',
+				name: 'enrollment_type',
+				type: 'options',
+				options: [
+					{ name: 'Designer', value: 'designer' },
+					{ name: 'Observer', value: 'observer' },
+					{ name: 'Student', value: 'student' },
+					{ name: 'TA', value: 'ta' },
+					{ name: 'Teacher', value: 'teacher' },
+				],
+				default: 'student',
+				description: 'Only return users with this enrollment type in the section',
+			},
+			{
+				displayName: 'Exclude Inactive',
+				name: 'exclude_inactive',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to leave out users whose enrollment in the section is inactive',
+			},
+			{
+				displayName: 'Include',
+				name: 'include',
+				type: 'multiOptions',
+				options: [
+					{ name: 'Avatar URL', value: 'avatar_url' },
+					{ name: 'UUID', value: 'uuid' },
+				],
+				default: [],
+				description: 'Additional information to include with each user',
+			},
+			{
+				displayName: 'Search Term',
+				name: 'search_term',
+				type: 'string',
+				default: '',
+				description: 'Partial name or full ID of the users to return (minimum 2 characters)',
 			},
 		],
 	},

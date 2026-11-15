@@ -1,5 +1,22 @@
 import type { INodeProperties } from 'n8n-workflow';
 
+const declaredUserType: INodeProperties = {
+	displayName: 'Declared User Type',
+	name: 'declaredUserType',
+	type: 'options',
+	options: [
+		{ name: 'Administrative', value: 'administrative' },
+		{ name: 'Observer', value: 'observer' },
+		{ name: 'Staff', value: 'staff' },
+		{ name: 'Student', value: 'student' },
+		{ name: 'Student Other', value: 'student_other' },
+		{ name: 'Teacher', value: 'teacher' },
+	],
+	default: 'student',
+	description:
+		'The declared intention for this login. Informational only: it does not change what the user may do in Canvas.',
+};
+
 export const loginOperations: INodeProperties[] = [
 	{
 		displayName: 'Operation',
@@ -27,8 +44,14 @@ export const loginOperations: INodeProperties[] = [
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many logins for a user or account',
+				description: 'Get the logins of a user, optionally limited to one root account',
 				action: 'Get many logins',
+			},
+			{
+				name: 'Reset Password',
+				value: 'resetPassword',
+				description: 'Send the password recovery email to the user with a given email address',
+				action: 'Start password recovery for a login',
 			},
 			{
 				name: 'Update',
@@ -51,8 +74,16 @@ export const loginFields: INodeProperties[] = [
 		type: 'options',
 		required: true,
 		options: [
-			{ name: 'Account', value: 'account' },
-			{ name: 'User', value: 'user' },
+			{
+				name: 'Account',
+				value: 'account',
+				description: 'The logins of a user in one root account',
+			},
+			{
+				name: 'User',
+				value: 'user',
+				description: 'All logins of a user',
+			},
 		],
 		default: 'user',
 		displayOptions: {
@@ -61,7 +92,7 @@ export const loginFields: INodeProperties[] = [
 				operation: ['getAll'],
 			},
 		},
-		description: 'List logins by account or by user',
+		description: 'Whether to list all logins of the user or only those in one root account',
 	},
 	{
 		displayName: 'Account ID',
@@ -72,12 +103,30 @@ export const loginFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['login'],
-				operation: ['getAll', 'create', 'update'],
+				operation: ['getAll'],
 				listBy: ['account'],
 			},
 		},
-		description: 'The ID of the account',
+		description: 'The ID of the root account (sub-accounts are refused by Canvas)',
 	},
+	{
+		displayName: 'User ID',
+		name: 'userId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['login'],
+				operation: ['getAll'],
+			},
+		},
+		description: 'The ID of the user whose logins to list (use "self" for the current user)',
+	},
+
+	// ----------------------------------
+	//         login: create, update
+	// ----------------------------------
 	{
 		displayName: 'Account ID',
 		name: 'accountId',
@@ -89,45 +138,9 @@ export const loginFields: INodeProperties[] = [
 				resource: ['login'],
 				operation: ['create', 'update'],
 			},
-			hide: {
-				operation: ['getAll'],
-			},
 		},
-		description: 'The ID of the account',
+		description: 'The ID of the root account the login belongs to',
 	},
-	{
-		displayName: 'User ID',
-		name: 'userId',
-		type: 'string',
-		required: true,
-		default: '',
-		displayOptions: {
-			show: {
-				resource: ['login'],
-				operation: ['getAll'],
-				listBy: ['user'],
-			},
-		},
-		description: 'The ID of the user (use "self" for current user)',
-	},
-	{
-		displayName: 'User ID',
-		name: 'userId',
-		type: 'string',
-		required: true,
-		default: '',
-		displayOptions: {
-			show: {
-				resource: ['login'],
-				operation: ['delete'],
-			},
-		},
-		description: 'The ID of the user whose login to delete',
-	},
-
-	// ----------------------------------
-	//         login: create
-	// ----------------------------------
 	{
 		displayName: 'User ID',
 		name: 'userId',
@@ -158,8 +171,22 @@ export const loginFields: INodeProperties[] = [
 	},
 
 	// ----------------------------------
-	//         login: update, delete
+	//         login: delete
 	// ----------------------------------
+	{
+		displayName: 'User ID',
+		name: 'userId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['login'],
+				operation: ['delete'],
+			},
+		},
+		description: 'The ID of the user whose login to delete. A user must keep at least one login.',
+	},
 	{
 		displayName: 'Login ID',
 		name: 'loginId',
@@ -173,6 +200,26 @@ export const loginFields: INodeProperties[] = [
 			},
 		},
 		description: 'The ID of the login to modify',
+	},
+
+	// ----------------------------------
+	//         login: resetPassword
+	// ----------------------------------
+	{
+		displayName: 'Email',
+		name: 'email',
+		type: 'string',
+		placeholder: 'name@email.com',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['login'],
+				operation: ['resetPassword'],
+			},
+		},
+		description:
+			'The email address or login ID of the user. Canvas emails the password reset link to them; an unknown address is answered with "not found".',
 	},
 
 	// ----------------------------------
@@ -196,29 +243,16 @@ export const loginFields: INodeProperties[] = [
 				name: 'authenticationProviderId',
 				type: 'string',
 				default: '',
-				description: 'The ID of the authentication provider for this login',
+				description:
+					'The authentication provider this login is used with: its ID or its type (e.g. "canvas", "saml")',
 			},
-			{
-				displayName: 'Declared User Type',
-				name: 'declaredUserType',
-				type: 'options',
-				options: [
-					{ name: 'Admin', value: 'admin' },
-					{ name: 'Observer', value: 'observer' },
-					{ name: 'Staff', value: 'staff' },
-					{ name: 'Student', value: 'student' },
-					{ name: 'Student Other', value: 'student_other' },
-					{ name: 'Teacher', value: 'teacher' },
-				],
-				default: 'student',
-				description: 'The declared type of user for this login',
-			},
+			declaredUserType,
 			{
 				displayName: 'Integration ID',
 				name: 'integrationId',
 				type: 'string',
 				default: '',
-				description: 'Integration ID for third-party systems',
+				description: 'Integration ID for third-party systems (requires the "manage SIS" permission)',
 			},
 			{
 				displayName: 'Password',
@@ -226,14 +260,14 @@ export const loginFields: INodeProperties[] = [
 				type: 'string',
 				typeOptions: { password: true },
 				default: '',
-				description: 'The password for this login',
+				description: 'The password for this login. Canvas generates a temporary one when left out.',
 			},
 			{
 				displayName: 'SIS User ID',
 				name: 'sisUserId',
 				type: 'string',
 				default: '',
-				description: 'SIS ID for the login',
+				description: 'SIS ID for the login (requires the "manage SIS" permission)',
 			},
 		],
 	},
@@ -259,29 +293,16 @@ export const loginFields: INodeProperties[] = [
 				name: 'authenticationProviderId',
 				type: 'string',
 				default: '',
-				description: 'The ID of the authentication provider for this login',
+				description:
+					'The authentication provider this login is used with: its ID or its type (e.g. "canvas", "saml"). Leave empty to detach the login from its provider.',
 			},
-			{
-				displayName: 'Declared User Type',
-				name: 'declaredUserType',
-				type: 'options',
-				options: [
-					{ name: 'Admin', value: 'admin' },
-					{ name: 'Observer', value: 'observer' },
-					{ name: 'Staff', value: 'staff' },
-					{ name: 'Student', value: 'student' },
-					{ name: 'Student Other', value: 'student_other' },
-					{ name: 'Teacher', value: 'teacher' },
-				],
-				default: 'student',
-				description: 'The declared type of user for this login',
-			},
+			declaredUserType,
 			{
 				displayName: 'Integration ID',
 				name: 'integrationId',
 				type: 'string',
 				default: '',
-				description: 'Integration ID for third-party systems',
+				description: 'Integration ID for third-party systems. Leave empty to clear it.',
 			},
 			{
 				displayName: 'Old Password',
@@ -289,14 +310,15 @@ export const loginFields: INodeProperties[] = [
 				type: 'string',
 				typeOptions: { password: true },
 				default: '',
-				description: 'Current password (required when changing password for self)',
+				description: 'Current password (required when changing the password of your own login)',
 			},
 			{
 				displayName: 'Override SIS Stickiness',
 				name: 'overrideSisStickiness',
 				type: 'boolean',
-				default: false,
-				description: 'Whether to override SIS stickiness when updating SIS-managed logins',
+				default: true,
+				description:
+					'Whether to change fields that an SIS import may later overwrite (Canvas default: true). When turned off, fields marked as changed in Canvas ("sticky") are left alone.',
 			},
 			{
 				displayName: 'Password',
@@ -304,14 +326,15 @@ export const loginFields: INodeProperties[] = [
 				type: 'string',
 				typeOptions: { password: true },
 				default: '',
-				description: 'New password for this login',
+				description:
+					'New password for this login. Admins can only set the password of another user when "Password setting by admins" is enabled on the account.',
 			},
 			{
 				displayName: 'SIS User ID',
 				name: 'sisUserId',
 				type: 'string',
 				default: '',
-				description: 'SIS ID for the login',
+				description: 'SIS ID for the login. Leave empty to clear it.',
 			},
 			{
 				displayName: 'Unique ID',
@@ -329,7 +352,7 @@ export const loginFields: INodeProperties[] = [
 					{ name: 'Suspended', value: 'suspended' },
 				],
 				default: 'active',
-				description: 'The workflow state of the login',
+				description: 'Suspend or re-activate the login',
 			},
 		],
 	},
