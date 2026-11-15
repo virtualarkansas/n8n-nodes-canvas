@@ -72,6 +72,7 @@ Node-level behaviour (item processing, error modes, pagination options, rate lim
 - Do not change instance-wide state without restoring it (root account settings, authentication providers, feature flags on the root account, roles other tests rely on).
 - Tests in a file run in order and may depend on each other (create → update → delete).
 - Other files change the shared Canvas while yours runs: compare lists by the records you own, or with data read immediately before and after the node ran.
+- A test must pass on a newly seeded Canvas: do not rely on what earlier runs left behind (leftover courses, IDs with several digits, lists that grew over time). Thresholds come from what the seed alone guarantees.
 - An unexpected Canvas refusal is information: read Canvas' own error (`docker logs canvas-web`), find out whether the node sent the wrong thing or Canvas legitimately refused, and test the real behaviour.
 
 ## Coverage report
