@@ -3,15 +3,16 @@
  *
  * Each of them gets the standard "Return All" and "Limit" fields (see resources.ts), so
  * that the number of records a list returns is visible next to the operation. The list
- * holds the operations whose paging the integration battery exercises; an operation
- * that pages without being listed here still works through the node-level Pagination
- * options, and the node says so when it stops before the end of a list.
+ * holds the operations for which paging by Canvas is established: the integration battery
+ * reads them with small pages, or Canvas' controller paginates the list. Lists that Canvas
+ * returns whole are deliberately absent (a Limit would cut them where nothing was cut
+ * before). An operation that pages without being listed here still works through the
+ * node-level Pagination options, and the node says so when it stops before the end.
  */
 export const PAGED_LIST_OPERATIONS: Record<string, string[]> = {
 	accessToken: ['getAll'],
 	account: ['getAll', 'getCourses', 'getSubAccounts'],
 	accountCalendar: ['getAll', 'getAllForAccount'],
-	accountNotification: ['getAll'],
 	accountReport: ['getAll'],
 	admin: ['getAll'],
 	announcement: ['getAll'],
@@ -19,11 +20,10 @@ export const PAGED_LIST_OPERATIONS: Record<string, string[]> = {
 	apiRequest: ['request'],
 	apiTokenScope: ['getAll'],
 	appointmentGroup: ['getAll', 'listUserParticipants'],
-	assignment: ['batchGetOverrides', 'getAll'],
+	assignment: ['getAll'],
 	assignmentGroup: ['getAll'],
 	authenticationProvider: ['getAll'],
 	authenticationsLog: ['getAllByAccount', 'getAllByLogin', 'getAllByUser'],
-	blackoutDate: ['getAll'],
 	blueprintCourse: ['getAllImports', 'getAllMigrations', 'getAssociatedCourses'],
 	bookmark: ['getAll'],
 	calendarEvent: ['getAll'],
@@ -46,18 +46,14 @@ export const PAGED_LIST_OPERATIONS: Record<string, string[]> = {
 	enrollment: ['getAll'],
 	enrollmentTerm: ['getAll'],
 	externalTool: ['getAll'],
-	favorite: ['getAllCourses'],
-	featureFlag: ['getAll', 'getAllEnabled'],
 	file: ['getAll'],
 	folder: ['getAll', 'listFiles'],
 	gradeChangeLog: ['getByAssignment', 'getByCourse', 'getByGrader', 'getByStudent', 'query'],
 	gradebookHistory: ['getFeed', 'getSubmissions'],
 	gradingPeriod: ['getAll'],
 	gradingPeriodSet: ['getAll'],
-	gradingStandard: ['getAll'],
 	group: ['getActivityStream', 'getAll', 'listUsers'],
 	groupCategory: ['getAll', 'listGroups', 'listUsers'],
-	history: ['getAll'],
 	lineItem: ['getAll'],
 	liveAssessment: ['getAll', 'getResults'],
 	login: ['getAll'],
@@ -67,24 +63,19 @@ export const PAGED_LIST_OPERATIONS: Record<string, string[]> = {
 	moderatedGrading: ['listModeratedStudents'],
 	module: ['getAll', 'listItems'],
 	moduleItem: ['getAll'],
-	notificationPreference: ['getAll'],
 	outcomeGroup: ['getAll', 'getAllLinks', 'listOutcomes', 'listSubgroups'],
 	outcomeResult: ['getAll', 'getRollups'],
 	page: ['getAll', 'listRevisions'],
-	peerReview: ['getAll'],
-	planner: ['getAllItems', 'getAllNotes', 'getAllOverrides'],
+	planner: ['getAllItems', 'getAllOverrides'],
 	poll: ['getAll'],
 	pollChoice: ['getAll'],
 	pollSession: ['getClosed', 'getOpened'],
-	questionBank: ['getAll', 'listQuestions'],
+	questionBank: ['listQuestions'],
 	quiz: ['getAll', 'getAllWithNewQuizzes', 'getSubmissionUsers'],
-	quizAssignmentOverride: ['getAll'],
 	quizQuestion: ['getAll'],
-	quizQuestionGroup: ['getAll'],
-	quizReport: ['getAll'],
 	quizSubmission: ['getAll'],
 	quizSubmissionEvent: ['getAll'],
-	role: ['getAll', 'getPermissions'],
+	role: ['getAll'],
 	rubric: ['getAll'],
 	search: ['findRecipients', 'listAllCourses'],
 	section: ['getAll', 'listUsers'],
@@ -92,7 +83,6 @@ export const PAGED_LIST_OPERATIONS: Record<string, string[]> = {
 	sisImportError: ['getAll', 'getAllForAccount'],
 	sisIntegration: ['getAssignments'],
 	submission: ['getAll', 'getAllForStudents', 'listGradeableStudents', 'listGradeableStudentsMultiple'],
-	tab: ['getAll'],
 	user: ['getActivityStream', 'getAll', 'getGradedSubmissions', 'getMissingSubmissions', 'getPageViews', 'getTodoItems'],
 	userObservee: ['getAll', 'listObservers'],
 	webZipExport: ['getAll'],

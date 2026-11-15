@@ -14,10 +14,15 @@ This release changes behaviour that workflows saved with 0.1.0 may rely on. Read
 
 **Output**
 
-- **Lists are always paginated.** Every operation that reads a list follows Canvas' pagination. With
-  the default options an operation returns at most 50 items (5 pages of 10); switch on
-  **Pagination → Return All** to get everything. In 0.1.0 about ten list operations (sub-accounts,
-  gradebook column data, recipients, outcome rollups ...) returned a single page whatever the options said.
+- **Lists: Return All and Limit on the operation.** Every operation that reads a list follows
+  Canvas' pagination, and 134 list operations now have n8n's usual **Return All** and **Limit**
+  (default 50) fields. A workflow saved with 0.1.0 returns what it returned before: 50 records
+  by default, everything with **Pagination → Return All**, and pages as configured where
+  **Items Per Page** or **Max Pages** were set (those two, when set, decide instead of Limit). New:
+  when a list is cut short, the output panel says so. In 0.1.0 about ten list operations
+  (sub-accounts, gradebook column data, recipients, outcome rollups ...) returned a single page
+  whatever the options said, and the Return All / Limit fields that twelve resources showed were
+  never read; they are honoured now.
 - **Wrapped answers are unwrapped.** Where Canvas answers `{ "quiz_submissions": [ ... ] }`, the node
   now outputs one item per record instead of one item holding the wrapper. Expressions such as
   `{{ $json.quiz_submissions[0].id }}` become `{{ $json.id }}`. Affected: Account Calendar (Get Many),
@@ -69,13 +74,14 @@ corrected. Where that changed what you see in the node:
 | Course Report | Only the report type Canvas offers per course remains (Course Pace) | Use Account Report for provisioning, grade export and the other account reports |
 | Custom Gradebook Column | Operation **Get** removed (Canvas has no such route) | Use Get Many |
 | Enrollment | Create: `sisEnrollmentId` removed (not an API parameter) | Nothing |
-| External Tool | Group context removed (no such routes); Return All / Limit on Get Many replaced by the node's Pagination options | Use Pagination → Return All |
-| File | Get Quota: Folder context removed; Initiate Upload takes **File Name** (it never read the binary field) | Fill in File Name |
+| External Tool | Group context removed (no such routes) | Use a course or account |
+| File | Get Quota: Folder context removed; Initiate Upload takes **File Name** (it never read the binary field); Get: option `replacement_chain_context_type` removed | Fill in File Name |
 | Folder | Get by Path and Get Many only offer the contexts Canvas has routes for | Re-select the context |
 | Grading Period | Batch Update takes the **Grading Period Set ID** (Canvas has no working course form); Update keeps its values in Update Fields; Delete defaults to the **Account** context (a course can only delete legacy periods of its own) | Re-enter the fields; for Delete in a course, select Context → Course again |
 | Grading Period Set | Update: `enrollment_term_ids` moved to where Canvas reads it | Re-select |
 | Group | Update: Override SIS Stickiness is sent where Canvas reads it (switched off, it was ignored and sticky fields were overwritten) | Nothing |
-| Line Item, LTI Registration, LTI Resource Link | Return All / Limit replaced by the node's Pagination options | Use Pagination → Return All |
+| LTI Registration | Bind: the value Allow is gone (Canvas rejects it) | Choose On or Off |
+| LTI Resource Link | Get Many: the Per Page option is gone | Use Limit or Pagination → Items Per Page |
 | Line Item, Progress → Get LTI | Need **Authentication → LTI Advantage** (see below); they never worked with an API token | Create a Canvas LTI Advantage API credential |
 | Moderated Grading | Bulk Select Provisional Grades takes **Provisional Grade IDs** | Re-enter the IDs |
 | New Quiz | `access_code`, `multiple_attempts`, `scoring_policy` replaced by the fields the API documents; Update uses PATCH | Re-enter the settings |
@@ -159,7 +165,8 @@ corrected. Where that changed what you see in the node:
 - **Canvas LTI Advantage API** credential: the node obtains and renews the token of an LTI 1.3 tool
   for the LTI Advantage services (Line Item, Progress → Get LTI, `/api/lti` paths).
 - **Trigger:** optional secret token, signed payloads (verified against Instructure's key set),
-  compressed bodies, Caliper deliveries, all current Live Events.
+  an optional check that events belong to your own Canvas (**Root Account UUID**), compressed
+  bodies, Caliper deliveries, all current Live Events.
 - **Debug mode** shows exactly the URL, body and `curl` command a real run sends.
 - Codex files for both nodes (categories and search aliases in the n8n editor).
 
@@ -169,7 +176,12 @@ corrected. Where that changed what you see in the node:
   header instead of the operation's name, items lost on empty answers, missing `pairedItem`, n8n's
   Continue On Fail ignored, error types, redirects on writes, uploads (three steps without a runtime
   dependency, URL uploads, empty files), expression errors swallowed into empty parameters.
-- Security: the credential is only ever sent to the configured Canvas host. Link and Location URLs
+- Security: a value in an ID field can no longer change where a request goes. Every such value is
+  sent as one encoded path segment, relative segments (`..`, also written as `%2e%2e`) are refused
+  before anything is sent, and **Act as User ID** replaces any `as_user_id` that arrives another
+  way. 0.1.0 put such values into the path as they were.
+- Security: the credential is only ever sent to the configured Canvas host, and never over http
+  when Canvas redirects within itself. Link and Location URLs
   are re-anchored on it, and a redirect to another host (file storage, a CDN) is followed without
   the credential; n8n would otherwise have put the Authorization header back on every hop.
 - Wrong routes, methods or body shapes in many operations, among them Account Report →
@@ -182,6 +194,11 @@ corrected. Where that changed what you see in the node:
   the rows of a collection are expected, an object in a list of IDs) instead of failing with an
   internal error or sending `[object Object]`; JSON fields accept surrounding whitespace and treat
   an empty value the same way everywhere.
+- Retry Then Error no longer repeats an upload once the file has been sent (it could store the
+  file twice), and a write that fails after an OAuth2 or LTI token renewal is treated like any
+  other failed write. Downloads wait out throttling and renew tokens like other requests.
+- Wait for Completion, throttling pauses and batch delays end at once when the execution is stopped.
+- n8n's node setting **On Error → Continue (using error output)** receives the failed items.
 - As an AI agent tool the node answered with nothing when an item failed in one of the "Continue"
   error modes, or in Debug Mode (n8n hands an agent the first output only). Failed items and debug
   requests are now part of the tool's answer.

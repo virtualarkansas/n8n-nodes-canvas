@@ -2,7 +2,9 @@
 
 Custom n8n community nodes for **Canvas LMS** by Instructure: one node for the Canvas REST API
 (116 resources, more than 700 operations) and a trigger for Canvas Live Events. Every operation
-is tested against a real Canvas through a real n8n; see [`test/COVERAGE.md`](test/COVERAGE.md).
+that open-source Canvas offers is tested against a real Canvas through a real n8n; the few that
+need Instructure-hosted services are checked against Instructure's documentation. See
+[`test/COVERAGE.md`](test/COVERAGE.md).
 
 ## Features
 
@@ -224,9 +226,18 @@ The Production URL is public, so restrict who can use it (under **Options**):
 | Option | What it does |
 |---|---|
 | **Secret Token** | Requests must carry `?token=<value>`. Add it to the URL you enter in Data Services. |
-| **Require Signed Payload** | Only accepts events delivered with Data Services' **Sign Payload** option. |
+| **Require Signed Payload** | Only accepts events delivered with Data Services' **Sign Payload** option; the signature is then always checked. |
+| **Root Account UUID** | Only accepts events of your Canvas (the `uuid` of your root account, which every event carries). |
 | **Verify Signed Payloads** (on by default) | Checks the signature of signed events against the keys Instructure publishes. |
 | **JWKS URL** | Where the signing keys are fetched from; the default is Instructure's key set. |
+
+A valid signature proves that Instructure's Data Services sent the event, not that it came from
+your Canvas: Instructure signs for all its customers with the same keys. Combine it with a
+**Secret Token** or the **Root Account UUID**.
+
+Data Services exists on Instructure-hosted Canvas only (open-source Canvas publishes Live Events to
+a message queue instead). The trigger is therefore tested with events built from Canvas'
+documentation and source, not with deliveries from a hosted Canvas.
 
 Each event becomes one item: the event's `body` fields, plus `eventType`, `timestamp` and (unless
 switched off) `metadata` with who, where and when.
@@ -241,8 +252,13 @@ switched off) `metadata` with who, where and when.
 4. Enter a purpose and expiration (optional)
 5. Copy the generated token immediately (it won't be shown again)
 
-The node can do whatever the token's user can do in Canvas; for account-wide automation use a
-token of an account admin.
+The node can do whatever the token's user can do in Canvas, and nothing more; for account-wide
+automation use a token of an account admin. Operations beyond a teacher's reach need the matching
+Canvas permission on that admin's role, for example "SIS Data - import" and "SIS Data - manage"
+for SIS imports, "Reports - manage" for account reports, "Statistics - view" or "Users - manage
+login details" for the authentication log, "Grades - view change logs" and "Courses - view change
+logs" for the other audit logs, "Users - act as" for Act as User ID. A request Canvas refuses for lack of a permission comes back as `FORBIDDEN` (or as
+`NOT_FOUND` where Canvas hides the record).
 
 ### OAuth2
 
@@ -262,6 +278,7 @@ token of an account admin.
      them on the key (`url:GET|/api/v1/courses`), separated by spaces or new lines
 
 Canvas access tokens obtained this way expire after an hour; n8n refreshes them automatically.
+The credential acts as the Canvas user who clicked **Authorize** when it was connected.
 
 ### LTI Advantage
 
@@ -293,16 +310,26 @@ Canvas gives every token a quota that drains with the cost of each request and r
 - **Enable Rate Limit Check** (default on) switches the waiting on or off; throttled requests are
   retried either way.
 
-### Pagination
+### Lists: Return All, Limit and Pagination
 
-Applies to every operation that returns a list.
+Every operation that returns a list Canvas hands out page by page has n8n's usual two fields:
 
-- **Items Per Page**: 1-100 (default 10)
-- **Max Pages**: default 5, so by default a list returns at most 50 items; 0 means no limit
-- **Return All**: fetch everything (uses pages of 100 unless Items Per Page is set)
+- **Return All**: read the whole list
+- **Limit** (default 50): otherwise, the first so many records
 
-A few resources have their own **Return All** / **Limit** fields on the operation; those take
-precedence.
+When a list is cut short, the node says so: the output panel shows a hint that Canvas has more
+records than were read. Nothing in the items marks it, so for a sync or an export that needs
+every record turn **Return All** on.
+
+The **Pagination** collection further down applies to the whole node:
+
+- **Return All**: read whole lists whatever the operation's own fields say
+- **Items Per Page** (1-100) and **Max Pages** (0 = no limit): when either is set, the node reads up
+  to Max Pages pages of that size (10 per page and 5 pages unless set) and the operation's Limit
+  is not used. Workflows saved with 0.1.0 keep working this way.
+
+Operations without Return All / Limit fields (and the Custom API Request for anything but GET)
+follow the Pagination collection alone: 5 pages of 10 unless set otherwise.
 
 ### Error Handling
 
@@ -315,9 +342,16 @@ precedence.
   the connection was never established, or Canvas answered 503); after any other failure it may
   have been applied, and repeating it could create a second record
 
-n8n's own node setting **On Error → Continue** also sends failures to the node's Error output.
-Do not use **On Error → Continue (using error output)**: n8n then adds a third output of its own,
-which stays empty because the failed items are already on the node's Error output.
+**Max Retries** (default 3) is how often Retry Then Error tries an item again.
+
+In **Stop Workflow** mode the node ends at the first item that fails. With Batch Mode the other
+items of that batch were sent at the same time, so their writes have been carried out although the
+node outputs nothing; for writes prefer Continue & Output Error (or Individual Mode), which reports
+every item.
+
+n8n's own node settings work too: **On Error → Continue** sends failures to the node's Error
+output, and **On Error → Continue (using error output)** sends them to the error output n8n adds
+for that setting (the node's own Error output then stays empty).
 
 An item on the Error output looks like this:
 
@@ -363,6 +397,18 @@ Canvas may otherwise overwrite one change with another.
   `as_user_id` parameter). Works with every resource and operation, accepts SIS IDs
   (`sis_user_id:jdoe`) and expressions, so each input item can act as a different user. The user of
   the credential needs the "Become other users" permission, and Canvas records both users in its logs.
+  Only this option decides who is acted as: an `as_user_id` that arrives in another parameter is
+  replaced by it.
+
+### Values From Other Nodes
+
+IDs often come from a webhook, a form, a sheet or an AI agent. Whatever such a value contains, the
+node sends it as one path segment: it cannot add a segment, a query parameter or change who the
+request is made as. A value like `..` or `%2e%2e/users/3`, which would point the request somewhere
+else, is refused before anything is sent (`INVALID_PARAMETERS`). SIS IDs with special characters
+work as they are (`sis_user_id:A/B`) or encoded by hand (`sis_user_id:A%2FB`). The **Custom API
+Request** is the exception by design: its path is yours to write, so do not build it from text you
+do not control.
 
 ### Debug Mode
 
@@ -398,7 +444,8 @@ body and an equivalent `curl` command, with a placeholder instead of the token) 
 
 ### A list returns fewer items than expected
 
-By default a list stops after 5 pages of 10 items. Switch on **Pagination → Return All**.
+A list operation returns the first 50 records unless you ask for more: turn on **Return All** (or
+raise **Limit**) on the operation. The output panel shows a hint whenever a list was cut short.
 
 ## Development and testing
 

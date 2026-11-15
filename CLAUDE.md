@@ -59,6 +59,7 @@ Releases are automated via GitHub Actions: update the version in `package.json` 
 Handlers are pure: they only build `{ method, endpoint, qs, body }` plus optional hints:
 - `dataKey` - the response wraps its records (`{ "quiz_submissions": [...] }`); unwrap into items (applies to reads and writes)
 - `fetchAllPages` + `transform` - always read every page and reshape the full list (summaries Canvas splits across pages)
+- `pageTransform` - reshape the records of each page with that page's whole answer at hand (audit logs: `{ events, linked }`)
 - `mergePagedArray` - a single record with a paginated embedded array (e.g. date details with overrides)
 - `singlePage` - the endpoint answers with its complete list while still announcing pages
 - `itemKey` - every entry of a list is wrapped (`[{ "course": {...} }]`)
@@ -82,7 +83,8 @@ Helpers for reading parameters live once in `handlers/shared.ts` (contract pinne
 - Bodies are JSON (or raw text / bytes for import files).
 - The credential only ever goes to the configured Canvas host: Link/Location URLs returned by Canvas are re-anchored on it, redirects are never followed by n8n (it would put the Authorization header back on every hop), and the node follows the redirect of a read itself, without the credential once it leaves the Canvas host. Writes are never redirected. Every request gets a fresh options object, because n8n writes the credential into the one it is given.
 
-- Request Options → Act as User ID adds `as_user_id` to every request made for an item (follow-up pages, the GET after a write, upload steps), never to the rate limit probe. It travels in the rate limit options (`asUserId`).
+- Request Options → Act as User ID adds `as_user_id` to every request made for an item (follow-up pages, the GET after a write, upload steps, downloads from Canvas), never to the rate limit probe. It travels in the rate limit options (`asUserId`) and replaces any `as_user_id` a URL already carries (`withMasquerade`).
+- A parameter value never changes where a request goes. Handlers put values into the path as they are; the node then encodes every value where it forms a path segment (`encodePathValues`: a hand-encoded value is decoded first, so nothing is encoded twice) and refuses a path with a relative segment, however it is written (`..`, `%2e%2e`, `..%2F`, backslashes). A handler that builds a multi-segment path from one parameter encodes it itself and names the parameter in `encodedParams`. `test/unit/nodeExecute.test.ts` runs the node against the inputs that used to get through.
 
 ### Rate Limiting
 - Canvas throttles with `403 Forbidden (Rate Limit Exceeded)` by default (429 only if the instance opts in); both are recognised.
@@ -91,12 +93,16 @@ Helpers for reading parameters live once in `handlers/shared.ts` (contract pinne
 
 ### Pagination
 - Every GET goes through the paginating request and follows `rel="next"` from the Link header (never construct page URLs). A response that is not a list is returned as a single item.
-- Defaults: 10 items/page, max 5 pages. `Return All` → pages of 100, no page limit. Operation-level `returnAll`/`limit` fields, where a resource has them, win over the node-level options.
+- The operations Canvas pages (`nodes/Canvas/listOperations.ts`) get the standard `returnAll` / `limit` fields, generated in `resources.ts`; a description that defines its own keeps them. Only list an operation there when paging is established (a battery run with small pages, or `Api.paginate` in Canvas' controller): a Limit on a list Canvas returns whole would cut it.
+- How much is read (`resolvePagination`): everything when Return All is on (the operation's field or Pagination → Return All; pages of 100); otherwise the node-level Items Per Page / Max Pages when either was set (10 per page and 5 pages for the one not set: what a workflow saved with 0.1.0 has); otherwise the operation's Limit (default 50, read in as few requests as possible). An operation without the fields follows the node-level options alone.
+- When reading stops while Canvas has more (`more` of `canvasApiRequestAllItems`), the node adds an execution hint. Never drop that: a partial list must not pass for a complete one.
 
 ### Output and errors
 - Dual outputs (Success, Error) plus Debug in debug mode. Every item carries `pairedItem`.
 - Empty response body → `{ success: true }` (never drop an item). Empty list → no items.
-- Modes: stop, continueWithError, ignoreAndContinue, retryThenError (retries only throttling, 5xx and network errors; a write only when Canvas cannot have carried it out: throttled, never sent, or 503). n8n's own "Continue On Fail" routes to the Error output.
+- Modes: stop, continueWithError, ignoreAndContinue, retryThenError (retries only throttling, 5xx and network errors; a write only when Canvas cannot have carried it out: throttled, never sent, or 503; an upload never once the file was sent, `markFinal`). n8n's own "Continue On Fail" routes to the Error output; with n8n's "Continue (using error output)" the failed items carry `error` so n8n moves them to its own error output.
+- As an AI agent tool the node has one output: failed items and debug requests join the successful ones.
+- Waits (`pause`) end when the execution is cancelled; a cancellation is never turned into a failed item.
 - Error output: `errorCode` (number, 0 without an HTTP response), `errorType`, `errorMessage` (Canvas' own message), `canvasErrors`, `responseBody` (when Canvas' answer holds more than an error list), `originalItem`, `resource`, `operation`, `endpoint`.
 
 ### Batch Processing
@@ -108,6 +114,7 @@ Helpers for reading parameters live once in `handlers/shared.ts` (contract pinne
 - Events that are filtered out are answered 200 (Canvas retries non-2xx).
 - Optional authentication: `?token=` secret, and signed payloads (RS/ES JWT verified against Instructure's JWKS; the key type has to fit the algorithm; unknown key IDs refetch the keys at most once a minute).
 - The body is read by the node itself (so signed payloads work whatever their content type), limited to 5 MB before and after decompression.
+- A signature only proves that Instructure sent the event (one key set for all customers): Require Signed Payload always verifies, and Root Account UUID ties events to one Canvas. A filter written as a global ID matches exactly; a local ID matches by local part.
 
 ## Canvas API Notes
 
