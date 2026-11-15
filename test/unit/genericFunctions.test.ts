@@ -455,6 +455,29 @@ describe('canvasApiRequest', () => {
 		expect(isRetryableError(error)).toBe(true);
 	});
 
+	it('a failed write is only worth repeating when Canvas cannot have carried it out', async () => {
+		const failWith = async (method: 'GET' | 'POST', response: FakeResponse): Promise<unknown> => {
+			const { context } = fakeContext(() => response);
+			return canvasApiRequest.call(context, method, '/api/v1/x', method === 'GET' ? undefined : { a: 1 }, undefined, NO_RATE_LIMIT).catch((e: unknown) => e);
+		};
+		const refused = { throw: { name: 'NodeApiError', message: 'The service refused the connection', messages: ['connect ECONNREFUSED 127.0.0.1:9'] } };
+		const reset = { throw: { name: 'NodeApiError', message: 'The connection to the server was closed unexpectedly', messages: ['socket hang up'], cause: { code: 'ECONNRESET' } } };
+
+		// Reads: every server error and every network failure.
+		for (const response of [{ status: 500 }, { status: 502 }, { status: 503 }, { status: 504 }, refused, reset]) {
+			expect(isRetryableError(await failWith('GET', response)), JSON.stringify(response)).toBe(true);
+		}
+		// Writes: throttled, never sent, or 503.
+		expect(isRetryableError(await failWith('POST', { ...THROTTLED }))).toBe(true);
+		expect(isRetryableError(await failWith('POST', refused))).toBe(true);
+		expect(isRetryableError(await failWith('POST', { status: 503 }))).toBe(true);
+		// Writes that may have been applied.
+		for (const response of [{ status: 500 }, { status: 502 }, { status: 504 }, reset]) {
+			expect(isRetryableError(await failWith('POST', response)), JSON.stringify(response)).toBe(false);
+		}
+		expect(isRetryableError(await failWith('POST', { status: 422, body: { errors: [{ message: 'no' }] } }))).toBe(false);
+	});
+
 	it('sends raw text bodies with their content type and JSON arrays as they are', async () => {
 		const { context, calls } = fakeContext(() => ({ body: '{"id": 7, "workflow_state": "created"}' }));
 		const response = await canvasApiRequest.call(context, 'POST', '/api/v1/accounts/1/sis_imports', 'user_id,login_id\n1,a', { import_type: 'instructure_csv' }, NO_RATE_LIMIT, 'text/csv');

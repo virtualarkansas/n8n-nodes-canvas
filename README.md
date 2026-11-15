@@ -332,7 +332,10 @@ precedence.
 - **Continue & Output Error**: failed items go to the Error output, the rest continue
 - **Ignore & Continue**: failed items are dropped
 - **Retry Then Error**: throttling, server errors (5xx) and network errors are retried with
-  backoff, then the item goes to the Error output; other errors go there immediately
+  backoff, then the item goes to the Error output; other errors go there immediately. A write
+  (create, update, delete) is only repeated when Canvas cannot have carried it out (it was throttled,
+  the connection was never established, or Canvas answered 503); after any other failure it may
+  have been applied, and repeating it could create a second record
 
 n8n's own node setting **On Error → Continue** also sends failures to the node's Error output.
 Do not use **On Error → Continue (using error output)**: n8n then adds a third output of its own,

@@ -495,6 +495,36 @@ function tagError<T extends Error>(error: T, type: CanvasErrorType, data?: unkno
 	return error;
 }
 
+/** Remember on the error that the failed request was a write (anything but GET). */
+function markWrite<T extends Error>(error: T): T {
+	const target = error as unknown as { context?: IDataObject };
+	target.context = { ...(target.context ?? {}), canvasWrite: true };
+	return error;
+}
+
+function isWriteFailure(error: unknown): boolean {
+	return ((error as JsonObject)?.context as JsonObject | undefined)?.canvasWrite === true;
+}
+
+/** A network failure that happened before the request could leave: nothing reached Canvas. */
+function neverSent(error: unknown): boolean {
+	const parts: string[] = [];
+	let current = error as JsonObject | undefined;
+	for (let depth = 0; current && typeof current === 'object' && depth < 4; depth++) {
+		parts.push(
+			String(current.code ?? ''),
+			String(current.httpCode ?? ''),
+			String(current.message ?? ''),
+			String(current.description ?? ''),
+		);
+		if (Array.isArray(current.messages)) {
+			parts.push(current.messages.map(String).join(' '));
+		}
+		current = current.cause as JsonObject | undefined;
+	}
+	return /ECONNREFUSED|ENOTFOUND|EAI_AGAIN|EHOSTUNREACH|ENETUNREACH/.test(parts.join(' '));
+}
+
 /**
  * Canvas answers throttled requests with `403 Forbidden (Rate Limit Exceeded)`
  * by default, and with 429 only when the instance opts in.
@@ -522,14 +552,20 @@ export function isRateLimitError(error: unknown): boolean {
 /**
  * Errors worth retrying: throttling, server-side failures and network failures.
  * Client errors (400, 401, 403, 404, 422, ...) will not succeed on a retry.
+ *
+ * A write is only repeated when Canvas cannot have carried it out: it was throttled,
+ * the connection was never established, or Canvas answered 503 (not available).
+ * After a 500/502/504 or a connection that broke mid-way the write may have been
+ * applied, and repeating it could create a second record.
  */
 export function isRetryableError(error: unknown): boolean {
 	if (isRateLimitError(error)) {
 		return true;
 	}
+	const write = isWriteFailure(error);
 	const tag = taggedErrorType(error);
 	if (tag === 'NETWORK_ERROR') {
-		return true;
+		return write ? neverSent(error) : true;
 	}
 	if (tag === 'INVALID_PARAMETERS') {
 		return false;
@@ -538,9 +574,12 @@ export function isRetryableError(error: unknown): boolean {
 	if (status === undefined) {
 		// No HTTP response at all. Errors raised by the node itself are not retryable.
 		const name = String((error as JsonObject)?.name ?? '');
-		return name !== 'NodeOperationError' && name !== 'ApplicationError';
+		if (name === 'NodeOperationError' || name === 'ApplicationError') {
+			return false;
+		}
+		return write ? neverSent(error) : true;
 	}
-	return status >= 500;
+	return write ? status === 503 : status >= 500;
 }
 
 /**
@@ -871,7 +910,8 @@ export async function canvasApiRequest(
 			);
 		} catch (error) {
 			// No HTTP response at all: DNS failure, refused connection, timeout.
-			throw extractHttpStatus(error) === undefined ? tagError(error as Error, 'NETWORK_ERROR') : error;
+			const failure = extractHttpStatus(error) === undefined ? tagError(error as Error, 'NETWORK_ERROR') : error;
+			throw method === 'GET' ? failure : markWrite(failure as Error);
 		}
 
 		// OAuth2 and LTI Advantage: n8n only renews an expired token when the request fails
@@ -929,7 +969,8 @@ export async function canvasApiRequest(
 			}
 		}
 
-		throw buildResponseError(this, status, data, headers, throttled);
+		const failure = buildResponseError(this, status, data, headers, throttled);
+		throw method === 'GET' ? failure : markWrite(failure);
 	}
 }
 

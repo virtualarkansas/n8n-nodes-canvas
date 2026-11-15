@@ -165,7 +165,8 @@ export class Canvas implements INodeType {
 							{
 								name: 'Retry Then Error',
 								value: 'retryThenError',
-								description: 'Retry with backoff, then output to Error branch',
+								description:
+									'Retry throttled requests, server errors and connection failures with backoff, then output to the Error branch. A write (create, update, delete) is only repeated when Canvas cannot have carried it out.',
 							},
 						],
 						default: 'stop',

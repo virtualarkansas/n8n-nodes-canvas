@@ -212,6 +212,59 @@ describe('cross-cutting', () => {
 			expect(elapsed).toBeLessThan(60_000);
 		}, 240_000);
 
+		it('retryThenError: a write is only repeated when Canvas cannot have carried it out', async () => {
+			const attempts: Record<string, number> = {};
+			stub.reset((request): StubResponse | undefined => {
+				const id = request.path.split('/').pop() ?? '';
+				attempts[id] = (attempts[id] ?? 0) + 1;
+				switch (id) {
+					case '500': // Canvas failed somewhere: the delete may have happened
+						return { status: 500, body: { errors: [{ message: 'boom' }] } };
+					case '504': // a gateway gave up waiting: Canvas may still have finished
+						return { status: 504, body: 'Gateway Timeout' };
+					case '503': // not available: nothing was done
+						return attempts[id] < 3 ? { status: 503, body: 'Service Unavailable' } : { body: { delete: true } };
+					case '403': // throttled: nothing was done
+						return attempts[id] < 2
+							? { status: 403, headers: { 'x-rate-limit-remaining': '0.0' }, body: '403 Forbidden (Rate Limit Exceeded)\n' }
+							: { body: { delete: true } };
+					default:
+						return undefined;
+				}
+			});
+			const result = await viaStub({
+				resource: 'course',
+				operation: 'delete',
+				items: [{ id: 500 }, { id: 504 }, { id: 503 }, { id: 403 }],
+				params: {
+					courseId: '={{ $json.id }}',
+					errorHandling: { onError: 'retryThenError', maxRetries: 3 },
+					rateLimiting: { enabled: false, maxRetries: 0 },
+					batchProcessing: { mode: 'individual' },
+				},
+			});
+			expect(attempts).toEqual({ '500': 1, '504': 1, '503': 3, '403': 2 });
+			expect(paired(result, 0)).toEqual([2, 3]);
+			expect(result.error.map((e) => [e.errorCode, e.errorType])).toEqual([
+				[500, 'SERVER_ERROR'],
+				[504, 'SERVER_ERROR'],
+			]);
+
+			// The same failures on a read are all retried.
+			for (const key of Object.keys(attempts)) delete attempts[key];
+			await viaStub({
+				resource: 'course',
+				operation: 'get',
+				items: [{ id: 500 }, { id: 504 }],
+				params: {
+					courseId: '={{ $json.id }}',
+					errorHandling: { onError: 'retryThenError', maxRetries: 1 },
+					rateLimiting: { enabled: false },
+				},
+			});
+			expect(attempts).toEqual({ '500': 2, '504': 2 });
+		}, 240_000);
+
 		it('stop (default): the execution fails with Canvas\' message and says which item and request', async () => {
 			const result = await getUsers({});
 			expect(result.ok).toBe(false);
@@ -1326,6 +1379,17 @@ describe('cross-cutting', () => {
 				});
 				expect(retried.error).toHaveLength(1);
 				expect(Date.now() - started).toBeGreaterThanOrEqual(2000);
+
+				// A write that never left (connection refused) is safe to repeat as well.
+				const startedWrite = Date.now();
+				const write = await runNode({
+					resource: 'bookmark',
+					operation: 'create',
+					persona: 'dead-host',
+					params: { name: 'x', url: '/x', rateLimiting: { enabled: false }, errorHandling: { onError: 'retryThenError', maxRetries: 1 } },
+				});
+				expect(write.error[0]).toMatchObject({ errorCode: 0, errorType: 'NETWORK_ERROR' });
+				expect(Date.now() - startedWrite).toBeGreaterThanOrEqual(2000);
 			} finally {
 				await removeCredential('dead-host');
 			}
