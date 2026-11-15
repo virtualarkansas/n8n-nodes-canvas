@@ -1,16 +1,24 @@
 # n8n-nodes-canvas
 
-Custom n8n community nodes for **Canvas LMS** by Instructure. Provides comprehensive coverage of the Canvas REST API with 92 resources and 466+ actions.
+Custom n8n community nodes for **Canvas LMS** by Instructure: one node for the Canvas REST API
+(more than 100 resources and 600 operations) and a trigger for Canvas Live Events. Every operation
+is tested against a real Canvas through a real n8n; see [`test/COVERAGE.md`](test/COVERAGE.md).
 
 ## Features
 
-- **Comprehensive API Coverage**: Access 92 Canvas API resources with 466+ actions
-- **Dual Authentication**: API Access Token and OAuth2 support
-- **Smart Rate Limiting**: Automatic quota checking with configurable thresholds
-- **Pagination Handling**: Automatic pagination with configurable limits
-- **Error Handling**: Multiple error modes with dedicated error output branch
-- **Batch Processing**: Process multiple items efficiently
-- **Webhook Trigger**: Listen for 22 Canvas Live Events
+- **The Canvas API as resources and operations**: teaching, communication and administration, plus
+  a Custom API Request and a GraphQL resource for everything else
+- **Authentication**: API access token, OAuth2, and LTI Advantage for the LTI services
+- **Rate limiting**: watches Canvas' quota, waits before it runs out and retries throttled requests
+- **Pagination**: follows Canvas' pagination for every list; limits and Return All
+- **Error handling**: four error modes and a dedicated Error output with Canvas' own message
+- **Batch processing**: items in parallel groups or one after the other
+- **Files and background jobs**: uploads, downloads, SIS import files, Wait for Completion
+- **Act as User**: carry out any operation as another user (masquerading)
+- **Debug mode**: see the exact request without sending it
+- **Trigger**: start workflows from 85 Canvas Live Events, with optional signature verification
+
+Upgrading from 0.1.0? Read the [changelog](CHANGELOG.md) first: several outputs and parameters changed.
 
 ## Installation
 
@@ -227,6 +235,17 @@ They are checked against Instructure's documentation rather than against a runni
 **IDs.** Wherever an ID is asked for, Canvas also accepts SIS IDs in the form `sis_course_id:ABC123`,
 `sis_user_id:...`, `sis_section_id:...` and so on.
 
+**Background jobs.** Canvas runs imports, reports, exports and bulk changes in the background and
+answers at once with a job record. **Wait for Completion** (on Progress, SIS Import, Account Report
+and Content Export) checks the job until it is over and outputs its final state; if it takes longer
+than the timeout you set, the item fails with the error type `TIMEOUT` while the job keeps running.
+A job that ends in failure is a result, not an error: check `workflow_state` (or `status`).
+
+**Files.** File → Upload takes a binary file from a previous node or a URL Canvas fetches itself.
+SIS Import → Create takes its CSV or zip file as binary data, text or Base64 text. Account Report and
+Content Export can attach their finished file to the output item (**Download File**), ready for
+Extract From File or any other node that reads binary data.
+
 ### Canvas Trigger
 
 Starts a workflow when Canvas sends a [Live Event](https://developerdocs.instructure.com/services/canvas/data-services/live-events/overview/file.data_service_introduction).
@@ -361,7 +380,13 @@ An item on the Error output looks like this:
 `errorType` is one of `VALIDATION_ERROR` (400, 422), `UNAUTHORIZED` (401), `FORBIDDEN` (403),
 `NOT_FOUND` (404), `CONFLICT` (409), `RATE_LIMITED`, `SERVER_ERROR` (5xx), `INVALID_PARAMETERS`
 (the node rejected the input before sending anything; `errorCode` is 0), `NETWORK_ERROR` (no
-response; `errorCode` is 0) or `UNKNOWN`.
+response; `errorCode` is 0), `TIMEOUT` (a Wait for Completion operation gave up waiting) or `UNKNOWN`.
+`canvasErrors` holds Canvas' own error list; when Canvas answers a refusal with a record instead
+(for example the report that is already running, with a 409), that record is in `responseBody`.
+Canvas writes its messages in the language of the credential's user, so branch on `errorCode` and
+`errorType` rather than on the text.
+
+Requests that get no answer are given up after five minutes (n8n's request timeout).
 
 ### Batch Processing
 
