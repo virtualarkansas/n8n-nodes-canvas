@@ -15,13 +15,13 @@ export const peerReviewOperations: INodeProperties[] = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create a peer review assignment',
+				description: 'Assign a student to review the submission of another student',
 				action: 'Create a peer review',
 			},
 			{
 				name: 'Delete',
 				value: 'delete',
-				description: 'Delete a peer review assignment',
+				description: 'Remove a reviewer from a submission',
 				action: 'Delete a peer review',
 			},
 			{
@@ -81,7 +81,7 @@ export const peerReviewFields: INodeProperties[] = [
 				operation: ['create', 'delete'],
 			},
 		},
-		description: 'The ID of the submission to assign for peer review',
+		description: 'The ID of the submission to be reviewed (the "ID" of the submission, not the ID of the student)',
 	},
 	{
 		displayName: 'Reviewer User ID',
@@ -95,7 +95,7 @@ export const peerReviewFields: INodeProperties[] = [
 				operation: ['create', 'delete'],
 			},
 		},
-		description: 'The ID of the user to assign as the reviewer',
+		description: 'The user ID of the reviewing student. A student cannot review their own submission.',
 	},
 
 	// ----------------------------------
@@ -130,7 +130,7 @@ export const peerReviewFields: INodeProperties[] = [
 				name: 'submission_id',
 				type: 'string',
 				default: '',
-				description: 'Filter peer reviews for a specific submission',
+				description: 'Only return the peer reviews of this submission (the "ID" of the submission, not the ID of the student)',
 			},
 		],
 	},

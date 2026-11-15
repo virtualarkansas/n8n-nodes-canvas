@@ -83,8 +83,8 @@ async function ensureCourse(key: string, name: string, extra: Json = {}): Promis
 	return String(created.id);
 }
 
-/** Enrol users as active students unless they already are. */
-async function ensureStudents(courseId: string, userIds: string[]): Promise<void> {
+/** Enrol users as active students (optionally in one section) unless they already are in the course. */
+async function ensureStudents(courseId: string, userIds: string[], sectionId?: string): Promise<void> {
 	const enrolled = await canvas().getAll<Json>(
 		`/api/v1/courses/${courseId}/enrollments?type[]=StudentEnrollment&state[]=active&state[]=invited`,
 	);
@@ -94,7 +94,13 @@ async function ensureStudents(courseId: string, userIds: string[]): Promise<void
 		6,
 		(userId) =>
 			canvas().post(`/api/v1/courses/${courseId}/enrollments`, {
-				enrollment: { user_id: userId, type: 'StudentEnrollment', enrollment_state: 'active', notify: false },
+				enrollment: {
+					user_id: userId,
+					type: 'StudentEnrollment',
+					enrollment_state: 'active',
+					notify: false,
+					...(sectionId ? { course_section_id: sectionId } : {}),
+				},
 			}),
 	);
 }
@@ -483,7 +489,10 @@ async function ensurePeriodsCourse(): Promise<AssignmentsBattery['periods']> {
 
 export interface SubmissionsBattery {
 	courseId: string;
+	/** Default section: everyone except the students of the second section. */
 	sectionId: string;
+	/** Second section holding five of the bulk students and nobody else. */
+	sectionTwo: { id: string; studentIds: string[] };
 	/** Published text/url assignment every bulk student has a submission row for. */
 	bulkAssignmentId: string;
 	/** Own students (not the personas), more than 50. */
@@ -492,6 +501,22 @@ export interface SubmissionsBattery {
 	submittedIds: string[];
 	/** Of those, the ones already graded. */
 	gradedIds: string[];
+	/**
+	 * Long-lived published assignments the student personas can submit to. (Canvas caches
+	 * which assignments a student may see for five minutes, so an assignment created during
+	 * a test run cannot be submitted to by a student right away.)
+	 */
+	playgroundAssignmentId: string;
+	/** External tool assignment (basic LTI launch submissions). */
+	ltiAssignmentId: string;
+	/** Student annotation assignment and the file to annotate. */
+	annotation: { assignmentId: string; fileId: string };
+	/** Peer review assignment (manual assignment of reviews) with four students who handed in. */
+	peer: { assignmentId: string; studentIds: string[] };
+	/** Group assignment graded per group, with two groups. */
+	group: { assignmentId: string; groupCategoryId: string; groups: Array<{ id: string; memberIds: string[] }> };
+	/** Assignment graded with a rubric of two criteria (6 and 4 points). */
+	rubric: { assignmentId: string; criterionIds: string[] };
 }
 
 export const BULK_STUDENTS = 55;
@@ -499,50 +524,189 @@ export const BULK_STUDENTS = 55;
 export function ensureSubmissionsBattery(): Promise<SubmissionsBattery> {
 	return withLock('submissions', async () => {
 		const courseId = await ensureCourse('C', 'W5682 submissions battery');
+		const base = `/api/v1/courses/${courseId}`;
 
 		const users = await pool(Array.from({ length: BULK_STUDENTS }, (_, i) => i + 1), 6, (n) =>
 			ensureUser(`${PREFIX}-S-${pad(n)}`, `W5682 Student ${pad(n)}`),
 		);
-		await ensureStudents(courseId, [...users, fx('studentUserId'), fx('student2UserId')]);
 
-		const sections = await canvas().getAll<Json>(`/api/v1/courses/${courseId}/sections`);
-		const sectionId = String(sections[0].id);
+		// The default section only exists once somebody is enrolled.
+		await ensureStudents(courseId, [...users.slice(0, 50), fx('studentUserId'), fx('student2UserId')]);
+		const sections = await canvas().getAll<Json>(`${base}/sections`);
+		let second = sections.find((section) => section.name === 'W5682 section two');
+		second ??= await canvas().post<Json>(`${base}/sections`, { course_section: { name: 'W5682 section two' } });
+		const sectionId = String(sections.find((section) => section.id !== second!.id)!.id);
+		const sectionTwo = { id: String(second.id), studentIds: users.slice(50) };
+		await ensureStudents(courseId, sectionTwo.studentIds, sectionTwo.id);
 
-		const assignments = await canvas().getAll<Json>(`/api/v1/courses/${courseId}/assignments?search_term=Bulk%20submissions`);
-		let assignment = assignments.find((a) => a.name === 'Bulk submissions');
-		assignment ??= await canvas().post<Json>(`/api/v1/courses/${courseId}/assignments`, {
-			assignment: {
-				name: 'Bulk submissions',
-				submission_types: ['online_text_entry', 'online_url'],
-				points_possible: 10,
-				published: true,
-			},
+		const assignments = await canvas().getAll<Json>(`${base}/assignments`);
+		const assignmentNamed = async (name: string, fields: Json): Promise<string> => {
+			const found = assignments.find((a) => a.name === name);
+			if (found) return String(found.id);
+			const created = await canvas().post<Json>(`${base}/assignments`, {
+				assignment: { name, points_possible: 10, published: true, ...fields },
+			});
+			return String(created.id);
+		};
+		const submitFor = async (assignmentId: string, userIds: string[]): Promise<void> => {
+			const existing = await canvas().getAll<Json>(`${base}/assignments/${assignmentId}/submissions`);
+			const state = new Map(existing.map((sub) => [String(sub.user_id), String(sub.workflow_state)]));
+			await pool(
+				userIds.filter((id) => (state.get(id) ?? 'unsubmitted') === 'unsubmitted'),
+				4,
+				(userId) =>
+					canvas().post(`${base}/assignments/${assignmentId}/submissions`, {
+						submission: { submission_type: 'online_text_entry', body: `<p>Answer of ${userId}</p>`, user_id: userId },
+					}),
+			);
+		};
+
+		// --- bulk: 57 submission rows, 20 handed in, 10 graded
+		const bulkAssignmentId = await assignmentNamed('Bulk submissions', {
+			submission_types: ['online_text_entry', 'online_url'],
 		});
-		const bulkAssignmentId = String(assignment.id);
-
 		const submittedIds = users.slice(0, 20);
 		const gradedIds = users.slice(0, 10);
-		const existing = await canvas().getAll<Json>(
-			`/api/v1/courses/${courseId}/assignments/${bulkAssignmentId}/submissions`,
-		);
-		const state = new Map(existing.map((s) => [String(s.user_id), String(s.workflow_state)]));
+		await submitFor(bulkAssignmentId, submittedIds);
+		const graded = await canvas().getAll<Json>(`${base}/assignments/${bulkAssignmentId}/submissions`);
+		const gradedState = new Map(graded.map((sub) => [String(sub.user_id), String(sub.workflow_state)]));
 		await pool(
-			submittedIds.filter((id) => (state.get(id) ?? 'unsubmitted') === 'unsubmitted'),
-			4,
-			(userId) =>
-				canvas().post(`/api/v1/courses/${courseId}/assignments/${bulkAssignmentId}/submissions`, {
-					submission: { submission_type: 'online_text_entry', body: `<p>Answer of ${userId}</p>`, user_id: userId },
-				}),
-		);
-		await pool(
-			gradedIds.filter((id) => state.get(id) !== 'graded'),
+			gradedIds.filter((id) => gradedState.get(id) !== 'graded'),
 			4,
 			(userId, index) =>
-				canvas().put(`/api/v1/courses/${courseId}/assignments/${bulkAssignmentId}/submissions/${userId}`, {
+				canvas().put(`${base}/assignments/${bulkAssignmentId}/submissions/${userId}`, {
 					submission: { posted_grade: String(5 + (index % 6)) },
 				}),
 		);
-		return { courseId, sectionId, bulkAssignmentId, studentIds: users, submittedIds, gradedIds };
+
+		// --- assignments the personas submit to
+		const playgroundAssignmentId = await assignmentNamed('Submit playground', {
+			submission_types: ['online_text_entry', 'online_url', 'online_upload', 'media_recording'],
+			points_possible: 20,
+		});
+		const ltiAssignmentId = await assignmentNamed('LTI playground', {
+			submission_types: ['external_tool'],
+			external_tool_tag_attributes: { url: fx('externalToolUrl') },
+		});
+		let annotationAssignment = assignments.find((a) => a.name === 'Annotation playground');
+		if (!annotationAssignment) {
+			const file = await uploadDirect(canvas(), `${base}/files`, 'annotate-me.txt', Buffer.from('Annotate this text.\n'), 'text/plain');
+			annotationAssignment = await canvas().post<Json>(`${base}/assignments`, {
+				assignment: {
+					name: 'Annotation playground',
+					submission_types: ['student_annotation'],
+					annotatable_attachment_id: file.id,
+					points_possible: 10,
+					published: true,
+				},
+			});
+		}
+		const annotation = {
+			assignmentId: String(annotationAssignment.id),
+			fileId: String(annotationAssignment.annotatable_attachment_id),
+		};
+
+		// --- peer reviews
+		const peer = {
+			assignmentId: await assignmentNamed('Peer review playground', { submission_types: ['online_text_entry'], peer_reviews: true }),
+			studentIds: users.slice(20, 24),
+		};
+		await submitFor(peer.assignmentId, peer.studentIds);
+
+		// --- group assignment
+		const categories = await canvas().getAll<Json>(`${base}/group_categories`);
+		let category = categories.find((c) => c.name === 'W5682 submission groups');
+		category ??= await canvas().post<Json>(`${base}/group_categories`, { name: 'W5682 submission groups' });
+		const groupCategoryId = String(category.id);
+		const existingGroups = await canvas().getAll<Json>(`/api/v1/group_categories/${groupCategoryId}/groups`);
+		const groups: Array<{ id: string; memberIds: string[] }> = [];
+		for (const [name, memberIds] of [
+			['Submission group 1', users.slice(30, 33)],
+			['Submission group 2', users.slice(33, 35)],
+		] as Array<[string, string[]]>) {
+			let group = existingGroups.find((g) => g.name === name);
+			group ??= await canvas().post<Json>(`/api/v1/group_categories/${groupCategoryId}/groups`, { name });
+			const members = await canvas().getAll<Json>(`/api/v1/groups/${String(group.id)}/memberships`);
+			const have = new Set(members.map((m) => String(m.user_id)));
+			for (const userId of memberIds.filter((id) => !have.has(id))) {
+				await canvas().post(`/api/v1/groups/${String(group.id)}/memberships`, { user_id: userId });
+			}
+			groups.push({ id: String(group.id), memberIds });
+		}
+		const group = {
+			assignmentId: await assignmentNamed('Group playground', {
+				submission_types: ['online_text_entry'],
+				group_category_id: groupCategoryId,
+			}),
+			groupCategoryId,
+			groups,
+		};
+
+		// --- rubric
+		const rubricAssignmentId = await assignmentNamed('Rubric playground', { submission_types: ['online_text_entry'] });
+		let rubricAssignment = await canvas().get<Json>(`${base}/assignments/${rubricAssignmentId}`);
+		if (!Array.isArray(rubricAssignment.rubric)) {
+			await canvas().post(`${base}/rubrics`, {
+				rubric: {
+					title: 'W5682 rubric',
+					criteria: {
+						'0': {
+							description: 'Content',
+							points: 6,
+							ratings: { '0': { description: 'Complete', points: 6 }, '1': { description: 'Partial', points: 3 }, '2': { description: 'Missing', points: 0 } },
+						},
+						'1': {
+							description: 'Form',
+							points: 4,
+							ratings: { '0': { description: 'Clean', points: 4 }, '1': { description: 'Sloppy', points: 0 } },
+						},
+					},
+				},
+				rubric_association: {
+					association_id: Number(rubricAssignmentId),
+					association_type: 'Assignment',
+					use_for_grading: true,
+					purpose: 'grading',
+				},
+			});
+			rubricAssignment = await canvas().get<Json>(`${base}/assignments/${rubricAssignmentId}`);
+		}
+		const rubric = {
+			assignmentId: rubricAssignmentId,
+			criterionIds: ((rubricAssignment.rubric ?? []) as Json[]).map((criterion) => String(criterion.id)),
+		};
+
+		// Wait until the personas can see the assignments they submit to (visibility cache).
+		const personas = [new CanvasClient('student'), new CanvasClient('student2')];
+		const deadline = Date.now() + 6 * 60_000;
+		for (;;) {
+			const seen = await Promise.all(
+				personas.flatMap((client) =>
+					[playgroundAssignmentId, ltiAssignmentId, annotation.assignmentId, peer.assignmentId].map((id) =>
+						client.request('GET', `${base}/assignments/${id}`),
+					),
+				),
+			);
+			if (seen.every((res) => res.status === 200)) break;
+			if (Date.now() > deadline) throw new Error('The student personas still cannot see the submission assignments');
+			await new Promise((r) => setTimeout(r, 5000));
+		}
+
+		return {
+			courseId,
+			sectionId,
+			sectionTwo,
+			bulkAssignmentId,
+			studentIds: users,
+			submittedIds,
+			gradedIds,
+			playgroundAssignmentId,
+			ltiAssignmentId,
+			annotation,
+			peer,
+			group,
+			rubric,
+		};
 	});
 }
 
@@ -574,7 +738,7 @@ export async function uploadDirect(
 	for (const [key, value] of Object.entries((step1.upload_params ?? {}) as Json)) {
 		form.append(key, String(value));
 	}
-	form.append(String(step1.file_param ?? 'file'), new Blob([content], { type: contentType }), name);
+	form.append(String(step1.file_param ?? 'file'), new Blob([new Uint8Array(content)], { type: contentType }), name);
 	const step2 = await fetch(String(step1.upload_url), { method: 'POST', body: form, redirect: 'manual' });
 	const text = await step2.text();
 	if (step2.status >= 400) throw new Error(`upload step 2 -> ${step2.status}: ${text.slice(0, 300)}`);
