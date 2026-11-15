@@ -20,6 +20,22 @@ export interface TestState {
 		/** IDs of seeded records (accountId, courseId, ...) */
 		fixtures: Record<string, string | number>;
 	};
+	/**
+	 * Extra tokens and credentials of the seeded personas, one set per parallel test
+	 * worker (keyed by VITEST_POOL_ID). Canvas throttles per token, so test files that
+	 * run side by side must not share one. Written by `test/env/n8n/bootstrap.ts`.
+	 */
+	pool?: Record<string, PoolEntry>;
+}
+
+export interface PoolEntry {
+	tokens: Record<string, string>;
+	credentials: Record<string, { id: string; name: string; type: string }>;
+}
+
+/** This worker's own tokens and credentials, when the pool has a set for it. */
+export function workerPool(state: TestState): PoolEntry | undefined {
+	return state.pool?.[process.env.VITEST_POOL_ID ?? ''];
 }
 
 export const STATE_PATH = resolve(

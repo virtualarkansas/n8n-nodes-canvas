@@ -5,33 +5,10 @@ import type { Json } from '../../lib/n8n';
 
 /**
  * Helpers shared by the tests of the account / auth / SIS resources.
- *
- * The battery runs several workers against one Canvas with the same persona
- * tokens, and Canvas throttles per token. When the shared quota stays below the
- * node's threshold, the node gives up before sending anything ("rate limit
- * quota is still below the threshold"). That says nothing about the operation
- * under test, so such a run is repeated; nothing reached Canvas, so repeating
- * it cannot create duplicates.
+ * (Runs the node abandoned on the rate-limit quota before sending anything are
+ * repeated by the harness itself.)
  */
-const THROTTLED = /rate limit quota is still below the threshold/i;
-
-function wasThrottledBeforeSending(result: RunNodeResult): boolean {
-	if (result.success.length > 0) return false;
-	const texts = [result.failure?.message ?? '', ...result.error.map((e) => String(e.errorMessage ?? ''))];
-	const relevant = texts.filter((text) => text !== '');
-	return relevant.length > 0 && relevant.every((text) => THROTTLED.test(text));
-}
-
-export async function runNode(opts: RunNodeOptions): Promise<RunNodeResult> {
-	for (let attempt = 0; ; attempt++) {
-		const result = await baseRunNode(opts);
-		if (attempt < 5 && wasThrottledBeforeSending(result)) {
-			await new Promise((resolve) => setTimeout(resolve, 10_000));
-			continue;
-		}
-		return result;
-	}
-}
+export const runNode = (opts: RunNodeOptions): Promise<RunNodeResult> => baseRunNode(opts);
 
 /** Run and require success; returns the Success output items. Throws with full context otherwise. */
 export async function runOk(opts: RunNodeOptions): Promise<Json[]> {

@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { loadState } from './state';
+import { loadState, workerPool } from './state';
 import type { Json } from './n8n';
 
 /**
@@ -13,7 +13,8 @@ export class CanvasClient {
 	constructor(persona = 'admin', token?: string) {
 		const state = loadState();
 		this.url = state.canvas.url.replace(/\/$/, '');
-		const resolved = token ?? state.canvas.tokens[persona];
+		// Each parallel worker has its own token per persona (own rate-limit quota), when the pool exists.
+		const resolved = token ?? workerPool(state)?.tokens[persona] ?? state.canvas.tokens[persona];
 		if (!resolved) throw new Error(`No Canvas token for persona "${persona}" in test state`);
 		this.token = resolved;
 	}

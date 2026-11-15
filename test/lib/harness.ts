@@ -3,7 +3,7 @@ import { appendFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { CANVAS_NODE_TYPE, N8nClient } from './n8n';
 import type { ExecutionResult, Json, N8nNode, N8nWorkflow } from './n8n';
-import { loadState } from './state';
+import { loadState, workerPool } from './state';
 
 export interface RunNodeOptions {
 	resource: string;
@@ -132,7 +132,7 @@ export function canvasNode(opts: RunNodeOptions, name = NODE_NAME, position: [nu
 	const authentication = opts.authentication ?? 'accessToken';
 	const persona = opts.persona ?? 'admin';
 	const credKey = authentication === 'oAuth2' ? `${persona}OAuth2` : persona;
-	const cred = opts.credential ?? state.n8n.credentials[credKey];
+	const cred = opts.credential ?? workerPool(state)?.credentials[credKey] ?? state.n8n.credentials[credKey];
 	if (!cred) {
 		throw new Error(`No n8n credential for persona "${credKey}" in test state`);
 	}
@@ -191,7 +191,44 @@ export function wrapInWebhookWorkflow(node: N8nNode, label: string): { workflow:
 }
 
 /** Execute one Canvas node operation on the real n8n instance and collect its outputs. */
+const QUOTA_EXHAUSTED = /rate limit quota is still below the threshold/i;
+
+/** Did the node give up on the quota before it sent anything for any item? */
+function blockedByQuota(result: RunNodeResult): boolean {
+	if (result.success.length > 0 || result.debug.length > 0) return false;
+	const texts = [result.failure?.message ?? '', ...result.error.map((e) => String(e.errorMessage ?? ''))].filter(
+		(text) => text !== '',
+	);
+	return texts.length > 0 && texts.every((text) => QUOTA_EXHAUSTED.test(text));
+}
+
+/**
+ * Run one Canvas node on the battery's n8n instance.
+ *
+ * Canvas throttles per token and other test files may be using the same persona.
+ * When the node's pre-flight check gives up on the quota before sending anything,
+ * that says nothing about the operation under test, so the run is repeated once the
+ * quota had time to recover (nothing reached Canvas, so nothing is done twice).
+ * Tests that set their own `rateLimiting` options are testing exactly that and are
+ * never repeated.
+ *
+ * On a heavily shared Canvas, BATTERY_RATE_LIMIT_THRESHOLD=<n> makes every run that
+ * does not set its own rate limiting use that pre-flight threshold instead of 300.
+ */
 export async function runNode(opts: RunNodeOptions): Promise<RunNodeResult> {
+	const ownRateLimiting = (opts.params as Json | undefined)?.rateLimiting !== undefined;
+	const threshold = process.env.BATTERY_RATE_LIMIT_THRESHOLD;
+	if (!ownRateLimiting && threshold) {
+		opts = { ...opts, params: { ...(opts.params ?? {}), rateLimiting: { threshold: Number(threshold) } } };
+	}
+	for (let attempt = 0; ; attempt++) {
+		const result = await runNodeOnce(opts);
+		if (ownRateLimiting || attempt >= 4 || !blockedByQuota(result)) return result;
+		await new Promise((resolve) => setTimeout(resolve, 15_000));
+	}
+}
+
+async function runNodeOnce(opts: RunNodeOptions): Promise<RunNodeResult> {
 	const api = n8n();
 	const node = canvasNode(opts);
 	const { workflow, path } = wrapInWebhookWorkflow(node, `${opts.resource}.${opts.operation}`);

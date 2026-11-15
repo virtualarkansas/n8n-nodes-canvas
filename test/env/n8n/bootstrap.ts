@@ -2,11 +2,16 @@
  * Prepare a fresh n8n instance for the battery:
  *   1. create (or log in as) the owner,
  *   2. create a public-API key,
- *   3. create one `canvasApi` credential per Canvas persona token found in the test state.
+ *   3. create one `canvasApi` credential per Canvas persona token found in the test state,
+ *   4. give every parallel test worker its own token and credential per seeded persona
+ *      (Canvas throttles per token; see `pool` in test/lib/state.ts).
  *
  * Usage: npx tsx test/env/n8n/bootstrap.ts
- * Env:   N8N_URL (default http://localhost:5678), CANVAS_URL (default http://localhost:3000)
+ * Env:   N8N_URL (default http://localhost:5678), CANVAS_URL (default http://localhost:3000),
+ *        BATTERY_POOL (number of worker sets, default 6; 0 to skip),
+ *        CANVAS_CONTAINER (default canvas-web)
  */
+import { execFileSync } from 'node:child_process';
 import { updateState } from '../../lib/state';
 
 const N8N_URL = (process.env.N8N_URL ?? 'http://localhost:5678').replace(/\/$/, '');
@@ -49,14 +54,17 @@ async function rest(method: string, path: string, body?: unknown): Promise<ApiRe
 }
 
 async function api(apiKey: string, method: string, path: string, body?: unknown): Promise<ApiResult> {
-	const res = await fetch(`${N8N_URL}/api/v1${path}`, {
-		method,
-		headers: {
-			'X-N8N-API-KEY': apiKey,
-			...(body === undefined ? {} : { 'content-type': 'application/json' }),
-		},
-		body: body === undefined ? undefined : JSON.stringify(body),
-	});
+	const send = (): Promise<Response> =>
+		fetch(`${N8N_URL}/api/v1${path}`, {
+			method,
+			headers: {
+				'X-N8N-API-KEY': apiKey,
+				...(body === undefined ? {} : { 'content-type': 'application/json' }),
+			},
+			body: body === undefined ? undefined : JSON.stringify(body),
+		});
+	// A kept-alive connection n8n has closed in the meantime fails once; the request never arrived.
+	const res = await send().catch(() => send());
 	const text = await res.text();
 	return { status: res.status, json: (text ? JSON.parse(text) : {}) as ApiResult['json'] };
 }
@@ -100,6 +108,7 @@ async function main(): Promise<void> {
 		updateState((s) => {
 			s.n8n.apiKey = apiKey;
 			s.n8n.credentials = {};
+			for (const entry of Object.values(s.pool ?? {})) entry.credentials = {};
 		});
 	}
 
@@ -121,7 +130,80 @@ async function main(): Promise<void> {
 		});
 		console.log(`credential created: ${persona} -> ${created.json.id}`);
 	}
+	await ensurePool(apiKey);
 	console.log(`n8n ready at ${N8N_URL}; state written.`);
+}
+
+/** The personas the seed creates; test files that add their own are left alone. */
+const POOLED_PERSONAS = ['admin', 'teacher', 'ta', 'student', 'student2', 'observer', 'designer', 'subaccountAdmin'];
+
+/**
+ * One extra token (and n8n credential) per seeded persona for each parallel worker.
+ * Tokens are minted inside Canvas: one created through the API for another user would stay pending.
+ */
+async function ensurePool(apiKey: string): Promise<void> {
+	const size = Number(process.env.BATTERY_POOL ?? 6);
+	if (!(size > 0)) return;
+	const state = updateState(() => undefined);
+	const personas = POOLED_PERSONAS.filter((persona) => state.canvas.tokens[persona]);
+
+	const wanted: Array<{ worker: string; persona: string }> = [];
+	for (let worker = 1; worker <= size; worker++) {
+		for (const persona of personas) {
+			if (!state.pool?.[String(worker)]?.tokens[persona]) wanted.push({ worker: String(worker), persona });
+		}
+	}
+	if (wanted.length > 0) {
+		const request = wanted.map((entry) => ({ ...entry, token: state.canvas.tokens[entry.persona] }));
+		const script =
+			'require "json"; out = JSON.parse(ENV.fetch("POOL_REQUEST")).map { |r| ' +
+			'user = AccessToken.authenticate(r["token"])&.user; ' +
+			'user && r.slice("worker", "persona").merge("token" => user.access_tokens.create!(purpose: "n8n battery worker #{r["worker"]}").full_token) ' +
+			'}.compact; puts "POOL=" + out.to_json';
+		let minted: Array<{ worker: string; persona: string; token: string }> = [];
+		try {
+			const out = execFileSync(
+				'docker',
+				['exec', '-e', `POOL_REQUEST=${JSON.stringify(request)}`, process.env.CANVAS_CONTAINER ?? 'canvas-web', 'bundle', 'exec', 'rails', 'runner', script],
+				{ encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
+			);
+			const line = out.split('\n').find((l) => l.startsWith('POOL='));
+			minted = line ? (JSON.parse(line.slice(5)) as typeof minted) : [];
+		} catch (error) {
+			console.warn(`worker token pool skipped (could not mint tokens in Canvas): ${(error as Error).message.split('\n')[0]}`);
+			return;
+		}
+		updateState((s) => {
+			s.pool ??= {};
+			for (const { worker, persona, token } of minted) {
+				s.pool[worker] ??= { tokens: {}, credentials: {} };
+				s.pool[worker].tokens[persona] = token;
+			}
+		});
+		console.log(`worker token pool: ${minted.length} tokens minted`);
+	}
+
+	const current = updateState(() => undefined);
+	let created = 0;
+	for (const [worker, entry] of Object.entries(current.pool ?? {})) {
+		for (const [persona, token] of Object.entries(entry.tokens)) {
+			if (entry.credentials[persona]) continue;
+			const name = `Canvas battery (${persona}, worker ${worker})`;
+			const result = await api(apiKey, 'POST', '/credentials', {
+				name,
+				type: 'canvasApi',
+				data: { canvasUrl: CANVAS_URL, accessToken: token, allowedHttpRequestDomains: 'all' },
+			});
+			if (result.status >= 300) {
+				throw new Error(`Could not create credential ${name}: ${JSON.stringify(result.json).slice(0, 300)}`);
+			}
+			updateState((s) => {
+				if (s.pool?.[worker]) s.pool[worker].credentials[persona] = { id: String(result.json.id), name, type: 'canvasApi' };
+			});
+			created++;
+		}
+	}
+	if (created > 0) console.log(`worker token pool: ${created} credentials created`);
 }
 
 main().catch((error) => {
