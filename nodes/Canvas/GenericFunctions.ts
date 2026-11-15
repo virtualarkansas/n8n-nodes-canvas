@@ -911,11 +911,18 @@ export async function canvasApiRequest(
 			await ensureRateLimit(this, rateLimitOptions);
 		}
 
+		// A fresh copy for every request: n8n writes the Authorization header into the options
+		// it is given, and that must not travel on to a request that goes elsewhere.
+		const options = (): IHttpRequestOptions => ({
+			...requestOptions,
+			...(requestOptions.headers ? { headers: { ...requestOptions.headers } } : {}),
+		});
+
 		let response: { statusCode?: number; headers?: IDataObject; body?: unknown };
 		try {
 			response = elsewhere
-				? await this.helpers.httpRequest(requestOptions)
-				: await this.helpers.httpRequestWithAuthentication.call(this, credentialType, requestOptions);
+				? await this.helpers.httpRequest(options())
+				: await this.helpers.httpRequestWithAuthentication.call(this, credentialType, options());
 		} catch (error) {
 			// No HTTP response at all: DNS failure, refused connection, timeout.
 			const failure = extractHttpStatus(error) === undefined ? tagError(error as Error, 'NETWORK_ERROR') : error;
@@ -929,7 +936,7 @@ export async function canvasApiRequest(
 			refreshTried = true;
 			try {
 				response = await this.helpers.httpRequestWithAuthentication.call(this, credentialType, {
-					...requestOptions,
+					...options(),
 					ignoreHttpStatusErrors: false,
 				});
 			} catch (error) {

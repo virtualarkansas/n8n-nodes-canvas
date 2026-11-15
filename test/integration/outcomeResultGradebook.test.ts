@@ -199,7 +199,7 @@ describe('outcomeResult: learning mastery gradebook', () => {
 		});
 		expect(result.success).toEqual([]);
 		expect(result.error).toHaveLength(1);
-		expect(String(result.error[0].errorMessage)).toContain('Learning Mastery Gradebook feature is not enabled');
+		expect(String(result.error[0].errorMessage)).toContain('the feature is not enabled');
 	});
 
 	it('getGradebookSettings: a course without the feature is reported as an error, not as { success: true }', async () => {

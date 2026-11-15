@@ -64,8 +64,13 @@ function fakeContext(responder: (options: IDataObject, callIndex: number) => Fak
 	const calls: IDataObject[] = [];
 	const answer = (authenticated: boolean) =>
 		async function (...args: unknown[]) {
-			// A copy: the request layer reuses and rewrites its options object (redirects).
-			const options: IDataObject = { ...((authenticated ? args[1] : args[0]) as IDataObject), authenticated };
+			const given = (authenticated ? args[1] : args[0]) as IDataObject;
+			// Like n8n: authenticating writes the credential into the options object it was handed.
+			if (authenticated) {
+				given.headers = { ...((given.headers as IDataObject | undefined) ?? {}), Authorization: 'Bearer t' };
+			}
+			// A copy for the record: the request layer rewrites its options between requests (redirects).
+			const options: IDataObject = { ...given, authenticated };
 			calls.push(options);
 			const response = responder(options, calls.length - 1);
 			if (response.throw) throw response.throw;
@@ -484,10 +489,10 @@ describe('canvasApiRequest', () => {
 		const variables = await canvasApiRequest.call(away.context, 'GET', '/api/v1/brand_variables', undefined, undefined, NO_RATE_LIMIT);
 		expect(variables.data).toEqual({ 'ic-brand-primary': '#0374B5' });
 		// Once the chain has left Canvas, the credential stays behind, even if it leads back.
-		expect(away.calls.map((c) => [c.authenticated, c.url])).toEqual([
-			[true, 'https://canvas.test/api/v1/brand_variables'],
-			[false, 'https://cdn.example.net/variables.json'],
-			[false, 'https://canvas.test/back-again.json'],
+		expect(away.calls.map((c) => [c.authenticated, c.url, (c.headers as IDataObject | undefined)?.Authorization])).toEqual([
+			[true, 'https://canvas.test/api/v1/brand_variables', 'Bearer t'],
+			[false, 'https://cdn.example.net/variables.json', undefined],
+			[false, 'https://canvas.test/back-again.json', undefined],
 		]);
 	});
 
