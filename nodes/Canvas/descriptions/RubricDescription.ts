@@ -951,14 +951,16 @@ export const rubricFields: INodeProperties[] = [
 				name: 'final',
 				type: 'boolean',
 				default: false,
-				description: 'Whether a provisional assessment is the final grader\'s own assessment',
+				description:
+					'Whether a provisional assessment is the final mark of the final grader. Canvas only accepts it from the final grader, and only once another grader has given a provisional grade.',
 			},
 			{
 				displayName: 'Graded Anonymously',
 				name: 'graded_anonymously',
 				type: 'boolean',
 				default: false,
-				description: 'Whether the assessment was made without knowing who the student is',
+				description:
+					'Whether the assessment was made without knowing who the student is. Canvas records it on the submission when the assessment changes its score; it is not kept for provisional assessments.',
 			},
 			{
 				displayName: 'Provisional',

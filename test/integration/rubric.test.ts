@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { canvas, fx, unique } from '../lib/canvas';
+import { canvas, CanvasClient, fx, unique } from '../lib/canvas';
 import { runNode, runOk } from '../lib/harness';
 import type { Json } from '../lib/n8n';
 import { canvasSql, createSandboxAccount, createSandboxCourse, deleteSandboxAccount, deleteSandboxCourse, unwrap } from './support/gradingSandbox';
@@ -632,6 +632,218 @@ describe('rubric', () => {
 			expect(result.success).toEqual([]);
 			expect([401, 403]).toContain(result.error[0].errorCode);
 			expect(result.error[0]).toMatchObject({ resource: 'rubric', operation });
+		}
+	});
+
+	// ------------------------------------------- outcome criteria, moderated grading
+
+	it('create / update: criterion IDs, learning outcomes, "ignore for scoring", long description and range', async () => {
+		const root = await canvas().get<Json>(`/api/v1/courses/${courseId}/root_outcome_group`);
+		const outcome = async (name: string): Promise<Json> =>
+			(
+				await canvas().post<Json>(`/api/v1/courses/${courseId}/outcome_groups/${String(root.id)}/outcomes`, {
+					title: name,
+					description: `<p>${name} description</p>`,
+					mastery_points: 3,
+					ratings: [
+						{ description: 'Exceeds', points: 5 },
+						{ description: 'Meets', points: 3 },
+					],
+				})
+			).outcome as Json;
+		const [first, second] = [await outcome(unique('Rubric outcome one')), await outcome(unique('Rubric outcome two'))];
+
+		const [output] = await runOk({
+			resource: 'rubric',
+			operation: 'create',
+			params: {
+				courseId,
+				title: unique('Outcome rubric'),
+				criteria: {
+					criterion: [
+						{ id: 'crit_outcome', description: 'Outcome row', points: 0, learning_outcome_id: String(first.id), ignore_for_scoring: true },
+						{
+							id: 'crit_plain',
+							description: 'Plain row',
+							long_description: 'Plain long',
+							points: 0,
+							ratings: { rating: [{ id: 'rate_top', description: 'Top', points: 4 }, { description: 'Low', points: 0 }] },
+						},
+					],
+				},
+			},
+		});
+		const id = String(unwrap(output, 'rubric').id);
+		const created = (await rubric(id)).data as Json[];
+		expect(created[0]).toMatchObject({
+			id: 'crit_outcome',
+			learning_outcome_id: first.id,
+			ignore_for_scoring: true,
+			// The outcome's own description replaces any given one.
+			long_description: `<p>${String(first.title)} description</p>`,
+		});
+		expect(created[1]).toMatchObject({ id: 'crit_plain', long_description: 'Plain long', criterion_use_range: false });
+		expect((created[1].ratings as Json[])[0]).toMatchObject({ id: 'rate_top', description: 'Top', points: 4 });
+
+		await runOk({
+			resource: 'rubric',
+			operation: 'update',
+			params: {
+				courseId,
+				rubricId: id,
+				title: unique('Outcome rubric v2'),
+				criteria: {
+					criterion: [
+						{ id: 'crit_outcome', description: 'Outcome row', points: 0, learning_outcome_id: String(second.id), ignore_for_scoring: false },
+						{
+							id: 'crit_plain',
+							description: 'Plain row',
+							long_description: 'Plain long, revised',
+							criterion_use_range: true,
+							points: 0,
+							ratings: { rating: [{ id: 'rate_top', description: 'Top', points: 4 }, { description: 'Low', points: 0 }] },
+						},
+					],
+				},
+			},
+		});
+		const updated = (await rubric(id)).data as Json[];
+		expect(updated[0]).toMatchObject({ id: 'crit_outcome', learning_outcome_id: second.id, ignore_for_scoring: false });
+		expect(updated[1]).toMatchObject({ id: 'crit_plain', long_description: 'Plain long, revised', criterion_use_range: true });
+	});
+
+	it('createAssessment / updateAssessment: a final provisional grade, graded anonymously, with rating IDs and saved comments', async () => {
+		const teacherId = Number(fx('teacherUserId'));
+		const student = course.studentIds[2];
+		const assignment = await canvas().post<Json>(`/api/v1/courses/${courseId}/assignments`, {
+			assignment: {
+				name: unique('Moderated rubric assignment'),
+				points_possible: 5,
+				submission_types: ['online_text_entry'],
+				published: true,
+				moderated_grading: true,
+				grader_count: 1,
+				final_grader_id: teacherId,
+			},
+		});
+		const created = await canvas().post<Json>(`/api/v1/courses/${courseId}/rubrics`, {
+			rubric: {
+				title: unique('Moderated rubric'),
+				criteria: { 0: { description: 'Row', points: 5, ratings: { 0: { description: 'Full', points: 5 }, 1: { description: 'None', points: 0 } } } },
+			},
+			rubric_association: { association_id: assignment.id, association_type: 'Assignment', use_for_grading: true, purpose: 'grading' },
+		});
+		const moderatedRubric = created.rubric as Json;
+		const association = created.rubric_association as Json;
+		const criterion = (moderatedRubric.data as Json[])[0];
+		const [full, none] = criterion.ratings as Json[];
+		const asTeacher = new CanvasClient('teacher');
+		const provisionalGrades = async (): Promise<Json[]> =>
+			(
+				await asTeacher.get<Json>(
+					`/api/v1/courses/${courseId}/assignments/${String(assignment.id)}/submissions/${student}?include[]=provisional_grades`,
+				)
+			).provisional_grades as Json[];
+		const savedComments = async (): Promise<unknown> => {
+			const associations = (await rubric(String(moderatedRubric.id), '?include[]=associations')).associations as Json[];
+			const summary = associations.find((a) => a.id === association.id)?.summary_data as Json | undefined;
+			return (summary?.saved_comments as Json | undefined)?.[String(criterion.id)];
+		};
+
+		// A TA grades provisionally first (Canvas refuses a final mark without another provisional grade) ...
+		const taId = Number(fx('taUserId'));
+		await canvas().post(`/api/v1/courses/${courseId}/enrollments`, {
+			enrollment: { user_id: taId, type: 'TaEnrollment', enrollment_state: 'active' },
+		});
+		const [byTa] = await runOk({
+			resource: 'rubric',
+			operation: 'createAssessment',
+			persona: 'ta',
+			params: {
+				courseId,
+				rubricAssociationId: String(association.id),
+				userId: student,
+				assessmentType: 'provisional_grade',
+				criterionAssessments: { criterion: [{ criterion_id: criterion.id, points: 0, comments: 'TA comment' }] },
+				options: { provisional: true },
+			},
+		});
+		expect(byTa).toMatchObject({ assessment_type: 'provisional_grade', score: 0 });
+		expect(await provisionalGrades()).toMatchObject([{ final: false, scorer_id: taId, score: 0 }]);
+		expect(await savedComments(), 'a comment without "save comment" is not kept').toBeUndefined();
+
+		// ... then the final grader gives the final mark.
+		const [assessment] = await runOk({
+			resource: 'rubric',
+			operation: 'createAssessment',
+			persona: 'teacher',
+			params: {
+				courseId,
+				rubricAssociationId: String(association.id),
+				userId: student,
+				assessmentType: 'provisional_grade',
+				criterionAssessments: { criterion: [{ criterion_id: criterion.id, points: 5, comments: 'First saved', save_comment: true }] },
+				options: { provisional: true, final: true },
+			},
+		});
+		expect(assessment).toMatchObject({ assessment_type: 'provisional_grade', score: 5 });
+		const finalGrade = (await provisionalGrades()).find((g) => g.scorer_id === teacherId);
+		expect(finalGrade).toMatchObject({ final: true, score: 5 });
+		expect(await savedComments()).toEqual(['First saved']);
+
+		// 3 points match no rating: the rating comes from the rating ID alone.
+		const [updated] = await runOk({
+			resource: 'rubric',
+			operation: 'updateAssessment',
+			persona: 'teacher',
+			params: {
+				courseId,
+				rubricAssociationId: String(association.id),
+				rubricAssessmentId: String(assessment.id),
+				userId: student,
+				assessmentType: 'provisional_grade',
+				criterionAssessments: {
+					criterion: [{ criterion_id: criterion.id, points: 3, rating_id: full.id, comments: 'Second saved', save_comment: true }],
+				},
+				options: { provisional: true, final: true },
+			},
+		});
+		expect(updated).toMatchObject({ id: assessment.id, score: 3 });
+		const grades = await provisionalGrades();
+		expect(grades).toHaveLength(2);
+		expect(grades.find((g) => g.scorer_id === teacherId)).toMatchObject({ final: true, score: 3 });
+		const stored = ((await rubric(String(moderatedRubric.id), '?include[]=assessments&style=full')).assessments as Json[]).find(
+			(a) => a.id === assessment.id,
+		) as Json;
+		expect((stored.data as Json[])[0]).toMatchObject({ criterion_id: criterion.id, id: full.id, points: 3 });
+		expect(full.id).not.toBe(none.id);
+		expect(await savedComments()).toEqual(['First saved', 'Second saved']);
+
+		// Graded Anonymously is recorded on the submission an ordinary grading assessment scores
+		// (the API does not show it, so it is read from Canvas' database); a later regrade without it clears it.
+		const plain = await canvas().post<Json>(`/api/v1/courses/${courseId}/assignments`, {
+			assignment: { name: unique('Anonymously assessed'), points_possible: 5, submission_types: ['online_text_entry'], published: true },
+		});
+		const plainRubric = await canvas().post<Json>(`/api/v1/courses/${courseId}/rubrics`, {
+			rubric: { title: unique('Anonymous rubric'), criteria: { 0: { description: 'Row', points: 5 } } },
+			rubric_association: { association_id: plain.id, association_type: 'Assignment', use_for_grading: true, purpose: 'grading' },
+		});
+		const plainCriterion = ((plainRubric.rubric as Json).data as Json[])[0];
+		const graded = (): string =>
+			canvasSql(`SELECT graded_anonymously FROM submissions WHERE assignment_id = ${String(plain.id)} AND user_id = ${student}`);
+		for (const [points, anonymously] of [[4, true], [2, false]] as const) {
+			await runOk({
+				resource: 'rubric',
+				operation: 'createAssessment',
+				params: {
+					courseId,
+					rubricAssociationId: String((plainRubric.rubric_association as Json).id),
+					userId: student,
+					criterionAssessments: { criterion: [{ criterion_id: plainCriterion.id, points }] },
+					options: { graded_anonymously: anonymously },
+				},
+			});
+			expect(graded(), `graded anonymously: ${String(anonymously)}`).toBe(anonymously ? 't' : '');
 		}
 	});
 });
