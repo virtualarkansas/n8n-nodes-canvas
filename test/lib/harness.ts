@@ -213,6 +213,10 @@ export async function runNode(opts: RunNodeOptions): Promise<RunNodeResult> {
 						? 'error-output'
 						: 'success';
 		logOp({ resource: opts.resource, operation: opts.operation, outcome });
+		// A run with both successful and failed items counts as a success for coverage too.
+		if (outcome === 'error-output' && (run?.outputs[0]?.length ?? 0) > 0) {
+			logOp({ resource: opts.resource, operation: opts.operation, outcome: 'success' });
+		}
 		await logRun(opts, outcome, run?.outputs[0] ?? []);
 		return {
 			ok: execution.status === 'success',

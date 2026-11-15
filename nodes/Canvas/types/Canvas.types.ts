@@ -8,14 +8,22 @@ import type { IDataObject, IHttpRequestMethods } from 'n8n-workflow';
 export interface IRequestConfig {
 	endpoint: string;
 	method: IHttpRequestMethods;
-	body?: Record<string, unknown>;
+	/** A JSON body (object or array), or raw text (e.g. CSV) sent as it is with `contentType`. */
+	body?: Record<string, unknown> | unknown[] | string;
+	/** Content type of a raw text body. Defaults to text/plain. */
+	contentType?: string;
 	qs?: Record<string, unknown>;
 	/**
-	 * For list endpoints that wrap their results in an object
-	 * (e.g. `{ "quiz_submissions": [...] }`), the key holding the array.
-	 * The node unwraps it so every record becomes its own item.
+	 * For endpoints that wrap their result in an object, the key holding it:
+	 * `{ "quiz_submissions": [...] }` becomes one item per record, and
+	 * `{ "late_policy": {...} }` becomes that record. Applies to reads and writes.
 	 */
 	dataKey?: string;
+	/**
+	 * For lists whose records are each wrapped again (`[{ "course": {...} }, ...]`):
+	 * the key inside every record that holds the real record.
+	 */
+	itemKey?: string;
 	/**
 	 * Always read every page (100 records at a time), whatever the node's Pagination
 	 * options say. For endpoints whose pages are not meaningful on their own, such as

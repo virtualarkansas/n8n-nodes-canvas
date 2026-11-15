@@ -217,6 +217,58 @@ export function buildCanvasUrl(
 }
 
 /**
+ * SIS IDs may contain characters that mean something in a URL
+ * (`sis_user_id:A/B #1`). Handlers put parameter values into the path as they
+ * are, so encode every value that needs it wherever it forms a path segment.
+ * A value that already looks encoded (%2F) is left alone.
+ */
+export function encodePathValues(endpoint: string, values: Iterable<string>): string {
+	if (/^https?:\/\//i.test(endpoint)) {
+		return endpoint;
+	}
+
+	const candidates = Array.from(new Set(values))
+		.filter(
+			(value) =>
+				value.length > 0 &&
+				/[^A-Za-z0-9_.~:,@!*'()$-]/.test(value) &&
+				!/%[0-9A-Fa-f]{2}/.test(value),
+		)
+		.sort((a, b) => b.length - a.length);
+	if (candidates.length === 0) {
+		return endpoint;
+	}
+
+	// The value may itself contain "?" or "/", so look for it as a whole before
+	// deciding where the path ends.
+	let result = endpoint;
+	for (const value of candidates) {
+		const encoded = encodeURIComponent(value)
+			.replace(/%3A/gi, ':')
+			.replace(/%2C/gi, ',')
+			.replace(/%40/g, '@');
+		const marker = `/${value}`;
+		let from = 0;
+		for (;;) {
+			const at = result.indexOf(marker, from);
+			if (at === -1) {
+				break;
+			}
+			// Only where the value is a whole path segment, before any query string.
+			const after = result[at + marker.length];
+			const inQuery = result.slice(0, at).includes('?');
+			if (!inQuery && (after === undefined || after === '/' || after === '?')) {
+				result = `${result.slice(0, at)}/${encoded}${result.slice(at + marker.length)}`;
+				from = at + encoded.length + 1;
+			} else {
+				from = at + marker.length;
+			}
+		}
+	}
+	return result;
+}
+
+/**
  * Canvas returns absolute URLs in Link and Location headers. Requests carrying
  * the user's token must only ever go to the configured Canvas host, so keep
  * the path and query of such a URL and re-anchor it on the configured base URL.
@@ -343,7 +395,14 @@ export function getCanvasErrorDetails(error: unknown): {
 	code?: string;
 	errors?: unknown;
 } {
-	const body = getErrorResponseBody(error);
+	return describeCanvasErrorBody(getErrorResponseBody(error));
+}
+
+function describeCanvasErrorBody(body: unknown): {
+	messages: string[];
+	code?: string;
+	errors?: unknown;
+} {
 	const messages: string[] = [];
 	let code: string | undefined;
 	let errors: unknown;
@@ -376,10 +435,61 @@ export function getCanvasErrorDetails(error: unknown): {
 }
 
 /**
+ * Is this response Canvas' throttle answer? By default that is
+ * `403 Forbidden (Rate Limit Exceeded)` as plain text with
+ * `X-Rate-Limit-Remaining: 0.0`; instances can opt in to 429 instead.
+ */
+export function isThrottleResponse(status: number, body: unknown, headers?: IDataObject): boolean {
+	if (status === 429) {
+		return true;
+	}
+	if (status !== 403) {
+		return false;
+	}
+	const text = typeof body === 'string' ? body : Buffer.isBuffer(body) ? body.toString('utf8') : JSON.stringify(body ?? '');
+	if (/rate limit exceeded/i.test(text)) {
+		return true;
+	}
+	// An ordinary "forbidden" answer is JSON with an errors payload; the throttle answer is not.
+	const remaining = parseFloat(String(headers?.['x-rate-limit-remaining'] ?? ''));
+	return Number.isFinite(remaining) && remaining <= 0 && (body === undefined || body === null || typeof body === 'string');
+}
+
+/** How the node classified an error it raised itself (overrides what the status suggests). */
+function taggedErrorType(error: unknown): CanvasErrorType | undefined {
+	const seen = new Set<unknown>();
+	let current = error as JsonObject | undefined;
+	for (let depth = 0; current && typeof current === 'object' && depth < 4; depth++) {
+		if (seen.has(current)) {
+			break;
+		}
+		seen.add(current);
+		const tag = (current.context as JsonObject | undefined)?.canvasErrorType ?? current.canvasErrorType;
+		if (typeof tag === 'string') {
+			return tag as CanvasErrorType;
+		}
+		current = current.cause as JsonObject | undefined;
+	}
+	return undefined;
+}
+
+function tagError<T extends Error>(error: T, type: CanvasErrorType, data?: unknown): T {
+	const target = error as unknown as { context?: IDataObject };
+	target.context = { ...(target.context ?? {}), canvasErrorType: type };
+	if (data !== undefined) {
+		target.context.data = data as IDataObject;
+	}
+	return error;
+}
+
+/**
  * Canvas answers throttled requests with `403 Forbidden (Rate Limit Exceeded)`
  * by default, and with 429 only when the instance opts in.
  */
 export function isRateLimitError(error: unknown): boolean {
+	if (taggedErrorType(error) === 'RATE_LIMITED') {
+		return true;
+	}
 	const status = extractHttpStatus(error);
 	if (status === 429) {
 		return true;
@@ -403,6 +513,13 @@ export function isRateLimitError(error: unknown): boolean {
 export function isRetryableError(error: unknown): boolean {
 	if (isRateLimitError(error)) {
 		return true;
+	}
+	const tag = taggedErrorType(error);
+	if (tag === 'NETWORK_ERROR') {
+		return true;
+	}
+	if (tag === 'INVALID_PARAMETERS') {
+		return false;
 	}
 	const status = extractHttpStatus(error);
 	if (status === undefined) {
@@ -453,14 +570,22 @@ export function createErrorOutput(
 	const details = getCanvasErrorDetails(error);
 	const name = String(error?.name ?? '');
 
+	const tag = taggedErrorType(error);
 	let errorType: CanvasErrorType;
-	if (isRateLimitError(error)) {
+	if (tag) {
+		errorType = tag;
+	} else if (isRateLimitError(error)) {
 		errorType = 'RATE_LIMITED';
 	} else if (statusCode !== undefined) {
 		errorType = categorizeError(statusCode);
 	} else if (name === 'NodeOperationError' || name === 'ApplicationError') {
 		errorType = 'INVALID_PARAMETERS';
-	} else if (error?.code || /ECONN|ETIMEDOUT|ENOTFOUND|EAI_AGAIN|socket|network/i.test(String(error?.message ?? ''))) {
+	} else if (
+		name === 'NodeApiError' ||
+		error?.code ||
+		/ECONN|ETIMEDOUT|ENOTFOUND|EAI_AGAIN|socket|network/i.test(String(error?.message ?? ''))
+	) {
+		// n8n wraps connection failures in a NodeApiError that carries no HTTP status.
 		errorType = 'NETWORK_ERROR';
 	} else {
 		errorType = 'UNKNOWN';
@@ -562,6 +687,8 @@ export async function checkRateLimit(
 				url: `${canvasUrl}/api/v1/users/self`,
 				returnFullResponse: true,
 				json: true,
+				// Read the status ourselves: n8n drops the plain-text body of Canvas' throttle answer.
+				ignoreHttpStatusErrors: true,
 			};
 			try {
 				const response = await this.helpers.httpRequestWithAuthentication.call(
@@ -569,12 +696,17 @@ export async function checkRateLimit(
 					getCredentialType(this),
 					requestOptions,
 				);
-				return parseRateLimitHeaders(response.headers as IDataObject);
-			} catch (error) {
-				if (isRateLimitError(error)) {
+				const status = Number(response.statusCode ?? 200);
+				const headers = (response.headers ?? {}) as IDataObject;
+				if (isThrottleResponse(status, response.body, headers)) {
 					return { remaining: 0 };
 				}
-				// If the probe fails for another reason, let the real request report it.
+				if (status >= 400) {
+					// The probe failed for another reason; let the real request report it.
+					return { remaining: 1000 };
+				}
+				return parseRateLimitHeaders(headers);
+			} catch {
 				return { remaining: 1000 };
 			}
 		};
@@ -593,32 +725,28 @@ export async function checkRateLimit(
 export async function waitForRateLimit(
 	this: CanvasContext,
 	options: IRateLimitOptions,
+	lastKnown?: IRateLimitStatus,
 ): Promise<void> {
-	for (let attempt = 0; attempt < options.maxRetries; attempt++) {
-		const status = await checkRateLimit.call(this, options);
+	let status = lastKnown ?? (await checkRateLimit.call(this, options));
 
-		if (status.remaining >= options.threshold) {
-			return;
+	for (let attempt = 0; status.remaining < options.threshold; attempt++) {
+		if (attempt >= options.maxRetries) {
+			throw tagError(
+				new NodeOperationError(
+					this.getNode(),
+					`Canvas rate limit quota is still below the threshold (${options.threshold}) after ${options.maxRetries} retries`,
+					{
+						description:
+							'Lower the Threshold under Rate Limiting, reduce the Batch Size, or try again later. ' +
+							`Last X-Rate-Limit-Remaining: ${status.remaining}`,
+					},
+				),
+				'RATE_LIMITED',
+			);
 		}
-
-		const delay = calculateBackoff(attempt, options.baseDelayMs, options.maxDelayMs);
-		await sleep(delay);
+		await sleep(calculateBackoff(attempt, options.baseDelayMs, options.maxDelayMs));
+		status = await checkRateLimit.call(this, options);
 	}
-
-	const last = await checkRateLimit.call(this, options);
-	if (last.remaining >= options.threshold) {
-		return;
-	}
-
-	throw new NodeOperationError(
-		this.getNode(),
-		`Canvas rate limit quota is still below the threshold (${options.threshold}) after ${options.maxRetries} retries`,
-		{
-			description:
-				'Lower the Threshold under Rate Limiting, reduce the Batch Size, or try again later. ' +
-				`Last X-Rate-Limit-Remaining: ${last.remaining}`,
-		},
-	);
 }
 
 /**
@@ -636,7 +764,7 @@ async function ensureRateLimit(context: CanvasContext, options: IRateLimitOption
 	}
 	const status = await checkRateLimit.call(context, options);
 	if (status.remaining < options.threshold) {
-		await waitForRateLimit.call(context, options);
+		await waitForRateLimit.call(context, options, status);
 	}
 }
 
@@ -653,9 +781,10 @@ export async function canvasApiRequest(
 	this: CanvasContext,
 	method: IHttpRequestMethods,
 	endpoint: string,
-	body?: IDataObject,
+	body?: IDataObject | IDataObject[] | string,
 	query?: IDataObject,
 	rateLimitOptions: IRateLimitOptions = DEFAULT_RATE_LIMIT_OPTIONS,
+	contentType?: string,
 ): Promise<ICanvasResponse> {
 	const canvasUrl = await getCanvasUrl.call(this);
 	const credentialType = getCredentialType(this);
@@ -671,45 +800,162 @@ export async function canvasApiRequest(
 		url,
 		returnFullResponse: true,
 		json: true,
+		// The node reads the status itself: n8n drops plain-text error bodies, and Canvas'
+		// throttle answer ("403 Forbidden (Rate Limit Exceeded)") is exactly that.
+		ignoreHttpStatusErrors: true,
 	};
-	if (body !== undefined && method !== 'GET' && Object.keys(body).length > 0) {
+	if (method !== 'GET') {
+		// A write must never be replayed as a GET against wherever a redirect points.
+		requestOptions.disableFollowRedirect = true;
+	}
+	const rawBody = typeof body === 'string';
+	if (rawBody) {
+		// Raw text (CSV uploads): send it untouched and parse the JSON answer ourselves.
+		requestOptions.body = body;
+		requestOptions.json = false;
+		requestOptions.headers = { 'Content-Type': contentType || 'text/plain', Accept: 'application/json' };
+	} else if (body !== undefined && method !== 'GET' && (Array.isArray(body) || Object.keys(body).length > 0)) {
 		requestOptions.body = body;
 	}
 
 	const state = getRateLimitState(this);
+	let refreshTried = false;
 
 	for (let attempt = 0; ; attempt++) {
 		await ensureRateLimit(this, rateLimitOptions);
 
+		let response: { statusCode?: number; headers?: IDataObject; body?: unknown };
 		try {
-			const response = await this.helpers.httpRequestWithAuthentication.call(
+			response = await this.helpers.httpRequestWithAuthentication.call(
 				this,
 				credentialType,
 				requestOptions,
 			);
+		} catch (error) {
+			// No HTTP response at all: DNS failure, refused connection, timeout.
+			throw extractHttpStatus(error) === undefined ? tagError(error as Error, 'NETWORK_ERROR') : error;
+		}
 
-			const headers = (response.headers ?? {}) as IDataObject;
-			const rateLimitStatus = parseRateLimitHeaders(headers);
-			if (headers['x-rate-limit-remaining'] !== undefined) {
-				state.remaining = rateLimitStatus.remaining;
+		// OAuth2: n8n only refreshes an expired token when the request fails with 401,
+		// so repeat it once the way n8n expects.
+		if (Number(response.statusCode) === 401 && credentialType === 'canvasOAuth2Api' && !refreshTried) {
+			refreshTried = true;
+			try {
+				response = await this.helpers.httpRequestWithAuthentication.call(this, credentialType, {
+					...requestOptions,
+					ignoreHttpStatusErrors: false,
+				});
+			} catch (error) {
+				// Still refused after the refresh attempt, or the refresh itself failed.
+				throw extractHttpStatus(error) === undefined ? tagError(error as Error, 'UNAUTHORIZED') : error;
 			}
+		}
+
+		const status = Number(response.statusCode ?? 200);
+		const headers = (response.headers ?? {}) as IDataObject;
+		const rateLimitStatus = parseRateLimitHeaders(headers);
+		if (headers['x-rate-limit-remaining'] !== undefined) {
+			state.remaining = rateLimitStatus.remaining;
+		}
+
+		let data = response.body;
+		if (Buffer.isBuffer(data)) {
+			data = data.toString('utf8');
+		}
+		if (rawBody && typeof data === 'string') {
+			try {
+				data = data.trim() === '' ? undefined : JSON.parse(data);
+			} catch {
+				// keep the text
+			}
+		}
+
+		if (status >= 200 && status < 300) {
 			return {
-				data: response.body as IDataObject | IDataObject[],
+				data: (rawBody && typeof data === 'string' ? { data } : data) as IDataObject | IDataObject[],
 				rateLimitStatus,
 				linkHeader: parseLinkHeader(headers.link as string),
 			};
-		} catch (error) {
+		}
+
+		const throttled = isThrottleResponse(status, data, headers);
+		if (throttled) {
+			state.remaining = 0;
 			// Only throttling is retried here; other failures go to the error handling mode.
-			if (isRateLimitError(error) && attempt < rateLimitOptions.maxRetries) {
-				state.remaining = 0;
+			if (attempt < rateLimitOptions.maxRetries) {
 				await sleep(
 					calculateBackoff(attempt, rateLimitOptions.baseDelayMs, rateLimitOptions.maxDelayMs),
 				);
 				continue;
 			}
-			throw error;
+		}
+
+		throw buildResponseError(this, status, data, headers, throttled);
+	}
+}
+
+const STATUS_MESSAGES: Record<number, string> = {
+	400: 'Canvas rejected the request as invalid',
+	401: 'Canvas rejected the credentials',
+	403: 'Canvas refused the request: the user of this token is not allowed to do this',
+	404: 'Canvas could not find what was asked for, or the user of this token may not see it',
+	409: 'Canvas reported a conflict',
+	422: 'Canvas could not process the request',
+};
+
+/**
+ * Turn a non-2xx Canvas response into the error the node reports, keeping
+ * Canvas' own body (JSON or text) so its message reaches the user.
+ */
+function buildResponseError(
+	context: CanvasContext,
+	status: number,
+	body: unknown,
+	headers: IDataObject,
+	throttled: boolean,
+): NodeApiError {
+	// Never carry a whole HTML error page around.
+	const kept = typeof body === 'string' ? body.slice(0, 2000) : body;
+	const details = describeCanvasErrorBody(kept);
+
+	let message: string;
+	if (throttled) {
+		message = `Canvas rate limit exceeded (HTTP ${status})`;
+	} else if (details.messages.length > 0) {
+		message = details.messages.join('; ');
+	} else if (status >= 300 && status < 400) {
+		message = `Canvas answered with a redirect (HTTP ${status})${headers.location ? ` to ${String(headers.location)}` : ''} instead of carrying out the request`;
+	} else if (status >= 500) {
+		message = `Canvas failed with an internal error (HTTP ${status})`;
+	} else {
+		message = `${STATUS_MESSAGES[status] ?? 'Canvas refused the request'} (HTTP ${status})`;
+	}
+
+	const error = new NodeApiError(
+		context.getNode(),
+		{ message, httpCode: String(status) } as JsonObject,
+		{ message, httpCode: String(status), description: `Canvas answered HTTP ${status}` },
+	);
+	const target = error as unknown as { context: IDataObject };
+	target.context = { ...(target.context ?? {}), data: kept as IDataObject };
+	if (throttled) {
+		target.context.canvasErrorType = 'RATE_LIMITED';
+	}
+	return error;
+}
+
+/**
+ * The record inside a response that wraps a single record: `{ "late_policy": {...} }`.
+ * Returns the response itself when there is nothing to unwrap.
+ */
+export function unwrapRecord(data: unknown, dataKey?: string): unknown {
+	if (dataKey && data && typeof data === 'object' && !Array.isArray(data)) {
+		const inner = (data as IDataObject)[dataKey];
+		if (inner && typeof inner === 'object') {
+			return inner;
 		}
 	}
+	return data;
 }
 
 /**
@@ -888,8 +1134,9 @@ export function buildCurlCommand(
 	baseUrl: string,
 	endpoint: string,
 	qs?: Record<string, unknown>,
-	body?: Record<string, unknown>,
+	body?: Record<string, unknown> | unknown[] | string,
 	authType?: string,
+	contentType?: string,
 ): string {
 	const url = buildCanvasUrl(baseUrl, endpoint, qs);
 
@@ -900,7 +1147,10 @@ export function buildCurlCommand(
 		`-H 'Authorization: Bearer ${tokenLabel}'`,
 	];
 
-	if (body && method !== 'GET' && Object.keys(body).length > 0) {
+	if (typeof body === 'string') {
+		parts.push(`-H ${shellQuote(`Content-Type: ${contentType || 'text/plain'}`)}`);
+		parts.push(`--data-binary ${shellQuote(body)}`);
+	} else if (body && method !== 'GET' && (Array.isArray(body) || Object.keys(body).length > 0)) {
 		parts.push("-H 'Content-Type: application/json'");
 		parts.push(`-d ${shellQuote(JSON.stringify(body))}`);
 	}

@@ -14,7 +14,9 @@ import {
 	canvasFileUpload,
 	canvasFileUploadFromUrl,
 	executeWithErrorHandling,
+	encodePathValues,
 	resolvePerPage,
+	unwrapRecord,
 	buildCurlCommand,
 	buildCanvasUrl,
 	getCanvasUrl,
@@ -355,7 +357,7 @@ export class Canvas implements INodeType {
 							: resolvePerPage(resolvePagination(this, i, pagination));
 					qs = { per_page: perPage, ...(request.qs ?? {}) };
 				}
-				const curl = buildCurlCommand(method, canvasBaseUrl, endpoint, qs, body, authType);
+				const curl = buildCurlCommand(method, canvasBaseUrl, endpoint, qs, body, authType, request.contentType);
 
 				const debugJson: IDataObject = {
 					resource,
@@ -496,7 +498,7 @@ async function processItem(
 		async () => {
 			const request = buildRequest(context, resource, operation, itemIndex);
 			endpoint = request.endpoint;
-			const bodyData = request.body as IDataObject | undefined;
+			const bodyData = request.body as IDataObject | IDataObject[] | string | undefined;
 			const qsData = request.qs as IDataObject | undefined;
 
 			// Special case: File Upload (three-step process)
@@ -508,7 +510,7 @@ async function processItem(
 					const binaryData = context.helpers.assertBinaryData(itemIndex, binaryPropertyName);
 					const binaryBuffer = await context.helpers.getBinaryDataBuffer(itemIndex, binaryPropertyName);
 
-					const step1Body = { ...(bodyData || {}) } as IDataObject;
+					const step1Body = { ...((bodyData as IDataObject | undefined) || {}) } as IDataObject;
 					if (!step1Body.name) {
 						step1Body.name = binaryData.fileName || 'unnamed_file';
 					}
@@ -530,7 +532,7 @@ async function processItem(
 				const fileUrl = context.getNodeParameter('fileUrl', itemIndex) as string;
 				const waitForCompletion = context.getNodeParameter('waitForCompletion', itemIndex, true) as boolean;
 
-				const step1Body = { ...(bodyData || {}) } as IDataObject;
+				const step1Body = { ...((bodyData as IDataObject | undefined) || {}) } as IDataObject;
 				if (!step1Body.name) {
 					try {
 						const urlPath = new URL(fileUrl).pathname;
@@ -570,16 +572,25 @@ async function processItem(
 					context,
 					request.method,
 					request.endpoint,
-					bodyData,
+					undefined,
 					qsData,
 					pagination,
 					rateLimit,
 					request.dataKey,
 				);
 				if (!response.isList) {
-					return response.items[0];
+					return unwrapRecord(response.items[0], request.dataKey);
 				}
-				return request.transform ? request.transform(response.items) : response.items;
+				let records = response.items;
+				if (request.itemKey) {
+					const key = request.itemKey;
+					records = records.map((record) =>
+						record && typeof record[key] === 'object' && record[key] !== null
+							? (record[key] as IDataObject)
+							: record,
+					);
+				}
+				return request.transform ? request.transform(records) : records;
 			}
 
 			const response = await canvasApiRequest.call(
@@ -589,6 +600,7 @@ async function processItem(
 				bodyData,
 				qsData,
 				rateLimit,
+				request.contentType,
 			);
 			if (request.checkResponse) {
 				request.checkResponse(response.data as IDataObject);
@@ -611,14 +623,15 @@ async function processItem(
 					undefined,
 					rateLimit,
 				);
-				return current.data;
+				return unwrapRecord(current.data, request.dataKey);
 			}
-			// Some APIs wrap even a created or updated record: { "poll_choices": [{...}] }.
+			// Some APIs wrap even a created or updated record:
+			// { "poll_choices": [{...}] } or { "late_policy": {...} }.
 			const data = response.data as IDataObject | undefined;
 			if (request.dataKey && data && Array.isArray(data[request.dataKey])) {
 				return data[request.dataKey] as IDataObject[];
 			}
-			return response.data;
+			return unwrapRecord(response.data, request.dataKey);
 		},
 		errorHandling,
 		item.json,
@@ -674,6 +687,8 @@ function buildRequest(
 	itemIndex: number,
 ): IRequestConfig {
 	const emptyParams: string[] = [];
+	// Values handed to the handler; any of them may end up as a path segment.
+	const pathValues = new Set<string>();
 
 	// Parameters hidden for the current operation resolve to the default; expression
 	// errors are real errors and must surface instead of silently becoming ''.
@@ -691,8 +706,9 @@ function buildRequest(
 		}
 		// IDs arrive as numbers when they come from an expression, and pasted IDs often
 		// carry stray whitespace. Free text is passed through untouched.
-		const text = String(value);
-		return /id$/i.test(name) ? text.trim() : text;
+		const text = /id$/i.test(name) ? String(value).trim() : String(value);
+		pathValues.add(text);
+		return text;
 	};
 
 	const getParamObject = (name: string): Record<string, unknown> => {
@@ -725,6 +741,8 @@ function buildRequest(
 			description: `Check the parameters of ${resource}/${operation}`,
 		});
 	}
+
+	request.endpoint = encodePathValues(request.endpoint, pathValues);
 
 	// A required ID that resolved to nothing leaves an empty path segment
 	// (e.g. /api/v1/courses//assignments), which Canvas answers with a misleading 404.

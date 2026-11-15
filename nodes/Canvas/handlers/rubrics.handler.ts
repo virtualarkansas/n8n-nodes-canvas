@@ -233,6 +233,7 @@ export function handleRubricResource(
 			return {
 				method: 'DELETE',
 				endpoint: `${coursePath}/rubrics/${rubricId}`,
+				dataKey: 'rubric',
 			};
 
 		case 'get': {
@@ -293,6 +294,7 @@ export function handleRubricResource(
 			return {
 				method: 'DELETE',
 				endpoint: `${coursePath}/rubric_associations/${getParam('rubricAssociationId')}`,
+				dataKey: 'rubric_association',
 			};
 
 		case 'createAssessment':
@@ -316,6 +318,7 @@ export function handleRubricResource(
 			return {
 				method: 'DELETE',
 				endpoint: `${coursePath}/rubric_associations/${getParam('rubricAssociationId')}/rubric_assessments/${getParam('rubricAssessmentId')}`,
+				dataKey: 'rubric_assessment',
 			};
 
 		default:
@@ -569,7 +572,8 @@ export function handleOutcomeImportResource(
 				method: 'POST',
 				endpoint: `${basePath}/outcome_imports${isBlank(groupId) ? '' : `/group/${String(groupId).trim()}`}`,
 				qs: { import_type: 'instructure_csv' },
-				body: getParam('csvData') as unknown as Record<string, unknown>,
+				body: getParam('csvData'),
+				contentType: 'text/csv',
 			};
 		}
 

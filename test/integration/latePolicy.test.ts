@@ -137,8 +137,16 @@ describe('latePolicy', () => {
 				},
 			},
 		});
-		// Canvas answers 204 No Content.
-		expect(result).toEqual({ success: true });
+		// Canvas answers 204 No Content; the node returns the policy as it is afterwards.
+		expect(result).toMatchObject({
+			late_submission_deduction: 10,
+			late_submission_deduction_enabled: true,
+			late_submission_interval: 'day',
+			late_submission_minimum_percent: 50,
+			late_submission_minimum_percent_enabled: false,
+			missing_submission_deduction: 100,
+			missing_submission_deduction_enabled: false,
+		});
 		expect(await policyOf(courseId)).toMatchObject({
 			late_submission_deduction: 10,
 			late_submission_deduction_enabled: true,

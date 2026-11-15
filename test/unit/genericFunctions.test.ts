@@ -9,6 +9,8 @@ import {
 	canvasApiRequest,
 	canvasApiRequestAllItems,
 	categorizeError,
+	encodePathValues,
+	isThrottleResponse,
 	createErrorOutput,
 	executeWithErrorHandling,
 	extractHttpStatus,
@@ -31,10 +33,20 @@ const FAST_RATE_LIMIT: IRateLimitOptions = {
 const NO_RATE_LIMIT: IRateLimitOptions = { ...FAST_RATE_LIMIT, enabled: false };
 
 interface FakeResponse {
+	/** HTTP status Canvas answers with (default 200). */
+	status?: number;
 	body?: unknown;
 	headers?: Record<string, string>;
+	/** Fail without any HTTP response (network error). */
 	throw?: unknown;
 }
+
+/** Canvas' default throttle answer: plain text, quota at zero. */
+const THROTTLED: FakeResponse = {
+	status: 403,
+	body: '403 Forbidden (Rate Limit Exceeded)\n',
+	headers: { 'x-rate-limit-remaining': '0.0', 'content-type': 'text/plain; charset=utf-8' },
+};
 
 /** What n8n's httpRequestWithAuthentication throws for a non-2xx response. */
 function apiError(status: number, data: unknown, message = `Request failed with status code ${status}`): JsonObject {
@@ -59,7 +71,12 @@ function fakeContext(responder: (options: IDataObject, callIndex: number) => Fak
 				calls.push(options);
 				const response = responder(options, calls.length - 1);
 				if (response.throw) throw response.throw;
-				return { body: response.body, headers: response.headers ?? {}, statusCode: 200 };
+				const status = response.status ?? 200;
+				// Like n8n: a non-2xx answer is only returned when the caller asked to see it.
+				if (status >= 400 && options.ignoreHttpStatusErrors !== true) {
+					throw apiError(status, typeof response.body === 'string' ? undefined : response.body);
+				}
+				return { body: response.body, headers: response.headers ?? {}, statusCode: status };
 			}),
 		},
 	};
@@ -101,6 +118,37 @@ describe('query string serialization', () => {
 			'https://c.test/api/v1/courses?x=1&per_page=10',
 		);
 		expect(buildCanvasUrl('https://c.test', '/api/v1/courses', {})).toBe('https://c.test/api/v1/courses');
+	});
+});
+
+describe('path encoding', () => {
+	it('encodes SIS IDs with URL characters where they are path segments', () => {
+		const sis = 'sis_user_id:S/SLASH #1?x%';
+		expect(encodePathValues(`/api/v1/users/${sis}/profile`, [sis])).toBe('/api/v1/users/sis_user_id:S%2FSLASH%20%231%3Fx%25/profile');
+		expect(encodePathValues(`/api/v1/users/${sis}`, [sis, '7'])).toBe('/api/v1/users/sis_user_id:S%2FSLASH%20%231%3Fx%25');
+	});
+
+	it('leaves ordinary IDs, already encoded values, the query and absolute URLs alone', () => {
+		expect(encodePathValues('/api/v1/courses/sis_course_id:ABC-1.2/users', ['sis_course_id:ABC-1.2'])).toBe('/api/v1/courses/sis_course_id:ABC-1.2/users');
+		expect(encodePathValues('/api/v1/courses/sis_course_id:A%2FB', ['sis_course_id:A%2FB'])).toBe('/api/v1/courses/sis_course_id:A%2FB');
+		expect(encodePathValues('/api/v1/search?q=a b', ['a b'])).toBe('/api/v1/search?q=a b');
+		expect(encodePathValues('https://c.test/api/v1/x y', ['x y'])).toBe('https://c.test/api/v1/x y');
+	});
+
+	it('only touches whole segments and handles page titles with spaces and Unicode', () => {
+		expect(encodePathValues('/api/v1/courses/1/pages/Wöchentlicher Plan', ['Wöchentlicher Plan', '1'])).toBe('/api/v1/courses/1/pages/W%C3%B6chentlicher%20Plan');
+		expect(encodePathValues('/api/v1/courses/a b c/x', ['a b'])).toBe('/api/v1/courses/a b c/x');
+	});
+});
+
+describe('throttle detection', () => {
+	it('recognises Canvas\' answers and nothing else', () => {
+		expect(isThrottleResponse(403, '403 Forbidden (Rate Limit Exceeded)\n', { 'x-rate-limit-remaining': '0.0' })).toBe(true);
+		expect(isThrottleResponse(403, '', { 'x-rate-limit-remaining': '0.0' })).toBe(true);
+		expect(isThrottleResponse(429, 'Too Many Requests', {})).toBe(true);
+		expect(isThrottleResponse(403, { errors: [{ message: 'user not authorized' }] }, { 'x-rate-limit-remaining': '0.0' })).toBe(false);
+		expect(isThrottleResponse(403, '', { 'x-rate-limit-remaining': '512.3' })).toBe(false);
+		expect(isThrottleResponse(404, 'Rate Limit Exceeded', {})).toBe(false);
 	});
 });
 
@@ -287,7 +335,7 @@ describe('canvasApiRequest', () => {
 
 	it('retries Canvas\' 403 throttle response and then succeeds', async () => {
 		const { context, calls } = fakeContext((_options, index) =>
-			index < 2 ? { throw: apiError(403, '403 Forbidden (Rate Limit Exceeded)\n') } : { body: { ok: true }, headers: { 'x-rate-limit-remaining': '600' } },
+			index < 2 ? THROTTLED : { body: { ok: true }, headers: { 'x-rate-limit-remaining': '600' } },
 		);
 		const response = await canvasApiRequest.call(context, 'GET', '/api/v1/courses/1', undefined, undefined, NO_RATE_LIMIT);
 		expect(response.data).toEqual({ ok: true });
@@ -295,13 +343,34 @@ describe('canvasApiRequest', () => {
 	});
 
 	it('gives up on throttling after maxRetries and does not retry other errors', async () => {
-		const throttled = fakeContext(() => ({ throw: apiError(429, 'Too Many Requests') }));
+		const throttled = fakeContext(() => ({ status: 429, body: 'Too Many Requests' }));
 		await expect(canvasApiRequest.call(throttled.context, 'GET', '/api/v1/x', undefined, undefined, NO_RATE_LIMIT)).rejects.toMatchObject({ httpCode: '429' });
 		expect(throttled.calls).toHaveLength(NO_RATE_LIMIT.maxRetries + 1);
 
-		const notFound = fakeContext(() => ({ throw: apiError(404, {}) }));
-		await expect(canvasApiRequest.call(notFound.context, 'GET', '/api/v1/x', undefined, undefined, NO_RATE_LIMIT)).rejects.toMatchObject({ httpCode: '404' });
+		const forever = fakeContext(() => THROTTLED);
+		const error = await canvasApiRequest.call(forever.context, 'GET', '/api/v1/x', undefined, undefined, NO_RATE_LIMIT).catch((e: unknown) => e);
+		expect(forever.calls).toHaveLength(NO_RATE_LIMIT.maxRetries + 1);
+		expect(isRateLimitError(error)).toBe(true);
+		expect(createErrorOutput(error as JsonObject, {}, 'r', 'o', '/e')).toMatchObject({ errorCode: 403, errorType: 'RATE_LIMITED' });
+
+		const notFound = fakeContext(() => ({ status: 404, body: { errors: [{ message: 'The specified resource does not exist.' }] } }));
+		const missing = await canvasApiRequest.call(notFound.context, 'GET', '/api/v1/x', undefined, undefined, NO_RATE_LIMIT).catch((e: unknown) => e);
+		expect(missing).toMatchObject({ httpCode: '404', message: 'The specified resource does not exist.' });
 		expect(notFound.calls).toHaveLength(1);
+
+		// An ordinary "forbidden" is not mistaken for throttling, even when the quota header is low.
+		const forbidden = fakeContext(() => ({
+			status: 403,
+			body: { status: 'unauthorized', errors: [{ message: 'user not authorized to perform that action' }] },
+			headers: { 'x-rate-limit-remaining': '0.0' },
+		}));
+		const refused = await canvasApiRequest.call(forbidden.context, 'GET', '/api/v1/x', undefined, undefined, NO_RATE_LIMIT).catch((e: unknown) => e);
+		expect(forbidden.calls).toHaveLength(1);
+		expect(createErrorOutput(refused as JsonObject, {}, 'r', 'o', '/e')).toMatchObject({
+			errorCode: 403,
+			errorType: 'FORBIDDEN',
+			errorMessage: 'user not authorized to perform that action',
+		});
 	});
 
 	it('probes the quota once, then relies on response headers', async () => {
@@ -328,7 +397,93 @@ describe('canvasApiRequest', () => {
 
 	it('fails with a clear message when the quota never recovers', async () => {
 		const { context } = fakeContext(() => ({ body: {}, headers: { 'x-rate-limit-remaining': '5' } }));
-		await expect(canvasApiRequest.call(context, 'GET', '/api/v1/a', undefined, undefined, FAST_RATE_LIMIT)).rejects.toThrow(/rate limit quota is still below the threshold/i);
+		const error = await canvasApiRequest.call(context, 'GET', '/api/v1/a', undefined, undefined, FAST_RATE_LIMIT).catch((e: unknown) => e);
+		expect((error as Error).message).toMatch(/rate limit quota is still below the threshold/i);
+		// A quota problem, not a problem with the parameters.
+		expect(createErrorOutput(error as JsonObject, {}, 'r', 'o', '/e')).toMatchObject({ errorType: 'RATE_LIMITED' });
+	});
+
+	it('probes once before waiting, not twice in a row', async () => {
+		const quota = ['100', '100', '500', '500'];
+		const { context, calls } = fakeContext((_options, index) => ({ body: {}, headers: { 'x-rate-limit-remaining': quota[Math.min(index, quota.length - 1)] } }));
+		await canvasApiRequest.call(context, 'GET', '/api/v1/a', undefined, undefined, FAST_RATE_LIMIT);
+		const urls = calls.map((c) => String(c.url).replace('https://canvas.test/api/v1/', ''));
+		// probe (100) -> wait -> probe (100) -> wait -> probe (500) -> the request
+		expect(urls).toEqual(['users/self', 'users/self', 'users/self', 'a']);
+	});
+
+	it('reports what Canvas said for every kind of error body', async () => {
+		const outputOf = async (response: FakeResponse) => {
+			const { context } = fakeContext(() => response);
+			const error = await canvasApiRequest.call(context, 'POST', '/api/v1/x', { a: 1 }, undefined, NO_RATE_LIMIT).catch((e: unknown) => e);
+			return createErrorOutput(error as JsonObject, {}, 'r', 'o', '/api/v1/x');
+		};
+		expect(await outputOf({ status: 400, body: { errors: { name: [{ type: 'blank', message: 'blank' }] } } })).toMatchObject({
+			errorCode: 400,
+			errorType: 'VALIDATION_ERROR',
+			errorMessage: 'name: blank',
+		});
+		expect(await outputOf({ status: 500, body: '<html><body>Internal Server Error</body></html>' })).toMatchObject({
+			errorCode: 500,
+			errorType: 'SERVER_ERROR',
+			errorMessage: 'Canvas failed with an internal error (HTTP 500)',
+		});
+		expect(await outputOf({ status: 401, body: { errors: [{ message: 'Invalid access token.' }] } })).toMatchObject({
+			errorCode: 401,
+			errorType: 'UNAUTHORIZED',
+			errorMessage: 'Invalid access token.',
+		});
+		expect(await outputOf({ status: 404, body: '' })).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND' });
+	});
+
+	it('does not follow a redirect on a write, and says where Canvas pointed', async () => {
+		const { context, calls } = fakeContext(() => ({ status: 302, body: '', headers: { location: 'https://canvas.test/accounts/1/terms' } }));
+		const error = await canvasApiRequest.call(context, 'PUT', '/api/v1/accounts/5/terms/9', { a: 1 }, undefined, NO_RATE_LIMIT).catch((e: unknown) => e);
+		expect(calls[0].disableFollowRedirect).toBe(true);
+		expect((error as Error).message).toMatch(/redirect \(HTTP 302\) to https:\/\/canvas\.test\/accounts\/1\/terms/);
+
+		const get = fakeContext(() => ({ body: {} }));
+		await canvasApiRequest.call(get.context, 'GET', '/api/v1/x', undefined, undefined, NO_RATE_LIMIT);
+		expect(get.calls[0].disableFollowRedirect).toBeUndefined();
+	});
+
+	it('labels a failure without any HTTP response as a network error and lets Retry Then Error retry it', async () => {
+		const { context } = fakeContext(() => ({ throw: { name: 'NodeApiError', message: 'The connection cannot be established' } }));
+		const error = await canvasApiRequest.call(context, 'GET', '/api/v1/x', undefined, undefined, NO_RATE_LIMIT).catch((e: unknown) => e);
+		expect(createErrorOutput(error as JsonObject, {}, 'r', 'o', '/e')).toMatchObject({ errorCode: 0, errorType: 'NETWORK_ERROR' });
+		expect(isRetryableError(error)).toBe(true);
+	});
+
+	it('sends raw text bodies with their content type and JSON arrays as they are', async () => {
+		const { context, calls } = fakeContext(() => ({ body: '{"id": 7, "workflow_state": "created"}' }));
+		const response = await canvasApiRequest.call(context, 'POST', '/api/v1/accounts/1/sis_imports', 'user_id,login_id\n1,a', { import_type: 'instructure_csv' }, NO_RATE_LIMIT, 'text/csv');
+		expect(calls[0].body).toBe('user_id,login_id\n1,a');
+		expect((calls[0].headers as IDataObject)['Content-Type']).toBe('text/csv');
+		expect(calls[0].json).toBe(false);
+		expect(response.data).toEqual({ id: 7, workflow_state: 'created' });
+
+		const array = fakeContext(() => ({ body: [] }));
+		await canvasApiRequest.call(array.context, 'POST', '/api/v1/x', [{ a: 1 }, { a: 2 }], undefined, NO_RATE_LIMIT);
+		expect(array.calls[0].body).toEqual([{ a: 1 }, { a: 2 }]);
+	});
+
+	it('OAuth2: a 401 is retried once the way n8n needs to refresh the token', async () => {
+		const { context, calls } = fakeContext((options, index) => {
+			if (index === 0) return { status: 401, body: { errors: [{ message: 'Invalid access token.' }] } };
+			// The second attempt is sent without ignoreHttpStatusErrors; n8n refreshes and succeeds.
+			return { body: { id: 1 } };
+		});
+		(context as unknown as { getNodeParameter: (name: string) => string }).getNodeParameter = () => 'oAuth2';
+		const response = await canvasApiRequest.call(context, 'GET', '/api/v1/users/self', undefined, undefined, NO_RATE_LIMIT);
+		expect(response.data).toEqual({ id: 1 });
+		expect(calls).toHaveLength(2);
+		expect(calls[0].ignoreHttpStatusErrors).toBe(true);
+		expect(calls[1].ignoreHttpStatusErrors).toBe(false);
+
+		// With an API token there is nothing to refresh: one request, one error.
+		const token = fakeContext(() => ({ status: 401, body: { errors: [{ message: 'Invalid access token.' }] } }));
+		await expect(canvasApiRequest.call(token.context, 'GET', '/api/v1/users/self', undefined, undefined, NO_RATE_LIMIT)).rejects.toMatchObject({ httpCode: '401' });
+		expect(token.calls).toHaveLength(1);
 	});
 
 	it('rejects an invalid Canvas URL before sending anything', async () => {
@@ -419,7 +574,7 @@ describe('canvasApiRequestAllItems', () => {
 	it('retries a throttled later page instead of losing the run', async () => {
 		const { context, calls } = fakeContext((_o, index) => {
 			if (index === 0) return page([{ id: 1 }], 'https://canvas.test/api/v1/x?page=2');
-			if (index === 1) return { throw: apiError(403, '403 Forbidden (Rate Limit Exceeded)') };
+			if (index === 1) return THROTTLED;
 			return page([{ id: 2 }]);
 		});
 		const result = await canvasApiRequestAllItems.call(context, 'GET', '/api/v1/x', undefined, undefined, { enabled: true, perPage: 1, maxPages: 0 }, NO_RATE_LIMIT);

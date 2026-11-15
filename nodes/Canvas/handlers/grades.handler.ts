@@ -271,6 +271,7 @@ export function handleGradingPeriodSetResource(
 				endpoint: `/api/v1/accounts/${accountId}/grading_period_sets`,
 				method: 'POST',
 				body,
+				dataKey: 'grading_period_set',
 			};
 		}
 
@@ -414,6 +415,7 @@ export function handleLatePolicyResource(
 				body: {
 					late_policy: Object.keys(fields).length > 0 ? fields : { late_submission_interval: 'day' },
 				},
+				dataKey: 'late_policy',
 			};
 		}
 
@@ -421,6 +423,7 @@ export function handleLatePolicyResource(
 			return {
 				endpoint: `/api/v1/courses/${courseId}/late_policy`,
 				method: 'GET',
+				dataKey: 'late_policy',
 			};
 
 		case 'update':
@@ -428,6 +431,9 @@ export function handleLatePolicyResource(
 				endpoint: `/api/v1/courses/${courseId}/late_policy`,
 				method: 'PATCH',
 				body: { late_policy: getParamObject('updateFields') },
+				// Canvas answers 204; return the policy as it is afterwards.
+				thenGet: `/api/v1/courses/${courseId}/late_policy`,
+				dataKey: 'late_policy',
 			};
 
 		default:
