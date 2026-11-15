@@ -1,6 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { collectionRows, parseJson, toList } from './shared';
+import { collectionRows, isBlank, parseJson, toList } from './shared';
 
 type Fields = Record<string, unknown>;
 
@@ -37,6 +37,14 @@ function buildAssignmentFields(fields: Fields): Fields {
 	}
 	if (Object.keys(toolAttributes).length > 0) {
 		assignment.external_tool_tag_attributes = toolAttributes;
+	}
+
+	// Canvas reads the annotation file only together with the submission types, and ignores
+	// it without a word otherwise (Api::V1::Assignment#update_api_assignment).
+	if (!isBlank(assignment.annotatable_attachment_id) && !toList(assignment.submission_types).includes('student_annotation')) {
+		throw new ApplicationError(
+			'Annotatable Attachment ID needs Submission Types with "Student Annotation" in the same request: Canvas ignores the file otherwise',
+		);
 	}
 
 	return assignment;
