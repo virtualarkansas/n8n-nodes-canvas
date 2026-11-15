@@ -44,6 +44,7 @@
 		"strict": false,
 		"credentials": [
 			"dist/credentials/CanvasApi.credentials.js",
+			"dist/credentials/CanvasLtiAdvantageApi.credentials.js",
 			"dist/credentials/CanvasOAuth2Api.credentials.js"
 		],
 		"nodes": [

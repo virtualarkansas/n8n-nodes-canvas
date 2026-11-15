@@ -75,6 +75,15 @@ export class Canvas implements INodeType {
 					},
 				},
 			},
+			{
+				name: 'canvasLtiAdvantageApi',
+				required: true,
+				displayOptions: {
+					show: {
+						authentication: ['ltiAdvantage'],
+					},
+				},
+			},
 		],
 		properties: [
 			// Authentication
@@ -86,6 +95,12 @@ export class Canvas implements INodeType {
 					{
 						name: 'Access Token',
 						value: 'accessToken',
+					},
+					{
+						name: 'LTI Advantage',
+						value: 'ltiAdvantage',
+						description:
+							'As an LTI 1.3 tool, for the LTI Advantage services only (Line Item, Progress > Get LTI, and /api/lti paths in Custom API Request)',
 					},
 					{
 						name: 'OAuth2',

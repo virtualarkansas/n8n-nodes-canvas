@@ -639,9 +639,14 @@ export function createErrorOutput(
 // Credentials / base URL
 // ============================================
 
+const LTI_CREDENTIAL = 'canvasLtiAdvantageApi';
+
 function getCredentialType(context: CanvasContext): string {
 	const authType = context.getNodeParameter('authentication', 0) as string;
-	return authType === 'oAuth2' ? 'canvasOAuth2Api' : 'canvasApi';
+	if (authType === 'oAuth2') {
+		return 'canvasOAuth2Api';
+	}
+	return authType === 'ltiAdvantage' ? LTI_CREDENTIAL : 'canvasApi';
 }
 
 /**
@@ -694,7 +699,8 @@ export async function checkRateLimit(
 	this: CanvasContext,
 	options: IRateLimitOptions,
 ): Promise<IRateLimitStatus> {
-	if (!options.enabled) {
+	// An LTI Advantage token cannot call /api/v1/users/self: go by the responses alone.
+	if (!options.enabled || getCredentialType(this) === LTI_CREDENTIAL) {
 		return { remaining: 1000 };
 	}
 
@@ -863,9 +869,10 @@ export async function canvasApiRequest(
 			throw extractHttpStatus(error) === undefined ? tagError(error as Error, 'NETWORK_ERROR') : error;
 		}
 
-		// OAuth2: n8n only refreshes an expired token when the request fails with 401,
-		// so repeat it once the way n8n expects.
-		if (Number(response.statusCode) === 401 && credentialType === 'canvasOAuth2Api' && !refreshTried) {
+		// OAuth2 and LTI Advantage: n8n only renews an expired token when the request fails
+		// with 401, so repeat it once the way n8n expects.
+		const renewable = credentialType === 'canvasOAuth2Api' || credentialType === LTI_CREDENTIAL;
+		if (Number(response.statusCode) === 401 && renewable && !refreshTried) {
 			refreshTried = true;
 			try {
 				response = await this.helpers.httpRequestWithAuthentication.call(this, credentialType, {
