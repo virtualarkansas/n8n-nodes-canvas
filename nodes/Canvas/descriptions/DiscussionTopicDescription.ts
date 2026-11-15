@@ -482,8 +482,10 @@ export const discussionTopicFields: INodeProperties[] = [
 				operation: ['update'],
 			},
 		},
+		// Canvas decides whether a topic is an announcement when it is created; on an update the
+		// flag only makes it look the topic up among the announcements (a discussion is then not found).
 		options: sortedByDisplayName([
-			...topicSettings,
+			...topicSettings.filter((field) => field.name !== 'is_announcement'),
 			{
 				displayName: 'Title',
 				name: 'title',

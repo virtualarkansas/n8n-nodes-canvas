@@ -334,6 +334,46 @@ describe('discussionTopic', () => {
 		expect(actual).toMatchObject({ locked: false, published: true, pinned: true });
 	});
 
+	it('update: "Lock Comment" of an announcement, "Position After" among pinned topics', async () => {
+		const api = `${coursePath}/discussion_topics`;
+		const announcement = await canvas().post<Json>(api, { title: unique('Lockable announcement'), message: '<p>News</p>', is_announcement: true, lock_comment: false });
+		const pinned: Json[] = [];
+		for (const label of ['A', 'B', 'C']) {
+			pinned.push(await canvas().post<Json>(api, { title: unique(`Pinned ${label}`), message: '<p>x</p>', pinned: true, published: true }));
+		}
+		try {
+			expect((await readTopic(String(announcement.id))).locked).toBe(false);
+			await runOk({ resource: 'discussionTopic', operation: 'update', params: { ...course(), topicId: String(announcement.id), updateFields: { lock_comment: true } } });
+			expect(await readTopic(String(announcement.id))).toMatchObject({ is_announcement: true, locked: true });
+			await runOk({ resource: 'discussionTopic', operation: 'update', params: { ...course(), topicId: String(announcement.id), updateFields: { lock_comment: false } } });
+			expect((await readTopic(String(announcement.id))).locked).toBe(false);
+
+			const positions = async (): Promise<number[]> =>
+				Promise.all(pinned.map(async (t) => Number((await readTopic(String(t.id))).position)));
+			const [a, b, c] = await positions();
+			expect(a).toBeLessThan(b);
+			expect(b).toBeLessThan(c);
+			// Canvas moves the topic to the position the other topic had (the other one moves down by one).
+			await runOk({
+				resource: 'discussionTopic',
+				operation: 'update',
+				params: { ...course(), topicId: String(pinned[2].id), updateFields: { position_after: String(pinned[0].id) } },
+			});
+			const [a2, b2, c2] = await positions();
+			expect(c2).toBe(a);
+			expect(a2).toBeGreaterThan(c2);
+			expect(b2).toBeGreaterThan(a2);
+
+			// "Is Announcement" is not offered for Update: Canvas decides it when the topic is created; on
+			// an update it only looks the topic up among the announcements, so a discussion is "not found".
+			const asAnnouncement = await canvas().request('PUT', `${api}/${String(pinned[1].id)}`, { is_announcement: true });
+			expect(asAnnouncement.status).toBe(404);
+			expect((await readTopic(String(pinned[1].id))).is_announcement ?? false).toBe(false);
+		} finally {
+			for (const topic of [announcement, ...pinned]) await canvas().request('DELETE', `${api}/${String(topic.id)}`);
+		}
+	});
+
 	it('update: an invalid value is reported with Canvas\' validation message', async () => {
 		const result = await runNode({
 			resource: 'discussionTopic',
