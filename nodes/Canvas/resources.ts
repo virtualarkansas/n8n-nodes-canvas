@@ -36,7 +36,7 @@ export const canvasResources: ICanvasResource[] = [
 	{ name: 'Blueprint Course', value: 'blueprintCourse', operations: descriptions.blueprintCourseOperations, fields: descriptions.blueprintCourseFields },
 	{ name: 'Bookmark', value: 'bookmark', operations: descriptions.bookmarkOperations, fields: descriptions.bookmarkFields },
 	{ name: 'Brand Config', value: 'brandConfig', operations: descriptions.brandConfigOperations, fields: descriptions.brandConfigFields },
-	{ name: 'Calendar Event', value: 'calendarEvent',operations: descriptions.calendarEventOperations, fields: descriptions.calendarEventFields },
+	{ name: 'Calendar Event', value: 'calendarEvent', operations: descriptions.calendarEventOperations, fields: descriptions.calendarEventFields },
 	{ name: 'Collaboration', value: 'collaboration', operations: descriptions.collaborationOperations, fields: descriptions.collaborationFields },
 	{ name: 'Comm Message', value: 'commMessage', operations: descriptions.commMessageOperations, fields: descriptions.commMessageFields },
 	{ name: 'Communication Channel', value: 'communicationChannel', operations: descriptions.communicationChannelOperations, fields: descriptions.communicationChannelFields },
