@@ -44,7 +44,7 @@ export const sisImportErrorFields: INodeProperties[] = [
 				resource: ['sisImportError'],
 			},
 		},
-		description: 'The ID of the account',
+		description: 'The ID of the root account',
 	},
 
 	// ----------------------------------

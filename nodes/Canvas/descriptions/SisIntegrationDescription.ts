@@ -113,7 +113,12 @@ export const sisIntegrationFields: INodeProperties[] = [
 				name: 'ends_after',
 				type: 'dateTime',
 				default: '',
-				description: 'Restrict to courses ending after this date (ISO 8601 format)',
+				description: 'Restrict to courses ending after this date, and courses without an end date',
+				displayOptions: {
+					show: {
+						'/context': ['account'],
+					},
+				},
 			},
 			{
 				displayName: 'Include',
@@ -130,7 +135,12 @@ export const sisIntegrationFields: INodeProperties[] = [
 				name: 'starts_before',
 				type: 'dateTime',
 				default: '',
-				description: 'Restrict to courses starting before this date (ISO 8601 format)',
+				description: 'Restrict to courses starting before this date, and courses without a start date',
+				displayOptions: {
+					show: {
+						'/context': ['account'],
+					},
+				},
 			},
 		],
 	},
@@ -156,7 +166,8 @@ export const sisIntegrationFields: INodeProperties[] = [
 				name: 'grading_period_id',
 				type: 'string',
 				default: '',
-				description: 'Limit to assignments in a specific grading period',
+				description:
+					'Only switch off the assignments that are due in this grading period (and assignments without a due date)',
 			},
 		],
 	},
