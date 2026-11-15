@@ -65,6 +65,8 @@ Handlers are pure: they only build `{ method, endpoint, qs, body }` plus optiona
 - Bodies are JSON.
 - Link/Location URLs returned by Canvas are re-anchored on the configured Canvas URL, so the token never goes to another host.
 
+- Request Options → Act as User ID adds `as_user_id` to every request made for an item (follow-up pages, the GET after a write, upload steps), never to the rate limit probe. It travels in the rate limit options (`asUserId`).
+
 ### Rate Limiting
 - Canvas throttles with `403 Forbidden (Rate Limit Exceeded)` by default (429 only if the instance opts in); both are recognised.
 - The remaining quota (`X-Rate-Limit-Remaining`) is read from every response. Canvas is probed (`GET /api/v1/users/self`) only when nothing is known yet or the last reading was below the threshold (default 300); then the node waits with backoff until it recovers.

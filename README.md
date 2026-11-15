@@ -350,6 +350,13 @@ response; `errorCode` is 0) or `UNKNOWN`.
   **Batch Delay** (default 1000 ms) between groups
 - **Individual Mode**: one item after the other
 
+### Request Options
+
+- **Act as User ID**: carry out the request as another user (Canvas calls this masquerading; the
+  `as_user_id` parameter). Works with every resource and operation, accepts SIS IDs
+  (`sis_user_id:jdoe`) and expressions, so each input item can act as a different user. The user of
+  the credential needs the "Become other users" permission, and Canvas records both users in its logs.
+
 ### Debug Mode
 
 With **Debug Mode** on, nothing is sent to Canvas. The request the node would send (method, URL,

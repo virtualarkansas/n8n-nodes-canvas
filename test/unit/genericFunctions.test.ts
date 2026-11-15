@@ -519,6 +519,34 @@ describe('canvasApiRequestAllItems', () => {
 		]);
 	});
 
+	it('acting as a user: every page carries as_user_id once, the rate limit probe does not', async () => {
+		const { context, calls } = fakeContext((options, index) => {
+			if (String(options.url).endsWith('/api/v1/users/self')) return { body: { id: 1 }, headers: { 'x-rate-limit-remaining': '600' } };
+			return [
+				page([{ id: 1 }], 'https://canvas.test/api/v1/users/self/bookmarks?page=2&per_page=1'),
+				// Canvas may or may not repeat the parameter in its links.
+				page([{ id: 2 }], 'https://canvas.test/api/v1/users/self/bookmarks?as_user_id=sis_user_id%3Aj%20doe&page=3&per_page=1'),
+				page([{ id: 3 }]),
+			][index - 1];
+		});
+		const result = await canvasApiRequestAllItems.call(
+			context,
+			'GET',
+			'/api/v1/users/self/bookmarks',
+			undefined,
+			undefined,
+			{ enabled: true, perPage: 1, maxPages: 0 },
+			{ ...FAST_RATE_LIMIT, asUserId: 'sis_user_id:j doe' },
+		);
+		expect(result.items.map((i) => i.id)).toEqual([1, 2, 3]);
+		expect(calls.map((c) => c.url)).toEqual([
+			'https://canvas.test/api/v1/users/self',
+			'https://canvas.test/api/v1/users/self/bookmarks?per_page=1&as_user_id=sis_user_id%3Aj%20doe',
+			'https://canvas.test/api/v1/users/self/bookmarks?page=2&per_page=1&as_user_id=sis_user_id%3Aj%20doe',
+			'https://canvas.test/api/v1/users/self/bookmarks?as_user_id=sis_user_id%3Aj%20doe&page=3&per_page=1',
+		]);
+	});
+
 	it('stops at maxPages and at the item limit', async () => {
 		const endless = (_options: IDataObject, index: number) =>
 			page([{ id: 1 }, { id: 2 }, { id: 3 }], `https://canvas.test/api/v1/x?page=${index + 2}`);

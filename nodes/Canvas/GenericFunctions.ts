@@ -813,7 +813,11 @@ export async function canvasApiRequest(
 		? resolveCanvasUrl(canvasUrl, endpoint)
 		: `${canvasUrl}${endpoint}`;
 	const queryString = buildCanvasQueryString(query);
-	const url = queryString ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${queryString}` : baseUrl;
+	let url = queryString ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${queryString}` : baseUrl;
+	// Masquerading applies to every request made for the item, follow-up pages included.
+	if (rateLimitOptions.asUserId && !/[?&]as_user_id=/.test(url)) {
+		url += `${url.includes('?') ? '&' : '?'}${buildCanvasQueryString({ as_user_id: rateLimitOptions.asUserId })}`;
+	}
 
 	const requestOptions: IHttpRequestOptions = {
 		method,

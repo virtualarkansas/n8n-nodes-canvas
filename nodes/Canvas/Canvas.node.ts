@@ -240,6 +240,26 @@ export class Canvas implements INodeType {
 				],
 			},
 
+			// Request Options
+			{
+				displayName: 'Request Options',
+				name: 'requestOptions',
+				type: 'collection',
+				placeholder: 'Add Request Option',
+				default: {},
+				options: [
+					{
+						displayName: 'Act as User ID',
+						name: 'asUserId',
+						type: 'string',
+						default: '',
+						placeholder: '12345 or sis_user_id:jdoe',
+						description:
+							'Carry out the request as this user (Canvas masquerading, as_user_id). The user of the credential needs the "Become other users" permission; Canvas records both users in its logs. May be an expression, so each item can act as a different user.',
+					},
+				],
+			},
+
 			// Batch Processing Options
 			{
 				displayName: 'Batch Processing',
@@ -385,6 +405,10 @@ export class Canvas implements INodeType {
 							: resolvePerPage(resolvePagination(this, i, pagination));
 					qs = { per_page: perPage, ...(request.qs ?? {}) };
 				}
+				const asUserId = masqueradeAs(this, i);
+				if (asUserId && qs?.as_user_id === undefined) {
+					qs = { ...(qs ?? {}), as_user_id: asUserId };
+				}
 				const curl = buildCurlCommand(method, canvasBaseUrl, endpoint, qs, body, authType, contentType);
 
 				const debugJson: IDataObject = {
@@ -508,6 +532,12 @@ function toOutputItems(data: unknown, itemIndex: number): INodeExecutionData[] {
 	return [wrap(data)];
 }
 
+/** The user to act as for this item ("Act as User ID"), if any. */
+function masqueradeAs(context: IExecuteFunctions, itemIndex: number): string {
+	const options = context.getNodeParameter('requestOptions', itemIndex, {}) as IDataObject;
+	return String(options.asUserId ?? '').trim();
+}
+
 async function processItem(
 	context: IExecuteFunctions,
 	item: INodeExecutionData,
@@ -516,7 +546,7 @@ async function processItem(
 	operation: string,
 	errorHandling: IErrorHandlingOptions,
 	nodePagination: IPaginationOptions,
-	rateLimit: IRateLimitOptions,
+	nodeRateLimit: IRateLimitOptions,
 ): Promise<IProcessResult> {
 	// Known once the request has been built; reported with any error.
 	let endpoint = '';
@@ -525,6 +555,8 @@ async function processItem(
 		context,
 		async () => {
 			const request = buildRequest(context, resource, operation, itemIndex);
+			const asUserId = masqueradeAs(context, itemIndex);
+			const rateLimit: IRateLimitOptions = asUserId ? { ...nodeRateLimit, asUserId } : nodeRateLimit;
 			endpoint = request.endpoint;
 			const bodyData = request.body as IDataObject | IDataObject[] | string | Buffer | undefined;
 			const qsData = request.qs as IDataObject | undefined;

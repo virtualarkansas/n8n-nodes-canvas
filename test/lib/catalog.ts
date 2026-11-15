@@ -25,6 +25,7 @@ const GLOBAL_FIELDS = new Set([
 	'pagination',
 	'rateLimiting',
 	'batchProcessing',
+	'requestOptions',
 ]);
 
 let cachedProperties: INodeProperties[] | undefined;

@@ -102,6 +102,12 @@ export interface IRateLimitOptions {
 	baseDelayMs: number;
 	/** Maximum delay cap in ms (default: 60000) */
 	maxDelayMs: number;
+	/**
+	 * Canvas user to act as (`as_user_id`, masquerading). It lives here because these
+	 * options travel with every request made for an item: follow-up pages, the GET after
+	 * a write, the steps of an upload.
+	 */
+	asUserId?: string;
 }
 
 /**
