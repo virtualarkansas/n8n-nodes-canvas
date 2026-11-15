@@ -15,7 +15,8 @@ export const featureFlagOperations: INodeProperties[] = [
 			{
 				name: 'Delete',
 				value: 'delete',
-				description: 'Remove a feature flag',
+				description:
+					'Remove the flag set on this account, course or user, so the inherited state applies again',
 				action: 'Delete a feature flag',
 			},
 			{
@@ -27,19 +28,20 @@ export const featureFlagOperations: INodeProperties[] = [
 			{
 				name: 'Get Many',
 				value: 'getAll',
-				description: 'Get many features',
+				description:
+					'Get the features that apply to an account, course or user, each with its flag. Always fetched in full pages of 100: Canvas counts features hidden from you towards a page.',
 				action: 'Get many features',
 			},
 			{
 				name: 'Get Many Enabled',
 				value: 'getAllEnabled',
-				description: 'Get many enabled features',
+				description: 'Get the names of the features that are enabled for an account, course or user',
 				action: 'Get many enabled features',
 			},
 			{
 				name: 'Get Many Environment',
 				value: 'getAllEnvironment',
-				description: 'Get many environment features',
+				description: 'Get the on/off state of the features that affect the Canvas interface, as one item',
 				action: 'Get many environment features',
 			},
 			{

@@ -328,7 +328,11 @@ export function buildFeatureFlagRequest(
 
 		case 'getAll': {
 			const options = getParamObject('options');
-			const qs: Record<string, unknown> = {};
+			// Canvas pages through every feature definition and only then drops the ones the
+			// caller may not see, so a page can hold fewer features than asked for, or none.
+			// With small pages the default page cap would silently cut the list short; the
+			// whole catalogue is a few dozen entries, so always ask for full pages.
+			const qs: Record<string, unknown> = { per_page: 100 };
 
 			if (options.hide_inherited_enabled !== undefined) {
 				qs.hide_inherited_enabled = options.hide_inherited_enabled;
@@ -337,7 +341,7 @@ export function buildFeatureFlagRequest(
 			return {
 				method: 'GET',
 				endpoint: `${basePath}/features`,
-				...(Object.keys(qs).length > 0 ? { qs } : {}),
+				qs,
 			};
 		}
 
