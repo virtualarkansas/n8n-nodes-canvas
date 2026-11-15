@@ -38,6 +38,13 @@ export const coursePaceOperations: INodeProperties[] = [
 				action: 'Get a course pace by context',
 			},
 			{
+				name: 'List Pace Contexts',
+				value: 'listContexts',
+				description:
+					'List what can be paced in a course (the course, its sections or its students), each with the pace that applies to it',
+				action: 'List pace contexts of a course',
+			},
+			{
 				name: 'Publish',
 				value: 'publish',
 				description: 'Publish a course pace, which recalculates the due dates of the affected students',
@@ -108,6 +115,84 @@ export const coursePaceFields: INodeProperties[] = [
 			},
 		},
 		description: 'The ID of the course pace. Use "Get by Context" to look it up.',
+	},
+
+	// ----------------------------------
+	//         coursePace: listContexts
+	// ----------------------------------
+	{
+		displayName: 'Type',
+		name: 'contextType',
+		type: 'options',
+		required: true,
+		default: 'section',
+		options: [
+			{ name: 'Course', value: 'course', description: 'The course itself (one entry)' },
+			{ name: 'Section', value: 'section', description: 'The active sections of the course' },
+			{
+				name: 'Student Enrollment',
+				value: 'student_enrollment',
+				description: 'The students of the course, one entry per student',
+			},
+		],
+		displayOptions: {
+			show: {
+				resource: ['coursePace'],
+				operation: ['listContexts'],
+			},
+		},
+		description:
+			'The kind of pace context to list. Each entry has the name, the ID of the section or enrollment ("item_id") and the pace that applies to it ("applied_pace").',
+	},
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['coursePace'],
+				operation: ['listContexts'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Context IDs',
+				name: 'context_ids',
+				type: 'string',
+				default: '',
+				placeholder: '12,15',
+				description:
+					'Comma-separated list of section IDs (type Section) or enrollment IDs (type Student Enrollment): only return these',
+			},
+			{
+				displayName: 'Order',
+				name: 'order',
+				type: 'options',
+				options: [
+					{ name: 'Ascending', value: 'asc' },
+					{ name: 'Descending', value: 'desc' },
+				],
+				default: 'asc',
+				description: 'The direction to sort in',
+			},
+			{
+				displayName: 'Search Term',
+				name: 'search_term',
+				type: 'string',
+				default: '',
+				description: 'Only return sections or students whose name contains this text',
+			},
+			{
+				displayName: 'Sort',
+				name: 'sort',
+				type: 'options',
+				options: [{ name: 'Name', value: 'name' }],
+				default: 'name',
+				description: 'Sort sections by their name and students by their sortable name',
+			},
+		],
 	},
 
 	// ----------------------------------
