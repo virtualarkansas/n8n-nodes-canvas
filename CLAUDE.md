@@ -75,7 +75,7 @@ Handlers are pure: they only build `{ method, endpoint, qs, body }` plus optiona
 
 The hints are documented where they are defined (`IRequestConfig` in `types/Canvas.types.ts`).
 
-Helpers for reading parameters live once in `handlers/shared.ts` (contract pinned by `test/unit/handlerHelpers.test.ts`); import them instead of defining a copy in a handler file: `toList` (separated text or an array to a list), `isBlank` / `isBlankOrWhitespace`, `withoutBlanks`, `takeKeys`, `pickDefined` / `pickFilled`, `mapFields`, `collectionRows` (rows of a fixedCollection), `parseJson` (any JSON value) and `parseJsonObject` with its two message variants `parseJsonObjectOrEmpty` and `parseJsonObjectFor`.
+Helpers for reading parameters live once in `handlers/shared.ts` (contract pinned by `test/unit/handlerHelpers.test.ts`); import them instead of defining a copy in a handler file: `toList` (separated text or an array to a list), `isBlank` / `isBlankOrWhitespace`, `withoutBlanks`, `takeKeys`, `pickDefined` / `pickFilled`, `mapFields`, `collectionRows` (rows of a fixedCollection), `parseJson` (any JSON value) and `parseJsonObject` with its two message variants `parseJsonObjectOrEmpty` and `parseJsonObjectFor`. They carry the rules for odd input: a JSON field is empty when it is undefined, null, `''` or whitespace; a list entry or a collection row of the wrong kind is refused with a message that names the field, never passed on.
 
 ### Requests
 - The node serializes query strings itself (`buildCanvasQueryString`): arrays as `key[]=v`, nested objects as `key[sub]=v`. Keys may be written with or without `[]`. Debug mode shows exactly the URL a real run sends.

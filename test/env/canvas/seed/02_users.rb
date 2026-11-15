@@ -137,6 +137,13 @@ Seed.step("users.personas") do
   Seed.fixture(:scopedAccessToken, scoped.full_token)
 end
 
+# The "admin" persona of the battery is the site's own admin (created by Canvas' initial
+# set-up from CANVAS_LMS_ADMIN_EMAIL). It gets a token of its own, apart from the one the
+# seed itself works with, because Canvas throttles per token.
+Seed.step("users.admin_token") do
+  Seed.token(:admin, Seed::Users.token_for(Seed.admin, "n8n battery persona: admin").full_token)
+end
+
 Seed.step("users.admins") do
   root = Seed.root
   add = lambda do |acct, user, role|
