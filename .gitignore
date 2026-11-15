@@ -33,3 +33,7 @@ coverage/
 # Release artifacts
 *.tgz
 *.tar.gz
+
+# Battery state (tokens, IDs)
+test/.state.json
+test/.results/
