@@ -39,7 +39,7 @@ describe('userCustomData', () => {
 			users.push(String(user.id));
 		}
 		userId = users[0];
-	});
+	}, 360_000);
 
 	afterAll(async () => {
 		for (const id of users) {

@@ -51,7 +51,7 @@ describe('user: preferences and sessions', () => {
 			course: { name: unique('Preferences foreign course') },
 		});
 		foreignCourseId = String(course.id);
-	});
+	}, 360_000);
 
 	afterAll(async () => {
 		if (mobileKeyId) {

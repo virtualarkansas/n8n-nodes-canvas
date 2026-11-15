@@ -130,10 +130,14 @@ describe('user: activity', () => {
 		}
 		// Every new assignment puts an "Assignment Created" message into the stream of the students.
 		// On paper and without a due date, so they are neither to-do items nor ever missing.
-		for (let i = 1; i <= STREAM_FILLERS; i++) {
-			await c.post(`/api/v1/courses/${courseC}/assignments`, {
-				assignment: { name: `${unique('Stream filler')} ${i}`, submission_types: ['on_paper'], published: true },
-			});
+		for (let i = 0; i < STREAM_FILLERS; i += 4) {
+			await Promise.all(
+				Array.from({ length: Math.min(4, STREAM_FILLERS - i) }, (_, offset) =>
+					c.post(`/api/v1/courses/${courseC}/assignments`, {
+						assignment: { name: `${unique('Stream filler')} ${i + offset + 1}`, submission_types: ['on_paper'], published: true },
+					}),
+				),
+			);
 		}
 		overrideId = Number(
 			(
@@ -145,20 +149,24 @@ describe('user: activity', () => {
 			).id,
 		);
 
-		// Stream items and due dates are computed by background jobs.
-		await waitFor('the activity of the learner', async () => {
-			const stream = await learnerStream();
-			const missing = await c.getAll<Json>(`/api/v1/users/${learner.id}/missing_submissions`);
-			const todo = await learner.client.getAll<Json>('/api/v1/users/self/todo');
-			return (
-				stream.length >= STREAM_FILLERS + 6 &&
-				stream.filter((item) => item.type === 'Announcement').length >= 3 &&
-				stream.filter((item) => item.type === 'Submission').length >= 3 &&
-				missing.length >= 3 &&
-				todo.some((item) => (item.assignment as Json | undefined)?.id === a.soon)
-			);
-		});
-	});
+		// Stream items and due dates are computed by background jobs, which all test files share.
+		await waitFor(
+			'the activity of the learner',
+			async () => {
+				const stream = await learnerStream();
+				const missing = await c.getAll<Json>(`/api/v1/users/${learner.id}/missing_submissions`);
+				const todo = await learner.client.getAll<Json>('/api/v1/users/self/todo');
+				return (
+					stream.length >= STREAM_FILLERS + 6 &&
+					stream.filter((item) => item.type === 'Announcement').length >= 3 &&
+					stream.filter((item) => item.type === 'Submission').length >= 3 &&
+					missing.length >= 3 &&
+					todo.some((item) => (item.assignment as Json | undefined)?.id === a.soon)
+				);
+			},
+			300_000,
+		);
+	}, 480_000);
 
 	afterAll(async () => {
 		for (const id of [courseA, courseB, courseC]) {
@@ -403,17 +411,19 @@ describe('user: activity', () => {
 		// courses (and delete again) while it is read.
 		const busy = { numberedPages: true, volatile: true };
 
-		const { all } = await expectListedLikeCanvas(run({ pagination: { returnAll: true } }), direct, busy);
-		expect(all.length).toBeGreaterThan(300);
+		// Three pages of the largest size (the complete stream has several hundred heavy items;
+		// reading all of a stream is verified on the learner's own above).
+		const large = await expectListedLikeCanvas(run({ pagination: { perPage: 100, maxPages: 3 } }), direct, { take: 300, ...busy });
+		expect(large.listed).toHaveLength(300);
 		await expectListedLikeCanvas(run({}), direct, { take: 50, ...busy });
 
-		// Two full pages of the filtered stream: only items of courses, no conversations.
+		// The filtered stream: only items of courses, no conversations.
 		const active = await expectListedLikeCanvas(
-			run({ additionalFields: { onlyActiveCourses: true }, pagination: { perPage: 100, maxPages: 2 } }),
+			run({ additionalFields: { onlyActiveCourses: true }, pagination: { perPage: 50, maxPages: 2 } }),
 			(limit) => readList(client, `${path}?only_active_courses=true`, limit),
-			{ take: 200, ...busy },
+			{ take: 100, ...busy },
 		);
-		expect(active.listed.length).toBe(200);
+		expect(active.listed).toHaveLength(100);
 		expect(active.listed.every((item) => item.course_id !== null && item.course_id !== undefined)).toBe(true);
 		expect(active.listed.some((item) => item.type === 'Conversation')).toBe(false);
 

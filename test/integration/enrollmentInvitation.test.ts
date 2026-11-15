@@ -68,7 +68,7 @@ describe('enrollment: invitations and bulk enrollment', () => {
 			});
 			users.push(String(user.id));
 		}
-	});
+	}, 360_000);
 
 	afterAll(async () => {
 		for (const id of [...courses, outsideCourseId]) {
