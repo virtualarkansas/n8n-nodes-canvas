@@ -296,6 +296,77 @@ describe('module', () => {
 		expect(items).toEqual([]);
 	});
 
+	it('setOverrides / listOverrides: assign the module to a section and to students, change and clear', async () => {
+		const path = `/api/v1/courses/${courseId}/modules/${moduleId}/assignment_overrides`;
+		const [section] = await canvas().getAll<Json>(`/api/v1/courses/${courseId}/sections`);
+		const params = { courseId, moduleId };
+
+		expect(await runOk({ resource: 'module', operation: 'listOverrides', params })).toEqual([]);
+
+		const [set] = await runOk({
+			resource: 'module',
+			operation: 'setOverrides',
+			params: {
+				...params,
+				overrides: {
+					overrideValues: [
+						{ course_section_id: String(section.id) },
+						{ student_ids: ` ${fx('studentUserId')}, ${fx('student2UserId')} `, title: 'Two students ünï' },
+					],
+				},
+			},
+		});
+		expect(set).toEqual({ success: true });
+		const stored = await canvas().get<Json[]>(path);
+		expect(stored).toHaveLength(2);
+		const sectionOverride = stored.find((o) => o.course_section)!;
+		const studentOverride = stored.find((o) => o.students)!;
+		expect(sectionOverride.course_section).toMatchObject({ id: section.id });
+		expect(studentOverride.title).toBe('Two students ünï');
+		expect((studentOverride.students as Json[]).map((s) => String(s.id)).sort()).toEqual([fx('studentUserId'), fx('student2UserId')].sort());
+
+		const listed = await runOk({ resource: 'module', operation: 'listOverrides', params });
+		expect(listed.map((o) => o.id).sort()).toEqual(stored.map((o) => o.id).sort());
+		expect(listed.every((o) => o.context_module_id === Number(moduleId))).toBe(true);
+
+		// Keep the student override (by ID) with one student less; the section override is not listed and goes away.
+		await runOk({
+			resource: 'module',
+			operation: 'setOverrides',
+			items: [{ override: studentOverride.id, student: Number(fx('studentUserId')) }],
+			params: {
+				...params,
+				overrides: { overrideValues: [{ id: '={{ $json.override }}', student_ids: '={{ $json.student }}', title: 'One student' }] },
+			},
+		});
+		const after = await canvas().get<Json[]>(path);
+		expect(after).toHaveLength(1);
+		expect(after[0]).toMatchObject({ id: studentOverride.id, title: 'One student' });
+		expect((after[0].students as Json[]).map((s) => String(s.id))).toEqual([fx('studentUserId')]);
+
+		// No entries: the module is assigned to everyone again.
+		await runOk({ resource: 'module', operation: 'setOverrides', params: { ...params, overrides: {} } });
+		expect(await canvas().get<Json[]>(path)).toEqual([]);
+	});
+
+	it('setOverrides: entries without a target, or with section and students together, are refused', async () => {
+		const [section] = await canvas().getAll<Json>(`/api/v1/courses/${courseId}/sections`);
+		const run = (overrideValues: Json[]): ReturnType<typeof runNode> =>
+			runNode({
+				resource: 'module',
+				operation: 'setOverrides',
+				params: { courseId, moduleId, overrides: { overrideValues }, errorHandling: { onError: 'continueWithError' } },
+			});
+		const empty = await run([{ title: 'nobody' }]);
+		expect(empty.error[0].errorCode).toBe(0);
+		expect(String(empty.error[0].errorMessage)).toContain('needs an override ID, a section ID or student IDs');
+
+		const both = await run([{ course_section_id: String(section.id), student_ids: fx('studentUserId') }]);
+		expect(both.error[0]).toMatchObject({ errorCode: 400, errorType: 'VALIDATION_ERROR' });
+		expect(String(both.error[0].errorMessage)).toContain('cannot provide course_section_id and student_ids');
+		expect(await canvas().get<Json[]>(`/api/v1/courses/${courseId}/modules/${moduleId}/assignment_overrides`)).toEqual([]);
+	});
+
 	it('relock: resets progressions and returns the module', async () => {
 		const [module] = await runOk({ resource: 'module', operation: 'relock', params: { courseId, moduleId } });
 		expect(module).toMatchObject({ id: Number(moduleId) });

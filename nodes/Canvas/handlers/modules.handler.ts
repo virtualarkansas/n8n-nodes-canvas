@@ -91,6 +91,43 @@ export function handleModuleResource(
 				method: 'PUT',
 			};
 
+		case 'listOverrides':
+			return {
+				endpoint: `/api/v1/courses/${courseId}/modules/${moduleId}/assignment_overrides`,
+				method: 'GET',
+			};
+
+		case 'setOverrides': {
+			// The complete list of who the module is assigned to; an empty list assigns it to everyone again.
+			const overrides = ((getParamObject('overrides').overrideValues ?? []) as Fields[]).map((entry) => {
+				const override: Fields = {};
+				const id = String(entry.id ?? '').trim();
+				const sectionId = String(entry.course_section_id ?? '').trim();
+				const studentIds = splitList(entry.student_ids);
+				if (id) {
+					override.id = id;
+				}
+				if (sectionId) {
+					override.course_section_id = sectionId;
+				}
+				if (studentIds.length > 0) {
+					override.student_ids = studentIds;
+				}
+				if (entry.title) {
+					override.title = entry.title;
+				}
+				if (Object.keys(override).length === 0 || (!id && !sectionId && studentIds.length === 0)) {
+					throw new ApplicationError('Each module override needs an override ID, a section ID or student IDs');
+				}
+				return override;
+			});
+			return {
+				endpoint: `/api/v1/courses/${courseId}/modules/${moduleId}/assignment_overrides`,
+				method: 'PUT',
+				body: { overrides },
+			};
+		}
+
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for module`);
 	}
