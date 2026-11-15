@@ -216,7 +216,10 @@ export function buildRequestFor(
 		const value = params[name];
 		if (value === undefined || value === null || value === '') return defaultValue;
 		if (Array.isArray(value)) {
-			return value.some((entry) => entry !== null && typeof entry === 'object')
+			const jsonField = nodeProperties().some(
+				(p) => p.name === name && p.type === 'json' && ((p.displayOptions?.show?.resource ?? []) as string[]).includes(resource),
+			);
+			return jsonField || value.some((entry) => entry !== null && typeof entry === 'object')
 				? JSON.stringify(value)
 				: value.map(String).join(',');
 		}

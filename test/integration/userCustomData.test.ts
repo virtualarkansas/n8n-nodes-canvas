@@ -188,6 +188,8 @@ describe('userCustomData', () => {
 				{ user: Number(users[2]), scope: 'active', value: false },
 				{ user: Number(users[2]), scope: 'phone', value: JSON.stringify('555-1234') },
 				{ user: Number(users[2]), scope: 'tags', value: JSON.stringify(['x', 'y']) },
+				// A list straight from an expression (no JSON.stringify) stays a list.
+				{ user: Number(users[2]), scope: 'codes', value: [5, 'six'] },
 			],
 			params: {
 				userId: '={{ $json.user }}',
@@ -205,9 +207,10 @@ describe('userCustomData', () => {
 			{ data: false },
 			{ data: '555-1234' },
 			{ data: ['x', 'y'] },
+			{ data: [5, 'six'] },
 		]);
 		expect(await stored(users[1])).toEqual({ profile: { tags: ['a', 'b'], level: 3, mentor: null }, score: 97.5 });
-		expect(await stored(users[2])).toEqual({ active: false, phone: '555-1234', tags: ['x', 'y'] });
+		expect(await stored(users[2])).toEqual({ active: false, phone: '555-1234', tags: ['x', 'y'], codes: [5, 'six'] });
 	});
 
 	it('set: Canvas drops null entries from lists (and keeps null values of objects)', async () => {
@@ -252,10 +255,8 @@ describe('userCustomData', () => {
 	});
 
 	// Canvas names what is in the way: { message, conflict_scope, type_at_conflict, value_at_conflict }.
-	// The node's error output keeps only the message of an error body that has one; the rest of the
-	// record is dropped (toErrorOutput in GenericFunctions.ts hands a body on as `responseBody` only
-	// when it has no errors / error / message key at all).
-	it('set [needs shared change]: a write conflict reports the scope and value that are in the way', async () => {
+	// Canvas says what is in the way next to its message; the Error output hands the whole body on.
+	it('set: a write conflict reports the scope and value that are in the way', async () => {
 		const conflict = await runNode({
 			resource: 'userCustomData',
 			operation: 'set',

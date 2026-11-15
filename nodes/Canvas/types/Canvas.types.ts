@@ -64,6 +64,11 @@ export interface IRequestConfig {
 		optional?: boolean;
 	};
 	/**
+	 * Names of parameters whose value the handler has percent-encoded in the path itself
+	 * (a folder path with several segments). Everything else is encoded by the node.
+	 */
+	encodedParams?: string[];
+	/**
 	 * The answer is a file as text (a CSV export): besides `{ value: text }`, attach it to
 	 * the output item as binary data under this name and type, ready for n8n's file nodes.
 	 */

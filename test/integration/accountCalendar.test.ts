@@ -198,10 +198,7 @@ describe('accountCalendar', () => {
 		expect(await calendar(childIds[0])).toMatchObject({ visible: true, auto_subscribe: true });
 	});
 
-	it('updateMany: a bare list of objects from an expression either works or is refused with a hint', async () => {
-		// The node's shared parameter reader flattens arrays to comma-separated text before the
-		// handler sees them, so a list of objects cannot be recovered. Until that changes the
-		// node must say what to do instead of a vague "invalid JSON".
+	it('updateMany: a list of objects straight from an expression works as well', async () => {
 		const result = await runNode({
 			resource: 'accountCalendar',
 			operation: 'updateMany',
@@ -212,12 +209,9 @@ describe('accountCalendar', () => {
 				errorHandling: { onError: 'continueWithError' },
 			},
 		});
-		if (result.success.length === 1) {
-			expect(await calendar(childIds[0])).toMatchObject({ visible: true, auto_subscribe: false });
-		} else {
-			expect(String(result.error[0]?.errorMessage ?? result.failure?.message)).toMatch(/JSON\.stringify\(\)/);
-			expect(await calendar(childIds[0])).toMatchObject({ visible: true, auto_subscribe: true });
-		}
+		expect(result.error).toEqual([]);
+		expect(result.success).toHaveLength(1);
+		expect(await calendar(childIds[0])).toMatchObject({ visible: true, auto_subscribe: false });
 	});
 
 	it('updateMany: calendars outside the account, duplicates and malformed JSON are refused', async () => {

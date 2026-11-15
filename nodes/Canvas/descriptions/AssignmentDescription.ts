@@ -912,7 +912,7 @@ export const assignmentFields: INodeProperties[] = [
 				operation: ['bulkUpdateDates'],
 			},
 		},
-		description: 'JSON array with one entry per assignment: its "ID" and "all_dates", a list of date sets. A date set with "base": true changes the assignment\'s own dates, one with the "ID" of an existing override changes that override. Each set may carry due_at, unlock_at and lock_at; use null to clear a date. Use JSON.stringify() when the value comes from an expression.',
+		description: 'JSON array with one entry per assignment: its "ID" and "all_dates", a list of date sets. A date set with "base": true changes the assignment\'s own dates, one with the "ID" of an existing override changes that override. Each set may carry due_at, unlock_at and lock_at; use null to clear a date. A list from an expression can be passed as it is.',
 	},
 
 	// ----------------------------------
@@ -930,7 +930,7 @@ export const assignmentFields: INodeProperties[] = [
 				operation: ['batchGetOverrides'],
 			},
 		},
-		description: 'JSON array with one entry per override to fetch: its "ID" and the "assignment_id" it belongs to. The overrides come back in this order; one that does not exist, or that the user of the credential may not see, comes back as { "ID", "assignment_id", "not_found": true }. Use JSON.stringify() when the value comes from an expression.',
+		description: 'JSON array with one entry per override to fetch: its "ID" and the "assignment_id" it belongs to. The overrides come back in this order; one that does not exist, or that the user of the credential may not see, comes back as { "ID", "assignment_id", "not_found": true }. A list from an expression can be passed as it is.',
 	},
 	{
 		displayName: 'Overrides',
@@ -944,7 +944,7 @@ export const assignmentFields: INodeProperties[] = [
 				operation: ['batchCreateOverrides'],
 			},
 		},
-		description: 'JSON array with one entry per new override: "assignment_id", its target (one of "student_ids" (a list), "group_id" or "course_section_id") and optionally "title" (student overrides), "due_at", "unlock_at" and "lock_at". Canvas creates all of them or, when one is refused, none. Use JSON.stringify() when the value comes from an expression.',
+		description: 'JSON array with one entry per new override: "assignment_id", its target (one of "student_ids" (a list), "group_id" or "course_section_id") and optionally "title" (student overrides), "due_at", "unlock_at" and "lock_at". Canvas creates all of them or, when one is refused, none. A list from an expression can be passed as it is.',
 	},
 	{
 		displayName: 'Overrides',
@@ -958,7 +958,7 @@ export const assignmentFields: INodeProperties[] = [
 				operation: ['batchUpdateOverrides'],
 			},
 		},
-		description: 'JSON array with one entry per override to change: its "ID", its "assignment_id" and the new values ("due_at", "unlock_at", "lock_at"; for student overrides also "student_ids" and "title"). Every date the override should keep has to be given again: a date that is left out is no longer overridden. Canvas updates all of them or, when one is refused, none. Use JSON.stringify() when the value comes from an expression.',
+		description: 'JSON array with one entry per override to change: its "ID", its "assignment_id" and the new values ("due_at", "unlock_at", "lock_at"; for student overrides also "student_ids" and "title"). Every date the override should keep has to be given again: a date that is left out is no longer overridden. Canvas updates all of them or, when one is refused, none. A list from an expression can be passed as it is.',
 	},
 
 	// ----------------------------------

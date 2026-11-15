@@ -888,6 +888,18 @@ function resolvePagination(
 	};
 }
 
+/** Top-level parameters of a resource that are JSON fields: a list given to one stays JSON. */
+const jsonParameterCache = new Map<string, Set<string>>();
+function jsonParameterNames(resource: string): Set<string> {
+	let names = jsonParameterCache.get(resource);
+	if (!names) {
+		const fields = canvasResources.find((entry) => entry.value === resource)?.fields ?? [];
+		names = new Set(fields.filter((field) => field.type === 'json').map((field) => field.name));
+		jsonParameterCache.set(resource, names);
+	}
+	return names;
+}
+
 function buildRequest(
 	context: IExecuteFunctions,
 	resource: string,
@@ -895,8 +907,9 @@ function buildRequest(
 	itemIndex: number,
 ): IRequestConfig {
 	const emptyParams: string[] = [];
-	// Values handed to the handler; any of them may end up as a path segment.
-	const pathValues = new Set<string>();
+	// Values handed to the handler, by parameter; any of them may end up as a path segment.
+	const pathValues = new Map<string, string>();
+	const jsonParams = jsonParameterNames(resource);
 
 	// Parameters hidden for the current operation resolve to the default; expression
 	// errors are real errors and must surface instead of silently becoming ''.
@@ -907,9 +920,9 @@ function buildRequest(
 			return defaultValue;
 		}
 		if (Array.isArray(value)) {
-			// A list of records (from an expression into a JSON field) stays JSON;
-			// a list of plain values becomes "a,b,c".
-			return value.some((entry) => entry !== null && typeof entry === 'object')
+			// A list for a JSON field, or a list of records, stays JSON (it came from an
+			// expression); a list of plain values for any other field becomes "a,b,c".
+			return jsonParams.has(name) || value.some((entry) => entry !== null && typeof entry === 'object')
 				? JSON.stringify(value)
 				: value.map((entry) => String(entry)).join(',');
 		}
@@ -919,7 +932,7 @@ function buildRequest(
 		// IDs arrive as numbers when they come from an expression, and pasted IDs often
 		// carry stray whitespace. Free text is passed through untouched.
 		const text = /id$/i.test(name) ? String(value).trim() : String(value);
-		pathValues.add(text);
+		pathValues.set(name, text);
 		return text;
 	};
 
@@ -954,7 +967,10 @@ function buildRequest(
 		});
 	}
 
-	request.endpoint = encodePathValues(request.endpoint, pathValues);
+	for (const name of request.encodedParams ?? []) {
+		pathValues.delete(name);
+	}
+	request.endpoint = encodePathValues(request.endpoint, pathValues.values());
 
 	// "." and ".." as an ID would let an input value move the request to another path.
 	if (/(^|\/)\.{1,2}(\/|$)/.test(request.endpoint.split('?')[0]) && !/^https?:\/\//i.test(request.endpoint)) {

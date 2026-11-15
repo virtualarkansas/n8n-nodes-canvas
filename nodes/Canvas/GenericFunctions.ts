@@ -612,6 +612,9 @@ export function categorizeError(statusCode: number | undefined): CanvasErrorType
 /**
  * Create structured error output for error branch
  */
+/** Keys of a plain Canvas error answer; a body with nothing else is fully described by `canvasErrors`. */
+const ERROR_ENVELOPE_KEYS = new Set(['errors', 'error', 'message', 'status', 'error_report_id']);
+
 export function createErrorOutput(
 	error: JsonObject,
 	originalItem: IDataObject,
@@ -664,11 +667,14 @@ export function createErrorOutput(
 	}
 	if (details.errors !== undefined) {
 		output.canvasErrors = details.errors;
-	} else {
-		// Some refusals carry a record instead of an error list, e.g. the report that
-		// is already running (409): hand it on so a workflow can use it.
-		const body = getErrorResponseBody(error);
-		if (body && typeof body === 'object') {
+	}
+	// Some refusals carry more than an error list: the report that is already running (409),
+	// or what exactly is in the way ({ message, conflict_scope, value_at_conflict }). Hand the
+	// whole body on so a workflow can use it.
+	const body = getErrorResponseBody(error);
+	if (body && typeof body === 'object' && !Array.isArray(body)) {
+		const extra = Object.keys(body).filter((key) => !ERROR_ENVELOPE_KEYS.has(key));
+		if (extra.length > 0) {
 			output.responseBody = body;
 		}
 	}

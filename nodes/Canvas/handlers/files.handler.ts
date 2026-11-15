@@ -382,6 +382,7 @@ export function handleFolderResource(
 			return {
 				method: 'GET',
 				endpoint: `${basePath}/folders/by_path${segments.length > 0 ? `/${segments.join('/')}` : ''}`,
+				encodedParams: ['folderPath'],
 			};
 		}
 

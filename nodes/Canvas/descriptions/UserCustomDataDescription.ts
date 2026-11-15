@@ -79,7 +79,7 @@ export const userCustomDataFields: INodeProperties[] = [
 			},
 		},
 		description:
-			'The data to store, as JSON: an object, a list, a number, true/false or text in double quotes. The keys of nested objects become scopes that can be read on their own. A value from an expression must be given as JSON text (wrap it in JSON.stringify). Canvas drops null entries from lists.',
+			'The data to store, as JSON: an object, a list, a number, true/false or text in double quotes. The keys of nested objects become scopes that can be read on their own. Objects and lists from an expression can be passed as they are; a single text, number or true/false from an expression must be given as JSON text (wrap it in JSON.stringify). Canvas drops null entries from lists.',
 	},
 	{
 		displayName: 'Options',
