@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { canvas, CanvasClient, fx, unique } from '../lib/canvas';
 import { runNode, runOk } from '../lib/harness';
 import type { Json } from '../lib/n8n';
@@ -35,7 +35,8 @@ describe('course: users', () => {
 		);
 	const current = (e: Json): boolean => e.enrollment_state === 'active' || e.enrollment_state === 'invited';
 
-	beforeAll(async () => {
+	// Read afresh for every test: other test files may add people to the seeded course while this one runs.
+	beforeEach(async () => {
 		enrollments = await canvas().getAll<Json>(
 			`/api/v1/courses/${main}/enrollments?state[]=active&state[]=invited&state[]=completed&state[]=inactive&state[]=rejected`,
 		);

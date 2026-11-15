@@ -17,6 +17,28 @@ import { actingAs, createSandboxAccount, deleteSandboxAccount } from './support/
  */
 const numeric = (values: unknown[]): number[] => values.map(Number).sort((a, b) => a - b);
 
+/**
+ * The seeded personas are enrolled in courses of other test files while this one runs, so
+ * their list of courses can change between a node run and the direct read it is compared
+ * with. The expectation is read before and after the node run; when it changed in between,
+ * the comparison is repeated.
+ */
+async function withStableExpectation<E, R>(
+	read: () => Promise<E>,
+	run: () => Promise<R>,
+	check: (expected: E, result: R) => void,
+): Promise<void> {
+	for (let attempt = 1; ; attempt++) {
+		const before = await read();
+		const result = await run();
+		const after = await read();
+		if (JSON.stringify(before) === JSON.stringify(after) || attempt === 5) {
+			check(after, result);
+			return;
+		}
+	}
+}
+
 describe('course: progress, due dates, to-do, activity', () => {
 	const main = fx('courseId');
 	let accountId = '';
@@ -495,25 +517,42 @@ describe('course: progress, due dates, to-do, activity', () => {
 	// ----------------------------------
 	it('getAllForUser: an admin lists the courses of a teacher, paged', async () => {
 		const teacherId = fx('teacherUserId');
-		const expected = await canvas().getAll<Json>(`/api/v1/users/${teacherId}/courses`);
-		expect(expected.length, 'the teacher persona should have more than 10 courses').toBeGreaterThan(10);
+		const direct = async (): Promise<unknown[]> =>
+			(await canvas().getAll<Json>(`/api/v1/users/${teacherId}/courses`)).map((c) => c.id);
+		expect((await direct()).length, 'the teacher persona should have more than 10 courses').toBeGreaterThan(10);
+
 		// The same courses the teacher gets from "Get Many".
-		const own = await new CanvasClient('teacher').getAll<Json>('/api/v1/courses');
-		expect(numeric(expected.map((c) => c.id))).toEqual(numeric(own.map((c) => c.id)));
+		await withStableExpectation(
+			direct,
+			async () => (await new CanvasClient('teacher').getAll<Json>('/api/v1/courses')).map((c) => c.id),
+			(expected, own) => expect(numeric(own)).toEqual(numeric(expected)),
+		);
 
-		const defaults = await runOk({ resource: 'course', operation: 'getAllForUser', params: { userId: teacherId } });
-		expect(defaults.map((c) => c.id)).toEqual(expected.slice(0, 50).map((c) => c.id));
+		await withStableExpectation(
+			direct,
+			() => runOk({ resource: 'course', operation: 'getAllForUser', params: { userId: teacherId } }),
+			(expected, defaults) => expect(defaults.map((c) => c.id)).toEqual(expected.slice(0, 50)),
+		);
 
-		const all = await runOk({ resource: 'course', operation: 'getAllForUser', params: { userId: teacherId, pagination: { returnAll: true } } });
-		expect(all.map((c) => c.id)).toEqual(expected.map((c) => c.id));
-		expect(new Set(all.map((c) => c.id)).size).toBe(all.length);
+		await withStableExpectation(
+			direct,
+			() => runOk({ resource: 'course', operation: 'getAllForUser', params: { userId: teacherId, pagination: { returnAll: true } } }),
+			(expected, all) => {
+				expect(all.map((c) => c.id)).toEqual(expected);
+				expect(new Set(all.map((c) => c.id)).size).toBe(all.length);
+			},
+		);
 
-		const some = await runOk({
-			resource: 'course',
-			operation: 'getAllForUser',
-			params: { userId: teacherId, pagination: { perPage: 4, maxPages: 2 } },
-		});
-		expect(some.map((c) => c.id)).toEqual(expected.slice(0, 8).map((c) => c.id));
+		await withStableExpectation(
+			direct,
+			() =>
+				runOk({
+					resource: 'course',
+					operation: 'getAllForUser',
+					params: { userId: teacherId, pagination: { perPage: 4, maxPages: 2 } },
+				}),
+			(expected, some) => expect(some.map((c) => c.id)).toEqual(expected.slice(0, 8)),
+		);
 	});
 
 	it('getAllForUser: every include adds its data', async () => {
@@ -584,18 +623,32 @@ describe('course: progress, due dates, to-do, activity', () => {
 		const inAccount = await run({ account_id: accountId });
 		expect(inAccount.map((c) => c.id)).toEqual([Number(courseId)]);
 
-		const everything = await direct('state[]=available&state[]=completed&state[]=unpublished');
-		const available = await run({ state: ['available'] });
-		expect(numeric(available.map((c) => c.id))).toEqual(numeric(everything.filter((c) => c.workflow_state === 'available').map((c) => c.id)));
-		const completed = await run({ state: ['completed'] });
-		expect(completed.length).toBeGreaterThan(0);
-		for (const course of completed) expect(course.workflow_state).toBe('completed');
-		expect(numeric(completed.map((c) => c.id))).toEqual(numeric(everything.filter((c) => c.workflow_state === 'completed').map((c) => c.id)));
+		const inState = (state: string) => async (): Promise<number[]> =>
+			numeric(
+				(await direct('state[]=available&state[]=completed&state[]=unpublished'))
+					.filter((c) => c.workflow_state === state)
+					.map((c) => c.id),
+			);
+		await withStableExpectation(
+			inState('available'),
+			() => run({ state: ['available'] }),
+			(expected, available) => expect(numeric(available.map((c) => c.id))).toEqual(expected),
+		);
+		await withStableExpectation(
+			inState('completed'),
+			() => run({ state: ['completed'] }),
+			(expected, completed) => {
+				expect(completed.length).toBeGreaterThan(0);
+				for (const course of completed) expect(course.workflow_state).toBe('completed');
+				expect(numeric(completed.map((c) => c.id))).toEqual(expected);
+			},
+		);
 
 		for (const state of ['active', 'invited_or_pending', 'completed']) {
-			const listed = await run({ enrollment_state: state });
-			expect(numeric(listed.map((c) => c.id)), `enrollment state ${state}`).toEqual(
-				numeric((await direct(`enrollment_state=${state}`)).map((c) => c.id)),
+			await withStableExpectation(
+				async () => numeric((await direct(`enrollment_state=${state}`)).map((c) => c.id)),
+				() => run({ enrollment_state: state }),
+				(expected, listed) => expect(numeric(listed.map((c) => c.id)), `enrollment state ${state}`).toEqual(expected),
 			);
 		}
 		const active = await run({ enrollment_state: 'active' });
@@ -608,9 +661,14 @@ describe('course: progress, due dates, to-do, activity', () => {
 		expect(asStudent.map((c) => c.id)).toContain(Number(courseId));
 		const asTeacher = await run({ enrollment_type: 'teacher' });
 		expect(asTeacher.map((c) => c.id)).not.toContain(Number(courseId));
-		const byRole = await run({ enrollment_role_id: fx('studentRoleId') });
-		expect(numeric(byRole.map((c) => c.id))).toEqual(numeric((await direct(`enrollment_role_id=${fx('studentRoleId')}`)).map((c) => c.id)));
-		expect(byRole.map((c) => c.id)).toContain(Number(courseId));
+		await withStableExpectation(
+			async () => numeric((await direct(`enrollment_role_id=${fx('studentRoleId')}`)).map((c) => c.id)),
+			() => run({ enrollment_role_id: fx('studentRoleId') }),
+			(expected, byRole) => {
+				expect(numeric(byRole.map((c) => c.id))).toEqual(expected);
+				expect(byRole.map((c) => c.id)).toContain(Number(courseId));
+			},
+		);
 
 		const noBlueprints = await run({ exclude_blueprint_courses: true });
 		expect(noBlueprints.map((c) => c.id)).not.toContain(Number(fx('blueprintCourseId')));
@@ -645,42 +703,60 @@ describe('course: progress, due dates, to-do, activity', () => {
 	});
 
 	it('getAllForUser: "self" and SIS user IDs; several users in one run', async () => {
-		const own = await new CanvasClient('student').getAll<Json>('/api/v1/courses');
-		const self = await runOk({
-			resource: 'course',
-			operation: 'getAllForUser',
-			persona: 'student',
-			params: { userId: 'self', pagination: { returnAll: true } },
-		});
-		expect(numeric(self.map((c) => c.id))).toEqual(numeric(own.map((c) => c.id)));
-
-		const result = await runNode({
-			resource: 'course',
-			operation: 'getAllForUser',
-			items: [{ user: `sis_user_id:${fx('studentSisUserId')}` }, { user: 99999999 }, { user: Number(studentB) }],
-			params: { userId: '={{ $json.user }}', pagination: { returnAll: true }, errorHandling: { onError: 'continueWithError' } },
-		});
-		const first = result.rawSuccess.filter((item) => (item.pairedItem as Json).item === 0).map((item) => item.json);
-		const third = result.rawSuccess.filter((item) => (item.pairedItem as Json).item === 2).map((item) => item.json);
-		// As seen by the admin, who may also see courses the student cannot open yet.
-		expect(numeric(first.map((c) => c.id))).toEqual(
-			numeric((await canvas().getAll<Json>(`/api/v1/users/${fx('studentUserId')}/courses`)).map((c) => c.id)),
+		await withStableExpectation(
+			async () => numeric((await new CanvasClient('student').getAll<Json>('/api/v1/courses')).map((c) => c.id)),
+			() =>
+				runOk({
+					resource: 'course',
+					operation: 'getAllForUser',
+					persona: 'student',
+					params: { userId: 'self', pagination: { returnAll: true } },
+				}),
+			(expected, self) => expect(numeric(self.map((c) => c.id))).toEqual(expected),
 		);
-		expect(third.map((c) => c.id)).toEqual([Number(courseId)]);
-		expect(result.error).toHaveLength(1);
-		expect(result.error[0]).toMatchObject({ errorCode: 404, errorType: 'NOT_FOUND', operation: 'getAllForUser', originalItem: { user: 99999999 } });
+
+		await withStableExpectation(
+			// As seen by the admin, who may also see courses the student cannot open yet.
+			async () => numeric((await canvas().getAll<Json>(`/api/v1/users/${fx('studentUserId')}/courses`)).map((c) => c.id)),
+			() =>
+				runNode({
+					resource: 'course',
+					operation: 'getAllForUser',
+					items: [{ user: `sis_user_id:${fx('studentSisUserId')}` }, { user: 99999999 }, { user: Number(studentB) }],
+					params: { userId: '={{ $json.user }}', pagination: { returnAll: true }, errorHandling: { onError: 'continueWithError' } },
+				}),
+			(expected, result) => {
+				const first = result.rawSuccess.filter((item) => (item.pairedItem as Json).item === 0).map((item) => item.json);
+				const third = result.rawSuccess.filter((item) => (item.pairedItem as Json).item === 2).map((item) => item.json);
+				expect(numeric(first.map((c) => c.id))).toEqual(expected);
+				expect(third.map((c) => c.id)).toEqual([Number(courseId)]);
+				expect(result.error).toHaveLength(1);
+				expect(result.error[0]).toMatchObject({
+					errorCode: 404,
+					errorType: 'NOT_FOUND',
+					operation: 'getAllForUser',
+					originalItem: { user: 99999999 },
+				});
+			},
+		);
 	});
 
 	it('getAllForUser: an observer may list the courses of the student they observe; other students may not', async () => {
-		const observed = await runOk({
-			resource: 'course',
-			operation: 'getAllForUser',
-			persona: 'observer',
-			params: { userId: fx('observeeUserId'), pagination: { returnAll: true } },
-		});
-		const expected = await new CanvasClient('observer').getAll<Json>(`/api/v1/users/${fx('observeeUserId')}/courses`);
-		expect(numeric(observed.map((c) => c.id))).toEqual(numeric(expected.map((c) => c.id)));
-		expect(observed.length).toBeGreaterThan(0);
+		await withStableExpectation(
+			async () =>
+				numeric((await new CanvasClient('observer').getAll<Json>(`/api/v1/users/${fx('observeeUserId')}/courses`)).map((c) => c.id)),
+			() =>
+				runOk({
+					resource: 'course',
+					operation: 'getAllForUser',
+					persona: 'observer',
+					params: { userId: fx('observeeUserId'), pagination: { returnAll: true } },
+				}),
+			(expected, observed) => {
+				expect(numeric(observed.map((c) => c.id))).toEqual(expected);
+				expect(observed.length).toBeGreaterThan(0);
+			},
+		);
 
 		const refused = await runNode({
 			resource: 'course',
