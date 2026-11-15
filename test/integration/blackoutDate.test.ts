@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { canvas, unique } from '../lib/canvas';
 import type { CanvasClient } from '../lib/canvas';
 import { runNode, runOk } from '../lib/harness';
@@ -42,6 +42,11 @@ describe('blackoutDate', () => {
 			enrollment: { user_id: sbx.students[0].id, type: 'StudentEnrollment', enrollment_state: 'active', notify: false },
 		});
 	}, 900_000);
+
+	afterAll(async () => {
+		// The course only exists for this run.
+		if (courseId) await canvas().request('DELETE', `/api/v1/courses/${courseId}?event=delete`);
+	}, 120_000);
 
 	// ---------------------------------------------------------------- create
 
