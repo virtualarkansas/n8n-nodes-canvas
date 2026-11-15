@@ -143,6 +143,7 @@ end
 Seed.step("assign.main") do
   a = Seed::Assign
   main = Seed.course(:main)
+  Seed.bulk_assignments(main) do
   rng = Seed.rng("assign.main")
   teacher = Seed.user(:teacher)
   ag = ->(k) { AssignmentGroup.find(Seed.ref("assignment_group:#{k}")) }
@@ -298,11 +299,13 @@ Seed.step("assign.main") do
   }.each { |fx, key| Seed.fixture(fx, all[key].id) }
   Seed.fixture(:deletedAssignmentId, deleted.first.id)
   Seed.log "  #{all.size} assignments created (#{core.size} core, #{partial.size} partial, #{edge.size} edge, #{deleted.size} deleted)"
+  end
 end
 
 Seed.step("assign.overrides") do
   a = Seed::Assign
   main = Seed.course(:main)
+  Seed.bulk_assignments(main) do
   p1, p2, p4, p6 = CourseSection.where(id: Seed.ref("sections:main")).order(:id).to_a
   students = Seed.users(:main_students)
   asg = ->(k) { Assignment.find(Seed.ref("assignment:#{k}")) }
@@ -329,6 +332,7 @@ Seed.step("assign.overrides") do
   Seed.fixture(:groupAssignmentOverrideId, grp.id)
   Seed.fixture(:deletedAssignmentOverrideId, gone.id)
   Seed.log "  #{AssignmentOverride.active.where(assignment_id: main.assignments.select(:id)).count} overrides in the main course"
+  end
 end
 
 Seed.step("assign.policies") do

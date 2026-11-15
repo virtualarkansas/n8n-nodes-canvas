@@ -29,11 +29,31 @@ module Seed
     end
   end
 
+  # With no notification found, BroadcastPolicy returns before computing recipient lists.
+  class NullNotificationFinder
+    def by_name(_name)
+      nil
+    end
+    alias_method :find_by_name, :by_name
+  end
+
   class << self
     attr_reader :fx, :tokens, :refs
 
     def conn
       ActiveRecord::Base.connection
+    end
+
+    def flag?(name)
+      !ENV[name].to_s.strip.empty?
+    end
+
+    # seed.rb loads every phase file (later phases reuse helpers defined in earlier ones) but
+    # only the files selected by SEED_FILES are "active": steps in inactive files are no-ops.
+    attr_accessor :active
+
+    def active?
+      @active != false
     end
 
     def setup!
@@ -47,12 +67,149 @@ module Seed
         )
       SQL
       @real_notifier = BroadcastPolicy.notifier
+      @real_finder = BroadcastPolicy.notification_finder
       @null_notifier = NullNotifier.new
+      @null_finder = NullNotificationFinder.new
       BroadcastPolicy.notifier = @null_notifier
+      BroadcastPolicy.notification_finder = @null_finder
       Rails.logger.level = :warn if Rails.logger.respond_to?(:level=)
+      # audio/video uploads would otherwise queue Kaltura jobs (no media server locally); the
+      # hook runs after commit, so the switch stays on for the whole process
+      Attachment.instance_variable_set(:@skip_media_object_creation, true)
       @t0 = Time.now
       @now = Time.zone.now.change(min: 0, sec: 0)
+      queue_background_work!
       load_state
+    end
+
+    # Background work. Outside production Canvas runs every `delay_if_production` job inline,
+    # which for a bulk load means e.g. a whole-course grade recalculation per saved record.
+    # The loader queues them like production does (so singleton/strand jobs coalesce), but
+    # into its own queue: the canvas-jobs container never sees them, and Seed.drain_jobs works
+    # them off in this process, where notifications are silenced. (Jobs created by the REST
+    # calls the loader makes - SIS imports, exports, migrations - still go to canvas-jobs.)
+    QUEUE = "n8n_seed"
+
+    def queue_background_work!
+      return if flag?("SEED_SYNC_JOBS")
+
+      Delayed::Settings.queue = QUEUE
+      Delayed::Job.singleton_class.prepend(SkipNoopJobs)
+      CanvasDelayedMessageSending.module_eval do
+        def delay_if_production(sender: nil, **kwargs)
+          sender ||= __calculate_sender_for_delay
+          delay(sender:, **kwargs.merge(synchronous: false))
+        end
+      end
+    end
+
+    # Jobs that are pure overhead for a bulk load: no LTI asset processors exist, and module
+    # progressions are evaluated explicitly once the modules are in place (08).
+    SKIPPED_JOBS = %w[
+      Lti::AssetProcessorNotifier.notify_asset_processors
+      Course#resubmission_for
+      Assignment#multiple_module_actions
+      Submission#context_module_action
+      Assignment#recalculate_module_progressions
+      Quizzes::Quiz#recalculate_module_progressions
+      DiscussionEntry#context_module_action
+      Lti::AssetProcessorDiscussionNotifier.notify_asset_processors_of_discussion
+      MediaObject#retrieve_details_ensure_codecs
+      MediaObject.create_if_id_exists
+      Submission#update_body_word_count
+    ].freeze # (MediaObject jobs call Kaltura, which is not configured locally; word counts are computed lazily)
+
+    module SkipNoopJobs
+      def enqueue(object, **opts)
+        name = object.respond_to?(:display_name) ? object.display_name : nil
+        return nil if name && SKIPPED_JOBS.include?(name)
+
+        case name
+        when "Enrollment.recompute_final_score"
+          # per-student grade recalculations collapse into one whole-course singleton job
+          return Seed.queue_course_grades(object.args[1])
+        when "Course#recompute_student_scores_without_send_later"
+          return Seed.queue_course_grades(object.object.id) unless opts[:singleton]
+        when "Assignment#update_submissions", "SubAssignment#update_submissions"
+          # re-saves every submission after a points/grading-type change; a brand-new
+          # assignment has nothing to re-save
+          return nil if object.object.saved_change_to_id?
+        when "ConversationMessage#create_stream_items"
+          return nil unless Seed.vip_user?(object.object.author_id)
+        when "LatePolicyApplicator#process"
+          # one late-policy pass per course instead of one job per touched assignment
+          if opts[:singleton].to_s.include?(":Assignment:")
+            return Seed.queue_course_late_policy(object.object.instance_variable_get(:@course))
+          end
+        when "Submission#generate_stream_items", "AssessmentRequest#create_stream_items"
+          return nil unless Seed.vip_user?(object.object.user_id)
+        when "SubmissionComment#create_stream_items"
+          return nil unless Seed.vip_user?(object.object.author_id)
+        when "DiscussionEntry#create_stream_items"
+          # the topic's own stream item still exists for everyone; per-reply refreshes of it
+          # are only done for replies written by the personas
+          return nil unless Seed.vip_user?(object.object.user_id)
+        end
+        super
+      end
+    end
+
+    def queue_course_grades(course_id)
+      @grade_jobs_queued ||= {}
+      return nil if @grade_jobs_queued[course_id]
+
+      @grade_jobs_queued[course_id] = true
+      course = (@grade_courses ||= {})[course_id] ||= Course.find(course_id)
+      Delayed::Job.enqueue(Delayed::PerformableMethod.new(course, :recompute_student_scores_without_send_later, args: [nil]),
+                           singleton: "recompute_student_scores:#{course.global_id}", max_attempts: 10)
+    end
+
+    def queue_course_late_policy(course)
+      @late_jobs_queued ||= {}
+      return nil if course.nil? || @late_jobs_queued[course.id]
+
+      @late_jobs_queued[course.id] = true
+      LatePolicyApplicator.for_course(course)
+    end
+
+    # Activity-stream items for submissions / comments / peer reviews are only generated for
+    # the personas; for everyone else those jobs are skipped.
+    VIP_KEYS = %w[teacher ta student student2 observer designer subaccountAdmin teacher2].freeze
+
+    def vip_user?(user_id)
+      @vip ||= VIP_KEYS.filter_map { |k| @refs["user:#{k}"] }.to_h { |i| [i, true] }
+      @vip[user_id]
+    end
+
+    def pending_jobs
+      Delayed::Job.where(queue: QUEUE, run_at: ..(Time.now.utc + 10.seconds)).count
+    end
+
+    # Work the loader's own job queue off until it is empty.
+    def drain_jobs(label = "jobs", timeout: 1200)
+      t = Time.now
+      ran = 0
+      tally = Hash.new { |h, k| h[k] = [0, 0.0] }
+      worker = Delayed::Worker.new
+      name = "n8n-seed:#{Process.pid}"
+      loop do
+        while (job = Delayed::Job.get_and_lock_next_available(name, QUEUE, 0, Delayed::MAX_PRIORITY))
+          jt = Time.now
+          worker.perform(job)
+          tally[job.tag][0] += 1
+          tally[job.tag][1] += Time.now - jt
+          ran += 1
+        end
+        left = pending_jobs
+        break if left.zero?
+        raise "timed out draining jobs (#{left} left)" if Time.now - t > timeout
+
+        sleep 1
+      end
+      return if ran.zero?
+
+      log format("drained %s: ran %d jobs in %.1fs (failed jobs so far: %d)", label, ran, Time.now - t, Delayed::Job::Failed.count)
+      tally.sort_by { |_, (_, secs)| -secs }.first(6).each { |tag, (n, secs)| log format("        %5d x %-60s %6.1fs", n, tag, secs) }
     end
 
     # Reference "now" for all generated dates (start of the current hour).
@@ -98,14 +255,20 @@ module Seed
       @done[name]
     end
 
+    # One atomic unit of work. The marker row is written in the same transaction as the
+    # data, so a step either happened completely (and is skipped next time) or not at all.
     def step(name, tx: true)
-      return unless selected?(name)
+      return unless @active != false && selected?(name)
 
       if @done[name] && !force?(name)
         log "skip  #{name} (already done)"
         return
       end
+      load_state # pick up refs written by a loader process running in parallel
       log "start #{name}"
+      @grade_jobs_queued = {}
+      @late_jobs_queued = {}
+      @vip = nil
       @cur = { "fixtures" => {}, "tokens" => {}, "refs" => {} }
       t = Time.now
       body = lambda do |*|
@@ -116,12 +279,25 @@ module Seed
                         name, @cur.to_json, Time.now - t]
                      ))
       end
+      attempts = 0
       begin
+        attempts += 1
         if tx
           ActiveRecord::Base.transaction(&body)
         else
           body.call
         end
+      rescue ActiveRecord::Deadlocked, ActiveRecord::LockWaitTimeout => e
+        # two loader processes run in parallel (see run.sh); a step is atomic, so retry it
+        raise unless tx && attempts < 4
+
+        log "retry #{name} after #{e.class.name.demodulize} (attempt #{attempts})"
+        @cur = { "fixtures" => {}, "tokens" => {}, "refs" => {} }
+        @grade_jobs_queued = {}
+        @late_jobs_queued = {}
+        load_state
+        sleep attempts
+        retry
       rescue Exception => e # rubocop:disable Lint/RescueException
         # roll the in-memory view back to what is persisted
         load_state
@@ -172,9 +348,21 @@ module Seed
     # realistic sample of Message rows exists for the CommMessages API.
     def loud
       BroadcastPolicy.notifier = @real_notifier
+      BroadcastPolicy.notification_finder = @real_finder
       yield
     ensure
       BroadcastPolicy.notifier = @null_notifier
+      BroadcastPolicy.notification_finder = @null_finder
+    end
+
+    # Create/modify many assignments (or overrides) in a course without queueing one
+    # due-date/grade recomputation per record; a single recompute runs when the block ends.
+    def bulk_assignments(course, update_grades: true)
+      result = Assignment.suspend_due_date_caching { yield }
+      conn.after_transaction_commit do
+        SubmissionLifecycleManager.recompute_course(course, run_immediately: true, update_grades:)
+      end
+      result
     end
 
     # ---- record lookups -------------------------------------------------------------

@@ -7,6 +7,12 @@
 #   run.sh --summary       only print record counts / sizes
 #   SEED_ONLY=users run.sh run only steps whose name matches (prefix or glob, comma separated)
 #   SEED_FORCE=step.name   re-run one finished (idempotent) step
+#   SEED_SERIAL=1          one loader process instead of two parallel ones in the middle stage
+#
+# A full run has three stages: phases 01-05 (accounts, users, courses, enrollments, main
+# course assignments), then two loader processes side by side - "main" (06-12: everything
+# else in the main course) and "other" (13: all the other courses) - then 14 + 99 (REST-driven
+# work and the final job drain). Fixtures are merged into the state file after every phase.
 #
 # Environment: CANVAS_WEB_CONTAINER (canvas-web), CANVAS_PG_CONTAINER (canvas-pg),
 #              STATE_FILE (test/.state.json), SEED_LOG (log file to keep)
@@ -95,8 +101,10 @@ docker exec "$WEB" mkdir -p "$REMOTE_DIR" || { echo "cannot reach container $WEB
 docker cp "$HERE/." "$WEB:$REMOTE_DIR/" >/dev/null
 
 LOG="${SEED_LOG:-$(mktemp -t canvas-seed.XXXXXX.log)}"
+: >"$LOG"
 only="${SEED_ONLY:-}"
 [ "$MODE" = "--fixtures" ] && only="__fixtures_only__"
+started=$(date +%s)
 
 merge_fixtures() {
 	node -e '
@@ -108,38 +116,63 @@ merge_fixtures() {
 		state.canvas.url = state.canvas.url || "http://localhost:3000";
 		state.canvas.tokens = { ...(state.canvas.tokens || {}), ...add.tokens };
 		state.canvas.fixtures = { ...(state.canvas.fixtures || {}), ...add.fixtures };
-		const tmp = file + ".seed-tmp";
+		const tmp = `${file}.seed-tmp-${process.pid}`;
 		fs.writeFileSync(tmp, JSON.stringify(state, null, 2) + "\n");
 		fs.renameSync(tmp, file);
 		console.log(`[run.sh] merged ${Object.keys(add.tokens).length} tokens + ${Object.keys(add.fixtures).length} fixtures into ${file}`);
 	' "$STATE_FILE"
 }
 
-# The loader prints a FIXTURES_JSON line after every phase (and once more on exit, even
-# after a failure); each one is merged into the state file as soon as it appears.
-merged=0
-last=""
-while IFS= read -r line; do
-	case "$line" in
-	"Running via Spring preloader"*) ;;
-	FIXTURES_JSON=*)
-		json="${line#FIXTURES_JSON=}"
-		if [ "$json" != "$last" ]; then
-			if printf '%s' "$json" | merge_fixtures; then merged=1; last="$json"; else echo "[run.sh] failed to merge fixtures into $STATE_FILE" >&2; fi
-		fi
-		;;
-	SEED_EXIT_STATUS=*) ;;
-	*) printf '%s\n' "$line" ;;
-	esac
-	printf '%s\n' "$line" >>"$LOG"
-done < <(docker exec -e SEED_ONLY="$only" -e SEED_FORCE="${SEED_FORCE:-}" "$WEB" bundle exec rails runner "$REMOTE_DIR/seed.rb" 2>&1; echo "SEED_EXIT_STATUS=$?")
-status=$(grep '^SEED_EXIT_STATUS=' "$LOG" | tail -1 | cut -d= -f2)
-status="${status:-1}"
-if [ "$merged" -eq 0 ]; then
+# Run one loader process. $1 = label shown in front of its output, $2 = SEED_FILES patterns
+# ("" = all phases). The loader prints a FIXTURES_JSON line after every phase (and once more
+# on exit, even after a failure); each one is merged into the state file as it appears.
+# The exit status is left in $LOG.<label>.status.
+run_loader() {
+	local label="$1" files="$2" prefix="" last="" line json
+	[ -n "$label" ] && prefix="[$label] "
+	echo 1 >"$LOG.${label:-all}.status"
+	while IFS= read -r line; do
+		case "$line" in
+		"Running via Spring preloader"*) ;;
+		FIXTURES_JSON=*)
+			json="${line#FIXTURES_JSON=}"
+			if [ "$json" != "$last" ]; then
+				if printf '%s' "$json" | merge_fixtures; then last="$json"; touch "$LOG.merged"; else echo "[run.sh] failed to merge fixtures into $STATE_FILE" >&2; fi
+			fi
+			;;
+		SEED_EXIT_STATUS=*) echo "${line#SEED_EXIT_STATUS=}" >"$LOG.${label:-all}.status" ;;
+		*) printf '%s%s\n' "$prefix" "$line" ;;
+		esac
+		printf '%s%s\n' "$prefix" "$line" >>"$LOG"
+	done < <(docker exec -e SEED_FILES="$files" -e SEED_ONLY="$only" -e SEED_FORCE="${SEED_FORCE:-}" "$WEB" \
+		bundle exec rails runner "$REMOTE_DIR/seed.rb" 2>&1; echo "SEED_EXIT_STATUS=$?")
+	return "$(cat "$LOG.${label:-all}.status")"
+}
+
+status=0
+if [ -n "$only" ] || [ -n "${SEED_SERIAL:-}" ]; then
+	run_loader "" "" || status=$?
+else
+	run_loader "" "0[1-5]_*" || status=$?
+	if [ "$status" -eq 0 ]; then
+		run_loader main "0[6-9]_*,1[0-2]_*" &
+		pid_main=$!
+		run_loader other "13_*" &
+		pid_other=$!
+		wait "$pid_main" || status=$?
+		wait "$pid_other" || status=$?
+	fi
+	if [ "$status" -eq 0 ]; then
+		run_loader "" "14_*,99_*" || status=$?
+	fi
+fi
+if [ ! -e "$LOG.merged" ]; then
 	echo "[run.sh] no FIXTURES_JSON line in the seed output (see $LOG)" >&2
 	status=1
 fi
+rm -f "$LOG".*.status "$LOG.merged"
 
 [ "$MODE" = "--fixtures" ] || summary
-[ "$status" -eq 0 ] || echo "seed finished with errors (exit $status); log: $LOG" >&2
+echo "elapsed: $(( $(date +%s) - started ))s; log: $LOG"
+[ "$status" -eq 0 ] || echo "seed finished with errors (exit $status)" >&2
 exit "$status"

@@ -261,7 +261,8 @@ Seed.step("accounts.grading") do
   cur = Seed.term(:current)
   mid = cur.start_at + ((cur.end_at - cur.start_at) / 2)
   g_cur = group.call("#{cur.name} Quarters", [:current], true, [
-                       ["Quarter 1", cur.start_at, mid, mid + 7.days, 40.0],
+                       # Quarter 1 has ended but stays open for grading (teachers cannot grade in a closed period)
+                       ["Quarter 1", cur.start_at, mid, mid + 30.days, 40.0],
                        ["Quarter 2", mid, cur.end_at, cur.end_at + 10.days, 60.0]
                      ])
   p1 = Seed.term(:past1)
