@@ -246,12 +246,28 @@ describe('course: users', () => {
 		});
 		expect(ids(byLogin)).toEqual([Number(fx('studentUserId'))]);
 
+		// A search term that is a number finds the user with that ID. Canvas wants two characters:
+		// the seeded personas have one-digit IDs on a new database, so a user with a longer one is used.
+		const roster = await canvas().getAll<Json>(`/api/v1/courses/${main}/users?enrollment_type[]=student`);
+		const longId = roster.map((u) => Number(u.id)).find((id) => id >= 10)!;
 		const byId = await runOk({
 			resource: 'course',
 			operation: 'listUsers',
-			params: { courseId: main, options: { search_term: fx('student2UserId') } },
+			params: { courseId: main, options: { search_term: String(longId) } },
 		});
-		expect(ids(byId)).toEqual([Number(fx('student2UserId'))]);
+		expect(ids(byId)).toEqual([longId]);
+
+		const tooShort = await runNode({
+			resource: 'course',
+			operation: 'listUsers',
+			params: { courseId: main, options: { search_term: '7' }, errorHandling: { onError: 'continueWithError' } },
+		});
+		expect(tooShort.success).toEqual([]);
+		expect(tooShort.error[0]).toMatchObject({
+			errorCode: 400,
+			errorType: 'VALIDATION_ERROR',
+			errorMessage: '2 or more characters is required',
+		});
 
 		const nobody = await runOk({
 			resource: 'course',

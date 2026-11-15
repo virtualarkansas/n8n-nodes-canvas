@@ -154,11 +154,18 @@ describe('course: progress, due dates, to-do, activity', () => {
 		await actingAs(studentA).post(`/api/v1/courses/${courseId}/assignments/${assignmentId}/submissions`, {
 			submission: { submission_type: 'online_text_entry', body: '<p>My essay</p>' },
 		});
-		const done = await waitFor(
-			() => canvas().get<Json>(`/api/v1/courses/${courseId}/users/${studentA}/progress`),
-			(progress) => progress.requirement_completed_count === 2,
+		// Canvas re-evaluates the module in background jobs after the submission; until they have
+		// settled, two readings a moment apart can differ. The node's answer is compared with what
+		// Canvas reports directly after it.
+		const { finished, done } = await waitFor(
+			async () => {
+				const [fromNode] = await runOk({ resource: 'course', operation: 'getUserProgress', params: { courseId, userId: studentA } });
+				const direct = await canvas().get<Json>(`/api/v1/courses/${courseId}/users/${studentA}/progress`);
+				return { finished: fromNode, done: direct };
+			},
+			(reading) =>
+				reading.finished.requirement_completed_count === 2 && JSON.stringify(reading.finished) === JSON.stringify(reading.done),
 		);
-		const [finished] = await runOk({ resource: 'course', operation: 'getUserProgress', params: { courseId, userId: studentA } });
 		expect(finished).toEqual(done);
 		expect(finished).toMatchObject({ requirement_count: 2, requirement_completed_count: 2, next_requirement_url: null });
 		expect(Date.now() - Date.parse(String(finished.completed_at))).toBeLessThan(10 * 60_000);

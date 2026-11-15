@@ -169,11 +169,14 @@ describe('coursePace: listContexts', () => {
 		const firstPages = await list('student_enrollment', {}, { perPage: 4, maxPages: 2 });
 		expect(itemIds(firstPages)).toEqual(expected.slice(0, 8));
 
-		const bySortableName = [...students].sort((a, b) => collator.compare(a.sortableName, b.sortableName));
+		// Canvas sorts only sections by name. Its query for students is ordered by user ID first (that
+		// is how it returns one enrollment per student), so "name" changes nothing for them, and
+		// "descending" means descending user IDs.
+		const byUserId = [...students].sort((a, b) => a.userId - b.userId);
 		const ascending = await list('student_enrollment', { sort: 'name' }, { returnAll: true });
-		expect(itemIds(ascending)).toEqual(bySortableName.map((s) => s.enrollmentId));
+		expect(itemIds(ascending)).toEqual(byUserId.map((s) => s.enrollmentId));
 		const descending = await list('student_enrollment', { sort: 'name', order: 'desc' }, { returnAll: true });
-		expect(itemIds(descending)).toEqual([...bySortableName].reverse().map((s) => s.enrollmentId));
+		expect(itemIds(descending)).toEqual([...byUserId].reverse().map((s) => s.enrollmentId));
 
 		const target = students.find((s) => s.userId === Number(paced.studentUserId)) ?? students[0];
 		const searched = await list('student_enrollment', { search_term: target.name });

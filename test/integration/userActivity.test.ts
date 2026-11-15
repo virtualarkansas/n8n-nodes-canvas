@@ -263,10 +263,11 @@ describe('user: activity', () => {
 		const numberedPages = true;
 
 		const { all } = await expectListedLikeCanvas(run({ userId: student, pagination: { returnAll: true } }), direct, { numberedPages });
-		// More than the default page budget of 5 x 10, so the checks below mean something.
-		expect(all.length).toBeGreaterThan(50);
+		// The seed alone leaves the student with about 25 missing submissions (other test files add
+		// more while they run): more than the three pages of five read below, so the limit cuts.
+		expect(all.length).toBeGreaterThan(15);
 		await expectListedLikeCanvas(run({ userId: student }), direct, { take: 50, numberedPages });
-		await expectListedLikeCanvas(run({ userId: student, pagination: { perPage: 7, maxPages: 3 } }), direct, { take: 21, numberedPages });
+		await expectListedLikeCanvas(run({ userId: student, pagination: { perPage: 5, maxPages: 3 } }), direct, { take: 15, numberedPages });
 
 		const inPeriod = await expectListedLikeCanvas(
 			run({ userId: student, additionalFields: { filter: ['current_grading_period'] }, pagination: { returnAll: true } }),
@@ -411,10 +412,10 @@ describe('user: activity', () => {
 		// courses (and delete again) while it is read.
 		const busy = { numberedPages: true, volatile: true };
 
-		// Three pages of the largest size (the complete stream has several hundred heavy items;
-		// reading all of a stream is verified on the learner's own above).
-		const large = await expectListedLikeCanvas(run({ pagination: { perPage: 100, maxPages: 3 } }), direct, { take: 300, ...busy });
-		expect(large.listed).toHaveLength(300);
+		// Two pages of the largest size (the seed alone gives the stream about 240 heavy items, and
+		// it grows while other files run; reading all of a stream is verified on the learner's own above).
+		const large = await expectListedLikeCanvas(run({ pagination: { perPage: 100, maxPages: 2 } }), direct, { take: 200, ...busy });
+		expect(large.listed).toHaveLength(200);
 		await expectListedLikeCanvas(run({}), direct, { take: 50, ...busy });
 
 		// The filtered stream: only items of courses, no conversations.

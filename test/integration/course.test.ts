@@ -220,14 +220,25 @@ describe('course', () => {
 	});
 
 	it('getAll: as a teacher, pages through more courses than one page holds', async () => {
-		const expected = await new (await import('../lib/canvas')).CanvasClient('teacher').getAll<Json>('/api/v1/courses');
-		expect(expected.length, 'seed should enrol the teacher persona in more than 10 courses').toBeGreaterThan(10);
+		// Other files enrol the teacher persona in courses of their own and delete them again while
+		// this one runs: the list is compared with what Canvas reports before and after the node ran.
+		const teacher = new (await import('../lib/canvas')).CanvasClient('teacher');
+		const courseIds = async (): Promise<number[]> => (await teacher.getAll<Json>('/api/v1/courses')).map((c) => Number(c.id));
+		const before = await courseIds();
+		expect(before.length, 'seed should enrol the teacher persona in more than 10 courses').toBeGreaterThan(10);
 
 		const defaults = await runOk({ resource: 'course', operation: 'getAll', persona: 'teacher' });
-		expect(defaults.length).toBe(Math.min(expected.length, 50));
-
 		const all = await runOk({ resource: 'course', operation: 'getAll', persona: 'teacher', params: { pagination: { returnAll: true } } });
-		expect(all.map((c) => c.id).sort()).toEqual(expected.map((c) => c.id).sort());
+		const after = await courseIds();
+
+		const sizes = [before.length, after.length].map((n) => Math.min(n, 50));
+		expect(defaults.length).toBeGreaterThanOrEqual(Math.min(...sizes));
+		expect(defaults.length).toBeLessThanOrEqual(Math.max(...sizes));
+
+		const listed = all.map((c) => Number(c.id));
+		expect(new Set(listed).size).toBe(listed.length);
+		expect(listed).toEqual(expect.arrayContaining(before.filter((id) => after.includes(id))));
+		expect([...before, ...after]).toEqual(expect.arrayContaining(listed));
 
 		const twoPages = await runOk({ resource: 'course', operation: 'getAll', persona: 'teacher', params: { pagination: { perPage: 3, maxPages: 2 } } });
 		expect(twoPages).toHaveLength(6);

@@ -47,6 +47,13 @@ describe('account', () => {
 
 	it('getAll: an admin sees their accounts, with every include', async () => {
 		const expected = await canvas().getAll<Json>('/api/v1/accounts');
+		// Other files add and remove sub-accounts of the root account while this one runs, so the
+		// count is compared with what Canvas reports immediately before and after the node ran.
+		const subAccountCount = async (): Promise<number> => {
+			const accounts = await canvas().getAll<Json>('/api/v1/accounts?include[]=sub_account_count');
+			return Number(accounts.find((a) => String(a.id) === root)!.sub_account_count);
+		};
+		const before = await subAccountCount();
 		const listed = await runOk({
 			resource: 'account',
 			operation: 'getAll',
@@ -57,10 +64,13 @@ describe('account', () => {
 				},
 			},
 		});
+		const after = await subAccountCount();
 		expect(ids(listed)).toEqual(ids(expected));
 		const rootAccount = listed.find((a) => String(a.id) === root)!;
 		expect(rootAccount.course_count).toBeTypeOf('number');
-		expect(rootAccount.sub_account_count).toBeGreaterThanOrEqual(5);
+		expect(before).toBeGreaterThan(0);
+		expect(rootAccount.sub_account_count).toBeGreaterThanOrEqual(Math.min(before, after));
+		expect(rootAccount.sub_account_count).toBeLessThanOrEqual(Math.max(before, after));
 		expect(rootAccount.lti_guid).toBeTypeOf('string');
 		expect(rootAccount.registration_settings).toBeTypeOf('object');
 		expect(rootAccount.services).toBeTypeOf('object');

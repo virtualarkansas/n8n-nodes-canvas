@@ -190,7 +190,8 @@ export const coursePaceFields: INodeProperties[] = [
 				type: 'options',
 				options: [{ name: 'Name', value: 'name' }],
 				default: 'name',
-				description: 'Sort sections by their name and students by their sortable name',
+				description:
+					'Sort sections by their name. Canvas returns students in the order of their user IDs whether or not this is set.',
 			},
 		],
 	},
