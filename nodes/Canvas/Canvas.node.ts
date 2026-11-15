@@ -590,6 +590,9 @@ async function processItem(
 				qsData,
 				rateLimit,
 			);
+			if (request.checkResponse) {
+				request.checkResponse(response.data as IDataObject);
+			}
 			if (request.thenGet) {
 				if (request.mergePagedArray) {
 					return canvasApiRequestMergedRecord.call(

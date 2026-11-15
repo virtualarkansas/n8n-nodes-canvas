@@ -10,6 +10,9 @@ import { resourceHandlers } from '../../nodes/Canvas/handlers';
  */
 const operations = listOperations();
 
+/** Resources whose path is whatever the user types; there is nothing to audit. */
+const FREE_FORM = new Set(['apiRequest']);
+
 describe('resource wiring', () => {
 	it('every resource in the dropdown has a handler and operations, and vice versa', () => {
 		const dropdown = listResources().sort();
@@ -50,7 +53,7 @@ for (const [resource, ops] of byResource) {
 						problems.push(`${variant.label}: malformed path ${path}`);
 						continue;
 					}
-					if (!findRoute(request.method, path)) {
+					if (!FREE_FORM.has(op.resource) && !findRoute(request.method, path)) {
 						const verbs = routesForPath(path).map((r) => r.verb);
 						problems.push(
 							`${variant.label}: ${request.method} ${path} ` +

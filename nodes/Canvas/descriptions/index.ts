@@ -569,3 +569,14 @@ export {
 	quizSubmissionUserOperations,
 	quizSubmissionUserFields,
 } from './QuizSubmissionUserDescription';
+
+// Generic requests resource group descriptions
+export {
+	apiRequestOperations,
+	apiRequestFields,
+} from './ApiRequestDescription';
+
+export {
+	graphqlOperations,
+	graphqlFields,
+} from './GraphqlDescription';

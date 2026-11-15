@@ -217,6 +217,12 @@ import {
 	buildQuizSubmissionUserRequest,
 } from './quizExtras.handler';
 
+// Generic requests group
+import {
+	buildApiRequestRequest,
+	buildGraphqlRequest,
+} from './generic.handler';
+
 /**
  * Maps every Canvas resource name to its handler function.
  * Each handler takes (operation, getParam, getParamObject) and returns IRequestConfig.
@@ -384,4 +390,8 @@ export const resourceHandlers: Record<string, ResourceHandler> = {
 	quizSubmissionEvent: buildQuizSubmissionEventRequest,
 	quizSubmissionQuestion: buildQuizSubmissionQuestionRequest,
 	quizSubmissionUser: buildQuizSubmissionUserRequest,
+
+	// Generic requests group
+	apiRequest: buildApiRequestRequest,
+	graphql: buildGraphqlRequest,
 };

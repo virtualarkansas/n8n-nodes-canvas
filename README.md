@@ -203,6 +203,15 @@ authentication providers, developer keys, access tokens, external tools and LTI 
 content migrations and exports, blueprint courses, feature flags, CSP settings, audit logs
 (grade change log, course audit log).
 
+**Anything else.** Two generic resources cover what has no operation of its own, including
+endpoints Instructure does not document and data only the Canvas web interface shows:
+
+- **Custom API Request** sends any method and path to your Canvas instance with the node's rate
+  limiting, pagination and error handling. Undocumented endpoints can change without notice.
+- **GraphQL** runs a query or mutation against Canvas' GraphQL API (explore the schema at
+  `/graphiql` on your instance). Canvas runs one operation per request and reports errors in a
+  successful response; the node turns those into failed items unless you ask for partial data.
+
 Some resources call services that only exist on hosted Canvas (New Quizzes, the Analytics plugin,
 LTI Advantage services). They are checked against Instructure's documentation rather than against
 a running instance; `test/COVERAGE.md` marks them.

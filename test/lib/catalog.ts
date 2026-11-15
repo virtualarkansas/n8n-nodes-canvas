@@ -112,6 +112,7 @@ export function sampleValue(field: INodeProperties, variant: 'minimal' | 'full')
 			return out;
 		}
 		default: {
+			if (name === 'path') return '/api/v1/courses';
 			if (/ids$/i.test(name)) return '7,8';
 			if (/id$/i.test(name)) return '7';
 			if (/url$/i.test(name) && !/page/i.test(name)) return 'https://example.com/file.txt';

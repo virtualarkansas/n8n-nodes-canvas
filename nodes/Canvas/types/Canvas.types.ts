@@ -34,6 +34,11 @@ export interface IRequestConfig {
 	 */
 	mergePagedArray?: string;
 	/**
+	 * Inspect a successful response and throw if it actually reports a failure
+	 * (GraphQL answers 200 with an `errors` array).
+	 */
+	checkResponse?: (data: IDataObject) => void;
+	/**
 	 * After a successful write, read this endpoint and output its response instead.
 	 * For the few calls whose own response does not reflect the change they made.
 	 */
