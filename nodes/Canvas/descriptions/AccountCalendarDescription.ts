@@ -186,6 +186,6 @@ export const accountCalendarFields: INodeProperties[] = [
 			},
 		},
 		description:
-			'JSON array of calendars to update, in the format of the default value. Each object needs the account ID (this account or one of its sub-accounts) and "visible" and/or "auto_subscribe".',
+			'JSON array of calendars to update, in the format of the default value. Each object needs the account ID (this account or one of its sub-accounts) and "visible" and/or "auto_subscribe". A list built by a previous node must be turned into text with JSON.stringify() in the expression.',
 	},
 ];

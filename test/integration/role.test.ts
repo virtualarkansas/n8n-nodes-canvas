@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { canvas, fx, unique } from '../lib/canvas';
-import { failureText, ids, pairedItems, runNode, runOk } from './support/adminGroup';
+import { expectSameIds, failureText, ids, pairedItems, runNode, runOk } from './support/adminGroup';
 import type { Json } from '../lib/n8n';
 
 /**
@@ -260,7 +260,7 @@ describe('role', () => {
 			operation: 'getAll',
 			params: { accountId: 'self', options: { show_inherited: false }, pagination: { returnAll: true } },
 		});
-		expect(listed.map((r) => r.id)).toEqual(expected.map((r) => r.id));
+		expectSameIds(listed, expected, await canvas().getAll<Json>(`/api/v1/accounts/${root}/roles`));
 		expect(ids(listed)).toContain(Number(fx('accountRoleId')));
 
 		const asTeacher = await runNode({

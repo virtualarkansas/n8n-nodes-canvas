@@ -16,6 +16,7 @@ describe('accountCalendar', () => {
 	const root = fx('accountId');
 	const tag = unique('CalBat').replace(/\s/g, '-');
 	let parentId = '';
+	let outsiderId = '';
 	const childIds: string[] = [];
 	const CHILDREN = 12;
 
@@ -32,6 +33,11 @@ describe('accountCalendar', () => {
 			});
 			childIds.push(String(child.id));
 		}
+		// An account next to the branch, to prove that Update Many cannot reach outside of it.
+		const outsider = await canvas().post<Json>(`/api/v1/accounts/${root}/sub_accounts`, {
+			account: { name: `${tag} Outsider` },
+		});
+		outsiderId = String(outsider.id);
 		// "Available calendars" lists the visible calendars below accounts the user is an admin of.
 		await canvas().post(`/api/v1/accounts/${parentId}/admins`, {
 			user_id: fx('observerUserId'),
@@ -46,8 +52,8 @@ describe('accountCalendar', () => {
 		for (const id of childIds) {
 			await canvas().request('DELETE', `/api/v1/accounts/${parentId}/sub_accounts/${id}`);
 		}
-		if (parentId) {
-			await canvas().request('DELETE', `/api/v1/accounts/${root}/sub_accounts/${parentId}`);
+		for (const id of [parentId, outsiderId].filter(Boolean)) {
+			await canvas().request('DELETE', `/api/v1/accounts/${root}/sub_accounts/${id}`);
 		}
 	});
 
@@ -220,13 +226,13 @@ describe('accountCalendar', () => {
 			operation: 'updateMany',
 			params: {
 				accountId: parentId,
-				calendars: JSON.stringify([{ id: Number(fx('subAccountId')), visible: true }]),
+				calendars: JSON.stringify([{ id: Number(outsiderId), visible: true }]),
 				errorHandling: { onError: 'continueWithError' },
 			},
 		});
 		expect(outside.success).toEqual([]);
 		expect(outside.error[0].errorType).toBe('FORBIDDEN');
-		expect((await calendar(fx('subAccountId'))).visible).toBe(false);
+		expect((await calendar(outsiderId)).visible).toBe(false);
 
 		const duplicates = await runNode({
 			resource: 'accountCalendar',

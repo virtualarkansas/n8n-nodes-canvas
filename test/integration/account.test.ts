@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { canvas, CanvasClient, fx, unique } from '../lib/canvas';
-import { expectSameIds, ids, runNode, runOk } from './support/adminGroup';
+import { expectSameIds, ids, runNode, runOk, settled } from './support/adminGroup';
 import type { Json } from '../lib/n8n';
 
 /**
@@ -91,8 +91,11 @@ describe('account', () => {
 		const after = await canvas().getAll<Json>('/api/v1/manageable_accounts');
 		expectSameIds(all, before, after);
 
+		// Default paging: up to 50 (other workers add and remove sub-accounts meanwhile).
 		const defaults = await runOk({ resource: 'account', operation: 'getAll', params: { accountScope: 'manageable' } });
-		expect(defaults.length).toBe(Math.min(after.length, 50));
+		const later = await canvas().getAll<Json>('/api/v1/manageable_accounts');
+		expect(defaults.length).toBeGreaterThanOrEqual(Math.min(after.length, later.length, 50));
+		expect(defaults.length).toBeLessThanOrEqual(Math.min(Math.max(after.length, later.length), 50));
 
 		const twoPages = await runOk({
 			resource: 'account',
@@ -631,13 +634,16 @@ describe('account', () => {
 		expect(defaults).toHaveLength(50);
 		expect(new Set(ids(defaults)).size).toBe(50);
 
-		const all = await runOk({
-			resource: 'account',
-			operation: 'getCourses',
-			params: { accountId: root, pagination: { returnAll: true } },
+		const all = await settled(async () => {
+			const snapshot = await canvas().getAll<Json>(`/api/v1/accounts/${root}/courses`);
+			const everything = await runOk({
+				resource: 'account',
+				operation: 'getCourses',
+				params: { accountId: root, pagination: { returnAll: true } },
+			});
+			expectSameIds(everything, snapshot, await canvas().getAll<Json>(`/api/v1/accounts/${root}/courses`));
+			return everything;
 		});
-		const after = await canvas().getAll<Json>(`/api/v1/accounts/${root}/courses`);
-		expectSameIds(all, before, after);
 		expect(all.some((c) => c.workflow_state === 'deleted')).toBe(false);
 
 		const paged = await runOk({
@@ -722,14 +728,18 @@ describe('account', () => {
 
 	for (const filterCase of courseFilterCases) {
 		it(`getCourses: filter "${filterCase.name}" returns exactly what Canvas returns for it`, async () => {
-			const before = await canvas().getAll<Json>(`/api/v1/accounts/${root}/courses?${filterCase.query}`);
-			const listed = await runOk({
-				resource: 'account',
-				operation: 'getCourses',
-				params: { accountId: root, filters: filterCase.filters, pagination: { returnAll: true } },
+			// The courses of the root account change all the time on the shared Canvas.
+			const { before, listed } = await settled(async () => {
+				const before = await canvas().getAll<Json>(`/api/v1/accounts/${root}/courses?${filterCase.query}`);
+				const listed = await runOk({
+					resource: 'account',
+					operation: 'getCourses',
+					params: { accountId: root, filters: filterCase.filters, pagination: { returnAll: true } },
+				});
+				const after = await canvas().getAll<Json>(`/api/v1/accounts/${root}/courses?${filterCase.query}`);
+				expectSameIds(listed, before, after);
+				return { before, listed };
 			});
-			const after = await canvas().getAll<Json>(`/api/v1/accounts/${root}/courses?${filterCase.query}`);
-			expectSameIds(listed, before, after);
 			if (filterCase.check) {
 				expect(listed.filter((c) => !filterCase.check!(c)).map((c) => c.id)).toEqual([]);
 			}

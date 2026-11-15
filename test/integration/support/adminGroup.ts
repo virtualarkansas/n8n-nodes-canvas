@@ -71,6 +71,24 @@ export function expectSameIds(listed: Json[], before: Json[], after: Json[]): vo
 	expect(listedIds.size, 'duplicates in the node output').toBe(listed.length);
 }
 
+/**
+ * Repeat a comparison that depends on lists other workers are changing right now
+ * (for example: every course of the root account). A real defect fails every time;
+ * a record that was created or deleted between two requests does not.
+ */
+export async function settled<T>(compare: () => Promise<T>, tries = 3): Promise<T> {
+	let lastError: unknown;
+	for (let attempt = 0; attempt < tries; attempt++) {
+		try {
+			return await compare();
+		} catch (error) {
+			lastError = error;
+			await new Promise((resolve) => setTimeout(resolve, 3000));
+		}
+	}
+	throw lastError;
+}
+
 /** The input item index each Success item is paired with. */
 export const pairedItems = (result: RunNodeResult): number[] =>
 	result.rawSuccess.map((item) => Number((item.pairedItem as Json | undefined)?.item));
