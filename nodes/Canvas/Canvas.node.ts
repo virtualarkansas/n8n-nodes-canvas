@@ -341,6 +341,10 @@ export class Canvas implements INodeType {
 		const resource = this.getNodeParameter('resource', 0) as string;
 		const operation = this.getNodeParameter('operation', 0) as string;
 		const debugMode = this.getNodeParameter('debugMode', 0, false) as boolean;
+		// Attached to an AI agent ("Canvas LMS Tool") the node has one output, and n8n hands the
+		// agent the first one only: failed items and debug requests join it, so the agent learns
+		// what went wrong instead of receiving nothing.
+		const asTool = this.getNode().type.endsWith('Tool');
 
 		// Get options
 		const errorHandlingRaw = this.getNodeParameter('errorHandling', 0, {}) as IDataObject;
@@ -452,7 +456,7 @@ export class Canvas implements INodeType {
 				debugItems.push({ json: debugJson, pairedItem: { item: i } });
 			}
 
-			return [[], errorItems, debugItems];
+			return asTool ? [[...errorItems, ...debugItems]] : [[], errorItems, debugItems];
 		}
 
 		const collect = (result: IProcessResult): void => {
@@ -509,7 +513,7 @@ export class Canvas implements INodeType {
 			}
 		}
 
-		return [successItems, errorItems];
+		return asTool ? [[...successItems, ...errorItems]] : [successItems, errorItems];
 	}
 }
 

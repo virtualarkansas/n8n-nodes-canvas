@@ -185,6 +185,12 @@ They are checked against Instructure's documentation rather than against a runni
 - Lists that Canvas wraps in an object (`{ "quiz_submissions": [...] }`, `{ "events": [...] }`)
   are unwrapped into items.
 
+**As an AI agent tool.** The node can be attached to an AI Agent as **Canvas LMS Tool**; use
+`$fromAI(...)` in a parameter to let the model supply its value. A tool has a single output, so the
+agent receives failed items (in the "Continue" error modes) and Debug Mode's request together with
+the successful items. In the default **Stop** mode a failure reaches the agent as an error with
+Canvas' message.
+
 **IDs.** Wherever an ID is asked for, Canvas also accepts SIS IDs in the form `sis_course_id:ABC123`,
 `sis_user_id:...`, `sis_section_id:...` and so on.
 
