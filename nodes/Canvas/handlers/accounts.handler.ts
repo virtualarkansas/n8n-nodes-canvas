@@ -3,6 +3,7 @@ import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.t
 import {
 	downloadIfAsked,
 	isBlank,
+	parseJson,
 	parseJsonObjectOrEmpty,
 	pollUntil,
 	stateIn,
@@ -515,19 +516,14 @@ export function buildAccountCalendarRequest(
 
 		case 'updateMany': {
 			const calendarsJson = getParam('calendars');
-			let calendars: unknown;
-			try {
-				calendars = JSON.parse(calendarsJson);
-			} catch {
-				if (calendarsJson.includes('[object Object]')) {
-					// A list of objects from an expression reaches this point flattened to text.
-					throw new ApplicationError(
-						'Calendars received a list of objects instead of JSON text. Wrap the expression in JSON.stringify(), e.g. {{ JSON.stringify($json.calendars) }}.',
-					);
-				}
-				throw new ApplicationError(
-					'Invalid JSON in Calendars. Expected a JSON array of objects like [{"id": 1, "visible": true, "auto_subscribe": false}].',
-				);
+			// A list of objects from an expression can reach this point flattened to text.
+			const invalidJson = calendarsJson.includes('[object Object]')
+				? 'Calendars received a list of objects instead of JSON text. Wrap the expression in JSON.stringify(), e.g. {{ JSON.stringify($json.calendars) }}.'
+				: 'Invalid JSON in Calendars. Expected a JSON array of objects like [{"id": 1, "visible": true, "auto_subscribe": false}].';
+			const calendars = parseJson(calendarsJson, invalidJson);
+			if (calendars === undefined) {
+				// Left empty.
+				throw new ApplicationError(invalidJson);
 			}
 			if (!Array.isArray(calendars) || calendars.length === 0) {
 				throw new ApplicationError(

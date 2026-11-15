@@ -1,6 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { mapFields, toList } from './shared';
+import { collectionRows, mapFields, toList } from './shared';
 
 // ============================================
 // Enrollment
@@ -135,14 +135,13 @@ export function buildEnrollmentRequest(
 // ============================================
 
 function buildEnrollmentTermOverrides(getParamObject: GetParamObject): Record<string, object> | undefined {
-	const overridesData = getParamObject('overrides');
-	const overrideItems = overridesData.override as Array<{
-		enrollmentType: string;
-		startAt?: string;
-		endAt?: string;
-	}> | undefined;
+	const overrideItems = collectionRows(
+		getParamObject('overrides'),
+		'override',
+		'Date Overrides',
+	) as Array<{ enrollmentType: string; startAt?: string; endAt?: string }>;
 
-	if (!overrideItems || overrideItems.length === 0) {
+	if (overrideItems.length === 0) {
 		return undefined;
 	}
 

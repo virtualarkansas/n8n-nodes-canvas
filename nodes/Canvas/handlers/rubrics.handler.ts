@@ -33,7 +33,7 @@ function getRubricBasePath(getParam: GetParam): string {
  * two ratings the Canvas rubric editor starts with are sent instead.
  */
 function rubricCriteria(collection: Record<string, unknown>): Record<string, Record<string, unknown>> {
-	const criteria = collectionRows(collection, 'criterion').map((item) => {
+	const criteria = collectionRows(collection, 'criterion', 'Criteria').map((item) => {
 		const criterion: Record<string, unknown> = {
 			description: item.description,
 			...pickFilled(item, ['id', 'long_description', 'learning_outcome_id', 'mastery_points']),
@@ -45,7 +45,7 @@ function rubricCriteria(collection: Record<string, unknown>): Record<string, Rec
 			criterion.ignore_for_scoring = true;
 		}
 
-		const ratings = collectionRows(item.ratings, 'rating').map((rating) => ({
+		const ratings = collectionRows(item.ratings, 'rating', 'Ratings').map((rating) => ({
 			description: rating.description,
 			points: rating.points ?? 0,
 			...pickFilled(rating, ['id', 'long_description']),
@@ -137,7 +137,7 @@ function rubricAssessment(getParam: GetParam, getParamObject: GetParamObject): R
 		user_id: getParam('userId'),
 		assessment_type: getParam('assessmentType', 'grading'),
 	};
-	for (const row of collectionRows(getParamObject('criterionAssessments'), 'criterion')) {
+	for (const row of collectionRows(getParamObject('criterionAssessments'), 'criterion', 'Criteria')) {
 		const criterionId = String(row.criterion_id ?? '').trim();
 		if (criterionId === '') {
 			continue;
@@ -174,7 +174,7 @@ export function handleRubricResource(
 
 		case 'update': {
 			const options = getParamObject('options');
-			if (collectionRows(getParamObject('criteria'), 'criterion').length === 0) {
+			if (collectionRows(getParamObject('criteria'), 'criterion', 'Criteria').length === 0) {
 				throw new ApplicationError(
 					'At least one criterion is required for rubric update: Canvas replaces the whole rubric, so an update without criteria would empty it',
 				);
@@ -352,7 +352,7 @@ function getOutcomeGroupBasePath(getParam: GetParam): string {
 
 /** `ratings[]` of an outcome from the Ratings collection. */
 function outcomeRatings(collection: Record<string, unknown>): IDataObject[] {
-	return collectionRows(collection, 'rating').map((rating) => ({
+	return collectionRows(collection, 'rating', 'Ratings').map((rating) => ({
 		description: rating.description,
 		points: rating.points ?? 0,
 	}));
@@ -839,7 +839,7 @@ export function handleProficiencyRatingResource(
 			};
 
 		case 'set': {
-			const ratingItems = collectionRows(getParamObject('ratings'), 'rating');
+			const ratingItems = collectionRows(getParamObject('ratings'), 'rating', 'Ratings');
 
 			if (ratingItems.length === 0) {
 				throw new ApplicationError(

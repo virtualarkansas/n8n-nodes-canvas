@@ -1,6 +1,7 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IDataObject } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
+import { collectionRows, parseJson, toList } from './shared';
 
 // ============================================
 // Learning Object Dates
@@ -13,6 +14,9 @@ const LEARNING_OBJECT_PATHS: Record<string, string> = {
 	page: 'pages',
 	quiz: 'quizzes',
 };
+
+/** The values of the "Clear Dates" option. */
+const CLEARABLE_DATES = ['due_at', 'lock_at', 'unlock_at'];
 
 export function buildLearningObjectDateRequest(
 	operation: string,
@@ -37,18 +41,19 @@ export function buildLearningObjectDateRequest(
 					body[key] = fields[key] as IDataObject[keyof IDataObject];
 				}
 			}
-			for (const key of (fields.clear as string[] | undefined) ?? []) {
+			for (const key of toList(fields.clear)) {
+				if (!CLEARABLE_DATES.includes(key)) {
+					throw new ApplicationError(
+						`Clear Dates: "${key}" is not a date that can be cleared (${CLEARABLE_DATES.join(', ')})`,
+					);
+				}
 				body[key] = null;
 			}
-			if (fields.assignment_overrides !== undefined) {
-				let overrides: unknown = fields.assignment_overrides;
-				if (typeof overrides === 'string') {
-					try {
-						overrides = JSON.parse(overrides);
-					} catch {
-						throw new ApplicationError('Assignment Overrides must be a JSON array, e.g. [{"course_section_id": 12, "due_at": "2026-05-01T23:59:00Z"}]');
-					}
-				}
+			const overrides = parseJson(
+				fields.assignment_overrides,
+				'Assignment Overrides must be a JSON array, e.g. [{"course_section_id": 12, "due_at": "2026-05-01T23:59:00Z"}]',
+			);
+			if (overrides !== undefined) {
 				if (!Array.isArray(overrides)) {
 					throw new ApplicationError('Assignment Overrides must be a JSON array');
 				}
@@ -114,7 +119,7 @@ export function buildLiveAssessmentRequest(
 		case 'getAll':
 			return { method: 'GET', endpoint: base, dataKey: 'assessments' };
 		case 'createResults': {
-			const entries = ((getParamObject('results').result as IDataObject[] | undefined) ?? []).filter(
+			const entries = collectionRows(getParamObject('results'), 'result', 'Results').filter(
 				(entry) => entry.user_id !== undefined && entry.user_id !== '',
 			);
 			if (entries.length === 0) {

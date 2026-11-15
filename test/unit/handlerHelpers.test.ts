@@ -34,9 +34,11 @@ function messageOf(run: () => unknown): string {
 	throw new Error('Expected an error, but nothing was thrown');
 }
 
-/** JSON does not accept these around a document, `String.prototype.trim` removes them. */
-const NBSP = ' ';
-const BOM = '﻿';
+/** JSON does not accept these around a document; `String.prototype.trim` removes them. */
+const NBSP = String.fromCharCode(0x00a0);
+const BOM = String.fromCharCode(0xfeff);
+
+const NOT_A_LIST = 'A list of single values (text or numbers) was expected, but';
 
 describe('toList', () => {
 	it('splits comma-separated text into trimmed, non-empty entries', () => {
@@ -57,18 +59,41 @@ describe('toList', () => {
 	it('takes the entries of an array as they are: text form, trimmed, not split again', () => {
 		expect(toList([1, ' 2 ', ''])).toEqual(['1', '2']);
 		expect(toList(['a,b', ' c '])).toEqual(['a,b', 'c']);
-		expect(toList([true, 0, null])).toEqual(['true', '0', 'null']);
-		expect(toList([[1, 2], { id: 7 }])).toEqual(['1,2', '[object Object]']);
+		expect(toList([true, 0, 12.5])).toEqual(['true', '0', '12.5']);
+	});
+
+	it('drops the null and undefined entries of an array', () => {
+		expect(toList([1, null, ' 2 ', undefined])).toEqual(['1', '2']);
+		expect(toList([null, undefined])).toEqual([]);
+		// As text these are ordinary words.
+		expect(toList('1, null, undefined')).toEqual(['1', 'null', 'undefined']);
+	});
+
+	it('refuses an array with an entry that is an object or an array, showing the entry', () => {
+		expect(messageOf(() => toList([1, { id: 7 }]))).toBe(`${NOT_A_LIST} one entry is {"id":7}`);
+		expect(messageOf(() => toList([{ id: 7 }, { id: '8' }]))).toBe(
+			`${NOT_A_LIST} one entry is {"id":7}`,
+		);
+		expect(messageOf(() => toList([[1, 2], 'a,b', null]))).toBe(`${NOT_A_LIST} one entry is [1,2]`);
+		expect(messageOf(() => toList(['a', []]))).toBe(`${NOT_A_LIST} one entry is []`);
+	});
+
+	it('refuses an object given instead of a list', () => {
+		expect(messageOf(() => toList({ a: 1 }))).toBe(`${NOT_A_LIST} the value is {"a":1}`);
+		expect(messageOf(() => toList({}))).toBe(`${NOT_A_LIST} the value is {}`);
+	});
+
+	it('shortens the value it shows to 60 characters', () => {
+		const entry = { description: 'x'.repeat(100) };
+		expect(messageOf(() => toList([entry]))).toBe(
+			`${NOT_A_LIST} one entry is ${JSON.stringify(entry).slice(0, 60)}…`,
+		);
 	});
 
 	it('accepts a single number or boolean', () => {
 		expect(toList(0)).toEqual(['0']);
 		expect(toList(12.5)).toEqual(['12.5']);
 		expect(toList(false)).toEqual(['false']);
-	});
-
-	it('reads any other value by its text form', () => {
-		expect(toList({ a: 1 })).toEqual(['[object Object]']);
 	});
 
 	it('splits on the given separator instead of a comma', () => {
@@ -84,9 +109,9 @@ describe('toList', () => {
 	});
 
 	it('does not change the array it is given', () => {
-		const input = [' 1 ', ''];
+		const input = [' 1 ', '', null];
 		toList(input);
-		expect(input).toEqual([' 1 ', '']);
+		expect(input).toEqual([' 1 ', '', null]);
 	});
 });
 
@@ -246,25 +271,54 @@ describe('mapFields', () => {
 describe('collectionRows', () => {
 	it('returns the rows of the group', () => {
 		const rows = [{ id: 1 }, { id: 2 }];
-		expect(collectionRows({ rating: rows }, 'rating')).toBe(rows);
+		expect(collectionRows({ rating: rows }, 'rating', 'Ratings')).toBe(rows);
+		expect(collectionRows({ rating: [{}] }, 'rating', 'Ratings')).toEqual([{}]);
 	});
 
-	it('returns an empty list when there are no rows', () => {
-		expect(collectionRows({}, 'rating')).toEqual([]);
-		expect(collectionRows({ other: [{ id: 1 }] }, 'rating')).toEqual([]);
-		expect(collectionRows({ rating: [] }, 'rating')).toEqual([]);
-	});
-
-	it('returns an empty list when the group is not an array', () => {
-		expect(collectionRows({ rating: { id: 1 } }, 'rating')).toEqual([]);
-		expect(collectionRows({ rating: 'text' }, 'rating')).toEqual([]);
-		expect(collectionRows({ rating: null }, 'rating')).toEqual([]);
-	});
-
-	it('returns an empty list when the collection is not an object', () => {
-		for (const collection of [undefined, null, '', 'rating', 0, true]) {
-			expect(collectionRows(collection, 'rating')).toEqual([]);
+	it('has no rows when the group is missing or was left empty', () => {
+		expect(collectionRows({}, 'rating', 'Ratings')).toEqual([]);
+		expect(collectionRows({ other: [{ id: 1 }] }, 'rating', 'Ratings')).toEqual([]);
+		expect(collectionRows({ rating: [] }, 'rating', 'Ratings')).toEqual([]);
+		for (const rows of [undefined, null, '']) {
+			expect(collectionRows({ rating: rows }, 'rating', 'Ratings')).toEqual([]);
 		}
+	});
+
+	it('has no rows when the collection itself is missing or was left empty', () => {
+		for (const collection of [undefined, null, '']) {
+			expect(collectionRows(collection, 'rating', 'Ratings')).toEqual([]);
+		}
+	});
+
+	it('refuses a group that is not a list, naming the field', () => {
+		const message = (rows: unknown): string =>
+			messageOf(() => collectionRows({ gradeValues: rows }, 'gradeValues', 'Grades'));
+		const expected = 'Grades must be a list of entries (one object per entry), got';
+		expect(message('x')).toBe(`${expected} "x"`);
+		expect(message('   ')).toBe(`${expected} "   "`);
+		expect(message(0)).toBe(`${expected} 0`);
+		expect(message(false)).toBe(`${expected} false`);
+		expect(message({ student_id: 7 })).toBe(`${expected} {"student_id":7}`);
+	});
+
+	it('refuses a row that is not an object, naming the field and the row', () => {
+		const message = (rows: unknown[]): string =>
+			messageOf(() => collectionRows({ slots: rows }, 'slots', 'Time Slots'));
+		const expected = 'must be an object with the fields of an entry, got';
+		expect(message([null])).toBe(`Time Slots: entry 1 ${expected} null`);
+		expect(message([{ start_at: 'a' }, 'text'])).toBe(`Time Slots: entry 2 ${expected} "text"`);
+		expect(message([{}, {}, [1, 2]])).toBe(`Time Slots: entry 3 ${expected} [1,2]`);
+		expect(message([7])).toBe(`Time Slots: entry 1 ${expected} 7`);
+	});
+
+	it('refuses a collection that is not an object, naming the field and the group', () => {
+		const message = (collection: unknown): string =>
+			messageOf(() => collectionRows(collection, 'rating', 'Ratings'));
+		const expected = 'Ratings must be an object with its entries under "rating", got';
+		expect(message('text')).toBe(`${expected} "text"`);
+		expect(message([{ description: 'A' }])).toBe(`${expected} [{"description":"A"}]`);
+		expect(message(0)).toBe(`${expected} 0`);
+		expect(message(true)).toBe(`${expected} true`);
 	});
 });
 
@@ -287,25 +341,27 @@ describe('parseJson', () => {
 		expect(parseJson('12', MESSAGE)).toBe(12);
 		expect(parseJson('"text"', MESSAGE)).toBe('text');
 		expect(parseJson('false', MESSAGE)).toBe(false);
-		expect(parseJson('null', MESSAGE)).toBeNull();
 		expect(parseJson(' \n{"a": 1}\t ', MESSAGE)).toEqual({ a: 1 });
 	});
 
-	it('returns undefined for empty and whitespace-only text', () => {
-		expect(parseJson('', MESSAGE)).toBeUndefined();
-		expect(parseJson('   ', MESSAGE)).toBeUndefined();
-		expect(parseJson(' \n\t', MESSAGE, { asTyped: true })).toBeUndefined();
+	it('gives undefined for a field that was left empty: undefined, null, empty or blank text', () => {
+		for (const value of [undefined, null, '', '   ', ' \n\t', NBSP, BOM]) {
+			expect(parseJson(value, MESSAGE)).toBeUndefined();
+		}
 	});
 
-	it('returns anything that is not text as it is', () => {
+	it('gives JSON null for the typed text null', () => {
+		expect(parseJson('null', MESSAGE)).toBeNull();
+		expect(parseJson(' null ', MESSAGE)).toBeNull();
+	});
+
+	it('returns any other value from an expression as it is', () => {
 		const object = { a: 1 };
 		const array = [1, 2];
 		expect(parseJson(object, MESSAGE)).toBe(object);
 		expect(parseJson(array, MESSAGE)).toBe(array);
 		expect(parseJson(0, MESSAGE)).toBe(0);
 		expect(parseJson(false, MESSAGE)).toBe(false);
-		expect(parseJson(null, MESSAGE)).toBeNull();
-		expect(parseJson(undefined, MESSAGE)).toBeUndefined();
 	});
 
 	it('throws the given message for text that is not JSON', () => {
@@ -314,94 +370,60 @@ describe('parseJson', () => {
 		expect(messageOf(() => parseJson('sample', other))).toBe(other);
 	});
 
-	it('trims the text before parsing, unless it is to be parsed as typed', () => {
+	it('trims the text before parsing, which also removes a BOM and no-break spaces', () => {
 		expect(parseJson(`${NBSP}{"a": 1}${NBSP}`, MESSAGE)).toEqual({ a: 1 });
 		expect(parseJson(`${BOM}[1]`, MESSAGE)).toEqual([1]);
-		expect(messageOf(() => parseJson(`${NBSP}{"a": 1}${NBSP}`, MESSAGE, { asTyped: true }))).toBe(
-			MESSAGE,
-		);
-		expect(messageOf(() => parseJson(`${BOM}[1]`, MESSAGE, { asTyped: true }))).toBe(MESSAGE);
-		// Ordinary whitespace is part of JSON and fine either way.
-		expect(parseJson(' \n[1]\t ', MESSAGE, { asTyped: true })).toEqual([1]);
+		expect(parseJson(`${BOM} 12 \n`, MESSAGE)).toBe(12);
 	});
 });
 
 describe('parseJsonObject', () => {
-	const rules = {
+	const messages = {
 		invalidJson: 'Assignment must be valid JSON',
 		notAnObject: 'Assignment must be a JSON object',
 	};
 
 	it('parses text into an object', () => {
-		expect(parseJsonObject('{"a": 1, "b": {"c": [2]}}', rules)).toEqual({ a: 1, b: { c: [2] } });
-		expect(parseJsonObject(' {"a": 1} ', rules)).toEqual({ a: 1 });
-		expect(parseJsonObject('{}', rules)).toEqual({});
+		expect(parseJsonObject('{"a": 1, "b": {"c": [2]}}', messages)).toEqual({ a: 1, b: { c: [2] } });
+		expect(parseJsonObject(' {"a": 1} ', messages)).toEqual({ a: 1 });
+		expect(parseJsonObject(`${BOM}{"a": 1}${NBSP}`, messages)).toEqual({ a: 1 });
+		expect(parseJsonObject('{}', messages)).toEqual({});
 	});
 
 	it('returns an object from an expression as it is', () => {
 		const object = { a: 1 };
-		expect(parseJsonObject(object, rules)).toBe(object);
+		expect(parseJsonObject(object, messages)).toBe(object);
 	});
 
-	it('returns undefined when the field was left empty', () => {
-		expect(parseJsonObject(undefined, rules)).toBeUndefined();
-		expect(parseJsonObject(null, rules)).toBeUndefined();
-		expect(parseJsonObject('', rules)).toBeUndefined();
-		expect(parseJsonObject('   ', rules)).toBeUndefined();
+	it('gives undefined for a field that was left empty', () => {
+		for (const value of [undefined, null, '', '   ', ' \n\t', NBSP]) {
+			expect(parseJsonObject(value, messages)).toBeUndefined();
+		}
 	});
 
 	it('throws invalidJson for text that is not JSON', () => {
-		expect(messageOf(() => parseJsonObject('{broken', rules))).toBe(
-			'Assignment must be valid JSON',
-		);
-		expect(messageOf(() => parseJsonObject('sample', rules))).toBe('Assignment must be valid JSON');
+		for (const value of ['{broken', 'sample']) {
+			expect(messageOf(() => parseJsonObject(value, messages))).toBe(messages.invalidJson);
+		}
 	});
 
-	it('throws notAnObject for anything that is not an object', () => {
-		for (const value of [
+	it('throws notAnObject for anything that is not an object, the typed text null included', () => {
+		const values = [
 			'[{"id": 7}]',
 			'12',
 			'"text"',
 			'true',
 			'null',
+			' null ',
 			[1],
 			[],
 			0,
 			12.5,
 			true,
-			false,
-		]) {
-			expect(messageOf(() => parseJsonObject(value, rules))).toBe(
-				'Assignment must be a JSON object',
-			);
+		];
+		for (const value of [...values, false]) {
+			expect(messageOf(() => parseJsonObject(value, messages))).toBe(messages.notAnObject);
 		}
-	});
-
-	it('whitespaceIsInvalid: only undefined, null and the empty string count as empty', () => {
-		const strict = { ...rules, whitespaceIsInvalid: true };
-		expect(parseJsonObject('', strict)).toBeUndefined();
-		expect(parseJsonObject(null, strict)).toBeUndefined();
-		expect(messageOf(() => parseJsonObject('   ', strict))).toBe('Assignment must be valid JSON');
-		expect(messageOf(() => parseJsonObject('   ', { ...strict, asTyped: true }))).toBe(
-			'Assignment must be valid JSON',
-		);
-	});
-
-	it('nullTextIsEmpty: the JSON text null counts as empty', () => {
-		expect(parseJsonObject('null', { ...rules, nullTextIsEmpty: true })).toBeUndefined();
-		expect(parseJsonObject(' null ', { ...rules, nullTextIsEmpty: true })).toBeUndefined();
-		// Other JSON that is not an object is still refused.
-		expect(messageOf(() => parseJsonObject('[]', { ...rules, nullTextIsEmpty: true }))).toBe(
-			'Assignment must be a JSON object',
-		);
-	});
-
-	it('asTyped: parses the text without trimming it first', () => {
-		expect(parseJsonObject(`${NBSP}{"a": 1}`, rules)).toEqual({ a: 1 });
-		expect(messageOf(() => parseJsonObject(`${NBSP}{"a": 1}`, { ...rules, asTyped: true }))).toBe(
-			'Assignment must be valid JSON',
-		);
-		expect(parseJsonObject(' {"a": 1} ', { ...rules, asTyped: true })).toEqual({ a: 1 });
 	});
 });
 
@@ -410,6 +432,7 @@ describe('parseJsonObjectOrEmpty', () => {
 		expect(parseJsonObjectOrEmpty('{"become_user": true}', 'Permissions')).toEqual({
 			become_user: true,
 		});
+		expect(parseJsonObjectOrEmpty(`${NBSP}{"a": 1}`, 'Permissions')).toEqual({ a: 1 });
 		const object = { a: 1 };
 		expect(parseJsonObjectOrEmpty(object, 'Permissions')).toBe(object);
 	});
@@ -430,12 +453,6 @@ describe('parseJsonObjectOrEmpty', () => {
 			);
 		}
 	});
-
-	it('parses the text as typed', () => {
-		expect(messageOf(() => parseJsonObjectOrEmpty(`${NBSP}{"a": 1}`, 'Permissions'))).toBe(
-			'Invalid JSON in Permissions. Expected a JSON object.',
-		);
-	});
 });
 
 describe('parseJsonObjectFor', () => {
@@ -445,13 +462,16 @@ describe('parseJsonObjectFor', () => {
 		expect(parseJsonObjectFor('{"key": "value"}', 'Custom Fields', CONTEXT)).toEqual({
 			key: 'value',
 		});
+		expect(parseJsonObjectFor(`${BOM}{"key": "value"}`, 'Custom Fields', CONTEXT)).toEqual({
+			key: 'value',
+		});
 		expect(parseJsonObjectFor('{}', 'Custom Fields', CONTEXT)).toEqual({});
 		const object = { a: 1 };
 		expect(parseJsonObjectFor(object, 'Custom Fields', CONTEXT)).toBe(object);
 	});
 
-	it('returns undefined for undefined, null and the empty string', () => {
-		for (const value of [undefined, null, '']) {
+	it('returns undefined when the field was left empty', () => {
+		for (const value of [undefined, null, '', '   ', ' \n']) {
 			expect(parseJsonObjectFor(value, 'Custom Fields', CONTEXT)).toBeUndefined();
 		}
 	});
@@ -465,14 +485,5 @@ describe('parseJsonObjectFor', () => {
 				'Placements must be a JSON object for externalTool create',
 			);
 		}
-	});
-
-	it('treats whitespace-only text as invalid JSON and parses the text as typed', () => {
-		expect(messageOf(() => parseJsonObjectFor('   ', 'Select', 'contentMigration create'))).toBe(
-			'Invalid JSON in Select field for contentMigration create',
-		);
-		expect(
-			messageOf(() => parseJsonObjectFor(`${NBSP}{"a": 1}`, 'Select', 'contentMigration create')),
-		).toBe('Invalid JSON in Select field for contentMigration create');
 	});
 });

@@ -1,7 +1,7 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IDataObject } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { toList } from './shared';
+import { collectionRows, toList } from './shared';
 
 /** Replace comma-separated fields of a collection by arrays (dropping the ones left empty). */
 function listFields(fields: Record<string, unknown>, names: string[]): void {
@@ -286,11 +286,11 @@ export function buildNotificationPreferenceRequest(
 		}
 
 		case 'updateMultiple': {
-			const preferences = getParamObject('preferences');
-			const preferenceValues = (preferences.preferenceValues || []) as Array<{
-				notification?: string;
-				frequency?: string;
-			}>;
+			const preferenceValues = collectionRows(
+				getParamObject('preferences'),
+				'preferenceValues',
+				'Preferences',
+			) as Array<{ notification?: string; frequency?: string }>;
 			const notificationPreferences: Record<string, { frequency: string }> = {};
 			for (const pref of preferenceValues) {
 				const notification = String(pref.notification ?? '').trim();

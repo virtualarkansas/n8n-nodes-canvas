@@ -42,7 +42,6 @@ function buildTopicBody(fields: Record<string, unknown>): Record<string, unknown
 		const assignment = parseJsonObject(body.assignment, {
 			invalidJson: 'Assignment must be valid JSON',
 			notAnObject: 'Assignment must be a JSON object',
-			nullTextIsEmpty: true,
 		});
 		if (assignment === undefined || Object.keys(assignment).length === 0) {
 			delete body.assignment;

@@ -1,6 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { toList } from './shared';
+import { collectionRows, toList } from './shared';
 
 type Fields = Record<string, unknown>;
 
@@ -461,7 +461,7 @@ export function handleMediaObjectResource(
 					body: [],
 				};
 			}
-			const tracks = ((getParamObject('tracks').trackValues ?? []) as Fields[])
+			const tracks = collectionRows(getParamObject('tracks'), 'trackValues', 'Tracks')
 				.filter((track) => String(track.locale ?? '').trim() !== '')
 				.map((track) => {
 					const entry: Fields = { locale: String(track.locale).trim() };

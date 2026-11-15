@@ -1,6 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { toList } from './shared';
+import { collectionRows, toList } from './shared';
 
 type Fields = Record<string, unknown>;
 
@@ -90,7 +90,11 @@ export function handleModuleResource(
 
 		case 'setOverrides': {
 			// The complete list of who the module is assigned to; an empty list assigns it to everyone again.
-			const overrides = ((getParamObject('overrides').overrideValues ?? []) as Fields[]).map((entry) => {
+			const overrides = collectionRows(
+				getParamObject('overrides'),
+				'overrideValues',
+				'Overrides',
+			).map((entry) => {
 				const override: Fields = {};
 				const id = String(entry.id ?? '').trim();
 				const sectionId = String(entry.course_section_id ?? '').trim();

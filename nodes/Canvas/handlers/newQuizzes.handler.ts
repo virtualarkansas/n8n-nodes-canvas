@@ -1,6 +1,6 @@
 import { ApplicationError } from 'n8n-workflow';
 import type { IRequestConfig, GetParam, GetParamObject } from '../types/Canvas.types';
-import { isPlainObject, parseJson } from './shared';
+import { isPlainObject, parseJson, parseJsonObject } from './shared';
 
 /**
  * New Quizzes is a hosted Instructure service behind /api/quiz/v1. Request
@@ -99,8 +99,7 @@ function buildNewQuizBody(fields: Record<string, unknown>): Record<string, unkno
 		}
 	}
 
-	// In this file null (an expression that found nothing) counts as left empty: `?? undefined`.
-	const filters = parseJson(fields.filters ?? undefined, 'IP Filters must be valid JSON');
+	const filters = parseJson(fields.filters, 'IP Filters must be valid JSON');
 	if (filters !== undefined) {
 		// Accept the list of ranges itself, or the documented { "ips": [...] } wrapper.
 		const ips = isPlainObject(filters) ? filters.ips : filters;
@@ -112,17 +111,12 @@ function buildNewQuizBody(fields: Record<string, unknown>): Record<string, unkno
 		settings.filters = { ips };
 	}
 
-	const resultView = parseJson(
-		fields.result_view_settings ?? undefined,
-		'Result View Settings must be valid JSON',
-	);
-	if (resultView !== undefined) {
-		if (!isPlainObject(resultView)) {
-			throw new ApplicationError('Result View Settings must be a JSON object');
-		}
-		if (Object.keys(resultView).length > 0) {
-			settings.result_view_settings = resultView;
-		}
+	const resultView = parseJsonObject(fields.result_view_settings, {
+		invalidJson: 'Result View Settings must be valid JSON',
+		notAnObject: 'Result View Settings must be a JSON object',
+	});
+	if (resultView !== undefined && Object.keys(resultView).length > 0) {
+		settings.result_view_settings = resultView;
 	}
 
 	if (Object.keys(multipleAttempts).length > 0) {
@@ -213,7 +207,11 @@ const FEEDBACK_FIELDS: Record<string, string> = {
  *   item: { position, points_possible, entry_type, entry: { title, item_body, …,
  *           interaction_data, scoring_data, feedback: { correct, incorrect, neutral } } }
  */
-function buildNewQuizItem(fields: Record<string, unknown>): Record<string, unknown> {
+function buildNewQuizItem(
+	fields: Record<string, unknown>,
+	/** JSON fields that are sent as `{}` when they were left empty. */
+	alwaysSent: string[] = [],
+): Record<string, unknown> {
 	const item: Record<string, unknown> = {};
 	const entry: Record<string, unknown> = {};
 	const feedback: Record<string, unknown> = {};
@@ -225,12 +223,15 @@ function buildNewQuizItem(fields: Record<string, unknown>): Record<string, unkno
 		if (fields[key] !== undefined) entry[target] = fields[key];
 	}
 	for (const [key, label] of Object.entries(ENTRY_JSON_FIELDS)) {
-		const parsed = parseJson(fields[key] ?? undefined, `${label} must be valid JSON`);
-		if (parsed === undefined) continue;
-		if (!isPlainObject(parsed)) {
-			throw new ApplicationError(`${label} must be a JSON object`);
+		const parsed = parseJsonObject(fields[key], {
+			invalidJson: `${label} must be valid JSON`,
+			notAnObject: `${label} must be a JSON object`,
+		});
+		if (parsed !== undefined) {
+			entry[key] = parsed;
+		} else if (alwaysSent.includes(key)) {
+			entry[key] = {};
 		}
-		entry[key] = parsed;
 	}
 	for (const [key, target] of Object.entries(FEEDBACK_FIELDS)) {
 		if (fields[key] !== undefined) feedback[target] = fields[key];
@@ -255,15 +256,18 @@ export function buildNewQuizItemRequest(
 
 	switch (operation) {
 		case 'create': {
-			const item = buildNewQuizItem({
-				...getParamObject('additionalFields'),
-				item_body: getParam('itemBody'),
-				interaction_type_slug: getParam('interactionType'),
+			const item = buildNewQuizItem(
+				{
+					...getParamObject('additionalFields'),
+					item_body: getParam('itemBody'),
+					interaction_type_slug: getParam('interactionType'),
+					interaction_data: getParam('interactionData'),
+					scoring_data: getParam('scoringData'),
+					scoring_algorithm: getParam('scoringAlgorithm'),
+				},
 				// Required by the API even for the types that have no interaction data.
-				interaction_data: getParam('interactionData', '{}'),
-				scoring_data: getParam('scoringData', '{}'),
-				scoring_algorithm: getParam('scoringAlgorithm'),
-			});
+				['interaction_data', 'scoring_data'],
+			);
 			return {
 				method: 'POST',
 				endpoint: basePath,
