@@ -1545,6 +1545,60 @@ export async function canvasFileUploadFromUrl(
 }
 
 /**
+ * Download a file Canvas points to (the `url` of a file record).
+ *
+ * Such URLs carry their own short-lived authorisation and usually redirect to a
+ * storage service on another host, so the Canvas token is not sent. Only when Canvas
+ * itself asks for it (401/403 from the Canvas host) is the request repeated with the
+ * credential, and then without following redirects with it.
+ */
+export async function canvasDownload(
+	this: IExecuteFunctions,
+	fileUrl: string,
+): Promise<{ data: Buffer; contentType?: string }> {
+	const canvasUrl = await getCanvasUrl.call(this);
+	const url = /^https?:\/\//i.test(fileUrl) ? fileUrl : `${canvasUrl}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
+	const options: IHttpRequestOptions = {
+		method: 'GET',
+		url,
+		encoding: 'arraybuffer',
+		returnFullResponse: true,
+		json: false,
+		ignoreHttpStatusErrors: true,
+	};
+
+	let response = await this.helpers.httpRequest(options);
+	let status = Number(response.statusCode);
+
+	const sameHost = new URL(url).host === new URL(canvasUrl).host;
+	if ((status === 401 || status === 403) && sameHost) {
+		response = await this.helpers.httpRequestWithAuthentication.call(this, getCredentialType(this), {
+			...options,
+			disableFollowRedirect: true,
+		});
+		status = Number(response.statusCode);
+		const location = (response.headers as IDataObject | undefined)?.location;
+		if (status >= 300 && status < 400 && typeof location === 'string') {
+			// Wherever the file is stored, that request goes out without the token.
+			response = await this.helpers.httpRequest({ ...options, url: new URL(location, url).toString() });
+			status = Number(response.statusCode);
+		}
+	}
+
+	if (status < 200 || status >= 300) {
+		throw new NodeApiError(
+			this.getNode(),
+			{ httpCode: String(status) } as JsonObject,
+			{ message: `The file could not be downloaded (HTTP ${status})`, httpCode: String(status) },
+		);
+	}
+	const body = response.body as Buffer | ArrayBuffer | string;
+	const data = Buffer.isBuffer(body) ? body : Buffer.from(body as ArrayBuffer);
+	const contentType = (response.headers as IDataObject | undefined)?.['content-type'];
+	return { data, contentType: typeof contentType === 'string' ? contentType.split(';')[0].trim() : undefined };
+}
+
+/**
  * Poll a Canvas progress URL until completion.
  * Returns the final file object when available.
  */

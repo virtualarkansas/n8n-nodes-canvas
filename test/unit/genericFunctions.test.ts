@@ -8,6 +8,7 @@ import {
 	calculateBackoff,
 	canvasApiRequest,
 	canvasApiRequestAllItems,
+	canvasDownload,
 	categorizeError,
 	encodePathValues,
 	isThrottleResponse,
@@ -608,6 +609,55 @@ describe('canvasApiRequestAllItems', () => {
 		const result = await canvasApiRequestAllItems.call(context, 'GET', '/api/v1/x', undefined, undefined, { enabled: true, perPage: 1, maxPages: 0 }, NO_RATE_LIMIT);
 		expect(result.items.map((i) => i.id)).toEqual([1, 2]);
 		expect(calls).toHaveLength(3);
+	});
+});
+
+describe('canvasDownload', () => {
+	function downloadContext(answers: Array<{ status: number; body?: Buffer; headers?: Record<string, string> }>) {
+		const calls: Array<{ authenticated: boolean; url: string; follow: boolean }> = [];
+		const answer = (authenticated: boolean) => async (...args: unknown[]) => {
+			const options = (authenticated ? args[1] : args[0]) as IDataObject;
+			calls.push({ authenticated, url: String(options.url), follow: options.disableFollowRedirect !== true });
+			const next = answers[calls.length - 1];
+			return { statusCode: next.status, body: next.body ?? Buffer.alloc(0), headers: next.headers ?? {} };
+		};
+		const context = {
+			getNodeParameter: () => 'accessToken',
+			getCredentials: async () => ({ canvasUrl: 'https://canvas.test', accessToken: 't' }),
+			getNode: () => ({ name: 'Canvas', type: 'canvas', typeVersion: 1, position: [0, 0], parameters: {}, id: '1' }),
+			helpers: { httpRequest: answer(false), httpRequestWithAuthentication: answer(true) },
+		} as unknown as IExecuteFunctions;
+		return { context, calls };
+	}
+
+	it('fetches the file without the Canvas token and reports its type', async () => {
+		const { context, calls } = downloadContext([{ status: 200, body: Buffer.from('a,b\n1,2\n'), headers: { 'content-type': 'text/csv; charset=utf-8' } }]);
+		const file = await canvasDownload.call(context, 'https://canvas.test/files/7/download?download_frd=1&verifier=abc');
+		expect(file.data.toString()).toBe('a,b\n1,2\n');
+		expect(file.contentType).toBe('text/csv');
+		expect(calls).toEqual([{ authenticated: false, url: 'https://canvas.test/files/7/download?download_frd=1&verifier=abc', follow: true }]);
+	});
+
+	it('uses the token only when Canvas itself asks for it, and never carries it along a redirect', async () => {
+		const { context, calls } = downloadContext([
+			{ status: 401 },
+			{ status: 302, headers: { location: 'https://storage.example.net/blob/7?sig=xyz' } },
+			{ status: 200, body: Buffer.from('PDF') },
+		]);
+		const file = await canvasDownload.call(context, '/files/7/download');
+		expect(file.data.toString()).toBe('PDF');
+		expect(calls).toEqual([
+			{ authenticated: false, url: 'https://canvas.test/files/7/download', follow: true },
+			{ authenticated: true, url: 'https://canvas.test/files/7/download', follow: false },
+			{ authenticated: false, url: 'https://storage.example.net/blob/7?sig=xyz', follow: true },
+		]);
+	});
+
+	it('a refusal from another host is not retried with the token; failures say the status', async () => {
+		const elsewhere = downloadContext([{ status: 403 }]);
+		await expect(canvasDownload.call(elsewhere.context, 'https://storage.example.net/blob/7')).rejects.toThrow(/could not be downloaded \(HTTP 403\)/);
+		expect(elsewhere.calls).toHaveLength(1);
+		expect(elsewhere.calls[0].authenticated).toBe(false);
 	});
 });
 

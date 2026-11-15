@@ -11,6 +11,7 @@ import {
 	canvasApiRequest,
 	canvasApiRequestAllItems,
 	canvasApiRequestMergedRecord,
+	canvasDownload,
 	canvasFileUpload,
 	canvasFileUploadFromUrl,
 	executeWithErrorHandling,
@@ -436,6 +437,9 @@ export class Canvas implements INodeType {
 					curl,
 				};
 
+				if (request.download) {
+					debugJson._note = `Then the file is downloaded from the "${request.download.urlField}" of the answer and attached as binary property "${request.download.binaryPropertyName}".`;
+				}
 				if (request.upload) {
 					debugJson._note = 'This is Step 1 of 3. Steps 2 (multipart upload) and 3 (confirmation) are handled automatically at runtime.';
 				}
@@ -538,6 +542,9 @@ function toOutputItems(data: unknown, itemIndex: number): INodeExecutionData[] {
 		return { json: { value: value as IDataObject[keyof IDataObject] }, pairedItem };
 	};
 
+	if (data instanceof OutputItem) {
+		return [data.item];
+	}
 	if (Array.isArray(data)) {
 		return data.map(wrap);
 	}
@@ -545,6 +552,36 @@ function toOutputItems(data: unknown, itemIndex: number): INodeExecutionData[] {
 		return [{ json: { success: true }, pairedItem }];
 	}
 	return [wrap(data)];
+}
+
+/** A finished output item (JSON plus binary data), passed through `toOutputItems` unchanged. */
+class OutputItem {
+	constructor(readonly item: INodeExecutionData) {}
+}
+
+/** Download the file a record points to and return the record with the file attached as binary data. */
+async function downloadTo(
+	context: IExecuteFunctions,
+	itemIndex: number,
+	record: IDataObject,
+	download: NonNullable<IRequestConfig['download']>,
+): Promise<OutputItem> {
+	const url = record?.[download.urlField];
+	if (typeof url !== 'string' || url === '') {
+		throw new NodeOperationError(context.getNode(), 'Canvas did not provide a download URL for this file', {
+			itemIndex,
+			description: `The record has no "${download.urlField}". Locked or hidden files, and files the user of the credential may not download, come without one.`,
+		});
+	}
+	const file = await canvasDownload.call(context, url);
+	const fileName = download.fileNameField ? (record[download.fileNameField] as string | undefined) : undefined;
+	const recordType = download.contentTypeField ? (record[download.contentTypeField] as string | undefined) : undefined;
+	const binary = await context.helpers.prepareBinaryData(file.data, fileName || undefined, recordType || file.contentType);
+	return new OutputItem({
+		json: record,
+		binary: { [download.binaryPropertyName]: binary },
+		pairedItem: { item: itemIndex },
+	});
 }
 
 /** The user to act as for this item ("Act as User ID"), if any. */
@@ -663,7 +700,11 @@ async function processItem(
 					request.dataKey,
 				);
 				if (!response.isList) {
-					return unwrapRecord(response.items[0], request.dataKey);
+					const record = unwrapRecord(response.items[0], request.dataKey);
+					if (request.download) {
+						return downloadTo(context, itemIndex, record as IDataObject, request.download);
+					}
+					return record;
 				}
 				let records = response.items;
 				if (request.itemKey) {

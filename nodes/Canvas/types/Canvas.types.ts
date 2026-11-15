@@ -49,6 +49,17 @@ export interface IRequestConfig {
 	upload?:
 		| { source: 'binaryData'; binaryPropertyName: string }
 		| { source: 'url'; url: string; waitForCompletion: boolean };
+	/**
+	 * After the GET, download the file the record points to and attach it to the output
+	 * item as binary data. `urlField` names the record's field that holds the download URL
+	 * (`url` of a file); the file name and type come from the record when the fields are given.
+	 */
+	download?: {
+		urlField: string;
+		binaryPropertyName: string;
+		fileNameField?: string;
+		contentTypeField?: string;
+	};
 	fetchAllPages?: boolean;
 	/**
 	 * The endpoint answers with its complete list whatever page is asked for, while
