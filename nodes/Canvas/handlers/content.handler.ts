@@ -309,6 +309,12 @@ export function handleContentMigrationResource(
 		}
 
 		case 'getSelectiveData': {
+			// Groups and users only have ZIP imports: nothing to select, and Canvas fails with a 500.
+			if (!['course', 'account'].includes(getParam('contextType', 'course'))) {
+				throw new ApplicationError(
+					'Get Selective Data is only for course and account migrations: groups and users only have ZIP imports, which have nothing to select',
+				);
+			}
 			const basePath = getContentMigrationBasePath(getParam);
 			const options = getParamObject('options');
 			return {
