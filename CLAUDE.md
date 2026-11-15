@@ -36,6 +36,8 @@ npm run test:integration  # Battery against local Canvas + n8n (see test/README.
 npx tsx test/tools/describe.ts <resource> [operation]   # What an operation offers and sends
 npx tsx test/tools/coverage.ts                          # Regenerate test/COVERAGE.md
 npx tsx test/tools/export-workflows.ts                  # Regenerate test/workflows/
+npx tsx test/tools/route-gaps.ts                        # Regenerate test/ROUTE_GAPS.md
+npx tsx test/tools/description-diff.ts [version]        # What changed for saved workflows since a release
 ```
 
 ### Project Commands
@@ -64,14 +66,19 @@ Handlers are pure: they only build `{ method, endpoint, qs, body }` plus optiona
 - `download` - after the GET, fetch the file the record points to and attach it as binary data
 - `poll` - repeat the GET until the record reports the end of a background job ("Wait for Completion"; `pollUntil` in `handlers/shared.ts`, fields from `waitFields` in `descriptions/shared.ts`)
 - `binaryBody` - send a binary property of the input item as the request body (import files); a string or Buffer `body` with `contentType` is sent as it is
+- `responseFile` - the answer is a file as text (CSV export): also attach it as binary data
+- `checkResponse` - throw when a successful answer actually reports a failure (GraphQL errors, a 204 that means "feature off")
+- `encodedParams` - parameters whose value the handler has percent-encoded in the path itself (multi-segment paths)
 - `thenGet` - after a write, output the result of this GET instead (writes whose own response is empty or stale)
 
-`getParam` returns strings (numbers and arrays are coerced, IDs trimmed); `getParamObject` returns a copy of a collection. Throw a plain error from a handler for unusable input; it reaches the user as `INVALID_PARAMETERS`.
+`getParam` returns strings (numbers coerced, IDs trimmed, plain lists as `a,b,c`, lists of records and lists for JSON fields as JSON text); `getParamObject` returns a copy of a collection. Throw a plain error from a handler for unusable input; it reaches the user as `INVALID_PARAMETERS`. Small helpers shared by handlers live in `handlers/shared.ts`, shared field sets (Wait for Completion, Download File) in `descriptions/shared.ts`.
+
+The hints are documented where they are defined (`IRequestConfig` in `types/Canvas.types.ts`).
 
 ### Requests
 - The node serializes query strings itself (`buildCanvasQueryString`): arrays as `key[]=v`, nested objects as `key[sub]=v`. Keys may be written with or without `[]`. Debug mode shows exactly the URL a real run sends.
-- Bodies are JSON.
-- Link/Location URLs returned by Canvas are re-anchored on the configured Canvas URL, so the token never goes to another host.
+- Bodies are JSON (or raw text / bytes for import files).
+- The credential only ever goes to the configured Canvas host: Link/Location URLs returned by Canvas are re-anchored on it, redirects are never followed by n8n (it would put the Authorization header back on every hop), and the node follows the redirect of a read itself, without the credential once it leaves the Canvas host. Writes are never redirected. Every request gets a fresh options object, because n8n writes the credential into the one it is given.
 
 - Request Options → Act as User ID adds `as_user_id` to every request made for an item (follow-up pages, the GET after a write, upload steps), never to the rate limit probe. It travels in the rate limit options (`asUserId`).
 
@@ -88,7 +95,7 @@ Handlers are pure: they only build `{ method, endpoint, qs, body }` plus optiona
 - Dual outputs (Success, Error) plus Debug in debug mode. Every item carries `pairedItem`.
 - Empty response body → `{ success: true }` (never drop an item). Empty list → no items.
 - Modes: stop, continueWithError, ignoreAndContinue, retryThenError (retries only throttling, 5xx and network errors; a write only when Canvas cannot have carried it out: throttled, never sent, or 503). n8n's own "Continue On Fail" routes to the Error output.
-- Error output: `errorCode` (number, 0 without an HTTP response), `errorType`, `errorMessage` (Canvas' own message), `canvasErrors`, `responseBody` (when Canvas answered a refusal with a record), `originalItem`, `resource`, `operation`, `endpoint`.
+- Error output: `errorCode` (number, 0 without an HTTP response), `errorType`, `errorMessage` (Canvas' own message), `canvasErrors`, `responseBody` (when Canvas' answer holds more than an error list), `originalItem`, `resource`, `operation`, `endpoint`.
 
 ### Batch Processing
 - Default: batches of 10 items in parallel with a delay between batches. Option: individual (sequential).
@@ -97,7 +104,8 @@ Handlers are pure: they only build `{ method, endpoint, qs, body }` plus optiona
 - Canvas cannot be told to call a URL through the API; an admin adds the node's URL in Admin → Data Services (HTTPS, Canvas format).
 - Event name is `metadata.event_name`; IDs in events are global IDs (`shard * 10^13 + local`) and are matched against local IDs.
 - Events that are filtered out are answered 200 (Canvas retries non-2xx).
-- Optional authentication: `?token=` secret, and signed payloads (RS256 JWT verified against Instructure's JWKS).
+- Optional authentication: `?token=` secret, and signed payloads (RS/ES JWT verified against Instructure's JWKS; the key type has to fit the algorithm; unknown key IDs refetch the keys at most once a minute).
+- The body is read by the node itself (so signed payloads work whatever their content type), limited to 5 MB before and after decompression.
 
 ## Canvas API Notes
 
@@ -105,6 +113,8 @@ Handlers are pure: they only build `{ method, endpoint, qs, body }` plus optiona
 - IDs can be SIS IDs: `sis_course_id:...`, `sis_user_id:...`.
 - Rate limits are quota based (`X-Request-Cost`, `X-Rate-Limit-Remaining`); parallel requests are charged up front.
 - Some list endpoints use page numbers, some bookmarks; some "summaries" repeat an entry on every page; some writes answer 204 or with stale data. When Canvas refuses something unexpectedly, read its own log before changing the node.
+- Canvas runs several server processes. A changed account setting or feature flag reaches each of them on its own (within about a minute), and writes sent at the same time to one record (the preferences of a user, a page) can overwrite each other: that is why Batch Processing has an Individual mode.
+- Lists that page by number shift when records are added while they are read (activity streams, user lists, history: every API request is a page view). Tests compare such lists on records of their own.
 - New Quizzes (`/api/quiz/v1`) and the Analytics plugin are not part of open-source Canvas; they are verified against Instructure's docs (see `test/fixtures/extra-routes.json`). LTI Advantage services (`/api/lti`) are tested locally with a tool the battery registers.
 
 ## Testing
