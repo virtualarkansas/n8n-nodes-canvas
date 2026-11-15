@@ -39,7 +39,7 @@ export const commMessageFields: INodeProperties[] = [
 				operation: ['getAll'],
 			},
 		},
-		description: 'The ID of the user to retrieve comm messages for',
+		description: 'The ID of the user whose notification messages (e-mails, push and SMS notifications sent by Canvas) to list. Requires an admin who may view notifications.',
 	},
 	{
 		displayName: 'Return All',
@@ -67,7 +67,6 @@ export const commMessageFields: INodeProperties[] = [
 		},
 		typeOptions: {
 			minValue: 1,
-			maxValue: 100,
 		},
 		default: 50,
 		description: 'Max number of results to return',
@@ -90,14 +89,14 @@ export const commMessageFields: INodeProperties[] = [
 				name: 'end_time',
 				type: 'dateTime',
 				default: '',
-				description: 'The end of the time range for message retrieval (historical data available up to one year)',
+				description: 'Only return messages created at or before this time (Canvas keeps about one year of history)',
 			},
 			{
 				displayName: 'Start Time',
 				name: 'start_time',
 				type: 'dateTime',
 				default: '',
-				description: 'The beginning of the time range for message retrieval (historical data available up to one year)',
+				description: 'Only return messages created at or after this time (Canvas keeps about one year of history)',
 			},
 		],
 	},

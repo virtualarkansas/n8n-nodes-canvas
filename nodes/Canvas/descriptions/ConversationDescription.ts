@@ -45,7 +45,7 @@ export const conversationOperations: INodeProperties[] = [
 			{
 				name: 'Delete for All',
 				value: 'deleteForAll',
-				description: 'Permanently delete a conversation for all participants',
+				description: 'Permanently delete a conversation for all participants (Site Admin only)',
 				action: 'Delete a conversation for all participants',
 			},
 			{
@@ -69,7 +69,7 @@ export const conversationOperations: INodeProperties[] = [
 			{
 				name: 'Get Deleted Conversations',
 				value: 'getDeleted',
-				description: 'List deleted conversations and messages for a user',
+				description: 'List the messages a user has deleted from their inbox (Site Admin only)',
 				action: 'List deleted conversations',
 			},
 			{
@@ -93,7 +93,7 @@ export const conversationOperations: INodeProperties[] = [
 			{
 				name: 'Restore',
 				value: 'restore',
-				description: 'Restore a deleted message for a user',
+				description: 'Put a message a user deleted back into their inbox (Site Admin only)',
 				action: 'Restore a deleted message',
 			},
 			{
@@ -186,6 +186,20 @@ export const conversationFields: INodeProperties[] = [
 				default: '',
 				description: 'Limit results to a single conversation',
 			},
+			{
+				displayName: 'Deleted After',
+				name: 'deleted_after',
+				type: 'dateTime',
+				default: '',
+				description: 'Only return messages the user deleted after this time',
+			},
+			{
+				displayName: 'Deleted Before',
+				name: 'deleted_before',
+				type: 'dateTime',
+				default: '',
+				description: 'Only return messages the user deleted before this time',
+			},
 		],
 	},
 
@@ -204,7 +218,7 @@ export const conversationFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		description: 'Comma-separated list of user IDs, course IDs (prefixed with "course_"), or group IDs (prefixed with "group_")',
+		description: 'Comma-separated list of recipients: user IDs (e.g. "123"), "course_123" or "group_456" for everyone in a course or group, or "course_123_students" / "course_123_teachers" for one role. Without "Group Conversation" each recipient gets a private conversation.',
 	},
 	{
 		displayName: 'Body',
@@ -241,7 +255,14 @@ export const conversationFields: INodeProperties[] = [
 				name: 'attachment_ids',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of previously uploaded file IDs to attach',
+				description: 'Comma-separated list of file IDs to attach. The files must be in the sender\'s "conversation attachments" folder.',
+			},
+			{
+				displayName: 'Bulk Message',
+				name: 'bulk_message',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to give every recipient their own new conversation although "Group Conversation" is on. Canvas requires both when a course or group with more than 100 members is addressed.',
 			},
 			{
 				displayName: 'Context Code',
@@ -255,14 +276,14 @@ export const conversationFields: INodeProperties[] = [
 				name: 'force_new',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to create a new conversation even if one already exists with these recipients',
+				description: 'Whether to always start a new conversation. By default a message to a single person is added to the existing private conversation with them. With several recipients each one gets their own new conversation.',
 			},
 			{
 				displayName: 'Group Conversation',
 				name: 'group_conversation',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to create a single group conversation (true) or individual conversations with each recipient (false)',
+				description: 'Whether all recipients share one conversation and see each other\'s replies. When off, each recipient gets a private conversation with the sender.',
 			},
 			{
 				displayName: 'Media Comment ID',
@@ -291,7 +312,7 @@ export const conversationFields: INodeProperties[] = [
 					{ name: 'Sync', value: 'sync' },
 				],
 				default: 'sync',
-				description: 'Whether to create the message synchronously or asynchronously',
+				description: 'Only used when several private conversations are created at once. With Async Canvas answers immediately and the node outputs no items; follow the progress with the Get Batches operation.',
 			},
 			{
 				displayName: 'Subject',
@@ -324,14 +345,14 @@ export const conversationFields: INodeProperties[] = [
 				name: 'auto_mark_as_read',
 				type: 'boolean',
 				default: true,
-				description: 'Whether to automatically mark the conversation as read',
+				description: 'Whether reading an unread conversation marks it as read. Canvas does this unless it is turned off here.',
 			},
 			{
 				displayName: 'Filter',
 				name: 'filter',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of course or group IDs to filter by',
+				description: 'Comma-separated list of prefixed IDs (e.g. "course_123, user_456"). Only used to compute the "visible" field of the result.',
 			},
 			{
 				displayName: 'Scope',
@@ -344,7 +365,7 @@ export const conversationFields: INodeProperties[] = [
 					{ name: 'Unread', value: 'unread' },
 				],
 				default: 'unread',
-				description: 'Filter by conversation type',
+				description: 'Only used to compute the "visible" field of the result: whether the conversation would be listed under this scope',
 			},
 		],
 	},
@@ -378,7 +399,6 @@ export const conversationFields: INodeProperties[] = [
 		},
 		typeOptions: {
 			minValue: 1,
-			maxValue: 100,
 		},
 		default: 50,
 		description: 'Max number of results to return',
@@ -401,7 +421,7 @@ export const conversationFields: INodeProperties[] = [
 				name: 'filter',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of course IDs, group IDs, or user IDs to filter by',
+				description: 'Comma-separated list of prefixed IDs to filter by, e.g. "course_123", "group_456" or "user_789"',
 			},
 			{
 				displayName: 'Filter Mode',
@@ -409,11 +429,10 @@ export const conversationFields: INodeProperties[] = [
 				type: 'options',
 				options: [
 					{ name: 'And', value: 'and' },
-					{ name: 'Default Or', value: 'default or' },
 					{ name: 'Or', value: 'or' },
 				],
 				default: 'or',
-				description: 'How to combine multiple filters',
+				description: 'Whether a conversation must match all filters (And) or at least one (Or)',
 			},
 			{
 				displayName: 'Include',
@@ -431,7 +450,7 @@ export const conversationFields: INodeProperties[] = [
 				name: 'include_all_conversation_ids',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to include all conversation IDs in the response',
+				description: 'Whether to output a single item with "conversations" (the first page only) and "conversation_ids" (the IDs of every matching conversation) instead of one item per conversation',
 			},
 			{
 				displayName: 'Scope',
@@ -444,7 +463,7 @@ export const conversationFields: INodeProperties[] = [
 					{ name: 'Unread', value: 'unread' },
 				],
 				default: 'unread',
-				description: 'Filter by conversation type',
+				description: 'Which conversations to list. Without a scope Canvas returns the inbox (everything that is not archived).',
 			},
 		],
 	},
