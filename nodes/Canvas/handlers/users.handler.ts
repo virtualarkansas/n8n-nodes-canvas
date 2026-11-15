@@ -26,9 +26,29 @@ function mapFields(
 	return target;
 }
 
+/** "1, 2 ,3" (or an array coming from an expression) -> ['1', '2', '3']. */
+function toList(value: unknown): string[] {
+	if (value === undefined || value === null) return [];
+	const entries = Array.isArray(value) ? value : String(value).split(',');
+	return entries.map((entry) => String(entry).trim()).filter((entry) => entry !== '');
+}
+
 // ============================================
 // USER
 // ============================================
+
+/** The settings Canvas documents for PUT /users/:id/settings, under their UI names. */
+const USER_SETTINGS: Record<string, string> = {
+	collapseCourseNav: 'collapse_course_nav',
+	collapseGlobalNav: 'collapse_global_nav',
+	commentLibrarySuggestionsEnabled: 'comment_library_suggestions_enabled',
+	elementaryDashboardDisabled: 'elementary_dashboard_disabled',
+	hideDashcardColorOverlays: 'hide_dashcard_color_overlays',
+	manualMarkAsRead: 'manual_mark_as_read',
+	releaseNotesBadgeDisabled: 'release_notes_badge_disabled',
+	widgetDashboardDarkMode: 'widget_dashboard_dark_mode',
+	widgetDashboardUserPreference: 'widget_dashboard_user_preference',
+};
 
 export function buildUserRequest(
 	operation: string,
@@ -191,6 +211,194 @@ export function buildUserRequest(
 			return {
 				endpoint: `/api/v1/users/${getParam('userId')}/sessions`,
 				method: 'DELETE',
+			};
+
+		case 'expireMobileSessions':
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/mobile_sessions`,
+				method: 'DELETE',
+				qs: mapFields(getParamObject('additionalFields'), { skipAdmins: 'skip_admins' }),
+			};
+
+		// ---- Preferences ----
+
+		case 'getSettings':
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/settings`,
+				method: 'GET',
+			};
+
+		case 'updateSettings':
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/settings`,
+				method: 'PUT',
+				body: mapFields(getParamObject('updateFields'), USER_SETTINGS),
+			};
+
+		case 'getColors':
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/colors`,
+				method: 'GET',
+				// Canvas wraps the map: { "custom_colors": { "course_42": "#abc123" } }
+				dataKey: 'custom_colors',
+			};
+
+		case 'getColor':
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/colors/${getParam('assetString').trim()}`,
+				method: 'GET',
+			};
+
+		case 'setColor':
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/colors/${getParam('assetString').trim()}`,
+				method: 'PUT',
+				// In the body, so a leading "#" needs no escaping.
+				body: { hexcode: getParam('hexcode').trim() },
+			};
+
+		case 'getDashboardPositions':
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/dashboard_positions`,
+				method: 'GET',
+				// Canvas wraps the map: { "dashboard_positions": { "course_42": 1 } }
+				dataKey: 'dashboard_positions',
+			};
+
+		case 'updateDashboardPositions': {
+			const entries = getParamObject('positions').position;
+			const positions: Record<string, number> = {};
+			for (const entry of (Array.isArray(entries) ? entries : []) as Array<Record<string, unknown>>) {
+				const asset = String(entry?.assetString ?? '').trim();
+				if (asset === '') continue;
+				const position = Number(entry.position);
+				if (!Number.isInteger(position)) {
+					throw new ApplicationError(
+						`The dashboard position of "${asset}" must be a whole number, got "${String(entry.position)}"`,
+					);
+				}
+				positions[asset] = position;
+			}
+			// Canvas answers a request without positions with a server error.
+			if (Object.keys(positions).length === 0) {
+				throw new ApplicationError('Add at least one dashboard position (asset and position)');
+			}
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/dashboard_positions`,
+				method: 'PUT',
+				body: { dashboard_positions: positions },
+				dataKey: 'dashboard_positions',
+			};
+		}
+
+		case 'setTextEditorPreference':
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/text_editor_preference`,
+				method: 'PUT',
+				// An empty value is meaningful: it clears the preference.
+				body: { text_editor_preference: getParam('textEditorPreference') },
+			};
+
+		case 'setFilesUiVersion':
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/files_ui_version_preference`,
+				method: 'PUT',
+				body: { files_ui_version: getParam('filesUiVersion', 'v2') },
+			};
+
+		case 'getAvatars':
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/avatars`,
+				method: 'GET',
+			};
+
+		// ---- Activity of a user ----
+
+		case 'getPageViews':
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/page_views`,
+				method: 'GET',
+				qs: mapFields(getParamObject('additionalFields'), {
+					endTime: 'end_time',
+					startTime: 'start_time',
+				}),
+			};
+
+		case 'getMissingSubmissions': {
+			const fields = getParamObject('additionalFields');
+			const qs = mapFields(fields, {
+				filter: 'filter',
+				include: 'include',
+				observedUserId: 'observed_user_id',
+			});
+			const courseIds = toList(fields.courseIds);
+			if (courseIds.length > 0) {
+				qs.course_ids = courseIds;
+			}
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/missing_submissions`,
+				method: 'GET',
+				qs,
+			};
+		}
+
+		case 'getGradedSubmissions':
+			return {
+				endpoint: `/api/v1/users/${getParam('userId')}/graded_submissions`,
+				method: 'GET',
+				qs: mapFields(getParamObject('additionalFields'), {
+					include: 'include',
+					onlyCurrentEnrollments: 'only_current_enrollments',
+					onlyPublishedAssignments: 'only_published_assignments',
+				}),
+			};
+
+		// ---- The current user's dashboard (Canvas offers these for the token's user only) ----
+
+		case 'getActivityStream':
+			return {
+				endpoint: '/api/v1/users/self/activity_stream',
+				method: 'GET',
+				qs: mapFields(getParamObject('additionalFields'), { onlyActiveCourses: 'only_active_courses' }),
+			};
+
+		case 'getActivityStreamSummary':
+			return {
+				endpoint: '/api/v1/users/self/activity_stream/summary',
+				method: 'GET',
+				qs: mapFields(getParamObject('additionalFields'), { onlyActiveCourses: 'only_active_courses' }),
+			};
+
+		case 'hideStreamItem':
+			return {
+				endpoint: `/api/v1/users/self/activity_stream/${getParam('streamItemId')}`,
+				method: 'DELETE',
+			};
+
+		case 'hideAllStreamItems':
+			return {
+				endpoint: '/api/v1/users/self/activity_stream',
+				method: 'DELETE',
+			};
+
+		case 'getTodoItems':
+			return {
+				endpoint: '/api/v1/users/self/todo',
+				method: 'GET',
+				qs: mapFields(getParamObject('additionalFields'), { include: 'include' }),
+			};
+
+		case 'getTodoItemCount':
+			return {
+				endpoint: '/api/v1/users/self/todo_item_count',
+				method: 'GET',
+				qs: mapFields(getParamObject('additionalFields'), { include: 'include' }),
+			};
+
+		case 'getUpcomingEvents':
+			return {
+				endpoint: '/api/v1/users/self/upcoming_events',
+				method: 'GET',
 			};
 
 		default:
