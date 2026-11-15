@@ -7,6 +7,7 @@ export default defineConfig({
 		include: ['test/integration/**/*.test.ts'],
 		environment: 'node',
 		globalSetup: ['test/lib/global-setup.ts'],
+		setupFiles: ['test/lib/setup-fetch.ts'],
 		testTimeout: 180_000,
 		hookTimeout: 180_000,
 		// Scenarios inside one file share Canvas records and run in order; files run in parallel.
