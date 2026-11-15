@@ -21,7 +21,8 @@ export const analyticsOperations: INodeProperties[] = [
 			{
 				name: 'Get Course Assignments',
 				value: 'getCourseAssignments',
-				description: 'Get assignment data for a course with grade distributions',
+				description:
+					'Get the assignments of a course with their score statistics and on-time/late/missing breakdown',
 				action: 'Get course assignments',
 			},
 			{
@@ -45,7 +46,7 @@ export const analyticsOperations: INodeProperties[] = [
 			{
 				name: 'Get Department Statistics by Subaccount',
 				value: 'getDepartmentStatisticsBySubaccount',
-				description: 'Get statistics broken down by subaccount',
+				description: 'Get the statistics of a department, one item per subaccount',
 				action: 'Get department statistics by subaccount',
 			},
 			{
@@ -78,6 +79,18 @@ export const analyticsOperations: INodeProperties[] = [
 ];
 
 export const analyticsFields: INodeProperties[] = [
+	{
+		displayName:
+			'Analytics is served by the Canvas Analytics plugin, which is part of Instructure-hosted Canvas but not of open-source Canvas. On an instance without the plugin every operation answers 404.',
+		name: 'analyticsNotice',
+		type: 'notice',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['analytics'],
+			},
+		},
+	},
 	// ----------------------------------
 	//         analytics: shared fields
 	// ----------------------------------
@@ -215,7 +228,7 @@ export const analyticsFields: INodeProperties[] = [
 				type: 'boolean',
 				default: false,
 				description:
-					'Whether to enable asynchronous processing and return a progress URL instead of results',
+					'Whether Canvas may compute the data in the background. If it is not ready yet, the result is a single item with a "progress_url" to poll (Progress > Get) instead of the assignments.',
 			},
 		],
 	},
@@ -247,6 +260,10 @@ export const analyticsFields: INodeProperties[] = [
 						value: 'name',
 					},
 					{
+						name: 'Name (Descending)',
+						value: 'name_descending',
+					},
+					{
 						name: 'Page Views',
 						value: 'page_views',
 					},
@@ -266,15 +283,19 @@ export const analyticsFields: INodeProperties[] = [
 						name: 'Score',
 						value: 'score',
 					},
+					{
+						name: 'Score (Descending)',
+						value: 'score_descending',
+					},
 				],
-				description: 'The column to sort results by',
+				description: 'The order of the student summaries',
 			},
 			{
 				displayName: 'Student ID',
 				name: 'student_id',
 				type: 'string',
 				default: '',
-				description: 'Filter to a specific student ID',
+				description: 'Return only the summary of the student with this ID',
 			},
 		],
 	},
