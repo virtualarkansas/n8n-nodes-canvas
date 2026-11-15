@@ -35,6 +35,8 @@ interface IJwk extends IDataObject {
 /** JWKS documents by URL. Instructure rotates keys monthly; an unknown kid forces a refetch. */
 const jwksCache = new Map<string, { keys: IJwk[]; fetchedAt: number }>();
 const JWKS_TTL_MS = 60 * 60 * 1000;
+/** An unknown key ID refetches the keys, but not more often than this: anyone can send one. */
+const JWKS_MIN_REFRESH_MS = 60 * 1000;
 
 interface ICanvasEvent {
 	name?: string;
@@ -105,14 +107,23 @@ async function readRequestBody(request: IRawRequest): Promise<Buffer | undefined
 	}
 	const body = Buffer.concat(chunks);
 	const encoding = String(request.headers['content-encoding'] ?? '').toLowerCase();
-	if (encoding === 'gzip' || encoding === 'x-gzip') {
-		return gunzipSync(body);
-	}
-	if (encoding === 'deflate') {
-		return inflateSync(body);
-	}
-	if (encoding === 'br') {
-		return brotliDecompressSync(body);
+	// The limit applies to the decompressed size as well: a few KB can unpack to gigabytes.
+	const limit = { maxOutputLength: MAX_BODY_BYTES };
+	try {
+		if (encoding === 'gzip' || encoding === 'x-gzip') {
+			return gunzipSync(body, limit);
+		}
+		if (encoding === 'deflate') {
+			return inflateSync(body, limit);
+		}
+		if (encoding === 'br') {
+			return brotliDecompressSync(body, limit);
+		}
+	} catch (error) {
+		if ((error as { code?: string }).code === 'ERR_BUFFER_TOO_LARGE') {
+			return undefined;
+		}
+		throw error;
 	}
 	return body;
 }
@@ -382,7 +393,8 @@ export class CanvasTrigger implements INodeType {
 
 					const findKey = async (forceRefresh: boolean): Promise<IJwk | undefined> => {
 						let cached = jwksCache.get(jwksUrl);
-						if (forceRefresh || !cached || Date.now() - cached.fetchedAt > JWKS_TTL_MS) {
+						const age = cached ? Date.now() - cached.fetchedAt : Infinity;
+						if (!cached || age > JWKS_TTL_MS || (forceRefresh && age > JWKS_MIN_REFRESH_MS)) {
 							const document = (await this.helpers.httpRequest({
 								method: 'GET',
 								url: jwksUrl,
@@ -402,6 +414,11 @@ export class CanvasTrigger implements INodeType {
 					}
 					if (!jwk) {
 						return reject(401, 'The payload was signed with an unknown key');
+					}
+
+					// The key decides what kind of signature is acceptable, not the token's header alone.
+					if (String(jwk.kty ?? '') !== (algorithm.ec ? 'EC' : 'RSA')) {
+						return reject(401, 'The signature algorithm does not match the signing key');
 					}
 
 					let valid = false;

@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import type { Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { createSign, generateKeyPairSync, randomUUID } from 'node:crypto';
+import { gzipSync } from 'node:zlib';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { n8n } from '../lib/harness';
 import { CANVAS_TRIGGER_TYPE } from '../lib/n8n';
@@ -219,6 +220,33 @@ describe('Canvas Trigger: request handling', () => {
 	});
 });
 
+describe('Canvas Trigger: compressed bodies', () => {
+	const send = async (url: string, compressed: Buffer): Promise<number> => {
+		const res = await fetch(url, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json', 'content-encoding': 'gzip', connection: 'close' },
+			body: compressed,
+		}).catch(() => undefined);
+		return res?.status ?? 0;
+	};
+
+	it('accepts a gzip-compressed event', async () => {
+		const trigger = await deployTrigger({ events: ['grade_change'] });
+		expect(await send(trigger.url, gzipSync(Buffer.from(JSON.stringify(gradeChange))))).toBe(200);
+		expect(await executionCount(trigger.workflowId, 1)).toBe(1);
+	});
+
+	it('refuses a small body that unpacks to more than the limit', async () => {
+		const trigger = await deployTrigger({ events: ['*'] });
+		// 64 MB of zeros compress to about 64 KB.
+		const bomb = gzipSync(Buffer.alloc(64 * 1024 * 1024));
+		expect(bomb.length).toBeLessThan(200 * 1024);
+		expect([413, 0]).toContain(await send(trigger.url, bomb));
+		expect(await executionCount(trigger.workflowId)).toBe(0);
+		expect((await post(trigger.url, gradeChange)).status).toBe(200);
+	});
+});
+
 describe('Canvas Trigger: course and account filters', () => {
 	it('matches a course by local ID although Canvas sends global IDs', async () => {
 		const trigger = await deployTrigger({ events: ['grade_change'], courseId: '565' });
@@ -291,6 +319,26 @@ describe('Canvas Trigger: authenticating the sender', () => {
 		expect((await post(trigger.url, signJwt(gradeChange, privateKey, 'unknown-kid'), 'application/jwt')).status).toBe(401);
 		const unsignedAlg = `${b64url(JSON.stringify({ alg: 'none', kid: KID }))}.${b64url(JSON.stringify(gradeChange))}.AAAA`;
 		expect((await post(trigger.url, unsignedAlg, 'application/jwt')).status).toBe(401);
+		expect(await executionCount(trigger.workflowId)).toBe(0);
+	});
+
+	it('unknown key IDs do not make the node fetch the key set over and over', async () => {
+		const trigger = await deployTrigger({ events: ['*'], triggerOptions: { jwksUrl } });
+		expect((await post(trigger.url, signJwt(gradeChange), 'application/jwt')).status).toBe(200);
+		const before = jwksHits;
+		for (let i = 0; i < 5; i++) {
+			expect((await post(trigger.url, signJwt(gradeChange, privateKey, `nobody-${i}`), 'application/jwt')).status).toBe(401);
+		}
+		expect(jwksHits - before).toBeLessThanOrEqual(1);
+	});
+
+	it('the algorithm has to fit the key: an EC algorithm with an RSA key is refused', async () => {
+		const trigger = await deployTrigger({ events: ['*'], triggerOptions: { jwksUrl } });
+		const header = b64url(JSON.stringify({ alg: 'ES256', typ: 'JWT', kid: KID }));
+		const payload = b64url(JSON.stringify(gradeChange));
+		const signature = b64url(createSign('RSA-SHA256').update(`${header}.${payload}`).sign(privateKey));
+		const res = await post(trigger.url, `${header}.${payload}.${signature}`, 'application/jwt');
+		expect(res.status).toBe(401);
 		expect(await executionCount(trigger.workflowId)).toBe(0);
 	});
 
