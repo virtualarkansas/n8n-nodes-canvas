@@ -666,6 +666,15 @@ function outcomeResultFilters(options: Record<string, unknown>): Record<string, 
 	return qs;
 }
 
+/** Without the Learning Mastery Gradebook feature Canvas answers 204: nothing is read or stored. */
+function requireGradebookSettings(data: unknown): void {
+	if (data === undefined || data === null || typeof data !== 'object') {
+		throw new ApplicationError(
+			'Canvas has no Learning Mastery Gradebook settings for this course: the feature is not enabled',
+		);
+	}
+}
+
 export function handleOutcomeResultResource(
 	operation: string,
 	getParam: GetParam,
@@ -800,6 +809,35 @@ export function handleOutcomeResultResource(
 				body: order,
 			};
 		}
+
+		// The display settings of the Learning Mastery Gradebook, stored per user and course.
+		case 'getGradebookSettings':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/learning_mastery_gradebook_settings`,
+				dataKey: 'learning_mastery_gradebook_settings',
+				checkResponse: requireGradebookSettings,
+			};
+
+		case 'updateGradebookSettings': {
+			const settings = getParamObject('settings');
+			if (Object.keys(settings).length === 0) {
+				throw new ApplicationError('Select at least one setting for outcomeResult updateGradebookSettings');
+			}
+			return {
+				method: 'PUT',
+				endpoint: `/api/v1/courses/${courseId}/learning_mastery_gradebook_settings`,
+				body: { learning_mastery_gradebook_settings: settings },
+				dataKey: 'learning_mastery_gradebook_settings',
+				checkResponse: requireGradebookSettings,
+			};
+		}
+
+		case 'getUserDetails':
+			return {
+				method: 'GET',
+				endpoint: `/api/v1/courses/${courseId}/users/${getParam('userId')}/lmgb_user_details`,
+			};
 
 		default:
 			throw new ApplicationError(`Operation ${operation} not implemented for outcomeResult`);

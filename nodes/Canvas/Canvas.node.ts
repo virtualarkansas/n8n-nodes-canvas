@@ -756,7 +756,7 @@ async function processItem(
 				if (!response.isList) {
 					const record = unwrapRecord(response.items[0], request.dataKey);
 					if (request.checkResponse) {
-						request.checkResponse((record ?? {}) as IDataObject);
+						request.checkResponse(record as IDataObject);
 					}
 					if (request.download) {
 						return downloadTo(context, itemIndex, record as IDataObject, request.download);

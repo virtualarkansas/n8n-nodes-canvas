@@ -47,6 +47,7 @@ export const canvasResources: ICanvasResource[] = [
 	{ name: 'Conversation', value: 'conversation', operations: descriptions.conversationOperations, fields: descriptions.conversationFields },
 	{ name: 'Course', value: 'course', operations: descriptions.courseOperations, fields: descriptions.courseFields },
 	{ name: 'Course Audit Log', value: 'courseAuditLog', operations: descriptions.courseAuditLogOperations, fields: descriptions.courseAuditLogFields },
+	{ name: 'Course Nickname', value: 'courseNickname', operations: descriptions.courseNicknameOperations, fields: descriptions.courseNicknameFields },
 	{ name: 'Course Pace', value: 'coursePace', operations: descriptions.coursePaceOperations, fields: descriptions.coursePaceFields },
 	{ name: 'Course Report', value: 'courseReport', operations: descriptions.courseReportOperations, fields: descriptions.courseReportFields },
 	{ name: 'CSP Setting', value: 'cspSetting', operations: descriptions.cspSettingOperations, fields: descriptions.cspSettingFields },
@@ -64,6 +65,7 @@ export const canvasResources: ICanvasResource[] = [
 	{ name: 'File', value: 'file', operations: descriptions.fileOperations, fields: descriptions.fileFields },
 	{ name: 'Folder', value: 'folder', operations: descriptions.folderOperations, fields: descriptions.folderFields },
 	{ name: 'Grade Change Log', value: 'gradeChangeLog', operations: descriptions.gradeChangeLogOperations, fields: descriptions.gradeChangeLogFields },
+	{ name: 'Gradebook', value: 'gradebook', operations: descriptions.gradebookOperations, fields: descriptions.gradebookFields },
 	{ name: 'Gradebook History', value: 'gradebookHistory', operations: descriptions.gradebookHistoryOperations, fields: descriptions.gradebookHistoryFields },
 	{ name: 'Grading Period', value: 'gradingPeriod', operations: descriptions.gradingPeriodOperations, fields: descriptions.gradingPeriodFields },
 	{ name: 'Grading Period Set', value: 'gradingPeriodSet', operations: descriptions.gradingPeriodSetOperations, fields: descriptions.gradingPeriodSetFields },
@@ -126,5 +128,6 @@ export const canvasResources: ICanvasResource[] = [
 	{ name: 'Tab', value: 'tab', operations: descriptions.tabOperations, fields: descriptions.tabFields },
 	{ name: 'User', value: 'user', operations: descriptions.userOperations, fields: descriptions.userFields },
 	{ name: 'User Observee', value: 'userObservee', operations: descriptions.userObserveeOperations, fields: descriptions.userObserveeFields },
+	{ name: 'Web Zip Export', value: 'webZipExport', operations: descriptions.webZipExportOperations, fields: descriptions.webZipExportFields },
 	{ name: 'What-If Grade', value: 'whatIfGrade', operations: descriptions.whatIfGradeOperations, fields: descriptions.whatIfGradeFields },
 ];

@@ -9,6 +9,10 @@ import {
 	buildCourseReportRequest,
 } from './courses.handler';
 
+import { buildCourseNicknameRequest } from './courseNickname.handler';
+import { buildGradebookRequest } from './gradebook.handler';
+import { buildWebZipExportRequest } from './webZipExport.handler';
+
 // Users group
 import {
 	buildUserRequest,
@@ -234,6 +238,9 @@ export const resourceHandlers: Record<string, ResourceHandler> = {
 	tab: buildTabRequest,
 	coursePace: buildCoursePaceRequest,
 	courseReport: buildCourseReportRequest,
+	courseNickname: buildCourseNicknameRequest,
+	gradebook: buildGradebookRequest,
+	webZipExport: buildWebZipExportRequest,
 
 	// Users group
 	user: buildUserRequest,

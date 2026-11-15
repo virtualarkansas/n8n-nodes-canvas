@@ -40,6 +40,12 @@ export {
 	courseReportFields,
 } from './CourseReportDescription';
 
+export { courseNicknameOperations, courseNicknameFields } from './CourseNicknameDescription';
+
+export { gradebookOperations, gradebookFields } from './GradebookDescription';
+
+export { webZipExportOperations, webZipExportFields } from './WebZipExportDescription';
+
 // User resource group descriptions
 export {
 	userOperations,
