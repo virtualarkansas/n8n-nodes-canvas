@@ -8,9 +8,8 @@
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { listOperations } from '../lib/catalog';
+import { buildRequestFor, listOperations, paramVariants } from '../lib/catalog';
 import { findRoute } from '../lib/routes';
-import { buildRequestFor, paramVariants } from '../lib/catalog';
 
 interface OpRecord {
 	resource: string;
