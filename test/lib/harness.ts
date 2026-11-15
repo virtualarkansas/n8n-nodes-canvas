@@ -101,7 +101,7 @@ async function logRun(opts: RunNodeOptions, outcome: OpRecord['outcome'], succes
 			...(await currentTest()),
 			resource: opts.resource,
 			operation: opts.operation,
-			persona: opts.persona ?? 'admin',
+			persona: opts.credential ? 'custom' : (opts.persona ?? 'admin'),
 			params: opts.params ?? {},
 			items: opts.items,
 			outcome,
@@ -249,4 +249,22 @@ export async function runOk(opts: RunNodeOptions): Promise<Json[]> {
 		);
 	}
 	return result.success;
+}
+
+/**
+ * Create an n8n Canvas API credential for a token the test obtained itself;
+ * pass the result as `credential` to runNode/runOk.
+ */
+export async function createCredential(
+	token: string,
+	label = 'test-created',
+	canvasUrl = loadState().canvas.url,
+): Promise<{ id: string; name: string; type: string }> {
+	const name = `Canvas battery (${label} ${randomUUID().slice(0, 8)})`;
+	const created = await n8n().api<{ id: string }>('POST', '/credentials', {
+		name,
+		type: 'canvasApi',
+		data: { canvasUrl, accessToken: token, allowedHttpRequestDomains: 'all' },
+	});
+	return { id: String(created.id), name, type: 'canvasApi' };
 }

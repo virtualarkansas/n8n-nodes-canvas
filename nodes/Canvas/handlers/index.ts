@@ -200,6 +200,13 @@ import {
 	buildDeveloperKeyAccountBindingRequest,
 } from './accountSecurity.handler';
 
+// Dates and assessment extras group
+import {
+	buildLearningObjectDateRequest,
+	buildLiveAssessmentRequest,
+	buildWhatIfGradeRequest,
+} from './learning.handler';
+
 /**
  * Maps every Canvas resource name to its handler function.
  * Each handler takes (operation, getParam, getParamObject) and returns IRequestConfig.
@@ -354,4 +361,9 @@ export const resourceHandlers: Record<string, ResourceHandler> = {
 	// Account security group
 	cspSetting: buildCspSettingRequest,
 	developerKeyAccountBinding: buildDeveloperKeyAccountBindingRequest,
+
+	// Dates and assessment extras group
+	learningObjectDate: buildLearningObjectDateRequest,
+	liveAssessment: buildLiveAssessmentRequest,
+	whatIfGrade: buildWhatIfGradeRequest,
 };

@@ -70,7 +70,9 @@ export const canvasResources: ICanvasResource[] = [
 	{ name: 'Group Category', value: 'groupCategory', operations: descriptions.groupCategoryOperations, fields: descriptions.groupCategoryFields },
 	{ name: 'History', value: 'history', operations: descriptions.historyOperations, fields: descriptions.historyFields },
 	{ name: 'Late Policy', value: 'latePolicy', operations: descriptions.latePolicyOperations, fields: descriptions.latePolicyFields },
+	{ name: 'Learning Object Date', value: 'learningObjectDate', operations: descriptions.learningObjectDateOperations, fields: descriptions.learningObjectDateFields },
 	{ name: 'Line Item', value: 'lineItem', operations: descriptions.lineItemOperations, fields: descriptions.lineItemFields },
+	{ name: 'Live Assessment', value: 'liveAssessment', operations: descriptions.liveAssessmentOperations, fields: descriptions.liveAssessmentFields },
 	{ name: 'Login', value: 'login', operations: descriptions.loginOperations, fields: descriptions.loginFields },
 	{ name: 'LTI Registration', value: 'ltiRegistration', operations: descriptions.ltiRegistrationOperations, fields: descriptions.ltiRegistrationFields },
 	{ name: 'LTI Resource Link', value: 'ltiResourceLink', operations: descriptions.ltiResourceLinkOperations, fields: descriptions.ltiResourceLinkFields },
@@ -116,4 +118,5 @@ export const canvasResources: ICanvasResource[] = [
 	{ name: 'Tab', value: 'tab', operations: descriptions.tabOperations, fields: descriptions.tabFields },
 	{ name: 'User', value: 'user', operations: descriptions.userOperations, fields: descriptions.userFields },
 	{ name: 'User Observee', value: 'userObservee', operations: descriptions.userObserveeOperations, fields: descriptions.userObserveeFields },
+	{ name: 'What-If Grade', value: 'whatIfGrade', operations: descriptions.whatIfGradeOperations, fields: descriptions.whatIfGradeFields },
 ];

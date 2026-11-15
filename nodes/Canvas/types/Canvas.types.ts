@@ -28,6 +28,12 @@ export interface IRequestConfig {
 	 */
 	transform?: (records: IDataObject[]) => IDataObject[];
 	/**
+	 * For a GET that returns one record containing a paginated array (the Link header
+	 * pages through that array): the key of the array. All pages are read and the
+	 * array is completed, so the record is output once and whole.
+	 */
+	mergePagedArray?: string;
+	/**
 	 * After a successful write, read this endpoint and output its response instead.
 	 * For the few calls whose own response does not reflect the change they made.
 	 */

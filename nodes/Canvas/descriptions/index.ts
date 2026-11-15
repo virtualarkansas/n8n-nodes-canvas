@@ -522,3 +522,19 @@ export {
 	developerKeyAccountBindingOperations,
 	developerKeyAccountBindingFields,
 } from './DeveloperKeyAccountBindingDescription';
+
+// Dates and assessment extras resource group descriptions
+export {
+	learningObjectDateOperations,
+	learningObjectDateFields,
+} from './LearningObjectDateDescription';
+
+export {
+	liveAssessmentOperations,
+	liveAssessmentFields,
+} from './LiveAssessmentDescription';
+
+export {
+	whatIfGradeOperations,
+	whatIfGradeFields,
+} from './WhatIfGradeDescription';

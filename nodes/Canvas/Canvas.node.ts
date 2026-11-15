@@ -10,6 +10,7 @@ import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import {
 	canvasApiRequest,
 	canvasApiRequestAllItems,
+	canvasApiRequestMergedRecord,
 	canvasFileUpload,
 	canvasFileUploadFromUrl,
 	executeWithErrorHandling,
@@ -540,6 +541,16 @@ async function processItem(
 
 			// Every GET goes through the paginating request: Canvas tells us through the
 			// Link header whether there is more, so no list endpoint is cut off at one page.
+			if (request.method === 'GET' && request.mergePagedArray) {
+				return canvasApiRequestMergedRecord.call(
+					context,
+					request.endpoint,
+					qsData,
+					request.mergePagedArray,
+					rateLimit,
+				);
+			}
+
 			if (request.method === 'GET') {
 				const pagination: IPaginationOptions = request.fetchAllPages
 					? { enabled: true, perPage: CANVAS_MAX_PER_PAGE, maxPages: 0 }
@@ -569,6 +580,15 @@ async function processItem(
 				rateLimit,
 			);
 			if (request.thenGet) {
+				if (request.mergePagedArray) {
+					return canvasApiRequestMergedRecord.call(
+						context,
+						request.thenGet,
+						undefined,
+						request.mergePagedArray,
+						rateLimit,
+					);
+				}
 				const current = await canvasApiRequest.call(
 					context,
 					'GET',

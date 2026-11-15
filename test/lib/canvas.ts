@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { loadState } from './state';
 import type { Json } from './n8n';
 
@@ -9,12 +10,17 @@ export class CanvasClient {
 	readonly url: string;
 	private readonly token: string;
 
-	constructor(persona = 'admin') {
+	constructor(persona = 'admin', token?: string) {
 		const state = loadState();
 		this.url = state.canvas.url.replace(/\/$/, '');
-		const token = state.canvas.tokens[persona];
-		if (!token) throw new Error(`No Canvas token for persona "${persona}" in test state`);
-		this.token = token;
+		const resolved = token ?? state.canvas.tokens[persona];
+		if (!resolved) throw new Error(`No Canvas token for persona "${persona}" in test state`);
+		this.token = resolved;
+	}
+
+	/** A client for a token the test created itself (see `createUserWithToken`). */
+	static withToken(token: string): CanvasClient {
+		return new CanvasClient('custom', token);
 	}
 
 	async request(
@@ -107,4 +113,46 @@ let counter = 0;
 export function unique(prefix: string): string {
 	counter++;
 	return `${prefix} ${Date.now().toString(36)}-${process.pid.toString(36)}-${counter}`;
+}
+
+export interface TestUser {
+	id: string;
+	name: string;
+	login: string;
+	token: string;
+	client: CanvasClient;
+}
+
+/**
+ * Create a Canvas user of the test's own, with an API token, so tests can act as
+ * that user without touching the seeded personas.
+ */
+export async function createUserWithToken(label: string, accountId = fx('accountId')): Promise<TestUser> {
+	const name = unique(label);
+	const login = `${name.toLowerCase().replace(/[^a-z0-9]+/g, '.')}@example.edu`;
+	const user = await canvas().post<Json>(`/api/v1/accounts/${accountId}/users`, {
+		user: { name, skip_registration: true },
+		pseudonym: { unique_id: login, send_confirmation: false },
+	});
+	// A token an admin creates for someone else through the API stays "pending" until that user
+	// activates it, so the token is minted inside Canvas instead.
+	const out = execFileSync(
+		'docker',
+		[
+			'exec',
+			'canvas-web',
+			'bundle',
+			'exec',
+			'rails',
+			'runner',
+			`puts "TOKEN=" + User.find(${Number(user.id)}).access_tokens.create!(purpose: "n8n battery (test-created user)").full_token`,
+		],
+		{ encoding: 'utf8' },
+	);
+	const token = out
+		.split('\n')
+		.find((line) => line.startsWith('TOKEN='))
+		?.slice(6);
+	if (!token) throw new Error(`Could not create a token for user ${String(user.id)}: ${out.slice(0, 300)}`);
+	return { id: String(user.id), name, login, token, client: CanvasClient.withToken(token) };
 }

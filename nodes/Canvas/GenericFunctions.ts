@@ -813,6 +813,49 @@ export async function canvasApiRequestAllItems(
 	};
 }
 
+/**
+ * GET one record whose embedded array is paginated (e.g. the overrides inside
+ * a learning object's date details): read every page and return the record
+ * with the complete array.
+ */
+export async function canvasApiRequestMergedRecord(
+	this: CanvasContext,
+	endpoint: string,
+	query: IDataObject | undefined,
+	arrayKey: string,
+	rateLimitOptions: IRateLimitOptions = DEFAULT_RATE_LIMIT_OPTIONS,
+): Promise<IDataObject> {
+	let response = await canvasApiRequest.call(
+		this,
+		'GET',
+		endpoint,
+		undefined,
+		{ per_page: CANVAS_MAX_PER_PAGE, ...(query ?? {}) },
+		rateLimitOptions,
+	);
+	const record = response.data as IDataObject;
+	if (!record || typeof record !== 'object' || !Array.isArray(record[arrayKey])) {
+		return record;
+	}
+	const merged = [...(record[arrayKey] as IDataObject[])];
+	while (response.linkHeader.next) {
+		response = await canvasApiRequest.call(
+			this,
+			'GET',
+			response.linkHeader.next,
+			undefined,
+			undefined,
+			rateLimitOptions,
+		);
+		const page = (response.data as IDataObject | undefined)?.[arrayKey];
+		if (!Array.isArray(page) || page.length === 0) {
+			break;
+		}
+		merged.push(...(page as IDataObject[]));
+	}
+	return { ...record, [arrayKey]: merged };
+}
+
 // ============================================
 // Debug output
 // ============================================
