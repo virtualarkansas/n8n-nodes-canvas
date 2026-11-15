@@ -361,21 +361,33 @@ describe('favorite', () => {
 	});
 
 	it('getAllCourses / getAllGroups: shared personas (read only) match Canvas', async () => {
+		// Other test files enrol the shared personas and add groups while this runs, so each list is
+		// compared with what Canvas returns before and after the node run: everything in both must be
+		// there, nothing outside either.
+		const expectConsistent = (got: number[], before: number[], after: number[], label: string): void => {
+			expect(new Set(got).size, label).toBe(got.length);
+			for (const id of before.filter((x) => after.includes(x))) expect(got, `${label}: missing ${id}`).toContain(id);
+			for (const id of got) expect(before.includes(id) || after.includes(id), `${label}: unexpected ${id}`).toBe(true);
+		};
 		for (const persona of ['student', 'teacher', 'observer']) {
 			const client = new CanvasClient(persona);
-			const expectedCourses = await client.get<Json[]>('/api/v1/users/self/favorites/courses');
+			const list = async (kind: string): Promise<number[]> =>
+				(await client.get<Json[]>(`/api/v1/users/self/favorites/${kind}`)).map((r) => Number(r.id));
+
+			const coursesBefore = await list('courses');
 			const courses = await runOk({
 				resource: 'favorite',
 				operation: 'getAllCourses',
 				persona,
+				// The endpoint is not paginated: page size options do not cut the list.
 				params: { pagination: { perPage: 5, maxPages: 1 } },
 			});
-			// The endpoint is not paginated: page size options do not cut the list.
-			expect(courses.map((c) => c.id), persona).toEqual(expectedCourses.map((c) => c.id));
+			expectConsistent(courses.map((c) => Number(c.id)), coursesBefore, await list('courses'), `${persona} courses`);
+			if (coursesBefore.length > 5) expect(courses.length, persona).toBeGreaterThan(5);
 
-			const expectedGroups = await client.get<Json[]>('/api/v1/users/self/favorites/groups');
+			const groupsBefore = await list('groups');
 			const groups = await runOk({ resource: 'favorite', operation: 'getAllGroups', persona });
-			expect(groups.map((g) => g.id), persona).toEqual(expectedGroups.map((g) => g.id));
+			expectConsistent(groups.map((g) => Number(g.id)), groupsBefore, await list('groups'), `${persona} groups`);
 		}
 		// A teacher with more courses than the dashboard holds gets Canvas' selection of 20, not everything.
 		const teacherCourses = await new CanvasClient('teacher').get<Json[]>('/api/v1/users/self/favorites/courses');
