@@ -15,7 +15,8 @@ export const announcementOperations: INodeProperties[] = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create a new announcement',
+				description:
+					'Create a new announcement. A user without the right to post announcements gets an ordinary discussion topic instead (Canvas does not refuse).',
 				action: 'Create an announcement',
 			},
 			{
@@ -173,21 +174,24 @@ export const announcementFields: INodeProperties[] = [
 				name: 'delayed_post_at',
 				type: 'dateTime',
 				default: '',
-				description: 'The datetime to publish the announcement (ISO 8601 format)',
+				description:
+					'Course announcements only. The announcement is posted at this time instead of right away (ISO 8601 format).',
 			},
 			{
 				displayName: 'Lock At',
 				name: 'lock_at',
 				type: 'dateTime',
 				default: '',
-				description: 'The datetime to lock the announcement (ISO 8601 format)',
+				description:
+					'Course announcements only. Comments are closed from this time on (ISO 8601 format).',
 			},
 			{
 				displayName: 'Lock Comment',
 				name: 'lock_comment',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to lock comments on this announcement',
+				description:
+					'Whether comments are disabled. Canvas enables comments again on every update that does not send this option switched on.',
 			},
 			{
 				displayName: 'Only Graders Can Rate',
@@ -208,7 +212,7 @@ export const announcementFields: INodeProperties[] = [
 				name: 'podcast_has_student_posts',
 				type: 'boolean',
 				default: false,
-				description: 'Whether the podcast feed includes student posts',
+				description: 'Whether the podcast feed includes student posts (implies Podcast Enabled). Course announcements only.',
 			},
 			{
 				displayName: 'Published',
@@ -222,7 +226,8 @@ export const announcementFields: INodeProperties[] = [
 				name: 'require_initial_post',
 				type: 'boolean',
 				default: false,
-				description: 'Whether users must post before seeing other replies',
+				description:
+					'Whether users must post before seeing other replies. Course announcements only; ignored while comments are disabled.',
 			},
 			{
 				displayName: 'Sort By Rating',
@@ -236,7 +241,8 @@ export const announcementFields: INodeProperties[] = [
 				name: 'specific_sections',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of section IDs to limit this announcement to',
+				description:
+					'Course announcements only. Comma-separated list of section IDs to limit this announcement to, or "all" to address every section again.',
 			},
 		],
 	},
@@ -269,21 +275,24 @@ export const announcementFields: INodeProperties[] = [
 				name: 'delayed_post_at',
 				type: 'dateTime',
 				default: '',
-				description: 'The datetime to publish the announcement (ISO 8601 format)',
+				description:
+					'Course announcements only. The announcement is posted at this time instead of right away (ISO 8601 format).',
 			},
 			{
 				displayName: 'Lock At',
 				name: 'lock_at',
 				type: 'dateTime',
 				default: '',
-				description: 'The datetime to lock the announcement (ISO 8601 format)',
+				description:
+					'Course announcements only. Comments are closed from this time on (ISO 8601 format).',
 			},
 			{
 				displayName: 'Lock Comment',
 				name: 'lock_comment',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to lock comments on this announcement',
+				description:
+					'Whether comments are disabled. Canvas enables comments again on every update that does not send this option switched on.',
 			},
 			{
 				displayName: 'Message',
@@ -314,7 +323,7 @@ export const announcementFields: INodeProperties[] = [
 				name: 'podcast_has_student_posts',
 				type: 'boolean',
 				default: false,
-				description: 'Whether the podcast feed includes student posts',
+				description: 'Whether the podcast feed includes student posts (implies Podcast Enabled). Course announcements only.',
 			},
 			{
 				displayName: 'Published',
@@ -328,7 +337,8 @@ export const announcementFields: INodeProperties[] = [
 				name: 'require_initial_post',
 				type: 'boolean',
 				default: false,
-				description: 'Whether users must post before seeing other replies',
+				description:
+					'Whether users must post before seeing other replies. Course announcements only; ignored while comments are disabled.',
 			},
 			{
 				displayName: 'Sort By Rating',
@@ -342,7 +352,8 @@ export const announcementFields: INodeProperties[] = [
 				name: 'specific_sections',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of section IDs to limit this announcement to',
+				description:
+					'Course announcements only. Comma-separated list of section IDs to limit this announcement to, or "all" to address every section again.',
 			},
 			{
 				displayName: 'Title',
@@ -401,7 +412,8 @@ export const announcementFields: INodeProperties[] = [
 				operation: ['getAll'],
 			},
 		},
-		description: 'Comma-separated list of context codes (e.g., course_123, course_456)',
+		description:
+			'Comma-separated list of courses, as context codes (course_123) or plain course IDs. Canvas supports courses only and skips courses it cannot find.',
 	},
 	{
 		displayName: 'Options',
@@ -435,7 +447,8 @@ export const announcementFields: INodeProperties[] = [
 				name: 'end_date',
 				type: 'dateTime',
 				default: '',
-				description: 'Only return announcements posted before this date (defaults to 28 days from start date)',
+				description:
+					'Only return announcements posted before this date (inclusive). Defaults to 28 days after the start date.',
 			},
 			{
 				displayName: 'Include',
@@ -460,7 +473,8 @@ export const announcementFields: INodeProperties[] = [
 				name: 'start_date',
 				type: 'dateTime',
 				default: '',
-				description: 'Only return announcements posted since this date (inclusive)',
+				description:
+					'Only return announcements posted since this date (inclusive). Defaults to 14 days ago, so older announcements are not returned unless this is set.',
 			},
 		],
 	},
