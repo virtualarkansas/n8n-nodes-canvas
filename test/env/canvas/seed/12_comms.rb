@@ -289,7 +289,7 @@ Seed.step("comms.appointments") do
   teacher = Seed.user(:teacher)
   students = Seed.users(:main_students)
   zone = ActiveSupport::TimeZone["America/Chicago"]
-  slot = ->(days, hour, min, len = 15) { s = zone.at(now + days.days).change(hour:, min:); [s, s + len.minutes] }
+  slot = ->(days, hour, min, len = 15) { s = zone.at(now + days.days).change(hour:, min: 0) + min.minutes; [s, s + len.minutes] }
   ag = lambda do |title, contexts, slots, publish: true, **attrs|
     g = AppointmentGroup.new(title:, contexts:, new_appointments: slots, **attrs)
     g.save!
@@ -314,7 +314,7 @@ Seed.step("comms.appointments") do
   review = ag.call("Midterm Review Slots (all in the past)", [main], (0..5).map { |i| slot.call(-26, 14, i * 20, 20) }, participants_per_appointment: 4)
   review.appointments.order(:start_at).each_with_index { |a, i| students[20 + (i * 2), 2].each { |u| a.reserve_for(u, u) } }
   dead = ag.call("Cancelled Sign-up (deleted)", [main], [slot.call(9, 9, 0)])
-  dead.destroy
+  dead.destroy(teacher)
   Seed.fixture(:appointmentGroupId, office.id)
   Seed.fixture(:appointmentId, future[0].id)
   Seed.fixture(:openAppointmentId, future[5].id)

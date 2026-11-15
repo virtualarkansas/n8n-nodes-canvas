@@ -88,12 +88,18 @@ module Seed
     # into its own queue: the canvas-jobs container never sees them, and Seed.drain_jobs works
     # them off in this process, where notifications are silenced. (Jobs created by the REST
     # calls the loader makes - SIS imports, exports, migrations - still go to canvas-jobs.)
-    QUEUE = "n8n_seed"
+    # Each loader process has its own queue (run.sh runs two of them side by side), so a
+    # process only waits for the work it produced; the final drain covers all of them.
+    QUEUE_PREFIX = "n8n_seed"
+
+    def queue
+      @queue ||= [QUEUE_PREFIX, ENV["SEED_LANE"].to_s.strip.presence].compact.join("_")
+    end
 
     def queue_background_work!
       return if flag?("SEED_SYNC_JOBS")
 
-      Delayed::Settings.queue = QUEUE
+      Delayed::Settings.queue = queue
       Delayed::Job.singleton_class.prepend(SkipNoopJobs)
       CanvasDelayedMessageSending.module_eval do
         def delay_if_production(sender: nil, **kwargs)
@@ -181,26 +187,32 @@ module Seed
       @vip[user_id]
     end
 
-    def pending_jobs
-      Delayed::Job.where(queue: QUEUE, run_at: ..(Time.now.utc + 10.seconds)).count
+    def job_queues(all)
+      all ? Delayed::Job.where("queue LIKE ?", "#{QUEUE_PREFIX}%").distinct.pluck(:queue) : [queue]
     end
 
-    # Work the loader's own job queue off until it is empty.
-    def drain_jobs(label = "jobs", timeout: 1200)
+    def pending_jobs(all: false)
+      Delayed::Job.where(queue: job_queues(all), run_at: ..(Time.now.utc + 10.seconds)).count
+    end
+
+    # Work the loader's job queue off until it is empty (all: every loader queue).
+    def drain_jobs(label = "jobs", all: false, timeout: 1200)
       t = Time.now
       ran = 0
       tally = Hash.new { |h, k| h[k] = [0, 0.0] }
       worker = Delayed::Worker.new
       name = "n8n-seed:#{Process.pid}"
       loop do
-        while (job = Delayed::Job.get_and_lock_next_available(name, QUEUE, 0, Delayed::MAX_PRIORITY))
-          jt = Time.now
-          worker.perform(job)
-          tally[job.tag][0] += 1
-          tally[job.tag][1] += Time.now - jt
-          ran += 1
+        job_queues(all).each do |q|
+          while (job = Delayed::Job.get_and_lock_next_available(name, q, 0, Delayed::MAX_PRIORITY))
+            jt = Time.now
+            worker.perform(job)
+            tally[job.tag][0] += 1
+            tally[job.tag][1] += Time.now - jt
+            ran += 1
+          end
         end
-        left = pending_jobs
+        left = pending_jobs(all:)
         break if left.zero?
         raise "timed out draining jobs (#{left} left)" if Time.now - t > timeout
 
@@ -307,6 +319,16 @@ module Seed
       end
       @done[name] = true
       @cur = nil
+      log format("done  %s (%.1fs)", name, Time.now - t)
+    end
+
+    # Like step, but without a marker: runs on every (selected) invocation.
+    def always(name)
+      return unless @active != false && selected?(name)
+
+      log "start #{name}"
+      t = Time.now
+      yield
       log format("done  %s (%.1fs)", name, Time.now - t)
     end
 

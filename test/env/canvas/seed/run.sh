@@ -144,7 +144,7 @@ run_loader() {
 		*) printf '%s%s\n' "$prefix" "$line" ;;
 		esac
 		printf '%s%s\n' "$prefix" "$line" >>"$LOG"
-	done < <(docker exec -e SEED_FILES="$files" -e SEED_ONLY="$only" -e SEED_FORCE="${SEED_FORCE:-}" "$WEB" \
+	done < <(docker exec -e SEED_LANE="$label" -e SEED_FILES="$files" -e SEED_ONLY="$only" -e SEED_FORCE="${SEED_FORCE:-}" "$WEB" \
 		bundle exec rails runner "$REMOTE_DIR/seed.rb" 2>&1; echo "SEED_EXIT_STATUS=$?")
 	return "$(cat "$LOG.${label:-all}.status")"
 }
