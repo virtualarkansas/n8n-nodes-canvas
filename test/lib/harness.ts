@@ -65,10 +65,11 @@ function logOp(record: Omit<OpRecord, 'at'>): void {
 }
 
 /** Name of the running vitest test, when the harness is used from a test. */
-function currentTest(): { file?: string; name?: string } {
+async function currentTest(): Promise<{ file?: string; name?: string }> {
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-require-imports
-		const state = (require('vitest') as typeof import('vitest')).expect.getState();
+		// vitest is ESM-only; the harness is also used from plain scripts, hence the dynamic import.
+		const { expect } = await import('vitest');
+		const state = expect.getState();
 		return { file: state.testPath, name: state.currentTestName };
 	} catch {
 		return {};
@@ -82,7 +83,7 @@ function currentTest(): { file?: string; name?: string } {
  */
 const RUNS_LOG = resolve(RESULTS_DIR, 'runs.jsonl');
 
-function logRun(opts: RunNodeOptions, outcome: OpRecord['outcome'], success: Json[]): void {
+async function logRun(opts: RunNodeOptions, outcome: OpRecord['outcome'], success: Json[]): Promise<void> {
 	const ids: Json[] = success.slice(0, 3).map((item) => {
 		const picked: Json = {};
 		for (const [key, value] of Object.entries(item)) {
@@ -96,7 +97,8 @@ function logRun(opts: RunNodeOptions, outcome: OpRecord['outcome'], success: Jso
 	appendFileSync(
 		RUNS_LOG,
 		JSON.stringify({
-			...currentTest(),
+			session: process.env.BATTERY_SESSION ?? '0',
+			...(await currentTest()),
 			resource: opts.resource,
 			operation: opts.operation,
 			persona: opts.persona ?? 'admin',
@@ -211,7 +213,7 @@ export async function runNode(opts: RunNodeOptions): Promise<RunNodeResult> {
 						? 'error-output'
 						: 'success';
 		logOp({ resource: opts.resource, operation: opts.operation, outcome });
-		logRun(opts, outcome, run?.outputs[0] ?? []);
+		await logRun(opts, outcome, run?.outputs[0] ?? []);
 		return {
 			ok: execution.status === 'success',
 			success: run?.outputs[0] ?? [],
