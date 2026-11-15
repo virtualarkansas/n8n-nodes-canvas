@@ -104,6 +104,40 @@ export interface DedicatedUser {
 	session: CanvasWebSession;
 }
 
+/** Delete a user this helper created (used when its setup could not be completed). */
+async function discardUser(id: string, wasAdmin = false): Promise<void> {
+	if (wasAdmin) {
+		await canvas()
+			.request('DELETE', `/api/v1/accounts/${fx('accountId')}/admins/${id}`)
+			.catch(() => undefined);
+	}
+	await canvas()
+		.request('DELETE', `/api/v1/accounts/${fx('accountId')}/users/${id}`)
+		.catch(() => undefined);
+}
+
+/** Sign in as the user and let the user generate an access token for itself. */
+async function signInAndCreateToken(
+	loginId: string,
+	password: string,
+	purpose: string,
+): Promise<{ session: CanvasWebSession; token: string }> {
+	const session = new CanvasWebSession();
+	await session.login(loginId, password);
+	const created = await session.request('POST', '/api/v1/users/self/tokens', {
+		// Canvas requires an expiry (at most 120 days) on tokens of users who are only students.
+		token: { purpose, expires_at: new Date(Date.now() + 30 * 86_400_000).toISOString() },
+	});
+	const data = (created.data ?? {}) as Json;
+	const token = String(data.visible_token ?? data.token ?? '');
+	if (created.status >= 300 || !token) {
+		throw new Error(
+			`Could not create an access token for ${loginId}: HTTP ${created.status} ${JSON.stringify(created.data).slice(0, 300)}`,
+		);
+	}
+	return { session, token };
+}
+
 export interface EnrollSpec {
 	courseId: string;
 	type: 'StudentEnrollment' | 'TeacherEnrollment' | 'ObserverEnrollment' | 'TaEnrollment';
@@ -163,35 +197,32 @@ export async function createDedicatedUser(
 	});
 	const id = String(user.id);
 
-	for (const e of enroll) {
-		await canvas().post(`/api/v1/courses/${e.courseId}/enrollments`, {
-			enrollment: {
-				user_id: id,
-				type: e.type,
-				enrollment_state: 'active',
-				notify: false,
-				...(e.associatedUserId ? { associated_user_id: e.associatedUserId } : {}),
-			},
-		});
+	try {
+		for (const e of enroll) {
+			await canvas().post(`/api/v1/courses/${e.courseId}/enrollments`, {
+				enrollment: {
+					user_id: id,
+					type: e.type,
+					enrollment_state: 'active',
+					notify: false,
+					...(e.associatedUserId ? { associated_user_id: e.associatedUserId } : {}),
+				},
+			});
+		}
+	} catch (error) {
+		await discardUser(id);
+		throw error;
 	}
 
-	const session = new CanvasWebSession();
-	await session.login(loginId, password);
-	const created = await session.request('POST', '/api/v1/users/self/tokens', {
-		// Canvas requires an expiry (at most 120 days) on tokens of users who are only students.
-		token: { purpose: `battery ${label}`, expires_at: new Date(Date.now() + 30 * 86_400_000).toISOString() },
-	});
-	const data = (created.data ?? {}) as Json;
-	const token = String(data.visible_token ?? data.token ?? '');
-	if (created.status >= 300 || !token) {
-		throw new Error(
-			`Could not create an access token for ${loginId}: HTTP ${created.status} ${JSON.stringify(created.data).slice(0, 300)}`,
-		);
+	try {
+		const { session, token } = await signInAndCreateToken(loginId, password, `battery ${label}`);
+		const persona = `dedicated-${label}-${suffix}`;
+		await registerCredential(persona, { canvasUrl: canvasUrl(), accessToken: token });
+		return { id, name, loginId, password, token, persona, session };
+	} catch (error) {
+		await discardUser(id);
+		throw error;
 	}
-
-	const persona = `dedicated-${label}-${suffix}`;
-	await registerCredential(persona, { canvasUrl: canvasUrl(), accessToken: token });
-	return { id, name, loginId, password, token, persona, session };
 }
 
 /** Remove the n8n credential of a dedicated user and delete the user from the account. */
@@ -222,16 +253,15 @@ export async function createDedicatedAdmin(label: string): Promise<DedicatedUser
 	const id = String(user.id);
 	await canvas().post(`/api/v1/accounts/${fx('accountId')}/admins`, { user_id: id, send_confirmation: false });
 
-	const session = new CanvasWebSession();
-	await session.login(loginId, password);
-	const created = await session.request('POST', '/api/v1/users/self/tokens', { token: { purpose: `battery admin ${label}` } });
-	const token = String(((created.data ?? {}) as Json).visible_token ?? '');
-	if (created.status >= 300 || !token) {
-		throw new Error(`Could not create an admin token for ${loginId}: HTTP ${created.status} ${JSON.stringify(created.data).slice(0, 300)}`);
+	try {
+		const { session, token } = await signInAndCreateToken(loginId, password, `battery admin ${label}`);
+		const persona = `dedicated-admin-${label}-${suffix}`;
+		await registerCredential(persona, { canvasUrl: canvasUrl(), accessToken: token });
+		return { id, name, loginId, password, token, persona, session };
+	} catch (error) {
+		await discardUser(id, true);
+		throw error;
 	}
-	const persona = `dedicated-admin-${label}-${suffix}`;
-	await registerCredential(persona, { canvasUrl: canvasUrl(), accessToken: token });
-	return { id, name, loginId, password, token, persona, session };
 }
 
 /** Remove a dedicated admin: its admin role, its credential and the user. */
