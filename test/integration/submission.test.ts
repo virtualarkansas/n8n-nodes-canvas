@@ -658,6 +658,16 @@ describe('submission', () => {
 		expect(notJson.error[0]).toMatchObject({ errorCode: 0, errorMessage: 'Rubric Assessment must be valid JSON' });
 	});
 
+	it('grade: a workflow saved with the former "Score" field still grades', async () => {
+		const student = battery.sectionTwo.studentIds[1];
+		await runOk({
+			resource: 'submission',
+			operation: 'grade',
+			params: { courseId, assignmentId: battery.playgroundAssignmentId, userId: student, gradeFields: { score: 6.5 } },
+		});
+		expect((await submissionFromCanvas(battery.playgroundAssignmentId, student)).score).toBe(6.5);
+	});
+
 	it('grade: a student may not grade', async () => {
 		const result = await runNode({
 			resource: 'submission',
