@@ -6,16 +6,18 @@ import type { Json } from '../../lib/n8n';
  * Records of their own for the grading / rubric / outcome test files, so that
  * nothing seeded (and nothing another test file uses) is ever modified:
  *
- *   - a pool of students that is created once and found again by SIS ID on later runs,
+ *   - a pool of students (and graders) that is created once and found again by SIS ID on later runs,
  *   - a fresh course per test file with those students and the personas enrolled.
  */
 
-const STUDENT_SIS_PREFIX = 'BATTERY-GRD-STU-';
-const STUDENT_LOGIN_PREFIX = 'grd.sandbox.student.';
-
-function studentSisId(index: number): string {
-	return `${STUDENT_SIS_PREFIX}${String(index).padStart(3, '0')}`;
+interface Pool {
+	sisPrefix: string;
+	loginPrefix: string;
+	name: string;
 }
+
+const STUDENTS: Pool = { sisPrefix: 'BATTERY-GRD-STU-', loginPrefix: 'grd.sandbox.student.', name: 'Grading Sandbox Student' };
+const GRADERS: Pool = { sisPrefix: 'BATTERY-GRD-GRADER-', loginPrefix: 'grd.sandbox.grader.', name: 'Grading Sandbox Grader' };
 
 async function inChunks<T, R>(items: T[], size: number, work: (item: T) => Promise<R>): Promise<R[]> {
 	const out: R[] = [];
@@ -25,30 +27,39 @@ async function inChunks<T, R>(items: T[], size: number, work: (item: T) => Promi
 	return out;
 }
 
-/** IDs of `count` sandbox students, created on first use. */
-export async function sandboxStudents(count: number): Promise<number[]> {
+async function poolUsers(pool: Pool, count: number): Promise<number[]> {
 	const api = canvas();
 	const existing = await api.getAll<Json>(
-		`/api/v1/accounts/${fx('accountId')}/users?search_term=${encodeURIComponent(STUDENT_LOGIN_PREFIX)}`,
+		`/api/v1/accounts/${fx('accountId')}/users?search_term=${encodeURIComponent(pool.loginPrefix)}`,
 	);
 	const bySis = new Map(existing.map((user) => [String(user.sis_user_id), Number(user.id)]));
 
 	const wanted = Array.from({ length: count }, (_, i) => i + 1);
 	return inChunks(wanted, 5, async (index) => {
-		const sisId = studentSisId(index);
+		const number = String(index).padStart(3, '0');
+		const sisId = `${pool.sisPrefix}${number}`;
 		const known = bySis.get(sisId);
 		if (known) return known;
-		const number = String(index).padStart(3, '0');
 		const created = await api.request('POST', `/api/v1/accounts/${fx('accountId')}/users`, {
-			user: { name: `Grading Sandbox Student ${number}`, skip_registration: true },
-			pseudonym: { unique_id: `${STUDENT_LOGIN_PREFIX}${number}@example.edu`, sis_user_id: sisId, send_confirmation: false },
+			user: { name: `${pool.name} ${number}`, skip_registration: true },
+			pseudonym: { unique_id: `${pool.loginPrefix}${number}@example.edu`, sis_user_id: sisId, send_confirmation: false },
 			communication_channel: { skip_confirmation: true },
 		});
 		if (created.status < 400) return Number((created.data as Json).id);
-		// Another test file created the same student a moment ago.
+		// Another test file created the same user a moment ago.
 		const found = await api.get<Json>(`/api/v1/users/sis_user_id:${sisId}`);
 		return Number(found.id);
 	});
+}
+
+/** IDs of `count` sandbox students, created on first use. */
+export function sandboxStudents(count: number): Promise<number[]> {
+	return poolUsers(STUDENTS, count);
+}
+
+/** IDs of `count` sandbox users meant to be enrolled as teachers (the seeded TA role may not grade). */
+export function sandboxGraders(count: number): Promise<number[]> {
+	return poolUsers(GRADERS, count);
 }
 
 export interface SandboxCourse {
