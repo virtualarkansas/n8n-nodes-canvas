@@ -25,6 +25,12 @@ export const moduleItemOperations: INodeProperties[] = [
 				action: 'Delete a module item',
 			},
 			{
+				name: 'Duplicate',
+				value: 'duplicate',
+				description: 'Copy an assignment, discussion or page item (and its content) within the same module',
+				action: 'Duplicate a module item',
+			},
+			{
 				name: 'Get',
 				value: 'get',
 				description: 'Get a single module item',
@@ -37,16 +43,28 @@ export const moduleItemOperations: INodeProperties[] = [
 				action: 'Get many module items',
 			},
 			{
+				name: 'Get Sequence',
+				value: 'getSequence',
+				description: 'Find the module item an asset belongs to, with the previous and next items in the course sequence',
+				action: 'Get the module item sequence for an asset',
+			},
+			{
 				name: 'Mark Done',
 				value: 'markDone',
-				description: 'Mark a module item as done',
+				description: 'Mark a module item as done for the user of the credential (fulfills a "must mark done" requirement)',
 				action: 'Mark a module item as done',
 			},
 			{
 				name: 'Mark Not Done',
 				value: 'markNotDone',
-				description: 'Mark a module item as not done',
+				description: 'Mark a module item as not done for the user of the credential',
 				action: 'Mark a module item as not done',
+			},
+			{
+				name: 'Mark Read',
+				value: 'markRead',
+				description: 'Fulfill the "must view" requirement of a module item for the user of the credential',
+				action: 'Mark a module item as read',
 			},
 			{
 				name: 'Select Mastery Path',
@@ -91,6 +109,17 @@ export const moduleItemFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['moduleItem'],
+				operation: [
+					'create',
+					'delete',
+					'get',
+					'getAll',
+					'markDone',
+					'markNotDone',
+					'markRead',
+					'selectMasteryPath',
+					'update',
+				],
 			},
 		},
 		description: 'The ID of the module',
@@ -108,10 +137,60 @@ export const moduleItemFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['moduleItem'],
-				operation: ['get', 'update', 'delete', 'markDone', 'markNotDone', 'selectMasteryPath'],
+				operation: [
+					'get',
+					'update',
+					'delete',
+					'duplicate',
+					'markDone',
+					'markNotDone',
+					'markRead',
+					'selectMasteryPath',
+				],
 			},
 		},
 		description: 'The ID of the module item',
+	},
+
+	// ----------------------------------
+	//         moduleItem: getSequence
+	// ----------------------------------
+	{
+		displayName: 'Asset Type',
+		name: 'assetType',
+		type: 'options',
+		required: true,
+		default: 'ModuleItem',
+		displayOptions: {
+			show: {
+				resource: ['moduleItem'],
+				operation: ['getSequence'],
+			},
+		},
+		options: [
+			{ name: 'Assignment', value: 'Assignment' },
+			{ name: 'Discussion', value: 'Discussion' },
+			{ name: 'External Tool', value: 'ExternalTool' },
+			{ name: 'File', value: 'File' },
+			{ name: 'Module Item', value: 'ModuleItem' },
+			{ name: 'Page', value: 'Page' },
+			{ name: 'Quiz', value: 'Quiz' },
+		],
+		description: 'The type of asset to find in the module sequence. Use Module Item when the item ID is known: an asset can appear in more than one module.',
+	},
+	{
+		displayName: 'Asset ID',
+		name: 'assetId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['moduleItem'],
+				operation: ['getSequence'],
+			},
+		},
+		description: 'The ID of the asset (for a page, its URL slug such as "my-page-title")',
 	},
 
 	// ----------------------------------
@@ -251,18 +330,18 @@ export const moduleItemFields: INodeProperties[] = [
 				name: 'completion_requirement_min_score',
 				type: 'number',
 				default: 0,
-				description: 'Minimum score required for completion (when type is min_score)',
+				description: 'Minimum score required for completion (used with the "Min Score" requirement type)',
 			},
 			{
 				displayName: 'Completion Requirement Type',
 				name: 'completion_requirement_type',
 				type: 'options',
 				options: [
-					{ name: 'Min Score', value: 'min_score' },
-					{ name: 'Must Contribute', value: 'must_contribute' },
-					{ name: 'Must Mark Done', value: 'must_mark_done' },
-					{ name: 'Must Submit', value: 'must_submit' },
-					{ name: 'Must View', value: 'must_view' },
+					{ name: 'Min Score', value: 'min_score', description: 'Assignments and quizzes only' },
+					{ name: 'Must Contribute', value: 'must_contribute', description: 'Assignments, discussions and pages' },
+					{ name: 'Must Mark Done', value: 'must_mark_done', description: 'Assignments and pages' },
+					{ name: 'Must Submit', value: 'must_submit', description: 'Assignments, graded discussions and quizzes' },
+					{ name: 'Must View', value: 'must_view', description: 'Any item type except sub headers' },
 				],
 				default: 'must_view',
 				description: 'The type of completion requirement for this item',
@@ -319,18 +398,19 @@ export const moduleItemFields: INodeProperties[] = [
 				name: 'completion_requirement_min_score',
 				type: 'number',
 				default: 0,
-				description: 'Minimum score required for completion (when type is min_score)',
+				description: 'Minimum score required for completion (used with the "Min Score" requirement type)',
 			},
 			{
 				displayName: 'Completion Requirement Type',
 				name: 'completion_requirement_type',
 				type: 'options',
 				options: [
-					{ name: 'Min Score', value: 'min_score' },
-					{ name: 'Must Contribute', value: 'must_contribute' },
-					{ name: 'Must Mark Done', value: 'must_mark_done' },
-					{ name: 'Must Submit', value: 'must_submit' },
-					{ name: 'Must View', value: 'must_view' },
+					{ name: 'Min Score', value: 'min_score', description: 'Assignments and quizzes only' },
+					{ name: 'Must Contribute', value: 'must_contribute', description: 'Assignments, discussions and pages' },
+					{ name: 'Must Mark Done', value: 'must_mark_done', description: 'Assignments and pages' },
+					{ name: 'Must Submit', value: 'must_submit', description: 'Assignments, graded discussions and quizzes' },
+					{ name: 'Must View', value: 'must_view', description: 'Any item type except sub headers' },
+					{ name: 'None (Remove Requirement)', value: 'none', description: 'Remove the completion requirement from this item' },
 				],
 				default: 'must_view',
 				description: 'The type of completion requirement for this item',
@@ -340,7 +420,7 @@ export const moduleItemFields: INodeProperties[] = [
 				name: 'external_url',
 				type: 'string',
 				default: '',
-				description: 'The external URL (for ExternalUrl and ExternalTool items)',
+				description: 'The external URL (only applies to External URL and External Tool items)',
 			},
 			{
 				displayName: 'Indent',
@@ -375,7 +455,7 @@ export const moduleItemFields: INodeProperties[] = [
 				name: 'published',
 				type: 'boolean',
 				default: false,
-				description: 'Whether the item is published and visible to students',
+				description: 'Whether the item is published and visible to students. Also publishes or unpublishes the linked content.',
 			},
 			{
 				displayName: 'Title',

@@ -19,10 +19,22 @@ export const mediaObjectOperations: INodeProperties[] = [
 				action: 'Get many media objects',
 			},
 			{
+				name: 'List Tracks',
+				value: 'listTracks',
+				description: 'List the caption/subtitle tracks the user of the credential added to a media object',
+				action: 'List media tracks',
+			},
+			{
 				name: 'Update',
 				value: 'update',
-				description: 'Update a media object',
+				description: 'Change the title of a media object (only its owner can)',
 				action: 'Update a media object',
+			},
+			{
+				name: 'Update Tracks',
+				value: 'updateTracks',
+				description: 'Replace the caption/subtitle tracks of a media object: tracks that are not listed are deleted',
+				action: 'Update media tracks',
 			},
 		],
 		default: 'getAll',
@@ -59,7 +71,7 @@ export const mediaObjectFields: INodeProperties[] = [
 			{
 				name: 'User',
 				value: 'user',
-				description: 'Media objects for the current user',
+				description: 'Media objects the user of the credential uploaded to their own files',
 			},
 		],
 		description: 'The context to list media objects from',
@@ -107,10 +119,99 @@ export const mediaObjectFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['mediaObject'],
-				operation: ['update'],
+				operation: ['update', 'listTracks', 'updateTracks'],
 			},
 		},
-		description: 'The ID of the media object',
+		description: 'The media ID of the media object (the "media_id" of the object, e.g. "m-2pbqZk3RCGMNFs"), not its numeric ID',
+	},
+
+	// ----------------------------------
+	//         mediaObject: listTracks, updateTracks
+	// ----------------------------------
+	{
+		displayName: 'Tracks',
+		name: 'tracks',
+		type: 'fixedCollection',
+		typeOptions: {
+			multipleValues: true,
+		},
+		placeholder: 'Add Track',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['mediaObject'],
+				operation: ['updateTracks'],
+			},
+		},
+		description: 'The complete set of tracks the media object should have afterwards. Existing tracks in languages that are not listed are deleted.',
+		options: [
+			{
+				name: 'trackValues',
+				displayName: 'Track',
+				values: [
+					{
+						displayName: 'Locale',
+						name: 'locale',
+						type: 'string',
+						required: true,
+						default: 'en',
+						description: 'Language code of the track, e.g. "en", "es" or "fr-CA"',
+					},
+					{
+						displayName: 'Content',
+						name: 'content',
+						type: 'string',
+						typeOptions: {
+							rows: 6,
+						},
+						default: '',
+						description: 'The captions in SRT or WebVTT format. Leave empty to keep the existing track of this language unchanged.',
+					},
+					{
+						displayName: 'Kind',
+						name: 'kind',
+						type: 'options',
+						options: [
+							{ name: 'Captions', value: 'captions' },
+							{ name: 'Chapters', value: 'chapters' },
+							{ name: 'Descriptions', value: 'descriptions' },
+							{ name: 'Metadata', value: 'metadata' },
+							{ name: 'Subtitles', value: 'subtitles' },
+						],
+						default: 'subtitles',
+						description: 'What the track contains',
+					},
+				],
+			},
+		],
+	},
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['mediaObject'],
+				operation: ['listTracks', 'updateTracks'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Include',
+				name: 'include',
+				type: 'multiOptions',
+				options: [
+					{ name: 'Content', value: 'content' },
+					{ name: 'Created At', value: 'created_at' },
+					{ name: 'Updated At', value: 'updated_at' },
+					{ name: 'WebVTT Content', value: 'webvtt_content' },
+				],
+				default: [],
+				description: 'Additional fields to return with each track (by default only ID, locale, kind, media object and user)',
+			},
+		],
 	},
 	{
 		displayName: 'Title',
@@ -124,7 +225,7 @@ export const mediaObjectFields: INodeProperties[] = [
 				operation: ['update'],
 			},
 		},
-		description: 'The new title for the media object',
+		description: 'The new title for the media object (shown instead of the original title)',
 	},
 
 	// ----------------------------------
@@ -152,7 +253,7 @@ export const mediaObjectFields: INodeProperties[] = [
 					{ name: 'Tracks', value: 'tracks' },
 				],
 				default: [],
-				description: 'Exclude certain data from the response to improve performance',
+				description: 'Leave the media sources and/or caption tracks out of the result. Without them Canvas does not have to ask the media server, which is much faster.',
 			},
 			{
 				displayName: 'Order',
